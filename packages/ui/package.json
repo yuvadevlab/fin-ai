@@ -10,8 +10,9 @@
     "./styles.css": "./src/styles.css"
   },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",

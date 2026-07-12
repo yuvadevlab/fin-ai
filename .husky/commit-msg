@@ -1,2 +1,17 @@
-# Validate commit message against Conventional Commits spec
+echo ""
+echo "📝 Validating commit message..."
+echo ""
+
 pnpm exec commitlint --edit "$1"
+
+status=$?
+
+if [ $status -eq 0 ]; then
+  echo ""
+  echo "✅ Commit message is valid."
+else
+  echo ""
+  echo "❌ Commit message must follow the Conventional Commits specification."
+fi
+
+exit $status
