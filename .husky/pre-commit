@@ -9,9 +9,11 @@ status=$?
 if [ $status -eq 0 ]; then
   echo ""
   echo "✅ Pre-commit checks passed."
+  echo ""
 else
   echo ""
   echo "❌ Pre-commit checks failed."
+  echo ""
 fi
 
 exit $status

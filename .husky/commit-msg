@@ -9,9 +9,11 @@ status=$?
 if [ $status -eq 0 ]; then
   echo ""
   echo "✅ Commit message is valid."
+  echo ""
 else
   echo ""
   echo "❌ Commit message must follow the Conventional Commits specification."
+  echo ""
 fi
 
 exit $status
