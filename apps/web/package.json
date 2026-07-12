@@ -13,6 +13,7 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
+    "@finai/features": "workspace:*",
     "@finai/finance-engine": "workspace:*",
     "@finai/shared-types": "workspace:*",
     "@finai/ui": "workspace:*",

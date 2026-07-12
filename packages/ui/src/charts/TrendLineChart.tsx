@@ -1,4 +1,3 @@
-import React from "react";
 import {
   CartesianGrid,
   Line,
@@ -26,7 +25,7 @@ export function TrendLine({ data }: TrendLineChartProps) {
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis dataKey="month" {...axisProps} />
         <YAxis {...axisProps} tickFormatter={inrShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v: any) => inrShort(Number(v))} />
+        <Tooltip {...tooltipStyle()} formatter={(v) => inrShort(Number(v))} />
         <Line
           type="monotone"
           dataKey="value"

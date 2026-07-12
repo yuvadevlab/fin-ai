@@ -1,90 +1,132 @@
 import type { UserConfig } from "@commitlint/types";
 
 /**
- * Commitlint Configuration — Distributed Systems Lab
+ * Commitlint Configuration — Yuva DevLab - FinAI
  *
- * Enforces the Conventional Commits specification (https://www.conventionalcommits.org).
- * All commit messages must follow the format:
+ * Enforces the Conventional Commits specification:
+ * https://www.conventionalcommits.org
+ *
+ * Format:
  *
  *   <type>(<scope>): <subject>
  *
  * Examples:
- *   feat(auth): add JWT refresh token rotation
- *   fix(api-gateway): handle circuit breaker timeout edge case
- *   docs(packages): update @yuvadevlab/logger usage guide
- *   chore(deps): bump nx to 23.1.0
+ *
+ *   feat(ui): add reusable chart card component
+ *   fix(api): handle expired JWT refresh token
+ *   refactor(database): simplify prisma repository
+ *   perf(web): reduce dashboard bundle size
+ *   docs(workspace): update development guide
+ *   chore(deps): upgrade next.js to latest version
+ *
+ * Breaking changes:
+ *
+ *   feat(api)!: remove legacy authentication endpoint
+ *
+ *   BREAKING CHANGE: Legacy /login endpoint has been removed.
  */
+
 const config: UserConfig = {
   extends: ["@commitlint/config-conventional"],
 
   rules: {
-    // ─── Type ───────────────────────────────────────────────────────────────
-    // Allowed commit types — strict, no extras accepted.
+    // ─── Type ────────────────────────────────────────────────────────────────
     "type-enum": [
       2,
       "always",
       [
-        "feat", // New feature
-        "fix", // Bug fix
-        "docs", // Documentation only
-        "style", // Formatting, no logic change
-        "refactor", // Code restructuring, no feature/fix
-        "perf", // Performance improvement
-        "test", // Adding or updating tests
-        "build", // Build system or external dependencies
-        "ci", // CI/CD configuration
-        "chore", // Maintenance, tooling
-        "revert", // Reverts a previous commit
+        "feat",
+        "fix",
+        "perf",
+        "refactor",
+        "style",
+        "test",
+        "docs",
+        "build",
+        "ci",
+        "chore",
+        "revert",
       ],
     ],
+
     "type-case": [2, "always", "lower-case"],
     "type-empty": [2, "never"],
 
-    // ─── Scope ──────────────────────────────────────────────────────────────
-    // Scope is required on all commits to identify affected component.
-    // Use the package, service, or app name as the scope.
+    // ─── Scope ────────────────────────────────────────────────────────────────
+    // Scope is mandatory in this monorepo.
+    // Prefer package/app/service names.
     "scope-empty": [2, "never"],
+
     "scope-case": [2, "always", "kebab-case"],
+
     "scope-enum": [
-      1, // warn (not error) — scopes may expand as new services are added
+      1,
       "always",
       [
-        "packages", // Monorepo packages
-        "apps", // Monorepo apps
-        "web", // Web app
-        "api", // API service
-        "database", // Database service
-        "features", // Features package
-        "finance-engine", // Finance engine service
-        "shared-types", // Shared types package
-        "ui", // UI component library
-        "validation", // Validation package
-        "workspace", // Workspaces
-        "ci", // CI/CD configuration
-        "infra", // Infrastructure
-        "configs", // Configuration files
-        "husky", // Husky configuration
-        "commitlint", // Commitlint configuration
+        // Applications
+        "web",
+        "mobile",
+        "desktop",
+        "docs",
+
+        // Services
+        "api",
+        "database",
+        "auth",
+        "finance-engine",
+
+        // Packages
+        "ui",
+        "features",
+        "shared",
+        "shared-types",
+        "validation",
+        "configs",
+
+        // Infrastructure
+        "workspace",
+        "infra",
+        "docker",
+        "k8s",
+        "ci",
+
+        // Tooling
+        "eslint",
+        "prettier",
+        "husky",
+        "commitlint",
+        "storybook",
+
+        // Dependencies
+        "deps",
       ],
     ],
 
-    // ─── Subject ────────────────────────────────────────────────────────────
+    // ─── Subject ────────────────────────────────────────────────────────────────
+
     "subject-empty": [2, "never"],
-    "subject-case": [2, "always", "lower-case"],
-    "subject-full-stop": [2, "never", "."], // No trailing period
-    "subject-min-length": [2, "always", 10], // Force descriptive messages
+
+    "subject-full-stop": [2, "never", "."],
+
+    "subject-min-length": [2, "always", 8],
+
     "subject-max-length": [2, "always", 100],
 
-    // ─── Header ─────────────────────────────────────────────────────────────
-    "header-max-length": [2, "always", 120],
+    // ─── Header ────────────────────────────────────────────────────────────────
 
-    // ─── Body ───────────────────────────────────────────────────────────────
-    "body-leading-blank": [2, "always"], // Blank line between header and body
-    "body-max-line-length": [2, "always", 120],
+    "header-max-length": [2, "always", 100],
 
-    // ─── Footer ─────────────────────────────────────────────────────────────
+    // ─── Body ────────────────────────────────────────────────────────────────
+
+    "body-leading-blank": [2, "always"],
+
+    "body-max-line-length": [2, "always", 100],
+
+    // ─── Footer ────────────────────────────────────────────────────────────────
+
     "footer-leading-blank": [2, "always"],
-    "footer-max-line-length": [2, "always", 120],
+
+    "footer-max-line-length": [2, "always", 100],
   },
 };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { TransactionForm } from "./TransactionForm";
@@ -9,7 +11,7 @@ export interface AddTransactionDialogProps {
 export function AddTransactionDialog({ trigger }: AddTransactionDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // TODO

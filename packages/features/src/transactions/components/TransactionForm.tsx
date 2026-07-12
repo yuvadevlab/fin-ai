@@ -1,3 +1,5 @@
+"use client";
+
 import { FormDialogField, FormField } from "@finai/ui";
 import { useState } from "react";
 

@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Simulate login and redirect to dashboard home
     router.push("/");

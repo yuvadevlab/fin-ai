@@ -2,8 +2,7 @@
 
 import React from "react";
 import { Send, Sparkles } from "lucide-react";
-import { PageContainer, PageHeader, Button, Input, MoneyDisplay, ContentCard } from "@finai/ui";
-import { cn } from "@/lib/utils";
+import { PageContainer, PageHeader, Button, Input, MoneyDisplay, ContentCard, cn } from "@finai/ui";
 
 const suggestedPrompts = [
   "Where did I overspend this month?",
@@ -45,7 +44,7 @@ export default function AiAdvisorPage() {
   ]);
   const [input, setInput] = React.useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
 

@@ -1,50 +1,12 @@
-"use client";
+import { DashboardShell } from "@finai/features";
 
-import React from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { AppShell, Sidebar, TopBar } from "@finai/ui";
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
-  const customLink = React.useCallback(
-    ({
-      href,
-      children,
-      className,
-    }: {
-      href: string;
-      children: React.ReactNode;
-      className?: string;
-    }) => (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    ),
-    [],
-  );
-
-  const sidebar = React.useMemo(
-    () => <Sidebar pathname={pathname} LinkComponent={customLink} />,
-    [pathname, customLink],
-  );
-
-  const topbar = React.useMemo(
-    () => (
-      <TopBar
-        workspaceName="Sharma Family"
-        avatarFallback="AS"
-        onAddTransactionClick={() => console.log("Add transaction click")}
-        onNotificationsClick={() => console.log("Notifications click")}
-      />
-    ),
-    [],
-  );
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const workspace = "Yuva Family";
+  const avatarFallback = workspace.substring(0, 2).toUpperCase();
 
   return (
-    <AppShell sidebar={sidebar} topbar={topbar}>
+    <DashboardShell workspaceName={workspace} avatarFallback={avatarFallback}>
       {children}
-    </AppShell>
+    </DashboardShell>
   );
 }

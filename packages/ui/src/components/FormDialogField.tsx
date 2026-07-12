@@ -1,6 +1,12 @@
-import { Input } from "@/primitives/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/primitives/select";
-import { Textarea } from "@/primitives/textarea";
+import { Input } from "../primitives/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../primitives/select";
+import { Textarea } from "../primitives/textarea";
 import { Label } from "@radix-ui/react-label";
 import React from "react";
 

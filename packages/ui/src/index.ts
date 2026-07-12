@@ -18,6 +18,7 @@ export { MoneyDisplay } from "./components/MoneyDisplay";
 export { PercentageBadge } from "./components/PercentageBadge";
 export { StatusBadge } from "./components/StatusBadge";
 export { ConfirmDialog } from "./components/ConfirmDialog";
+export { cn } from "./lib/utils";
 export { ChartCard } from "./components/ChartCard";
 export { FormDialog } from "./components/FormDialog";
 export {

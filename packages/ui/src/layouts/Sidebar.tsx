@@ -13,7 +13,30 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+const routeFeatures = {
+  "/transactions": process.env.NEXT_PUBLIC_FEATURE_TRANSACTIONS === "true",
+  "/accounts": process.env.NEXT_PUBLIC_FEATURE_ACCOUNTS === "true",
+  "/budgets": process.env.NEXT_PUBLIC_FEATURE_BUDGETS === "true",
+  "/goals": process.env.NEXT_PUBLIC_FEATURE_GOALS === "true",
+  "/investments": process.env.NEXT_PUBLIC_FEATURE_INVESTMENTS === "true",
+  "/reports": process.env.NEXT_PUBLIC_FEATURE_REPORTS === "true",
+  "/family": process.env.NEXT_PUBLIC_FEATURE_FAMILY === "true",
+  "/health": process.env.NEXT_PUBLIC_FEATURE_HEALTH === "true",
+  "/ai-advisor": process.env.NEXT_PUBLIC_FEATURE_AI_ADVISOR === "true",
+  "/settings": process.env.NEXT_PUBLIC_FEATURE_SETTINGS === "true",
+} as const;
+
+function isRouteEnabled(href: string) {
+  if (href === "/") return true;
+
+  return routeFeatures[href as keyof typeof routeFeatures] ?? true;
+}
+
+type NavItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+};
 
 const primaryNav: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -55,10 +78,11 @@ export function Sidebar({
   className,
   ...props
 }: SidebarProps) {
+  const Link = LinkComponent;
+
   const renderLink = (item: NavItem) => {
     const Icon = item.icon;
     const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-    const Link = LinkComponent;
 
     return (
       <Link
@@ -76,6 +100,10 @@ export function Sidebar({
       </Link>
     );
   };
+
+  const visiblePrimaryNav = primaryNav.filter((item) => isRouteEnabled(item.href));
+
+  const visibleAdvancedNav = advancedNav.filter((item) => isRouteEnabled(item.href));
 
   return (
     <aside
@@ -98,13 +126,18 @@ export function Sidebar({
         <div className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase">
           Overview
         </div>
-        {primaryNav.map(renderLink)}
-        <div className="pt-6">
-          <div className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase">
-            Intelligence
+
+        {visiblePrimaryNav.map(renderLink)}
+
+        {visibleAdvancedNav.length > 0 && (
+          <div className="pt-6">
+            <div className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase">
+              Intelligence
+            </div>
+
+            {visibleAdvancedNav.map(renderLink)}
           </div>
-          {advancedNav.map(renderLink)}
-        </div>
+        )}
       </nav>
 
       <div className="p-4">

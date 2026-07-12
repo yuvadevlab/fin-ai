@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.1
-        version: 21.2.1(@types/node@26.1.1)(conventional-commits-parser@7.1.0)(typescript@5.9.2)
+        version: 21.2.1(@types/node@22.20.1)(conventional-commits-parser@7.1.0)(typescript@5.9.2)
       '@commitlint/config-conventional':
         specifier: ^21.2.0
         version: 21.2.0
@@ -20,12 +20,18 @@ importers:
       '@eslint/js':
         specifier: ^9.39.5
         version: 9.39.5
+      '@types/node':
+        specifier: ^22.20.1
+        version: 22.20.1
       eslint:
         specifier: ^9.0.0
         version: 9.39.5(jiti@2.7.0)
+      eslint-config-prettier:
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@9.39.5(jiti@2.7.0))
       eslint-plugin-prettier:
         specifier: ^5.5.6
-        version: 5.5.6(@types/eslint@9.6.1)(eslint@9.39.5(jiti@2.7.0))(prettier@3.9.5)
+        version: 5.5.6(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))(prettier@3.9.5)
       eslint-plugin-react-hooks:
         specifier: ^7.1.1
         version: 7.1.1(eslint@9.39.5(jiti@2.7.0))
@@ -150,6 +156,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@finai/features':
+        specifier: workspace:*
+        version: link:../../packages/features
       '@finai/finance-engine':
         specifier: workspace:*
         version: link:../../packages/finance-engine
@@ -248,9 +257,18 @@ importers:
 
   packages/features:
     dependencies:
+      '@finai/finance-engine':
+        specifier: workspace:*
+        version: link:../finance-engine
       '@finai/ui':
         specifier: workspace:*
         version: link:../ui
+      lucide-react:
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.2.7)
+      next:
+        specifier: ^15.1.5
+        version: 15.5.20(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react:
         specifier: ^19.0.0
         version: 19.2.7
@@ -3508,6 +3526,12 @@ packages:
       typescript:
         optional: true
 
+  eslint-config-prettier@10.1.8:
+    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
+
   eslint-import-resolver-node@0.3.10:
     resolution: {integrity: sha512-tRrKqFyCaKict5hOd244sL6EQFNycnMQnBe+j8uqGNXYzsImGbGUU4ibtoaBmv5FLwJwcFJNeg1GeVjQfbMrDQ==}
 
@@ -6050,12 +6074,12 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commitlint/cli@21.2.1(@types/node@26.1.1)(conventional-commits-parser@7.1.0)(typescript@5.9.2)':
+  '@commitlint/cli@21.2.1(@types/node@22.20.1)(conventional-commits-parser@7.1.0)(typescript@5.9.2)':
     dependencies:
       '@commitlint/config-conventional': 21.2.0
       '@commitlint/format': 21.2.0
       '@commitlint/lint': 21.2.0
-      '@commitlint/load': 21.2.0(@types/node@26.1.1)(typescript@5.9.2)
+      '@commitlint/load': 21.2.0(@types/node@22.20.1)(typescript@5.9.2)
       '@commitlint/read': 21.2.1(conventional-commits-parser@7.1.0)
       '@commitlint/types': 21.2.0
       tinyexec: 1.2.4
@@ -6100,14 +6124,14 @@ snapshots:
       '@commitlint/rules': 21.2.0
       '@commitlint/types': 21.2.0
 
-  '@commitlint/load@21.2.0(@types/node@26.1.1)(typescript@5.9.2)':
+  '@commitlint/load@21.2.0(@types/node@22.20.1)(typescript@5.9.2)':
     dependencies:
       '@commitlint/config-validator': 21.2.0
       '@commitlint/execute-rule': 21.0.1
       '@commitlint/resolve-extends': 21.2.0
       '@commitlint/types': 21.2.0
       cosmiconfig: 9.0.2(typescript@5.9.2)
-      cosmiconfig-typescript-loader: 6.3.0(@types/node@26.1.1)(cosmiconfig@9.0.2(typescript@5.9.2))(typescript@5.9.2)
+      cosmiconfig-typescript-loader: 6.3.0(@types/node@22.20.1)(cosmiconfig@9.0.2(typescript@5.9.2))(typescript@5.9.2)
       es-toolkit: 1.49.0
       is-plain-obj: 4.1.0
       picocolors: 1.1.1
@@ -7835,6 +7859,7 @@ snapshots:
   '@types/node@26.1.1':
     dependencies:
       undici-types: 8.3.0
+    optional: true
 
   '@types/passport-jwt@4.0.1':
     dependencies:
@@ -8716,9 +8741,9 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig-typescript-loader@6.3.0(@types/node@26.1.1)(cosmiconfig@9.0.2(typescript@5.9.2))(typescript@5.9.2):
+  cosmiconfig-typescript-loader@6.3.0(@types/node@22.20.1)(cosmiconfig@9.0.2(typescript@5.9.2))(typescript@5.9.2):
     dependencies:
-      '@types/node': 26.1.1
+      '@types/node': 22.20.1
       cosmiconfig: 9.0.2(typescript@5.9.2)
       jiti: 2.6.1
       typescript: 5.9.2
@@ -9107,6 +9132,10 @@ snapshots:
       - eslint-plugin-import-x
       - supports-color
 
+  eslint-config-prettier@10.1.8(eslint@9.39.5(jiti@2.7.0)):
+    dependencies:
+      eslint: 9.39.5(jiti@2.7.0)
+
   eslint-import-resolver-node@0.3.10:
     dependencies:
       debug: 3.2.7
@@ -9189,7 +9218,7 @@ snapshots:
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
 
-  eslint-plugin-prettier@5.5.6(@types/eslint@9.6.1)(eslint@9.39.5(jiti@2.7.0))(prettier@3.9.5):
+  eslint-plugin-prettier@5.5.6(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))(prettier@3.9.5):
     dependencies:
       eslint: 9.39.5(jiti@2.7.0)
       prettier: 3.9.5
@@ -9197,6 +9226,7 @@ snapshots:
       synckit: 0.11.13
     optionalDependencies:
       '@types/eslint': 9.6.1
+      eslint-config-prettier: 10.1.8(eslint@9.39.5(jiti@2.7.0))
 
   eslint-plugin-react-hooks@5.2.0(eslint@9.39.5(jiti@2.7.0)):
     dependencies:
@@ -11322,7 +11352,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici-types@8.3.0: {}
+  undici-types@8.3.0:
+    optional: true
 
   universalify@2.0.1: {}
 

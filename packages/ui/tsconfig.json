@@ -4,8 +4,7 @@
     "jsx": "react-jsx",
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/ui/*": ["./src/primitives/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]

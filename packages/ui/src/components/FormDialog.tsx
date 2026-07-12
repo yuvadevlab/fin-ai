@@ -1,4 +1,4 @@
-import { Button } from "@/primitives/button";
+import { Button } from "../primitives/button";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/primitives/dialog";
+} from "../primitives/dialog";
 
 export interface FormDialogProps {
   open?: boolean;

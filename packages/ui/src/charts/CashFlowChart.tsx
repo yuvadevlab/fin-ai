@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Area,
   AreaChart,
@@ -37,7 +36,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis dataKey="month" {...axisProps} />
         <YAxis {...axisProps} tickFormatter={inrShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v: any) => inrShort(Number(v))} />
+        <Tooltip {...tooltipStyle()} formatter={(value) => inrShort(Number(value ?? 0))} />
         <Area
           type="monotone"
           dataKey="income"

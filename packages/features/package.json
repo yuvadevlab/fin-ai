@@ -14,9 +14,12 @@
     "clean": "rm -rf .turbo"
   },
   "dependencies": {
-    "@finai/ui": "workspace:*"
+    "@finai/ui": "workspace:*",
+    "@finai/finance-engine": "workspace:*",
+    "lucide-react": "^0.475.0"
   },
   "peerDependencies": {
+    "next": "^15.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

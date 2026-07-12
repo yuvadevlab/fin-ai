@@ -1,4 +1,3 @@
-import React from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { axisProps, tooltipStyle, inrShort } from "./chart-theme";
 
@@ -18,7 +17,7 @@ export function ExpenseBarChart({ data }: ExpenseBarChartProps) {
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis dataKey="month" {...axisProps} />
         <YAxis {...axisProps} tickFormatter={inrShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v: any) => inrShort(Number(v))} />
+        <Tooltip {...tooltipStyle()} formatter={(v) => inrShort(Number(v))} />
         <Bar dataKey="expense" radius={[6, 6, 0, 0]} fill="oklch(0.63 0.14 156)" />
       </BarChart>
     </ResponsiveContainer>
