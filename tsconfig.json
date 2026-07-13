@@ -4,14 +4,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@finai/shared-types": ["packages/shared-types/src/index.ts"],
-      "@finai/validation": ["packages/validation/src/index.ts"],
-      "@finai/finance-engine": ["packages/finance-engine/src/index.ts"],
-      "@finai/database": ["packages/database/src/index.ts"],
-      "@finai/ui": ["packages/ui/src/index.ts"]
-    },
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

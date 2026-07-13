@@ -96,6 +96,7 @@ const config: UserConfig = {
         "husky",
         "commitlint",
         "storybook",
+        "tsconfig",
 
         // Dependencies
         "deps",
