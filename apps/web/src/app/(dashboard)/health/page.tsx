@@ -1,6 +1,6 @@
 import { healthMetrics } from "@/lib/mock-data";
-import { HealthPage } from "@finai/features";
+import { HealthPage } from "@/features/health/components";
 
 export default function Page() {
-  <HealthPage healthMetrics={healthMetrics} />;
+  return <HealthPage healthMetrics={healthMetrics} />;
 }

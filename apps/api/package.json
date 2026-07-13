@@ -2,12 +2,12 @@
   "name": "@finai/api",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "clean": "rm -rf dist .turbo",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

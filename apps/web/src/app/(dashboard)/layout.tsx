@@ -1,4 +1,4 @@
-import { DashboardShell } from "@finai/features";
+import { DashboardShell } from "@/features/dashboard/components";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const workspace = "Yuva Family";

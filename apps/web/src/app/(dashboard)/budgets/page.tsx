@@ -1,4 +1,4 @@
-import { BudgetsPage } from "@finai/features";
+import { BudgetsPage } from "@/features/budgets/components";
 import { budgets } from "@/lib/mock-data";
 
 export default function Page() {

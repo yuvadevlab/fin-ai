@@ -1,4 +1,4 @@
-import { DashboardPage } from "@finai/features";
+import { DashboardPage } from "@/features/dashboard/components";
 import { categoryBreakdown, monthlyCashFlow, savingsTrend } from "@/lib/mock-data";
 
 export default async function Page() {

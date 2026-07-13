@@ -1,4 +1,4 @@
-import { FamilyPage } from "@finai/features";
+import { FamilyPage } from "@/features/family/components";
 import { categoryBreakdown, monthlyCashFlow, savingsTrend } from "@/lib/mock-data";
 
 export default function Page() {

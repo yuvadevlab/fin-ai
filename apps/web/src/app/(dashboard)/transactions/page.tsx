@@ -1,4 +1,4 @@
-import { TransactionsPage } from "@finai/features";
+import { TransactionsPage } from "@/features/transactions/components";
 import { transactions } from "@/lib/mock-data";
 
 export default async function Page() {

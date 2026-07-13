@@ -1,4 +1,4 @@
-import { GoalsPage } from "@finai/features";
+import { GoalsPage } from "@/features/goals/components";
 import { goals } from "@/lib/mock-data";
 
 export default function Page() {
