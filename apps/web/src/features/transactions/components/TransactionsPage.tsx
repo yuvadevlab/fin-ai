@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Filter, Plus } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Filter, Plus, Edit2, Trash2 } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -13,29 +13,36 @@ import {
   Button,
 } from "@finai/ui";
 import { TransactionDialog } from "./TransactionDialog";
+import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useTransactions, Transaction } from "../api/getTransactions";
+import { useDeleteTransaction } from "../api/deleteTransaction";
+import { TransactionFilterInput } from "@finai/validation";
 
-// TODO: Replace with real data from API
-interface Transaction {
-  id: string;
-  date: string;
-  merchant: string;
-  category: string;
-  account: string;
-  workspace: string;
-  amount: number;
-}
+const chips = ["All", "Income", "Expenses", "Transfer"];
 
-interface TransactionsPageProps {
-  transactions: Transaction[];
-}
+export function TransactionsPage() {
+  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [search, setSearch] = useState("");
 
-const chips = ["All", "Personal", "Family", "Income", "Expenses", "Investments"];
+  const { activeWorkspaceId } = useActiveWorkspace();
 
-export function TransactionsPage({ transactions }: TransactionsPageProps) {
-  const [selectedFilter, setSelectedFilter] = React.useState("All");
-  const [search, setSearch] = React.useState("");
+  const queryFilter = useMemo(() => {
+    const filter: TransactionFilterInput = {
+      page: 1,
+      pageSize: 50,
+      sortOrder: "desc",
+    };
+    if (search) filter.search = search;
+    if (selectedFilter === "Income") filter.type = "INCOME";
+    if (selectedFilter === "Expenses") filter.type = "EXPENSE";
+    if (selectedFilter === "Transfer") filter.type = "TRANSFER";
+    return filter;
+  }, [selectedFilter, search]);
 
-  const columns = React.useMemo(
+  const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
+  const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
+
+  const columns = useMemo(
     () => [
       {
         header: "Date",
@@ -55,46 +62,73 @@ export function TransactionsPage({ transactions }: TransactionsPageProps) {
         header: "Category",
         accessor: (t: Transaction) => (
           <Badge variant="secondary" className="rounded-full font-normal">
-            {t.category}
+            {t.category?.name || "Uncategorized"}
           </Badge>
         ),
       },
       {
         header: "Account",
-        accessor: (t: Transaction) => t.account,
+        accessor: (t: Transaction) =>
+          t.type === "TRANSFER" && t.toAccount
+            ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
+            : t.account?.name || "Unknown",
         className: "text-muted-foreground font-normal",
       },
       {
-        header: "Workspace",
-        accessor: (t: Transaction) => t.workspace,
-        className: "text-muted-foreground font-normal",
+        header: "Type",
+        accessor: (t: Transaction) => (
+          <Badge variant="outline" className="font-normal capitalize">
+            {t.type.toLowerCase()}
+          </Badge>
+        ),
       },
       {
         header: "Amount",
-        accessor: (t: Transaction) => <MoneyDisplay value={t.amount} showSign={t.amount > 0} />,
+        accessor: (t: Transaction) => {
+          const displayAmount = t.type === "EXPENSE" ? -t.amount : t.amount;
+          return <MoneyDisplay value={displayAmount} showSign={t.type === "INCOME"} />;
+        },
         className: "text-right whitespace-nowrap",
       },
+      {
+        header: "Actions",
+        accessor: (t: Transaction) => (
+          <div className="flex justify-end gap-1.5">
+            <TransactionDialog
+              mode="edit"
+              transactionId={t.id}
+              initialValues={t}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 cursor-pointer"
+                >
+                  <Edit2 className="size-3.5" />
+                </Button>
+              }
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-destructive h-8 w-8 cursor-pointer"
+              onClick={() => {
+                if (confirm("Are you sure you want to delete this transaction?")) {
+                  deleteTransaction.mutate(t.id);
+                }
+              }}
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ),
+        className: "text-right",
+      },
     ],
-    [],
+    [deleteTransaction],
   );
 
-  const filteredTransactions = React.useMemo(() => {
-    return transactions.filter((t) => {
-      const matchSearch =
-        t.merchant.toLowerCase().includes(search.toLowerCase()) ||
-        t.category.toLowerCase().includes(search.toLowerCase());
-
-      if (!matchSearch) return false;
-
-      if (selectedFilter === "All") return true;
-      if (selectedFilter === "Personal") return t.workspace === "Personal";
-      if (selectedFilter === "Family") return t.workspace === "Family";
-      if (selectedFilter === "Income") return t.amount > 0;
-      if (selectedFilter === "Expenses") return t.amount < 0 && t.category !== "Investment";
-      if (selectedFilter === "Investments") return t.category === "Investment";
-      return true;
-    });
-  }, [selectedFilter, search, transactions]);
+  const transactionsList = response?.items || [];
 
   return (
     <PageContainer>
@@ -114,7 +148,7 @@ export function TransactionsPage({ transactions }: TransactionsPageProps) {
 
       <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
         <SearchBar
-          placeholder="Search merchants, notes, tags…"
+          placeholder="Search merchants..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -124,7 +158,13 @@ export function TransactionsPage({ transactions }: TransactionsPageProps) {
         <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
       </div>
 
-      <DataTable data={filteredTransactions} columns={columns} rowKey={(t: Transaction) => t.id} />
+      {isLoading ? (
+        <div className="text-muted-foreground flex items-center justify-center p-12">
+          Loading transactions...
+        </div>
+      ) : (
+        <DataTable data={transactionsList} columns={columns} rowKey={(t: Transaction) => t.id} />
+      )}
     </PageContainer>
   );
 }

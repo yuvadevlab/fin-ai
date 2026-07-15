@@ -10,8 +10,8 @@ interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> {
   target: number;
   unit?: string;
   percentage: number;
-  footerLeft?: string;
-  footerRight?: string;
+  footerLeft?: React.ReactNode;
+  footerRight?: React.ReactNode;
   statusBadge?: React.ReactNode;
   progressColorClass?: string;
 }

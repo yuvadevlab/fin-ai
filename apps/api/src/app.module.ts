@@ -9,6 +9,8 @@ import { GoalsModule } from "./modules/goals/goals.module";
 import { InvestmentsModule } from "./modules/investments/investments.module";
 import { AnalyticsModule } from "./modules/analytics/analytics.module";
 import { AiModule } from "./modules/ai/ai.module";
+import { WorkspacesModule } from "./modules/workspaces/workspaces.module";
+import { CategoriesModule } from "./modules/categories/categories.module";
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { AiModule } from "./modules/ai/ai.module";
     InvestmentsModule,
     AnalyticsModule,
     AiModule,
+    WorkspacesModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

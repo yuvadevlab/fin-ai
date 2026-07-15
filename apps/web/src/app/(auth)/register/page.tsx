@@ -4,7 +4,9 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { Button, Input, Label, ContentCard } from "@finai/ui";
+import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
+import { apiClient } from "@/lib/api-client";
+import { Workspace } from "@/hooks/useActiveWorkspace";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,15 +14,45 @@ export default function RegisterPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleRegister = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
-    // Simulate sign up and redirect to dashboard
-    router.push("/");
+    setLoading(true);
+    try {
+      const response = await apiClient.post<{ accessToken: string; user: unknown }>(
+        "auth/register",
+        {
+          name,
+          email,
+          password,
+        },
+      );
+      localStorage.setItem("finai_token", response.accessToken);
+      localStorage.setItem("finai_user", JSON.stringify(response.user));
+      document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
+
+      // Fetch user's workspaces
+      const workspaces = await apiClient.get<Workspace[]>("workspaces");
+      if (workspaces && workspaces.length > 0) {
+        localStorage.setItem("finai_workspace_id", workspaces[0].id);
+        document.cookie = `finai_workspace_id=${workspaces[0].id}; path=/; max-age=604800; SameSite=Lax`;
+      }
+
+      toast.success("Account created successfully!");
+      router.push("/");
+    } catch (err) {
+      const apiErr = err as { message?: string };
+      setError(apiErr?.message || "Failed to create account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,15 +70,21 @@ export default function RegisterPage() {
 
         <ContentCard className="p-8">
           <form onSubmit={handleRegister} className="space-y-4">
+            {error && (
+              <div className="bg-destructive/15 text-destructive rounded-lg p-3 text-sm font-medium">
+                {error}
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="name">Full Name</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="Arjun Sharma"
+                placeholder="Your Full Name"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
@@ -59,6 +97,7 @@ export default function RegisterPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
@@ -71,6 +110,7 @@ export default function RegisterPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
@@ -83,12 +123,17 @@ export default function RegisterPage() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
 
-            <Button type="submit" className="mt-2 w-full cursor-pointer font-semibold shadow-sm">
-              Create Account
+            <Button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full cursor-pointer font-semibold shadow-sm"
+            >
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
         </ContentCard>

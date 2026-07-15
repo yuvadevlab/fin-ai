@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -22,24 +22,60 @@ import {
   CHART_COLORS,
 } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
+import { useDashboardStats } from "../api/getDashboardStats";
+import { useMonthlyAnalytics } from "../api/getMonthlyAnalytics";
+import { useCategoryBreakdown } from "../api/getCategoryBreakdown";
+import { useWorkspace } from "@/providers";
 
-// TODO: Replace mock data with real data from API
-interface DashboardPageProps {
-  categoryBreakdown: { name: string; value: number }[];
-  monthlyCashFlow: { month: string; income: number; expense: number }[];
-  savingsTrend: { month: string; value: number }[];
-}
-
-export function DashboardPage({
-  categoryBreakdown,
-  monthlyCashFlow,
-  savingsTrend,
-}: DashboardPageProps) {
+export function DashboardPage() {
   const pathname = usePathname();
+  const { workspaceId } = useWorkspace();
+
+  const { data: stats } = useDashboardStats(workspaceId);
+  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(workspaceId);
+  const { data: rawCategoryBreakdown } = useCategoryBreakdown(workspaceId);
+
+  // Guard against non-array API responses during hydration
+  const monthlyCashFlow = useMemo(
+    () => (Array.isArray(rawMonthlyCashFlow) ? rawMonthlyCashFlow : []),
+    [rawMonthlyCashFlow],
+  );
+
+  const categoryBreakdown = useMemo(
+    () => (Array.isArray(rawCategoryBreakdown) ? rawCategoryBreakdown : []),
+    [rawCategoryBreakdown],
+  );
   const expenseData = React.useMemo(
     () => monthlyCashFlow.map((m) => ({ month: m.month, expense: m.expense })),
     [monthlyCashFlow],
   );
+
+  const savingsTrend = React.useMemo(
+    () =>
+      monthlyCashFlow.map((m) => ({
+        month: m.month,
+        value: Math.max(0, m.income - m.expense),
+      })),
+    [monthlyCashFlow],
+  );
+
+  const pieData = React.useMemo(
+    () => categoryBreakdown.map((c) => ({ name: c.name, value: c.total })),
+    [categoryBreakdown],
+  );
+
+  const savingsRate = stats?.savingsRate ?? 0;
+  const incomeChange =
+    stats && stats.lastMonthIncome > 0
+      ? (((stats.monthlyIncome - stats.lastMonthIncome) / stats.lastMonthIncome) * 100).toFixed(1)
+      : null;
+  const expenseChange =
+    stats && stats.lastMonthExpenses > 0
+      ? (
+          ((stats.monthlyExpenses - stats.lastMonthExpenses) / stats.lastMonthExpenses) *
+          100
+        ).toFixed(1)
+      : null;
 
   const customLink = React.useCallback(
     ({
@@ -78,25 +114,42 @@ export function DashboardPage({
 
       <KPIGrid>
         <StatCard
-          label="Net Balance"
-          value={<MoneyDisplay value={842500} />}
-          trend={{ value: "+12.4%", kind: "up" }}
-          hint="vs last month"
+          label="Net Worth"
+          value={<MoneyDisplay value={stats?.netWorth ?? 0} />}
+          hint="Accounts + Investments"
         />
         <StatCard
           label="Monthly Income"
-          value={<MoneyDisplay value={125000} />}
-          trend={{ value: "Stable", kind: "flat" }}
+          value={<MoneyDisplay value={stats?.monthlyIncome ?? 0} />}
+          trend={
+            incomeChange !== null
+              ? {
+                  value: `${Number(incomeChange) >= 0 ? "+" : ""}${incomeChange}%`,
+                  kind: Number(incomeChange) >= 0 ? "up" : "down",
+                }
+              : undefined
+          }
+          hint="vs last month"
         />
         <StatCard
           label="Monthly Expenses"
-          value={<MoneyDisplay value={48200} />}
-          trend={{ value: "+8.2%", kind: "down" }}
-          hint="Dining +18%"
+          value={<MoneyDisplay value={stats?.monthlyExpenses ?? 0} />}
+          trend={
+            expenseChange !== null
+              ? {
+                  value: `${Number(expenseChange) >= 0 ? "+" : ""}${expenseChange}%`,
+                  kind: Number(expenseChange) > 0 ? "down" : "up",
+                }
+              : undefined
+          }
+          hint="vs last month"
         />
-        <StatCard label="Savings Rate" value="61.4%">
+        <StatCard label="Savings Rate" value={`${savingsRate.toFixed(1)}%`}>
           <div className="bg-border/60 ml-auto h-1 w-24 overflow-hidden rounded-full">
-            <div className="bg-primary h-full w-[61%]" />
+            <div
+              className="bg-primary h-full"
+              style={{ width: `${Math.min(100, savingsRate)}%` }}
+            />
           </div>
         </StatCard>
       </KPIGrid>
@@ -110,7 +163,7 @@ export function DashboardPage({
             <ChartCard title="Expense Trend" hint="Monthly total">
               <ExpenseBarChart data={expenseData} />
             </ChartCard>
-            <ChartCard title="Lave-Savin Trend" hint="Amount saved / month">
+            <ChartCard title="Savings Trend" hint="Amount saved / month">
               <TrendLine data={savingsTrend} />
             </ChartCard>
           </div>
@@ -118,23 +171,25 @@ export function DashboardPage({
 
         <div className="space-y-6">
           <AIInsightCard
-            title="Insight #12"
+            title="AI Insight"
             body={
               <>
-                You spent <span className="text-foreground font-semibold">18% more</span> on food
-                this month. Reducing dining expenses could save approximately{" "}
-                <span className="text-primary font-semibold">₹2,500</span> toward your Vacation
-                goal.
+                Your spending patterns show consistent trends. Review your category breakdown to
+                identify opportunities to{" "}
+                <span className="text-primary font-semibold">boost savings</span>.
               </>
             }
-            cta="Review Dining Categories"
+            cta="Review Categories"
           />
 
           <ChartCard title="Category Allocation" hint="This month">
-            <CategoryPie data={categoryBreakdown} />
+            <CategoryPie data={pieData} />
             <ul className="mt-4 space-y-3">
               {categoryBreakdown.map((c, i) => (
-                <li key={c.name} className="flex items-center justify-between text-sm">
+                <li
+                  key={c.categoryId ?? c.name}
+                  className="flex items-center justify-between text-sm"
+                >
                   <div className="flex items-center gap-3">
                     <span
                       className="size-2 rounded-full"
@@ -144,7 +199,7 @@ export function DashboardPage({
                     />
                     <span className="text-muted-foreground">{c.name}</span>
                   </div>
-                  <MoneyDisplay value={c.value} className="text-foreground font-medium" />
+                  <MoneyDisplay value={c.total} className="text-foreground font-medium" />
                 </li>
               ))}
             </ul>
@@ -155,15 +210,17 @@ export function DashboardPage({
       <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <MiniStat
           label="Investment Value"
-          value={<MoneyDisplay value={1135000} />}
-          icon={<TrendingUp className="text-primary size-4" />}
-          sub="+9.4% YTD"
+          value={<MoneyDisplay value={stats?.netWorth ?? 0} />}
+          sub="Net worth (accounts + investments)"
         />
-        <MiniStat label="Budget Status" value="On track" sub="4 of 6 categories within limit" />
         <MiniStat
-          label="Savings"
-          value={<MoneyDisplay value={76800} />}
-          icon={<TrendingDown className="text-muted-foreground size-4" />}
+          label="Active Goals"
+          value={String(stats?.goalCount ?? 0)}
+          sub={`${stats?.accountCount ?? 0} accounts linked`}
+        />
+        <MiniStat
+          label="Net Cash Flow"
+          value={<MoneyDisplay value={stats?.netCashFlow ?? 0} />}
           sub="This month"
         />
       </section>

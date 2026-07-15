@@ -4,17 +4,46 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { Button, Input, Label, ContentCard } from "@finai/ui";
+import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
+import { apiClient } from "@/lib/api-client";
+
+import { Workspace } from "@/hooks/useActiveWorkspace";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simulate login and redirect to dashboard home
-    router.push("/");
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await apiClient.post<{ accessToken: string; user: unknown }>("auth/login", {
+        email,
+        password,
+      });
+      localStorage.setItem("finai_token", response.accessToken);
+      localStorage.setItem("finai_user", JSON.stringify(response.user));
+      document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
+
+      // Fetch user's workspaces
+      const workspaces = await apiClient.get<Workspace[]>("workspaces");
+      if (workspaces && workspaces.length > 0) {
+        localStorage.setItem("finai_workspace_id", workspaces[0].id);
+        document.cookie = `finai_workspace_id=${workspaces[0].id}; path=/; max-age=604800; SameSite=Lax`;
+      }
+
+      toast.success("Welcome back! Login successful.");
+      router.push("/");
+    } catch (err) {
+      const apiErr = err as { message?: string };
+      setError(apiErr?.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,6 +61,11 @@ export default function LoginPage() {
 
         <ContentCard className="p-8">
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="bg-destructive/15 text-destructive rounded-lg p-3 text-sm font-medium">
+                {error}
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="email">Email address</Label>
               <Input
@@ -41,6 +75,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
@@ -58,12 +93,17 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
                 className="bg-secondary/40 border-border/80"
               />
             </div>
 
-            <Button type="submit" className="mt-2 w-full cursor-pointer font-semibold shadow-sm">
-              Sign In
+            <Button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full cursor-pointer font-semibold shadow-sm"
+            >
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </ContentCard>

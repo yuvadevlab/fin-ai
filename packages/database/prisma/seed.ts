@@ -36,10 +36,10 @@ async function main() {
   console.log("Seeding base user...");
   const user = await prisma.user.create({
     data: {
-      email: "arjun@example.com",
-      name: "Arjun Sharma",
-      // Pre-hashed "Password123!" using bcrypt
-      passwordHash: "$2b$10$EPY9FJ3wQO.2P.Wp9rCjGux93O34XvU6M6p3uYc.621q6s1h9P/yK",
+      email: "finai.user@gmail.com",
+      name: "FinAI User",
+      // Pre-hashed "FinAI#1234!" using bcrypt
+      passwordHash: "$2b$10$g/5An7UmkRH/UwPQ/TplMObWJCO2/L5lGSmoOXZWYGWL2zyl1GePq",
       avatarUrl: null,
     },
   });
@@ -47,7 +47,7 @@ async function main() {
   console.log("Seeding workspaces...");
   const personalWorkspace = await prisma.workspace.create({
     data: {
-      name: "Arjun's Personal Workspace",
+      name: "FinAI Personal Workspace",
       type: WorkspaceType.PERSONAL,
       ownerId: user.id,
     },
@@ -55,7 +55,7 @@ async function main() {
 
   const familyWorkspace = await prisma.workspace.create({
     data: {
-      name: "Sharma Family",
+      name: "FinAI Family Workspace",
       type: WorkspaceType.FAMILY,
       ownerId: user.id,
     },
@@ -113,7 +113,7 @@ async function main() {
     },
   });
 
-  const cash = await prisma.account.create({
+  await prisma.account.create({
     data: {
       workspaceId: personalWorkspace.id,
       name: "Cash",

@@ -129,3 +129,5 @@ export {
   AlertDialogAction,
   AlertDialogCancel,
 } from "./primitives/alert-dialog";
+export { Toaster } from "./primitives/sonner";
+export { toast } from "sonner";

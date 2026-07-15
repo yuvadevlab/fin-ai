@@ -6,17 +6,15 @@ import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
 
-export function DashboardShell({
-  workspaceName,
-  avatarFallback,
-  children,
-}: {
-  workspaceName: string;
-  avatarFallback: string;
-  children: React.ReactNode;
-}) {
+import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+
+export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  const { activeWorkspace } = useActiveWorkspace();
+  const workspaceName = activeWorkspace?.name || "FinAI Workspace";
+  const avatarFallback = workspaceName.substring(0, 2).toUpperCase();
 
   const customLink = React.useCallback(
     ({

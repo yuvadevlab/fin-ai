@@ -1,9 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
-import { QueryProvider } from "@/providers/QueryProvider";
+import { QueryProvider } from "@/providers";
+import { Toaster } from "@finai/ui";
 import "@finai/ui/styles.css";
 import "./globals.css";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
   title: "FinAI — AI-Powered Personal & Family Finance",
   description:
@@ -24,7 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="antialiased">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );

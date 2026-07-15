@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Plus } from "lucide-react";
 import {
   PageContainer,
@@ -10,44 +11,47 @@ import {
   Button,
 } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
+import { useBudgets } from "../api/getBudgets";
+import { BudgetDialog } from "./BudgetDialog";
+import { useWorkspace } from "@/providers";
 
-// TODO: Replace with real data from API
-interface Budget {
-  name: string;
-  spent: number;
-  limit: number;
-}
+export function BudgetsPage() {
+  const { workspaceId } = useWorkspace();
+  const { data: rawBudgets } = useBudgets(workspaceId);
+  // Guard against non-array during hydration
+  const budgets = Array.isArray(rawBudgets) ? rawBudgets : [];
 
-interface BudgetsPageProps {
-  budgets: Budget[];
-}
-
-export function BudgetsPage({ budgets }: BudgetsPageProps) {
   return (
     <PageContainer>
       <PageHeader
         title="Budgets"
         description="Monthly caps by category. AI flags categories at risk of overspend."
         actions={
-          <Button size="sm" className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> New Budget
-          </Button>
+          <BudgetDialog
+            trigger={
+              <Button size="sm" className="cursor-pointer gap-1.5">
+                <Plus className="size-4" /> New Budget
+              </Button>
+            }
+          />
         }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
           {budgets.map((b) => {
-            const pct = Math.round((b.spent / b.limit) * 100);
+            const spent = b.spent ?? 0;
+            const pct = b.limit > 0 ? Math.round((spent / b.limit) * 100) : 0;
             const over = pct > 100;
             const warn = pct > 85 && !over;
             const status = over ? "OVER" : warn ? "NEAR_LIMIT" : "ON_TRACK";
+            const name = b.category?.name || "Uncategorized";
 
             return (
               <ProgressCard
-                key={b.name}
-                title={b.name}
-                value={b.spent}
+                key={b.id}
+                title={name}
+                value={spent}
                 target={b.limit}
                 unit="₹"
                 percentage={pct}
@@ -55,8 +59,8 @@ export function BudgetsPage({ budgets }: BudgetsPageProps) {
                 statusBadge={<StatusBadge status={status} />}
                 footerLeft={
                   over
-                    ? `${formatINR(b.spent - b.limit)} over limit`
-                    : `${formatINR(b.limit - b.spent)} remaining this month`
+                    ? `${formatINR(spent - b.limit)} over limit`
+                    : `${formatINR(b.limit - spent)} remaining this month`
                 }
               />
             );

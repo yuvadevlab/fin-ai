@@ -71,160 +71,231 @@ enum NotificationType {
 }
 
 model User {
-  id           String            @id @default(uuid())
-  email        String            @unique
-  name         String
-  passwordHash String
-  avatarUrl    String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  memberships  WorkspaceMember[]
-  conversations Conversation[]
-  notifications Notification[]
+  id              String            @id @default(uuid())
+  email           String            @unique
+  name            String
+  passwordHash    String            @map("password_hash")
+  avatarUrl       String?           @map("avatar_url")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  memberships     WorkspaceMember[]
+  conversations   Conversation[]
+  notifications   Notification[]
   workspacesOwned Workspace[]
+  sessions        Session[]
+  invitationsSent WorkspaceInvite[] @relation("InvitedByUser")
+
+  @@map("users")
 }
 
 model Workspace {
-  id        String            @id @default(uuid())
-  name      String
-  type      WorkspaceType     @default(PERSONAL)
-  ownerId   String
-  owner     User              @relation(fields: [ownerId], references: [id])
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  members   WorkspaceMember[]
-  accounts  Account[]
-  transactions Transaction[]
-  categories Category[]
-  budgets   Budget[]
-  goals     Goal[]
-  investments Investment[]
+  id            String            @id @default(uuid())
+  name          String
+  type          WorkspaceType     @default(PERSONAL)
+  ownerId       String            @map("owner_id")
+  owner         User              @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  members       WorkspaceMember[]
+  accounts      Account[]
+  transactions  Transaction[]
+  categories    Category[]
+  budgets       Budget[]
+  goals         Goal[]
+  investments   Investment[]
   conversations Conversation[]
+  invitations   WorkspaceInvite[]
+
+  @@map("workspaces")
 }
 
 model WorkspaceMember {
-  workspaceId String
+  workspaceId String        @map("workspace_id")
   workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  userId      String
+  userId      String        @map("user_id")
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role        WorkspaceRole @default(MEMBER)
-  joinedAt    DateTime      @default(now())
+  joinedAt    DateTime      @default(now()) @map("joined_at")
 
   @@id([workspaceId, userId])
+  @@index([userId])
+  @@map("workspace_members")
 }
 
 model Account {
-  id           String        @id @default(uuid())
-  workspaceId  String
-  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  name         String
-  type         AccountType
-  balance      Float         @default(0.0)
-  currency     String        @default("INR")
-  isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  transactions Transaction[]
+  id                String        @id @default(uuid())
+  workspaceId       String        @map("workspace_id")
+  workspace         Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name              String
+  type              AccountType
+  balance           Float         @default(0.0)
+  currency          String        @default("INR")
+  isActive          Boolean       @default(true) @map("is_active")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  transactions      Transaction[] @relation("SourceAccount")
+  transfersReceived Transaction[] @relation("DestinationAccount")
+
+  @@index([workspaceId])
+  @@map("accounts")
 }
 
 model Transaction {
   id          String          @id @default(uuid())
-  workspaceId String
+  workspaceId String          @map("workspace_id")
   workspace   Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  accountId   String
-  account     Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  categoryId  String
+  accountId   String          @map("account_id")
+  account     Account         @relation("SourceAccount", fields: [accountId], references: [id], onDelete: Cascade)
+  toAccountId String?         @map("to_account_id")
+  toAccount   Account?        @relation("DestinationAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
+  categoryId  String          @map("category_id")
   category    Category        @relation(fields: [categoryId], references: [id])
   amount      Float
   merchant    String
   date        DateTime
   notes       String?
   type        TransactionType
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  @@index([workspaceId])
+  @@index([accountId])
+  @@index([toAccountId])
+  @@index([categoryId])
+  @@index([date])
+  @@map("transactions")
 }
 
 model Category {
-  id          String        @id @default(uuid())
-  workspaceId String?
-  workspace   Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  name        String
-  group       String
-  icon        String?
-  isSystem    Boolean       @default(false)
+  id           String        @id @default(uuid())
+  workspaceId  String?       @map("workspace_id")
+  workspace    Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name         String
+  group        String
+  icon         String?
+  isSystem     Boolean       @default(false) @map("is_system")
   transactions Transaction[]
-  budgets     Budget[]
+  budgets      Budget[]
 
   @@unique([workspaceId, name])
+  @@map("categories")
 }
 
 model Budget {
   id          String       @id @default(uuid())
-  workspaceId String
+  workspaceId String       @map("workspace_id")
   workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  categoryId  String
+  categoryId  String       @map("category_id")
   category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   limit       Float
   period      BudgetPeriod @default(MONTHLY)
-  startDate   DateTime     @default(now())
+  startDate   DateTime     @default(now()) @map("start_date")
 
   @@unique([workspaceId, categoryId])
+  @@map("budgets")
 }
 
 model Goal {
   id            String    @id @default(uuid())
-  workspaceId   String
+  workspaceId   String    @map("workspace_id")
   workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   name          String
-  targetAmount  Float
-  currentAmount Float     @default(0.0)
+  targetAmount  Float     @map("target_amount")
+  currentAmount Float     @default(0.0) @map("current_amount")
   deadline      DateTime
   type          GoalType  @default(PERSONAL)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([workspaceId])
+  @@map("goals")
 }
 
 model Investment {
   id             String     @id @default(uuid())
-  workspaceId    String
+  workspaceId    String     @map("workspace_id")
   workspace      Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   name           String
-  assetClass     AssetClass
-  currentValue   Float
-  investedAmount Float
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  assetClass     AssetClass @map("asset_class")
+  currentValue   Float      @map("current_value")
+  investedAmount Float      @map("invested_amount")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  @@index([workspaceId])
+  @@map("investments")
 }
 
 model Conversation {
   id          String    @id @default(uuid())
-  userId      String
+  userId      String    @map("user_id")
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspaceId String
+  workspaceId String    @map("workspace_id")
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   title       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
   messages    Message[]
+
+  @@index([userId])
+  @@index([workspaceId])
+  @@map("conversations")
 }
 
 model Message {
   id             String       @id @default(uuid())
-  conversationId String
+  conversationId String       @map("conversation_id")
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           MessageRole
   content        String
   metadata       Json?
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([conversationId])
+  @@map("messages")
 }
 
 model Notification {
   id        String           @id @default(uuid())
-  userId    String
+  userId    String           @map("user_id")
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
   title     String
   body      String
   read      Boolean          @default(false)
-  createdAt DateTime         @default(now())
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model WorkspaceInvite {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  email       String
+  role        WorkspaceRole @default(MEMBER)
+  token       String        @unique
+  invitedById String        @map("invited_by_id")
+  invitedBy   User          @relation("InvitedByUser", fields: [invitedById], references: [id])
+  expiresAt   DateTime      @map("expires_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  @@index([workspaceId])
+  @@index([email])
+  @@map("workspace_invites")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("sessions")
 }

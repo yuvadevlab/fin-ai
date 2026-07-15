@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createTransactionSchema = z.object({
   accountId: z.string().uuid("Invalid account ID"),
+  toAccountId: z.string().uuid("Invalid destination account ID").optional().nullable(),
   categoryId: z.string().uuid("Invalid category ID"),
   amount: z.number().refine((v) => v !== 0, "Amount cannot be zero"),
   merchant: z.string().min(1, "Merchant is required").max(200),
@@ -32,16 +33,30 @@ export const transactionFilterSchema = z.object({
 
 export type TransactionFilterInput = z.infer<typeof transactionFilterSchema>;
 
-export const clientTransactionSchema = z.object({
-  amount: z.coerce.number().refine((v) => v > 0, "Amount must be greater than zero"),
-  kind: z.enum(["expense", "income", "transfer"], {
-    errorMap: () => ({ message: "Please select a valid type" }),
-  }),
-  category: z.string().min(1, "Category is required"),
-  account: z.string().min(1, "Account is required"),
-  date: z.string().min(1, "Date is required"),
-  merchant: z.string().min(1, "Merchant is required").max(200),
-  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
-});
+export const clientTransactionSchema = z
+  .object({
+    amount: z.coerce.number().refine((v) => v > 0, "Amount must be greater than zero"),
+    kind: z.enum(["expense", "income", "transfer"], {
+      errorMap: () => ({ message: "Please select a valid type" }),
+    }),
+    category: z.string().min(1, "Category is required"),
+    account: z.string().min(1, "Account is required"),
+    toAccount: z.string().optional().nullable(),
+    date: z.string().min(1, "Date is required"),
+    merchant: z.string().min(1, "Merchant is required").max(200),
+    notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.kind === "transfer" && !data.toAccount) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Destination account is required for transfers",
+      path: ["toAccount"],
+    },
+  );
 
 export type ClientTransactionInput = z.infer<typeof clientTransactionSchema>;
