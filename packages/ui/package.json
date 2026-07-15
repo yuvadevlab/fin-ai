@@ -3,16 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/ui.css"
   },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css",
+    "**/*.css"
+  ],
   "scripts": {
+    "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "clean": "rm -rf .turbo"
+    "clean": "rm -rf dist .turbo"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",
@@ -57,13 +74,13 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2"
   },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
   "devDependencies": {
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "typescript": "^5.9.2"
+    "@vitejs/plugin-react": "^6.0.3",
+    "magic-string": "^0.30.21",
+    "typescript": "^5.9.2",
+    "vite": "^8.1.4",
+    "vite-plugin-dts": "^5.0.3"
   }
 }

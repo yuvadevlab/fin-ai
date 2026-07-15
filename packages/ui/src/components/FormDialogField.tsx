@@ -9,6 +9,7 @@ import {
 import { Textarea } from "../primitives/textarea";
 import { Label } from "@radix-ui/react-label";
 import React from "react";
+import { DatePicker } from "../primitives/date-picker";
 
 export interface BaseField {
   name: string;
@@ -87,6 +88,12 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
             ))}
           </SelectContent>
         </Select>
+      ) : field.type === "date" ? (
+        <DatePicker
+          value={value}
+          placeholder={field.placeholder || "Pick a date"}
+          onChange={(date) => onChange?.(field.name, date)}
+        />
       ) : (
         <Input
           {...field}

@@ -12,6 +12,7 @@ import {
   Badge,
   Button,
 } from "@finai/ui";
+import { TransactionDialog } from "./TransactionDialog";
 
 // TODO: Replace with real data from API
 interface Transaction {
@@ -101,9 +102,13 @@ export function TransactionsPage({ transactions }: TransactionsPageProps) {
         title="Transactions"
         description="All income, expenses, and transfers across your workspaces."
         actions={
-          <Button size="sm" className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> Add Transaction
-          </Button>
+          <TransactionDialog
+            trigger={
+              <Button size="sm" className="cursor-pointer gap-1.5">
+                <Plus className="size-4" /> Add Transaction
+              </Button>
+            }
+          />
         }
       />
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { FormDialogField, FormField } from "@finai/ui";
-import { useState } from "react";
 
 // TODO: Move Category and Account options to DB and fetch them dynamically.
 const fields: FormField[] = [
@@ -10,6 +9,12 @@ const fields: FormField[] = [
     name: "amount",
     label: "Amount",
     placeholder: "0.00",
+  },
+  {
+    type: "text",
+    name: "merchant",
+    label: "Merchant",
+    placeholder: "e.g. Amazon, Starbucks",
   },
   {
     type: "select",
@@ -66,24 +71,22 @@ const fields: FormField[] = [
   },
 ];
 
-export function TransactionForm() {
-  const [values, setValues] = useState<Record<string, string>>({}); // TODO: Map the respective types for each field instead of using string.
+export interface TransactionFormProps {
+  values: Record<string, string>;
+  errors: Record<string, string>;
+  onChange: (name: string, value: string) => void;
+}
 
-  const handleChange = (name: string, value: string) => {
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
-
+export function TransactionForm({ values, errors, onChange }: TransactionFormProps) {
   return (
     <>
       {fields.map((field) => (
         <FormDialogField
           key={field.name}
           field={field}
-          value={values[field.name]}
-          onChange={handleChange}
+          value={values[field.name] || ""}
+          error={errors[field.name]}
+          onChange={onChange}
         />
       ))}
     </>

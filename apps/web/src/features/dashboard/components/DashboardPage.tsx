@@ -21,6 +21,7 @@ import {
   TrendLine,
   CHART_COLORS,
 } from "@finai/ui";
+import { TransactionDialog } from "../../transactions/components";
 
 // TODO: Replace mock data with real data from API
 interface DashboardPageProps {
@@ -63,9 +64,13 @@ export function DashboardPage({
         title="Financial Overview"
         description="Your aggregated wealth across personal accounts. AI insights updated 3 minutes ago."
         actions={
-          <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
-            <Plus className="size-4" /> Add Transaction
-          </Button>
+          <TransactionDialog
+            trigger={
+              <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
+                <Plus className="size-4" /> Add Transaction
+              </Button>
+            }
+          />
         }
       />
 

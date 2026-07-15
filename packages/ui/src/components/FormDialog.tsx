@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../primitives/dialog";
+import { cn } from "../lib/utils";
 
 export interface FormDialogProps {
   open?: boolean;
@@ -54,17 +55,19 @@ export function FormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
 
-      <DialogContent className={className ?? "sm:max-w-md"}>
-        <form onSubmit={onSubmit}>
-          <DialogHeader>
+      <DialogContent
+        className={cn("flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-md", className)}
+      >
+        <form onSubmit={onSubmit} className="flex max-h-[90vh] flex-col overflow-hidden">
+          <DialogHeader className="p-6 pb-2">
             <DialogTitle>{title}</DialogTitle>
 
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
 
-          <div className="space-y-4 py-4">{children}</div>
+          <div className="flex-1 space-y-4 overflow-y-auto px-6 py-2">{children}</div>
 
-          <DialogFooter>
+          <DialogFooter className="p-6 pt-2">
             <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
               {cancelLabel}
             </Button>

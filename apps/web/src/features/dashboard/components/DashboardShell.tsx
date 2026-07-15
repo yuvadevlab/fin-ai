@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
+import { TransactionDialog } from "../../transactions/components";
 
 export function DashboardShell({
   workspaceName,
@@ -15,6 +16,7 @@ export function DashboardShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const customLink = React.useCallback(
     ({
@@ -43,7 +45,7 @@ export function DashboardShell({
       <TopBar
         workspaceName={workspaceName}
         avatarFallback={avatarFallback}
-        onAddTransactionClick={() => console.log("Add transaction click")}
+        onAddTransactionClick={() => setIsDialogOpen(true)}
         onNotificationsClick={() => console.log("Notifications click")}
       />
     ),
@@ -51,8 +53,11 @@ export function DashboardShell({
   );
 
   return (
-    <AppShell sidebar={sidebar} topbar={topbar}>
-      {children}
-    </AppShell>
+    <>
+      <AppShell sidebar={sidebar} topbar={topbar}>
+        {children}
+      </AppShell>
+      <TransactionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+    </>
   );
 }

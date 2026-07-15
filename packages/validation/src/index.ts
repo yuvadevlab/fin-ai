@@ -9,9 +9,11 @@ export {
   createTransactionSchema,
   updateTransactionSchema,
   transactionFilterSchema,
+  clientTransactionSchema,
   type CreateTransactionInput,
   type UpdateTransactionInput,
   type TransactionFilterInput,
+  type ClientTransactionInput,
 } from "./schemas/transaction.schema";
 
 export {
