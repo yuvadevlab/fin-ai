@@ -14,7 +14,7 @@ export function AccountsPage() {
   // Guard against non-array during hydration
   const accounts = useMemo(() => (Array.isArray(rawAccounts) ? rawAccounts : []), [rawAccounts]);
 
-  const total = React.useMemo(() => accounts.reduce((sum, a) => sum + a.balance, 0), [accounts]);
+  const total = useMemo(() => accounts.reduce((sum, a) => sum + a.balance, 0), [accounts]);
 
   const getAccountTypeLabel = (type: string) => {
     switch (type) {

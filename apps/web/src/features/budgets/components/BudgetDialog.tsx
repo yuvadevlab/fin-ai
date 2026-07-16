@@ -58,7 +58,7 @@ export function BudgetDialog({
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const parseResult = createBudgetSchema.safeParse({

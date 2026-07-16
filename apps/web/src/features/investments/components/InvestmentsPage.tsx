@@ -40,19 +40,19 @@ export function InvestmentsPage() {
     [rawInvestments],
   );
 
-  const totalValue = React.useMemo(
+  const totalValue = useMemo(
     () => investments.reduce((s, a) => s + (a.currentValue ?? 0), 0),
     [investments],
   );
 
-  const totalInvested = React.useMemo(
+  const totalInvested = useMemo(
     () => investments.reduce((s, a) => s + (a.investedAmount ?? 0), 0),
     [investments],
   );
 
   const unrealisedPL = totalValue - totalInvested;
 
-  const pieData = React.useMemo(
+  const pieData = useMemo(
     () =>
       investments.map((i) => ({
         name: ASSET_CLASS_LABELS[i.assetClass] ?? i.assetClass,
@@ -62,7 +62,7 @@ export function InvestmentsPage() {
   );
 
   // Group by asset class for allocation breakdown
-  const allocationByClass = React.useMemo(() => {
+  const allocationByClass = useMemo(() => {
     const grouped: Record<string, number> = {};
     investments.forEach((i) => {
       const label = ASSET_CLASS_LABELS[i.assetClass] ?? i.assetClass;
@@ -71,7 +71,7 @@ export function InvestmentsPage() {
     return Object.entries(grouped).map(([name, value]) => ({ name, value }));
   }, [investments]);
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         header: "Asset",

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PageContainer, PageHeader, DashboardTabs, ContentCard, Progress, cn } from "@finai/ui";
@@ -24,7 +24,7 @@ export function HealthPage({ healthMetrics }: HealthPageProps) {
   const pathname = usePathname();
   const score = 82;
 
-  const customLink = React.useCallback(
+  const customLink = useCallback(
     ({
       href,
       children,

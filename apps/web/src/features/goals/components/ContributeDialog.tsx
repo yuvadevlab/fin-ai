@@ -19,7 +19,7 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
   const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
 
