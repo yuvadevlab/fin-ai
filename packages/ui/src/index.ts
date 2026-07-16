@@ -10,6 +10,7 @@ export { StatCard } from "./components/StatCard";
 export { KPIGrid } from "./components/KPIGrid";
 export { MiniStat } from "./components/MiniStat";
 export { AIInsightCard } from "./components/AIInsightCard";
+export { AISuggestionsDialog, type AISuggestion } from "./components/AISuggestionsDialog";
 export { DataTable } from "./components/DataTable";
 export { SearchBar } from "./components/SearchBar";
 export { FilterChips } from "./components/FilterChips";
@@ -100,6 +101,18 @@ export {
   DrawerTitle,
   DrawerDescription,
 } from "./primitives/drawer";
+export {
+  Sheet,
+  SheetPortal,
+  SheetOverlay,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+} from "./primitives/sheet";
 export { Popover, PopoverTrigger, PopoverContent } from "./primitives/popover";
 export { Checkbox } from "./primitives/checkbox";
 export { Label } from "./primitives/label";
@@ -131,3 +144,35 @@ export {
 } from "./primitives/alert-dialog";
 export { Toaster } from "./primitives/sonner";
 export { toast } from "sonner";
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+} from "./primitives/dropdown-menu";
+export { Toggle } from "./primitives/toggle";
+export { toggleVariants } from "./primitives/toggle.variants";
+export { ToggleGroup, ToggleGroupItem } from "./primitives/toggle-group";
+export {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  NavigationMenuViewport,
+  NavigationMenuIndicator,
+} from "./primitives/navigation-menu";
+export { navigationMenuTriggerStyle } from "./primitives/navigation-menu";
+export { useIsMobile } from "./hooks/use-mobile";

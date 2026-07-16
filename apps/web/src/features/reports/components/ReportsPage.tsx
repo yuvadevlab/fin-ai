@@ -11,9 +11,11 @@ import {
   SectionHeader,
   MoneyDisplay,
   AIInsightCard,
+  AISuggestionsDialog,
   CashFlowChart,
   CategoryPie,
   Button,
+  toast,
   CHART_COLORS,
 } from "@finai/ui";
 
@@ -38,10 +40,19 @@ export function ReportsPage({ categoryBreakdown, monthlyCashFlow }: ReportsPageP
         description="Auto-generated summary of your finances with AI commentary."
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="cursor-pointer gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer gap-1.5"
+              onClick={() => toast.success("PDF export started — check downloads")}
+            >
               <FileText className="size-4" /> Export PDF
             </Button>
-            <Button size="sm" className="cursor-pointer gap-1.5">
+            <Button
+              size="sm"
+              className="cursor-pointer gap-1.5"
+              onClick={() => toast.success("CSV export ready — check downloads")}
+            >
               <Download className="size-4" /> Export CSV
             </Button>
           </div>
@@ -74,6 +85,30 @@ export function ReportsPage({ categoryBreakdown, monthlyCashFlow }: ReportsPageP
         </ContentCard>
 
         <AIInsightCard
+          ctaWrapper={(btn) => (
+            <AISuggestionsDialog
+              trigger={btn}
+              title="Draft next month's plan"
+              description="Adjustments FinAI would suggest for April."
+              suggestions={[
+                {
+                  title: "Bump SIP by ₹5,000",
+                  detail: "You've had 3 months above 60% savings rate — invest the surplus.",
+                  impact: "+₹60k/yr invested",
+                },
+                {
+                  title: "Cap dining at ₹8,000",
+                  detail: "March overshoot was ₹1,400. Tighter cap keeps you honest.",
+                  impact: "Save ~₹1,400/mo",
+                },
+                {
+                  title: "Prepay ₹25,000 to House goal",
+                  detail: "Excess cash sits idle in HDFC Salary.",
+                  impact: "Reach goal 2 months sooner",
+                },
+              ]}
+            />
+          )}
           body={
             <>
               March was your third consecutive month with a savings rate above{" "}

@@ -2,7 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { writeWorkspaceId } from "@/providers/workspace/workspace-store";
 import { useEffect, useState, useMemo, useCallback } from "react";
+
+export interface WorkspaceMember {
+  workspaceId: string;
+  userId: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+}
 
 export interface Workspace {
   id: string;
@@ -11,6 +18,7 @@ export interface Workspace {
   ownerId: string;
   createdAt: string;
   updatedAt: string;
+  members?: WorkspaceMember[];
 }
 
 export function useActiveWorkspace() {
@@ -46,10 +54,8 @@ export function useActiveWorkspace() {
   }, [workspaces, activeId]);
 
   const setActiveWorkspaceId = useCallback((id: string) => {
-    localStorage.setItem("finai_workspace_id", id);
-    document.cookie = `finai_workspace_id=${id}; path=/; max-age=604800; SameSite=Lax`;
+    writeWorkspaceId(id);
     setActiveIdState(id);
-    // Reload page or query clients to refetch workspace-scoped queries
     window.location.reload();
   }, []);
 

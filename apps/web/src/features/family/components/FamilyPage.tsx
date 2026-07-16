@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +17,7 @@ import {
   CategoryPie,
   TrendLine,
   CHART_COLORS,
+  toast,
 } from "@finai/ui";
 
 const upcoming = [
@@ -43,7 +44,7 @@ interface FamilyPageProps {
 export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }: FamilyPageProps) {
   const pathname = usePathname();
 
-  const customLink = React.useCallback(
+  const customLink = useCallback(
     ({
       href,
       children,
@@ -115,6 +116,7 @@ export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }:
         <div className="space-y-6">
           <AIInsightCard
             variant="light"
+            onCtaClick={() => toast.success("₹4,500 moved to Europe Vacation goal")}
             body={
               <>
                 Your family reduced transport expenses by{" "}

@@ -6,6 +6,9 @@ import { Avatar, AvatarFallback } from "../primitives/avatar";
 import { cn } from "../lib/utils";
 
 interface TopBarProps extends React.HTMLAttributes<HTMLElement> {
+  workspaceMenu?: React.ReactNode;
+  notificationsMenu?: React.ReactNode;
+  profileMenu?: React.ReactNode;
   workspaceName?: string;
   avatarFallback?: string;
   searchPlaceholder?: string;
@@ -17,6 +20,9 @@ interface TopBarProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function TopBar({
+  workspaceMenu,
+  notificationsMenu,
+  profileMenu,
   workspaceName = "Sharma Family",
   avatarFallback = "AS",
   searchPlaceholder = "Search transactions, insights…",
@@ -37,14 +43,16 @@ export function TopBar({
       {...props}
     >
       <div className="flex items-center gap-4">
-        <button
-          onClick={onWorkspaceClick}
-          className="bg-secondary ring-border/80 hover:bg-secondary/80 focus-visible:ring-ring flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 ring-1 transition outline-none"
-        >
-          <span className="bg-primary size-2 rounded-full" />
-          <span className="text-foreground text-xs font-semibold">{workspaceName}</span>
-          <ChevronDown className="text-muted-foreground size-3" />
-        </button>
+        {workspaceMenu ?? (
+          <button
+            onClick={onWorkspaceClick}
+            className="bg-secondary ring-border/80 hover:bg-secondary/80 focus-visible:ring-ring flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 ring-1 transition outline-none"
+          >
+            <span className="bg-primary size-2 rounded-full" />
+            <span className="text-foreground text-xs font-semibold">{workspaceName}</span>
+            <ChevronDown className="text-muted-foreground size-3" />
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-3 md:gap-5">
@@ -56,17 +64,19 @@ export function TopBar({
             className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 pl-10 text-sm transition-colors focus-visible:ring-1"
           />
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onNotificationsClick}
-          className="hover:bg-secondary relative cursor-pointer rounded-full"
-        >
-          <Bell className="size-4" />
-          {hasNotifications && (
-            <span className="bg-primary absolute top-2 right-2 size-1.5 rounded-full" />
-          )}
-        </Button>
+        {notificationsMenu ?? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onNotificationsClick}
+            className="hover:bg-secondary relative cursor-pointer rounded-full"
+          >
+            <Bell className="size-4" />
+            {hasNotifications && (
+              <span className="bg-primary absolute top-2 right-2 size-1.5 rounded-full" />
+            )}
+          </Button>
+        )}
         {onAddTransactionClick && (
           <Button
             size="sm"
@@ -77,11 +87,13 @@ export function TopBar({
             Add Transaction
           </Button>
         )}
-        <Avatar className="ring-border/60 size-8 ring-1">
-          <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">
-            {avatarFallback}
-          </AvatarFallback>
-        </Avatar>
+        {profileMenu ?? (
+          <Avatar className="ring-border/60 size-8 ring-1">
+            <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">
+              {avatarFallback}
+            </AvatarFallback>
+          </Avatar>
+        )}
       </div>
     </header>
   );

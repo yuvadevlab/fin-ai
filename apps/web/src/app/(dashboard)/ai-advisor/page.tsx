@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { PageContainer, PageHeader, Button, Input, MoneyDisplay, ContentCard, cn } from "@finai/ui";
 
@@ -23,7 +23,7 @@ interface ChatMessage {
 }
 
 export default function AiAdvisorPage() {
-  const [conversation, setConversation] = React.useState<ChatMessage[]>([
+  const [conversation, setConversation] = useState<ChatMessage[]>([
     { role: "user", text: "Where did I overspend this month?" },
     {
       role: "assistant",
@@ -42,7 +42,16 @@ export default function AiAdvisorPage() {
       text: "At your current savings rate, adding ₹18,000/month for 4 months covers a ₹72,000 trip while keeping your emergency fund intact.",
     },
   ]);
-  const [input, setInput] = React.useState("");
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToLatest = useCallback((behavior: ScrollBehavior = "smooth") => {
+    messagesEndRef.current?.scrollIntoView({ behavior, block: "end" });
+  }, []);
+
+  useEffect(() => {
+    scrollToLatest();
+  }, [conversation, scrollToLatest]);
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -124,6 +133,7 @@ export default function AiAdvisorPage() {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} aria-hidden="true" />
           </div>
 
           <div className="border-border/80 bg-secondary/10 border-t p-4">

@@ -9,6 +9,7 @@ interface AIInsightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   cta?: string;
   variant?: "dark" | "light";
   onCtaClick?: () => void;
+  ctaWrapper?: (button: React.ReactNode) => React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -18,10 +19,25 @@ export function AIInsightCard({
   cta = "Review details",
   variant = "dark",
   onCtaClick,
+  ctaWrapper,
   children,
   className,
   ...props
 }: AIInsightCardProps) {
+  const button = cta ? (
+    <Button
+      variant={variant === "dark" ? "secondary" : "default"}
+      size="sm"
+      onClick={onCtaClick}
+      className={cn(
+        "mt-5 w-full rounded-lg font-medium",
+        variant === "dark" && "bg-zinc-800 text-white ring-1 ring-white/5 hover:bg-zinc-700",
+      )}
+    >
+      {cta}
+    </Button>
+  ) : null;
+
   return (
     <div
       className={cn(
@@ -58,19 +74,7 @@ export function AIInsightCard({
         {body}
       </p>
       {children}
-      {cta && (
-        <Button
-          variant={variant === "dark" ? "secondary" : "default"}
-          size="sm"
-          onClick={onCtaClick}
-          className={cn(
-            "mt-5 w-full rounded-lg font-medium",
-            variant === "dark" && "bg-zinc-800 text-white ring-1 ring-white/5 hover:bg-zinc-700",
-          )}
-        >
-          {cta}
-        </Button>
-      )}
+      {ctaWrapper && button ? ctaWrapper(button) : button}
     </div>
   );
 }

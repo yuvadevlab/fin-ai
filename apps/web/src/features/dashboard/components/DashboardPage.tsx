@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -12,6 +12,7 @@ import {
   StatCard,
   ChartCard,
   AIInsightCard,
+  AISuggestionsDialog,
   MiniStat,
   MoneyDisplay,
   Button,
@@ -45,12 +46,12 @@ export function DashboardPage() {
     () => (Array.isArray(rawCategoryBreakdown) ? rawCategoryBreakdown : []),
     [rawCategoryBreakdown],
   );
-  const expenseData = React.useMemo(
+  const expenseData = useMemo(
     () => monthlyCashFlow.map((m) => ({ month: m.month, expense: m.expense })),
     [monthlyCashFlow],
   );
 
-  const savingsTrend = React.useMemo(
+  const savingsTrend = useMemo(
     () =>
       monthlyCashFlow.map((m) => ({
         month: m.month,
@@ -59,7 +60,7 @@ export function DashboardPage() {
     [monthlyCashFlow],
   );
 
-  const pieData = React.useMemo(
+  const pieData = useMemo(
     () => categoryBreakdown.map((c) => ({ name: c.name, value: c.total })),
     [categoryBreakdown],
   );
@@ -77,7 +78,7 @@ export function DashboardPage() {
         ).toFixed(1)
       : null;
 
-  const customLink = React.useCallback(
+  const customLink = useCallback(
     ({
       href,
       children,
@@ -171,15 +172,40 @@ export function DashboardPage() {
 
         <div className="space-y-6">
           <AIInsightCard
-            title="AI Insight"
+            title="Insight #12"
+            ctaWrapper={(btn) => (
+              <AISuggestionsDialog
+                trigger={btn}
+                title="Trim dining spend"
+                description="Options FinAI thinks will bring dining back under budget."
+                suggestions={[
+                  {
+                    title: "Cook one weekend dinner at home",
+                    detail: "You averaged 3 weekend deliveries in March.",
+                    impact: "Save ~₹1,200/mo",
+                  },
+                  {
+                    title: "Move Swiggy One → HDFC Millennia",
+                    detail: "Card gives 5% cashback on food delivery.",
+                    impact: "Save ~₹300/mo",
+                  },
+                  {
+                    title: "Set a ₹500 lunch cap on weekdays",
+                    detail: "FinAI will nudge you when a single order crosses the cap.",
+                    impact: "Prevent overshoot",
+                  },
+                ]}
+              />
+            )}
             body={
               <>
-                Your spending patterns show consistent trends. Review your category breakdown to
-                identify opportunities to{" "}
-                <span className="text-primary font-semibold">boost savings</span>.
+                You spent <span className="font-medium text-white">18% more</span> on food this
+                month. Reducing dining expenses could save approximately{" "}
+                <span className="text-primary font-semibold">₹2,500</span> toward your Vacation
+                goal.
               </>
             }
-            cta="Review Categories"
+            cta="Review Dining Categories"
           />
 
           <ChartCard title="Category Allocation" hint="This month">
