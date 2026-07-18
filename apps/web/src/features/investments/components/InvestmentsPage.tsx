@@ -36,7 +36,8 @@ export function InvestmentsPage() {
   const { data: rawInvestments } = useInvestments(workspaceId);
   // Guard against non-array during hydration
   const investments: Investment[] = useMemo(
-    () => (Array.isArray(rawInvestments) ? rawInvestments : []),
+    () =>
+      rawInvestments && Array.isArray(rawInvestments.investments) ? rawInvestments.investments : [],
     [rawInvestments],
   );
 

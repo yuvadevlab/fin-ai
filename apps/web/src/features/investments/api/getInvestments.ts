@@ -17,14 +17,21 @@ export interface Investment {
     | "OTHER";
   currentValue: number;
   investedAmount: number;
+  allocation?: number;
+  value?: number;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface InvestmentsResponse {
+  investments: Investment[];
+  totalValue: number;
+}
+
 export function useInvestments(workspaceId: string | null) {
-  return useQuery<Investment[]>({
+  return useQuery<InvestmentsResponse>({
     queryKey: ["investments", workspaceId],
-    queryFn: () => apiClient.get<Investment[]>(`workspaces/${workspaceId}/investments`),
+    queryFn: () => apiClient.get<InvestmentsResponse>(`workspaces/${workspaceId}/investments`),
     enabled: !!workspaceId,
   });
 }

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";
-import { BudgetPeriod } from "@finai/database";
+import { BudgetPeriod, TransactionType } from "@finai/database";
 
 @Injectable()
 export class BudgetsService {
@@ -24,12 +24,17 @@ export class BudgetsService {
           where: {
             workspaceId,
             categoryId: budget.categoryId,
-            date: { gte: budget.startDate ?? startOfMonth },
-            amount: { lt: 0 },
+            type: TransactionType.EXPENSE,
+            date: {
+              gte: budget.startDate ?? startOfMonth,
+            },
           },
-          _sum: { amount: true },
+          _sum: {
+            amount: true,
+          },
         });
-        const spent = Math.abs(agg._sum.amount ?? 0);
+
+        const spent = agg._sum.amount ?? 0;
         const status = calculateBudgetStatus(spent, budget.limit);
         return { ...budget, spent, status };
       }),

@@ -57,3 +57,12 @@ export {
   type UpdateProfileInput,
   type UpdatePreferencesInput,
 } from "./schemas/settings.schema";
+
+export {
+  createCategorySchema,
+  updateCategorySchema,
+  type CreateCategoryInput,
+  type UpdateCategoryInput,
+} from "./schemas/category.schema";
+
+export { contributeSchema, type ContributeFormValues } from "./schemas/contribute.schema";

@@ -24,6 +24,7 @@ export function calculateAssetAllocation(
     }));
 
   return investments.map((inv) => ({
+    ...inv,
     name: inv.name,
     value: inv.currentValue,
     allocation: Math.round((inv.currentValue / total) * 100),

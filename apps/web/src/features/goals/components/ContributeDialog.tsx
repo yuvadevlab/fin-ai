@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog, FormDialogField, FormField } from "@finai/ui";
+import { FormDialog } from "@finai/ui";
 import { useContributeGoal } from "../api/createGoal";
 import { useWorkspace } from "@/providers";
+import { ContributeForm } from "./ContributeForm";
+import { contributeSchema } from "@finai/validation";
 
 export interface ContributeDialogProps {
   goalId: string;
@@ -16,34 +18,48 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
   const { workspaceId } = useWorkspace();
   const contributeGoal = useContributeGoal(workspaceId);
 
-  const [amount, setAmount] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [values, setValues] = useState<Record<string, string>>({
+    amount: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const handleChange = (name: string, value: string) => {
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
 
-    const val = Number(amount || 0);
-    if (isNaN(val) || val <= 0) {
-      setError("Please enter a valid positive contribution amount.");
+    const parseResult = contributeSchema.safeParse(values);
+
+    if (!parseResult.success) {
+      const fieldErrors: Record<string, string> = {};
+      parseResult.error.issues.forEach((issue) => {
+        const path = issue.path[0] as string;
+        fieldErrors[path] = issue.message;
+      });
+      setErrors(fieldErrors);
       return;
     }
 
     try {
-      await contributeGoal.mutateAsync({ id: goalId, amount: val });
+      await contributeGoal.mutateAsync({ id: goalId, amount: parseResult.data.amount });
       setOpen(false);
-      setAmount("");
+      setValues({ amount: "" });
+      setErrors({});
     } catch (err) {
       const apiErr = err as { message?: string };
-      setError(apiErr?.message || "An error occurred while contributing.");
+      setErrors({ amount: apiErr?.message || "An error occurred while contributing." });
     }
-  };
-
-  const field: FormField = {
-    type: "number",
-    name: "amount",
-    label: "Amount",
-    placeholder: "e.g. ₹5,000",
   };
 
   return (
@@ -58,21 +74,13 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
       onCancel={() => setOpen(false)}
       onSubmit={handleSubmit}
     >
-      {error && (
+      {errors.amount && (
         <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-          {error}
+          {errors.amount}
         </div>
       )}
       <div className="space-y-4">
-        <FormDialogField
-          field={field}
-          value={amount}
-          error={error ?? undefined}
-          onChange={(val) => {
-            setAmount(val);
-            setError(null);
-          }}
-        />
+        <ContributeForm values={values} errors={errors} onChange={handleChange} />
       </div>
     </FormDialog>
   );

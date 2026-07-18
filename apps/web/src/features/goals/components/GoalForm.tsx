@@ -56,7 +56,7 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
           field={field}
           value={values[field.name] ?? ""}
           error={errors[field.name]}
-          onChange={(val) => onChange(field.name, val)}
+          onChange={onChange}
         />
       ))}
     </>

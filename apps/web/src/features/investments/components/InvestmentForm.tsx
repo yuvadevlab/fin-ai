@@ -14,7 +14,7 @@ export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps
       type: "text",
       name: "name",
       label: "Investment Name",
-      placeholder: "e.g. Zerodha Nifty 50 Mutual Fund",
+      placeholder: "e.g. Nifty 50 Mutual Fund",
       autoComplete: "off",
     },
     {
@@ -57,7 +57,7 @@ export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps
           field={field}
           value={values[field.name] ?? ""}
           error={errors[field.name]}
-          onChange={(val) => onChange(field.name, val)}
+          onChange={onChange}
         />
       ))}
     </>

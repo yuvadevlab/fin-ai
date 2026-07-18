@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PageContainer, PageHeader, DashboardTabs, ContentCard, Progress, cn } from "@finai/ui";
+import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
+import { useWorkspace } from "@/providers";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -11,18 +13,23 @@ function scoreColor(v: number) {
   return "text-destructive";
 }
 
-// TODO: Replace with real data from API
-interface HealthPageProps {
-  healthMetrics: {
-    label: string;
-    score: number;
-    note: string;
-  }[];
-}
+const RATING_LABEL: Record<string, string> = {
+  Excellent: "Excellent standing",
+  Good: "Good standing",
+  Fair: "Fair standing",
+  "Needs Attention": "Needs attention",
+};
 
-export function HealthPage({ healthMetrics }: HealthPageProps) {
+export function HealthPage() {
   const pathname = usePathname();
-  const score = 82;
+  const { workspaceId } = useWorkspace();
+  const { data: healthData } = useHealthScore(workspaceId);
+
+  const score = healthData?.score ?? 0;
+  const metrics = useMemo(
+    () => (Array.isArray(healthData?.metrics) ? healthData!.metrics : []),
+    [healthData],
+  );
 
   const customLink = useCallback(
     ({
@@ -40,6 +47,9 @@ export function HealthPage({ healthMetrics }: HealthPageProps) {
     ),
     [],
   );
+
+  // SVG arc circumference for r=52
+  const CIRCUMFERENCE = 326.7;
 
   return (
     <PageContainer>
@@ -63,7 +73,8 @@ export function HealthPage({ healthMetrics }: HealthPageProps) {
                 strokeWidth="10"
                 fill="none"
                 strokeLinecap="round"
-                strokeDasharray={`${(score / 100) * 326.7} 326.7`}
+                strokeDasharray={`${(score / 100) * CIRCUMFERENCE} ${CIRCUMFERENCE}`}
+                style={{ transition: "stroke-dasharray 0.8s ease" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -73,23 +84,32 @@ export function HealthPage({ healthMetrics }: HealthPageProps) {
               </span>
             </div>
           </div>
-          <p className="text-primary mt-6 text-sm font-bold">Excellent standing</p>
-          <p className="text-muted-foreground mt-1 text-xs">Top 15% of users in your bracket</p>
+          <p className="text-primary mt-6 text-sm font-bold">
+            {RATING_LABEL[healthData?.rating ?? ""] ?? "—"}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">Based on your live financial data</p>
         </ContentCard>
 
         <div className="space-y-4 lg:col-span-2">
-          {healthMetrics.map((m) => (
-            <ContentCard key={m.label} className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-foreground text-sm font-bold">{m.label}</p>
-                  <p className="text-muted-foreground text-xs">{m.note}</p>
-                </div>
-                <span className={cn("text-lg font-bold", scoreColor(m.score))}>{m.score}</span>
-              </div>
-              <Progress value={m.score} className="mt-3 h-1.5" />
-            </ContentCard>
-          ))}
+          {metrics.length === 0
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <ContentCard key={i} className="animate-pulse p-5">
+                  <div className="bg-muted h-4 w-1/3 rounded" />
+                  <div className="bg-muted mt-2 h-2 w-full rounded" />
+                </ContentCard>
+              ))
+            : metrics.map((m) => (
+                <ContentCard key={m.label} className="p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-foreground text-sm font-bold">{m.label}</p>
+                      <p className="text-muted-foreground text-xs">{m.note}</p>
+                    </div>
+                    <span className={cn("text-lg font-bold", scoreColor(m.score))}>{m.score}</span>
+                  </div>
+                  <Progress value={m.score} className="mt-3 h-1.5" />
+                </ContentCard>
+              ))}
         </div>
       </section>
     </PageContainer>

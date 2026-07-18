@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import "dotenv/config";
+import morgan from "morgan";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
@@ -11,6 +12,7 @@ async function bootstrap() {
 
   // Global prefix
   app.setGlobalPrefix("api/v1");
+  app.use(morgan("dev"));
 
   // CORS
   app.enableCors({
@@ -36,7 +38,9 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
+  // eslint-disable-next-line no-console
   console.log(`🚀 FinAI API running on http://localhost:${port}`);
+  // eslint-disable-next-line no-console
   console.log(`📖 Swagger docs: http://localhost:${port}/api/docs`);
 }
 

@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { InvestmentsPage } from "@/features/investments/components";
-import { Investment } from "@/features/investments/api/getInvestments";
+import { InvestmentsResponse } from "@/features/investments/api/getInvestments";
 import { getServerAuth } from "@/lib/server-auth";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -13,9 +13,13 @@ export default async function Page() {
       await queryClient.prefetchQuery({
         queryKey: ["investments", auth.workspaceId],
         queryFn: () =>
-          serverFetch<Investment[]>(`workspaces/${auth.workspaceId}/investments`, auth.token),
+          serverFetch<InvestmentsResponse>(
+            `workspaces/${auth.workspaceId}/investments`,
+            auth.token,
+          ),
       });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Server-side prefetch error:", err);
     }
   }

@@ -27,4 +27,16 @@ export class AnalyticsController {
   getCategories(@Param("workspaceId") workspaceId: string) {
     return this.analyticsService.getCategoryBreakdown(workspaceId);
   }
+
+  @Get("health")
+  @ApiOperation({ summary: "Get financial health score and component metrics" })
+  getHealth(@Param("workspaceId") workspaceId: string) {
+    return this.analyticsService.getHealthScore(workspaceId);
+  }
+
+  @Get("savings-trend")
+  @ApiOperation({ summary: "Get monthly savings trend (income - expense per month)" })
+  getSavingsTrend(@Param("workspaceId") workspaceId: string, @Query("months") months?: string) {
+    return this.analyticsService.getSavingsTrend(workspaceId, months ? parseInt(months) : 6);
+  }
 }

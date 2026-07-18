@@ -25,13 +25,23 @@ export function calculateComponentScores(input: HealthInput): ComponentScore[] {
   return [
     {
       label: "Spending Control",
-      score: clampScore(input.budgetAdherence > 0.9 ? 90 : input.budgetAdherence > 0.75 ? 75 : 55),
+      score: clampScore(
+        input.budgetAdherence < 0
+          ? 0
+          : input.budgetAdherence > 0.9
+            ? 90
+            : input.budgetAdherence > 0.75
+              ? 75
+              : 55,
+      ),
       note:
-        input.budgetAdherence > 0.9
-          ? "Below monthly cap"
-          : input.budgetAdherence > 0.75
-            ? "Slightly above target"
-            : "Spending needs attention",
+        input.budgetAdherence < 0
+          ? "No budgets configured"
+          : input.budgetAdherence > 0.9
+            ? "Below monthly cap"
+            : input.budgetAdherence > 0.75
+              ? "Slightly above target"
+              : "Spending needs attention",
     },
     {
       label: "Savings Rate",
@@ -41,20 +51,44 @@ export function calculateComponentScores(input: HealthInput): ComponentScore[] {
     {
       label: "Investments",
       score: clampScore(input.investmentDiversification),
-      note: `Diversified across assets`,
+      note:
+        input.investmentDiversification > 0
+          ? "Diversified across assets"
+          : "No investments tracked",
     },
     {
       label: "Emergency Fund",
       score: clampScore(
-        input.emergencyFundMonths >= 6 ? 85 : input.emergencyFundMonths >= 3 ? 65 : 35,
+        input.emergencyFundMonths <= 0
+          ? 0
+          : input.emergencyFundMonths >= 6
+            ? 85
+            : input.emergencyFundMonths >= 3
+              ? 65
+              : 35,
       ),
-      note: `${input.emergencyFundMonths.toFixed(1)} months covered`,
+      note:
+        input.emergencyFundMonths <= 0
+          ? "No emergency savings"
+          : `${input.emergencyFundMonths.toFixed(1)} months covered`,
     },
     {
       label: "Budget Discipline",
-      score: clampScore(input.budgetAdherence >= 1 ? 60 : input.budgetAdherence >= 0.85 ? 75 : 90),
+      score: clampScore(
+        input.budgetAdherence < 0
+          ? 0
+          : input.budgetAdherence >= 1
+            ? 90
+            : input.budgetAdherence >= 0.85
+              ? 75
+              : 60,
+      ),
       note:
-        input.budgetAdherence >= 1 ? "Some categories over budget" : "All categories within limit",
+        input.budgetAdherence < 0
+          ? "No budgets configured"
+          : input.budgetAdherence >= 1
+            ? "All categories within limit"
+            : "Some categories over budget",
     },
   ];
 }

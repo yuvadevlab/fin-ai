@@ -1,15 +1,23 @@
 "use client";
 
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
 import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/components";
+import { SearchDropdown } from "../../search/components/SearchDropdown";
+import { useWorkspace } from "@/providers";
+import { useMenuItems } from "../api/getMenuItems";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { workspaceId } = useWorkspace();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const { data: menuItems } = useMenuItems();
 
   const customLink = useCallback(
     ({
@@ -29,8 +37,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
 
   const sidebar = useMemo(
-    () => <Sidebar pathname={pathname} LinkComponent={customLink} />,
-    [pathname, customLink],
+    () => <Sidebar pathname={pathname} LinkComponent={customLink} menuItems={menuItems} />,
+    [pathname, customLink, menuItems],
   );
 
   const topbar = useMemo(
@@ -40,6 +48,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         notificationsMenu={<NotificationsMenu />}
         profileMenu={<ProfileMenu />}
         onAddTransactionClick={() => setIsDialogOpen(true)}
+        onSearchChange={(val) => setSearchQuery(val)}
       />
     ),
     [],
@@ -48,6 +57,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppShell sidebar={sidebar} topbar={topbar}>
+        {/* Search results dropdown — rendered inside the shell so it floats above content */}
+        {searchQuery.trim().length >= 2 && (
+          <div
+            ref={searchRef}
+            className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4 md:px-8"
+          >
+            <div className="pointer-events-auto w-full max-w-lg">
+              <SearchDropdown
+                workspaceId={workspaceId}
+                query={searchQuery}
+                onClose={() => setSearchQuery("")}
+              />
+            </div>
+          </div>
+        )}
         {children}
       </AppShell>
       <TransactionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />

@@ -30,6 +30,7 @@ import {
   toast,
 } from "@finai/ui";
 import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { type Category, useCategories } from "@/features/categories";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
 
@@ -65,6 +66,7 @@ export function SettingsPage() {
   const [active, setActive] = useState<Section | null>(null);
   const { workspaces, activeWorkspace } = useActiveWorkspace();
   const user = getStoredUser();
+  const { data: categories = [] } = useCategories(activeWorkspace?.id || null);
 
   const sections: Section[] = [
     {
@@ -166,28 +168,7 @@ export function SettingsPage() {
       icon: Tag,
       label: "Categories",
       desc: "Customise categories for personal and shared spending.",
-      body: (
-        <div className="flex flex-wrap gap-2">
-          {[
-            "Food & Dining",
-            "Groceries",
-            "Transport",
-            "Utilities",
-            "Shopping",
-            "Entertainment",
-            "Housing",
-            "Travel",
-            "Health",
-            "Education",
-            "Gifts",
-            "Investment",
-          ].map((c) => (
-            <Badge key={c} variant="secondary" className="rounded-full px-3 py-1 text-xs">
-              {c}
-            </Badge>
-          ))}
-        </div>
-      ),
+      body: <CategorySettingsList categories={categories} />,
     },
     {
       id: "accounts",
@@ -333,5 +314,26 @@ export function SettingsPage() {
         </SheetContent>
       </Sheet>
     </PageContainer>
+  );
+}
+
+function CategorySettingsList({ categories }: { categories: Category[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {categories.map((c) => (
+          <Badge key={c.id} variant="secondary" className="rounded-full px-3 py-1 text-xs">
+            {c.name}
+          </Badge>
+        ))}
+      </div>
+      <div className="pt-2">
+        <a href="/categories">
+          <Button size="sm" variant="outline" className="w-full cursor-pointer">
+            Manage Categories
+          </Button>
+        </a>
+      </div>
+    </div>
   );
 }

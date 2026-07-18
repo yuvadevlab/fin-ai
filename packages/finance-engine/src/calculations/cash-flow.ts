@@ -2,13 +2,13 @@
  * Cash flow calculations — pure functions.
  */
 
-import type { CashFlowDataPoint } from "@finai/shared-types";
+import { type CashFlowDataPoint, TransactionType } from "@finai/shared-types";
 
 /**
  * Calculate cash flow from a list of transaction amounts grouped by month.
  */
 export function calculateCashFlow(
-  transactions: { amount: number; date: string }[],
+  transactions: { amount: number; date: string; type: TransactionType }[],
   months: number = 6,
 ): CashFlowDataPoint[] {
   const now = new Date();
@@ -26,11 +26,12 @@ export function calculateCashFlow(
     });
 
     const income = monthTransactions
-      .filter((t) => t.amount > 0)
-      .reduce((sum, t) => sum + t.amount, 0);
-    const expense = Math.abs(
-      monthTransactions.filter((t) => t.amount < 0).reduce((sum, t) => sum + t.amount, 0),
-    );
+      .filter((t) => t.type === TransactionType.INCOME)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    const expense = monthTransactions
+      .filter((t) => t.type === TransactionType.EXPENSE)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     result.push({ month: monthKey, income, expense });
   }

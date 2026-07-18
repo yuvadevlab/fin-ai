@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,30 +19,59 @@ import {
   CHART_COLORS,
   toast,
 } from "@finai/ui";
+import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
+import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
+import { useCategoryBreakdown } from "@/features/dashboard/api/getCategoryBreakdown";
+import { useSavingsTrend } from "@/features/dashboard/api/getSavingsTrend";
+import { useWorkspace } from "@/providers";
+import { FEATURE_FLAGS } from "@/lib/app-constants";
 
-const upcoming = [
-  { name: "Home Rent", due: "Apr 1", amount: 32000 },
-  { name: "Electricity Bill", due: "Apr 3", amount: 4200 },
-  { name: "School Fee", due: "Apr 5", amount: 18500 },
-  { name: "Internet — ACT", due: "Apr 8", amount: 1499 },
-];
-
-// TODO: Replace with real data from API
-interface FamilyPageProps {
-  categoryBreakdown: { name: string; value: number }[];
-  monthlyCashFlow: {
-    month: string;
-    income: number;
-    expense: number;
-  }[];
-  savingsTrend: {
-    month: string;
-    value: number;
-  }[];
-}
-
-export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }: FamilyPageProps) {
+export function FamilyPage() {
   const pathname = usePathname();
+  const { workspaceId } = useWorkspace();
+
+  const { data: stats } = useDashboardStats(workspaceId);
+  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(workspaceId);
+  const { data: rawCategoryBreakdown } = useCategoryBreakdown(workspaceId);
+  const { data: rawSavingsTrend } = useSavingsTrend(workspaceId);
+
+  const monthlyCashFlow = useMemo(
+    () => (Array.isArray(rawMonthlyCashFlow) ? rawMonthlyCashFlow : []),
+    [rawMonthlyCashFlow],
+  );
+
+  const categoryBreakdown = useMemo(
+    () => (Array.isArray(rawCategoryBreakdown) ? rawCategoryBreakdown : []),
+    [rawCategoryBreakdown],
+  );
+
+  const savingsTrend = useMemo(
+    () => (Array.isArray(rawSavingsTrend) ? rawSavingsTrend : []),
+    [rawSavingsTrend],
+  );
+
+  // Shared budget usage — ratio of expenses to income (as %)
+  const sharedBudgetPct = useMemo(() => {
+    const income = stats?.monthlyIncome ?? 0;
+    const expenses = stats?.monthlyExpenses ?? 0;
+    if (income <= 0) return 0;
+    return Math.min(100, Math.round((expenses / income) * 100));
+  }, [stats]);
+
+  const netSaved = (stats?.monthlyIncome ?? 0) - (stats?.monthlyExpenses ?? 0);
+
+  const incomeChange =
+    stats && stats.lastMonthIncome > 0
+      ? (((stats.monthlyIncome - stats.lastMonthIncome) / stats.lastMonthIncome) * 100).toFixed(1)
+      : null;
+
+  const expenseChange =
+    stats && stats.lastMonthExpenses > 0
+      ? (
+          ((stats.monthlyExpenses - stats.lastMonthExpenses) / stats.lastMonthExpenses) *
+          100
+        ).toFixed(1)
+      : null;
 
   const customLink = useCallback(
     ({
@@ -65,7 +94,7 @@ export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }:
     <PageContainer>
       <PageHeader
         title="Family Finance"
-        description="Shared spending, bills, and goals across the Sharma Family workspace."
+        description="Shared spending, bills, and goals across your family workspace."
       />
 
       <DashboardTabs pathname={pathname} LinkComponent={customLink} />
@@ -73,23 +102,44 @@ export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }:
       <KPIGrid>
         <StatCard
           label="Combined Income"
-          value={<MoneyDisplay value={215000} />}
-          trend={{ value: "+6.2%", kind: "up" }}
+          value={<MoneyDisplay value={stats?.monthlyIncome ?? 0} />}
+          trend={
+            incomeChange !== null
+              ? {
+                  value: `${Number(incomeChange) >= 0 ? "+" : ""}${incomeChange}%`,
+                  kind: Number(incomeChange) >= 0 ? "up" : "down",
+                }
+              : undefined
+          }
         />
         <StatCard
           label="Combined Expenses"
-          value={<MoneyDisplay value={112400} />}
-          trend={{ value: "-3.1%", kind: "up" }}
-          hint="vs Feb"
+          value={<MoneyDisplay value={stats?.monthlyExpenses ?? 0} />}
+          trend={
+            expenseChange !== null
+              ? {
+                  value: `${Number(expenseChange) >= 0 ? "+" : ""}${expenseChange}%`,
+                  kind: Number(expenseChange) > 0 ? "down" : "up",
+                }
+              : undefined
+          }
+          hint="vs last month"
         />
         <StatCard
           label="Family Savings"
-          value={<MoneyDisplay value={102600} />}
-          trend={{ value: "+11.4%", kind: "up" }}
+          value={<MoneyDisplay value={netSaved} />}
+          trend={{
+            value: `${stats?.savingsRate?.toFixed(1) ?? 0}% savings rate`,
+            kind: (stats?.savingsRate ?? 0) > 30 ? "up" : "flat",
+          }}
         />
-        <StatCard label="Shared Budget" value="72%" hint="of monthly cap used">
+        <StatCard
+          label="Shared Budget"
+          value={`${sharedBudgetPct}%`}
+          hint="of monthly income spent"
+        >
           <div className="bg-border/60 ml-auto h-1 w-24 overflow-hidden rounded-full">
-            <div className="bg-primary h-full w-[72%]" />
+            <div className="bg-primary h-full" style={{ width: `${sharedBudgetPct}%` }} />
           </div>
         </StatCard>
       </KPIGrid>
@@ -107,32 +157,39 @@ export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }:
           <ContentCard>
             <div className="mb-4 flex items-center justify-between">
               <SectionHeader title="Family Savings Trend" className="mb-0" />
-              <span className="text-muted-foreground text-xs">Cumulative saved</span>
+              <span className="text-muted-foreground text-xs">Monthly net savings</span>
             </div>
             <TrendLine data={savingsTrend} />
           </ContentCard>
         </div>
 
         <div className="space-y-6">
-          <AIInsightCard
-            variant="light"
-            onCtaClick={() => toast.success("₹4,500 moved to Europe Vacation goal")}
-            body={
-              <>
-                Your family reduced transport expenses by{" "}
-                <span className="text-foreground font-semibold">12%</span> compared to last month.
-                Consider redirecting savings to the Europe Vacation goal.
-              </>
-            }
-            cta="Allocate ₹4,500 to Vacation"
-          />
+          {FEATURE_FLAGS.AI_INSIGHT && (
+            <AIInsightCard
+              variant="light"
+              onCtaClick={() => toast.success("Navigating to Goals…")}
+              body={
+                <>
+                  Your family&apos;s savings rate is{" "}
+                  <span className="text-foreground font-semibold">
+                    {stats?.savingsRate?.toFixed(1) ?? 0}%
+                  </span>{" "}
+                  this month.{" "}
+                  {(stats?.savingsRate ?? 0) >= 40
+                    ? "Great discipline! Consider redirecting the surplus to your top family goal."
+                    : "There is room to grow — review shared expenses to boost savings."}
+                </>
+              }
+              cta="View Family Goals"
+            />
+          )}
 
           <ContentCard>
             <SectionHeader title="Shared Category Spending" />
-            <CategoryPie data={categoryBreakdown} />
+            <CategoryPie data={categoryBreakdown.map((c) => ({ name: c.name, value: c.total }))} />
             <ul className="mt-4 space-y-2 text-sm">
               {categoryBreakdown.slice(0, 4).map((c, i) => (
-                <li key={c.name} className="flex items-center justify-between">
+                <li key={c.categoryId ?? c.name} className="flex items-center justify-between">
                   <span className="text-muted-foreground flex items-center gap-2">
                     <span
                       className="size-2 animate-pulse rounded-full"
@@ -143,26 +200,24 @@ export function FamilyPage({ categoryBreakdown, monthlyCashFlow, savingsTrend }:
                     {c.name}
                   </span>
                   <span className="font-semibold">
-                    <MoneyDisplay value={c.value} />
+                    <MoneyDisplay value={c.total} />
                   </span>
                 </li>
               ))}
             </ul>
           </ContentCard>
 
+          {/* Net Worth mini card */}
           <ContentCard>
-            <SectionHeader title="Upcoming Bills" />
-            <ul className="space-y-3.5">
-              {upcoming.map((b) => (
-                <li key={b.name} className="flex items-center justify-between text-sm">
-                  <div>
-                    <p className="text-foreground font-bold">{b.name}</p>
-                    <p className="text-muted-foreground text-xs">Due {b.due}</p>
-                  </div>
-                  <MoneyDisplay value={b.amount} />
-                </li>
-              ))}
-            </ul>
+            <SectionHeader title="Family Net Worth" />
+            <div className="mt-2">
+              <p className="text-foreground text-2xl font-bold">
+                <MoneyDisplay value={stats?.netWorth ?? 0} />
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {stats?.accountCount ?? 0} accounts + investments
+              </p>
+            </div>
           </ContentCard>
         </div>
       </div>
