@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { serverFetch } from "@/lib/server-fetch";
 
 export interface Category {
   id: string;
@@ -9,10 +10,23 @@ export interface Category {
   isSystem: boolean;
 }
 
+export const categoriesQueryKey = (workspaceId: string) => ["categories", workspaceId] as const;
+
 export function useCategories(workspaceId: string | null) {
   return useQuery<Category[]>({
-    queryKey: ["categories", workspaceId],
+    queryKey: categoriesQueryKey(workspaceId ?? ""),
     queryFn: () => apiClient.get<Category[]>(`workspaces/${workspaceId}/categories`),
     enabled: !!workspaceId,
+  });
+}
+
+export async function prefetchCategories(
+  queryClient: QueryClient,
+  workspaceId: string,
+  token: string,
+) {
+  await queryClient.prefetchQuery({
+    queryKey: categoriesQueryKey(workspaceId),
+    queryFn: () => serverFetch<Category[]>(`workspaces/${workspaceId}/categories`, token),
   });
 }

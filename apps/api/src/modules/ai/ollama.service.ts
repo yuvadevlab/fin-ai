@@ -3,7 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
 
 export interface OllamaStreamOptions {
-  model: string;
+  /** Override the model for this specific request. Falls back to OLLAMA_MODEL env var. */
+  model?: string;
   prompt: string;
   systemPrompt?: string;
 }
@@ -16,10 +17,18 @@ export class OllamaService {
 
   constructor(configService: ConfigService) {
     this.baseUrl = configService.get<string>("OLLAMA_BASE_URL", "http://localhost:11434");
-    this.model = configService.get<string>("OLLAMA_MODEL", "gemma3");
+    this.model = configService.get<string>("OLLAMA_MODEL", "qwen3:8b");
   }
 
-  async streamChat(options: OllamaStreamOptions, res: Response): Promise<void> {
+  /**
+   * Streams an Ollama chat response to an SSE `res` and invokes `onToken`
+   * for each text token (used to accumulate the full response for persistence).
+   */
+  async streamChatWithCallback(
+    options: OllamaStreamOptions,
+    res: Response,
+    onToken?: (token: string) => void,
+  ): Promise<void> {
     const { prompt, systemPrompt, model = this.model } = options;
 
     const body = JSON.stringify({
@@ -57,6 +66,7 @@ export class OllamaService {
             const parsed = JSON.parse(line);
             const token = parsed.message?.content ?? "";
             if (token) {
+              onToken?.(token);
               res.write(`data: ${JSON.stringify({ token })}\n\n`);
             }
             if (parsed.done) {
@@ -74,8 +84,15 @@ export class OllamaService {
       res.end();
     } catch (error) {
       this.logger.error("Ollama streaming error", error);
-      res.write(`data: ${JSON.stringify({ error: "AI service unavailable" })}\n\n`);
+      res.write(
+        `data: ${JSON.stringify({ error: "AI service unavailable. Make sure Ollama is running." })}\n\n`,
+      );
       res.end();
     }
+  }
+
+  /** @deprecated Use streamChatWithCallback instead */
+  async streamChat(options: OllamaStreamOptions, res: Response): Promise<void> {
+    return this.streamChatWithCallback(options, res);
   }
 }

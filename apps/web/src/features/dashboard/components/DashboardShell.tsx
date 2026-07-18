@@ -9,6 +9,8 @@ import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/c
 import { SearchDropdown } from "../../search/components/SearchDropdown";
 import { useWorkspace } from "@/providers";
 import { useMenuItems } from "../api/getMenuItems";
+import { FEATURE_FLAGS } from "@/lib/app-constants";
+import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -36,19 +38,33 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const sidebar = useMemo(
-    () => <Sidebar pathname={pathname} LinkComponent={customLink} menuItems={menuItems} />,
-    [pathname, customLink, menuItems],
-  );
+  const { activeWorkspace } = useActiveWorkspace();
+
+  const sidebar = useMemo(() => {
+    const memberCount = activeWorkspace?.members?.length ?? 1;
+    const planText = activeWorkspace?.type === "FAMILY" ? "Family Plan" : "Personal Workspace";
+    const detailsText = `${memberCount} member${memberCount > 1 ? "s" : ""} · 100% synced`;
+
+    return (
+      <Sidebar
+        pathname={pathname}
+        LinkComponent={customLink}
+        menuItems={menuItems}
+        planName={activeWorkspace?.name || planText}
+        planDetails={detailsText}
+        planSyncPercentage={100}
+      />
+    );
+  }, [pathname, customLink, menuItems, activeWorkspace]);
 
   const topbar = useMemo(
     () => (
       <TopBar
         workspaceMenu={<WorkspaceMenu />}
-        notificationsMenu={<NotificationsMenu />}
+        notificationsMenu={FEATURE_FLAGS.NOTIFICATIONS ? <NotificationsMenu /> : null}
         profileMenu={<ProfileMenu />}
         onAddTransactionClick={() => setIsDialogOpen(true)}
-        onSearchChange={(val) => setSearchQuery(val)}
+        onSearchChange={FEATURE_FLAGS.SEARCH ? (val) => setSearchQuery(val) : undefined}
       />
     ),
     [],

@@ -11,8 +11,6 @@ import {
   KPIGrid,
   StatCard,
   ChartCard,
-  AIInsightCard,
-  AISuggestionsDialog,
   MiniStat,
   MoneyDisplay,
   Button,
@@ -28,6 +26,7 @@ import { useMonthlyAnalytics } from "../api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "../api/getCategoryBreakdown";
 import { useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 
 export function DashboardPage() {
   const pathname = usePathname();
@@ -100,7 +99,7 @@ export function DashboardPage() {
     <PageContainer>
       <PageHeader
         title="Financial Overview"
-        description="Your aggregated wealth across personal accounts. AI insights updated 3 minutes ago."
+        description="Your aggregated wealth across accounts, investments, and goals in this workspace."
         actions={
           <TransactionDialog
             trigger={
@@ -172,44 +171,7 @@ export function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          {FEATURE_FLAGS.AI_INSIGHT && (
-            <AIInsightCard
-              title="Insight #12"
-              ctaWrapper={(btn) => (
-                <AISuggestionsDialog
-                  trigger={btn}
-                  title="Trim dining spend"
-                  description="Options FinAI thinks will bring dining back under budget."
-                  suggestions={[
-                    {
-                      title: "Cook one weekend dinner at home",
-                      detail: "You averaged 3 weekend deliveries in March.",
-                      impact: "Save ~₹1,200/mo",
-                    },
-                    {
-                      title: "Move Swiggy One → HDFC Millennia",
-                      detail: "Card gives 5% cashback on food delivery.",
-                      impact: "Save ~₹300/mo",
-                    },
-                    {
-                      title: "Set a ₹500 lunch cap on weekdays",
-                      detail: "FinAI will nudge you when a single order crosses the cap.",
-                      impact: "Prevent overshoot",
-                    },
-                  ]}
-                />
-              )}
-              body={
-                <>
-                  You spent <span className="font-medium text-white">18% more</span> on food this
-                  month. Reducing dining expenses could save approximately{" "}
-                  <span className="text-primary font-semibold">₹2,500</span> toward your Vacation
-                  goal.
-                </>
-              }
-              cta="Review Dining Categories"
-            />
-          )}
+          {FEATURE_FLAGS.AI_INSIGHT && <LiveAIInsightCard page="dashboard" cta="Review details" />}
           <ChartCard title="Category Allocation" hint="This month">
             <CategoryPie data={pieData} />
             <ul className="mt-4 space-y-3">

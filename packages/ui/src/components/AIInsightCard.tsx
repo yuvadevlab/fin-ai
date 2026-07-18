@@ -3,8 +3,8 @@ import { Sparkles } from "lucide-react";
 import { Button } from "../primitives/button";
 import { cn } from "../lib/utils";
 
-interface AIInsightCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
+interface AIInsightCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
+  title?: React.ReactNode;
   body: React.ReactNode;
   cta?: string;
   variant?: "dark" | "light";
@@ -41,24 +41,26 @@ export function AIInsightCard({
   return (
     <div
       className={cn(
-        "rounded-2xl p-6 shadow-lg ring-1 transition hover:shadow-xl/5",
+        "hover:shadow-primary/5 rounded-2xl p-6 shadow-md transition-all duration-300 hover:scale-[1.01] hover:shadow-lg",
         variant === "dark"
-          ? "bg-zinc-900 text-zinc-100 ring-zinc-800"
-          : "bg-accent text-accent-foreground ring-border/50",
+          ? "bg-gradient-to-br from-zinc-900 to-zinc-950 text-zinc-100 ring-1 shadow-black/20 ring-zinc-800/60"
+          : "from-background via-accent/20 to-accent/40 text-foreground ring-border/60 bg-gradient-to-br shadow-sm ring-1",
         className,
       )}
       {...props}
     >
-      <div className="mb-3 flex items-center gap-2">
-        <div className="bg-primary flex size-6 items-center justify-center rounded-full shadow-sm">
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="from-primary shadow-primary/20 flex size-6.5 items-center justify-center rounded-full bg-gradient-to-tr to-indigo-500 shadow-md">
           <Sparkles className="text-primary-foreground size-3.5 animate-pulse" />
         </div>
-        <h3 className="text-sm font-semibold">AI Insight</h3>
+        <h3 className="from-primary bg-gradient-to-r via-indigo-400 to-violet-500 bg-clip-text text-sm font-semibold tracking-wide text-transparent">
+          AI Insight
+        </h3>
         {title && (
           <span
             className={cn(
-              "ml-auto font-mono text-[10px] tracking-widest uppercase",
-              variant === "dark" ? "text-zinc-400" : "text-muted-foreground",
+              "ml-auto font-mono text-[9px] font-medium tracking-widest uppercase",
+              variant === "dark" ? "text-zinc-500" : "text-muted-foreground",
             )}
           >
             {title}
@@ -67,8 +69,8 @@ export function AIInsightCard({
       </div>
       <p
         className={cn(
-          "text-sm leading-relaxed text-pretty",
-          variant === "dark" ? "text-zinc-300" : "text-foreground/80",
+          "text-[13px] leading-relaxed font-normal text-pretty",
+          variant === "dark" ? "text-zinc-300" : "text-foreground/90",
         )}
       >
         {body}

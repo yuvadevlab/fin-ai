@@ -56,15 +56,17 @@ export function TopBar({
       </div>
 
       <div className="flex items-center gap-3 md:gap-5">
-        <div className="relative hidden md:block">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-          <Input
-            placeholder={searchPlaceholder}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 pl-10 text-sm transition-colors focus-visible:ring-1"
-          />
-        </div>
-        {notificationsMenu ?? (
+        {onSearchChange && (
+          <div className="relative hidden md:block">
+            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+            <Input
+              placeholder={searchPlaceholder}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 pl-10 text-sm transition-colors focus-visible:ring-1"
+            />
+          </div>
+        )}
+        {notificationsMenu && (
           <Button
             variant="ghost"
             size="icon"

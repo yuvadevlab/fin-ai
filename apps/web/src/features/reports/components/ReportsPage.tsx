@@ -10,14 +10,13 @@ import {
   ContentCard,
   SectionHeader,
   MoneyDisplay,
-  AIInsightCard,
-  AISuggestionsDialog,
   CashFlowChart,
   CategoryPie,
   Button,
   toast,
   CHART_COLORS,
 } from "@finai/ui";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "@/features/dashboard/api/getCategoryBreakdown";
@@ -134,45 +133,7 @@ export function ReportsPage() {
         </ContentCard>
 
         {FEATURE_FLAGS.AI_INSIGHT && (
-          <AIInsightCard
-            ctaWrapper={(btn) => (
-              <AISuggestionsDialog
-                trigger={btn}
-                title="Draft next month's plan"
-                description="Adjustments FinAI would suggest for next month."
-                suggestions={[
-                  {
-                    title: "Bump SIP by ₹5,000",
-                    detail: "You've had 3 months above 60% savings rate — invest the surplus.",
-                    impact: "+₹60k/yr invested",
-                  },
-                  {
-                    title: "Cap dining at ₹8,000",
-                    detail: "Tighter cap keeps you honest.",
-                    impact: "Save ~₹1,400/mo",
-                  },
-                  {
-                    title: "Prepay to your top goal",
-                    detail: "Excess cash can accelerate your goal by months.",
-                    impact: "Reach goal sooner",
-                  },
-                ]}
-              />
-            )}
-            body={
-              <>
-                Your savings rate this month is{" "}
-                <span className="text-primary font-semibold">
-                  {stats?.savingsRate?.toFixed(1) ?? 0}%
-                </span>
-                .{" "}
-                {(stats?.savingsRate ?? 0) >= 60
-                  ? "Excellent discipline — consider allocating more to equity."
-                  : "Push a little more toward savings to hit the 60% mark."}
-              </>
-            }
-            cta="Draft next month's plan"
-          />
+          <LiveAIInsightCard page="reports" cta="Draft next month's plan" />
         )}
       </section>
 

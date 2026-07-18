@@ -2,15 +2,8 @@
 
 import React from "react";
 import { Plus } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  ProgressCard,
-  StatusBadge,
-  AIInsightCard,
-  AISuggestionsDialog,
-  Button,
-} from "@finai/ui";
+import { PageContainer, PageHeader, ProgressCard, StatusBadge, Button } from "@finai/ui";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { formatINR } from "@finai/finance-engine";
 import { useBudgets } from "../api/getBudgets";
 import { BudgetDialog } from "./BudgetDialog";
@@ -70,47 +63,7 @@ export function BudgetsPage() {
         </section>
 
         {FEATURE_FLAGS.AI_INSIGHT && (
-          <AIInsightCard
-            ctaWrapper={(btn) => (
-              <AISuggestionsDialog
-                trigger={btn}
-                title="Optimise your budgets"
-                description="Small changes FinAI thinks will keep you on track this month."
-                suggestions={[
-                  {
-                    title: "Pause one streaming subscription",
-                    detail:
-                      "Netflix + Prime + Hotstar overlap heavily. Pausing Hotstar until IPL saves recurring spend.",
-                    impact: "Save ~₹499/mo",
-                  },
-                  {
-                    title: "Cap weekend food delivery to ₹500",
-                    detail: "Weekend Swiggy orders are the top driver of the dining overshoot.",
-                    impact: "Save ~₹1,600/mo",
-                  },
-                  {
-                    title: "Shift ₹800 from Entertainment to Groceries",
-                    detail: "Groceries have been within budget 3 months in a row.",
-                    impact: "Rebalance ₹800",
-                  },
-                  {
-                    title: "Enable auto-alert at 80%",
-                    detail: "Get a nudge before you cross the cap on any category.",
-                    impact: "Prevent overshoot",
-                  },
-                ]}
-              />
-            )}
-            body={
-              <>
-                You're on pace to exceed your{" "}
-                <span className="text-foreground font-semibold">Entertainment</span> budget by{" "}
-                <span className="text-primary font-semibold">₹800</span>. Skipping one streaming
-                subscription can bring it back on track.
-              </>
-            }
-            cta="Suggest optimisations"
-          />
+          <LiveAIInsightCard page="budgets" cta="Suggest optimisations" />
         )}
       </div>
     </PageContainer>

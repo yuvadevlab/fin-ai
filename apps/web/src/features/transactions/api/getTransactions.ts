@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { serverFetch } from "@/lib/server-fetch";
 import { TransactionFilterInput } from "@finai/validation";
 
 export interface Transaction {
@@ -36,6 +37,9 @@ export interface PaginatedTransactions {
   totalPages: number;
 }
 
+export const transactionsQueryKey = (workspaceId: string, filter?: TransactionFilterInput) =>
+  ["transactions", workspaceId, filter] as const;
+
 export function useTransactions(workspaceId: string | null, filter?: TransactionFilterInput) {
   const queryParams = new URLSearchParams();
   if (filter?.search) queryParams.append("search", filter.search);
@@ -51,8 +55,21 @@ export function useTransactions(workspaceId: string | null, filter?: Transaction
   const endpoint = `workspaces/${workspaceId}/transactions${queryStr ? `?${queryStr}` : ""}`;
 
   return useQuery<PaginatedTransactions>({
-    queryKey: ["transactions", workspaceId, filter],
+    queryKey: transactionsQueryKey(workspaceId ?? "", filter),
     queryFn: () => apiClient.get<PaginatedTransactions>(endpoint),
     enabled: !!workspaceId,
+  });
+}
+
+export async function prefetchTransactions(
+  queryClient: QueryClient,
+  workspaceId: string,
+  token: string,
+  filter?: TransactionFilterInput,
+) {
+  await queryClient.prefetchQuery({
+    queryKey: transactionsQueryKey(workspaceId, filter),
+    queryFn: () =>
+      serverFetch<PaginatedTransactions>(`workspaces/${workspaceId}/transactions`, token),
   });
 }

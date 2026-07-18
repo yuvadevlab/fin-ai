@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { serverFetch } from "@/lib/server-fetch";
 
 export interface Investment {
   id: string;
@@ -28,10 +29,23 @@ export interface InvestmentsResponse {
   totalValue: number;
 }
 
+export const investmentsQueryKey = (workspaceId: string) => ["investments", workspaceId] as const;
+
 export function useInvestments(workspaceId: string | null) {
   return useQuery<InvestmentsResponse>({
-    queryKey: ["investments", workspaceId],
+    queryKey: investmentsQueryKey(workspaceId ?? ""),
     queryFn: () => apiClient.get<InvestmentsResponse>(`workspaces/${workspaceId}/investments`),
     enabled: !!workspaceId,
+  });
+}
+
+export async function prefetchInvestments(
+  queryClient: QueryClient,
+  workspaceId: string,
+  token: string,
+) {
+  await queryClient.prefetchQuery({
+    queryKey: investmentsQueryKey(workspaceId),
+    queryFn: () => serverFetch<InvestmentsResponse>(`workspaces/${workspaceId}/investments`, token),
   });
 }

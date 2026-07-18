@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { serverFetch } from "@/lib/server-fetch";
 
 export interface DashboardStats {
   netWorth: number;
@@ -13,10 +14,25 @@ export interface DashboardStats {
   goalCount: number;
 }
 
+export const dashboardStatsQueryKey = (workspaceId: string) =>
+  ["analytics", "dashboard", workspaceId] as const;
+
 export function useDashboardStats(workspaceId: string | null) {
   return useQuery<DashboardStats>({
-    queryKey: ["analytics", "dashboard", workspaceId],
+    queryKey: dashboardStatsQueryKey(workspaceId ?? ""),
     queryFn: () => apiClient.get<DashboardStats>(`workspaces/${workspaceId}/analytics/dashboard`),
     enabled: !!workspaceId,
+  });
+}
+
+export async function prefetchDashboardStats(
+  queryClient: QueryClient,
+  workspaceId: string,
+  token: string,
+) {
+  await queryClient.prefetchQuery({
+    queryKey: dashboardStatsQueryKey(workspaceId),
+    queryFn: () =>
+      serverFetch<DashboardStats>(`workspaces/${workspaceId}/analytics/dashboard`, token),
   });
 }

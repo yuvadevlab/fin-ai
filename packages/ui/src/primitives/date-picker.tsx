@@ -24,7 +24,19 @@ export function DatePicker({
   className,
   disabled,
 }: DatePickerProps) {
-  const date = value ? new Date(value) : undefined;
+  // Parse date safely in local timezone to avoid UTC shifting
+  const date = React.useMemo(() => {
+    if (!value) return undefined;
+    const parts = value.split("-");
+    if (parts.length !== 3) {
+      const d = new Date(value);
+      return isNaN(d.getTime()) ? undefined : d;
+    }
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // 0-based month
+    const day = parseInt(parts[2], 10);
+    return new Date(year, month, day, 12, 0, 0); // Local noon
+  }, [value]);
 
   return (
     <Popover>
@@ -48,7 +60,7 @@ export function DatePicker({
           mode="single"
           selected={date}
           onSelect={(selectedDate) =>
-            onChange?.(selectedDate ? selectedDate.toISOString().split("T")[0] : "")
+            onChange?.(selectedDate ? format(selectedDate, "yyyy-MM-dd") : "")
           }
           initialFocus
         />
