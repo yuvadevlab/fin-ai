@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog, FormDialogField, FormField } from "@finai/ui";
+import { FormDialog } from "@finai/ui";
 import { createAccountSchema } from "@finai/validation";
 import { useCreateAccount } from "../api/createAccount";
 import { useWorkspace } from "@/providers";
+import { AccountForm } from "./AccountForm";
 
 export interface AccountDialogProps {
   trigger?: React.ReactNode;
@@ -84,38 +85,6 @@ export function AccountDialog({
     }
   };
 
-  const fields: FormField[] = [
-    {
-      type: "text",
-      name: "name",
-      label: "Account Name",
-      placeholder: "e.g. HDFC Salary, SBI Savings",
-    },
-    {
-      type: "select",
-      name: "type",
-      label: "Account Type",
-      options: [
-        { label: "Bank Account", value: "BANK" },
-        { label: "Credit Card", value: "CREDIT_CARD" },
-        { label: "Digital Wallet", value: "WALLET" },
-        { label: "Cash Wallet", value: "CASH" },
-      ],
-    },
-    {
-      type: "number",
-      name: "balance",
-      label: "Initial Balance",
-      placeholder: "0.00",
-    },
-    {
-      type: "text",
-      name: "currency",
-      label: "Currency",
-      placeholder: "INR",
-    },
-  ];
-
   return (
     <FormDialog
       open={open}
@@ -134,15 +103,7 @@ export function AccountDialog({
         </div>
       )}
       <div className="space-y-4">
-        {fields.map((field) => (
-          <FormDialogField
-            key={field.name}
-            field={field}
-            value={values[field.name] ?? ""}
-            error={errors[field.name]}
-            onChange={(val) => handleChange(field.name, val)}
-          />
-        ))}
+        <AccountForm values={values} errors={errors} onChange={handleChange} />
       </div>
     </FormDialog>
   );

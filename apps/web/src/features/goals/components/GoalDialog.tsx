@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog, FormDialogField, FormField } from "@finai/ui";
+import { FormDialog } from "@finai/ui";
 import { createGoalSchema } from "@finai/validation";
 import { useCreateGoal } from "../api/createGoal";
 import { useWorkspace } from "@/providers";
+import { GoalForm } from "./GoalForm";
 
 export interface GoalDialogProps {
   trigger?: React.ReactNode;
@@ -95,42 +96,6 @@ export function GoalDialog({
     }
   };
 
-  const fields: FormField[] = [
-    {
-      type: "text",
-      name: "name",
-      label: "Goal Name",
-      placeholder: "e.g. Dream House, New Car, Vacation",
-    },
-    {
-      type: "number",
-      name: "targetAmount",
-      label: "Target Amount",
-      placeholder: "0.00",
-    },
-    {
-      type: "number",
-      name: "currentAmount",
-      label: "Initial Savings",
-      placeholder: "0.00",
-    },
-    {
-      type: "text",
-      name: "deadline",
-      label: "Target Deadline (YYYY-MM-DD)",
-      placeholder: "YYYY-MM-DD",
-    },
-    {
-      type: "select",
-      name: "type",
-      label: "Scope",
-      options: [
-        { label: "Personal Goal", value: "PERSONAL" },
-        { label: "Family / Shared Goal", value: "FAMILY" },
-      ],
-    },
-  ];
-
   return (
     <FormDialog
       open={open}
@@ -149,15 +114,7 @@ export function GoalDialog({
         </div>
       )}
       <div className="space-y-4">
-        {fields.map((field) => (
-          <FormDialogField
-            key={field.name}
-            field={field}
-            value={values[field.name] ?? ""}
-            error={errors[field.name]}
-            onChange={(val) => handleChange(field.name, val)}
-          />
-        ))}
+        <GoalForm values={values} errors={errors} onChange={handleChange} />
       </div>
     </FormDialog>
   );

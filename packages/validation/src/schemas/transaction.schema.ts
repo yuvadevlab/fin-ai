@@ -5,7 +5,6 @@ export const createTransactionSchema = z.object({
   toAccountId: z.string().uuid("Invalid destination account ID").optional().nullable(),
   categoryId: z.string().uuid("Invalid category ID"),
   amount: z.number().refine((v) => v !== 0, "Amount cannot be zero"),
-  merchant: z.string().min(1, "Merchant is required").max(200),
   date: z.string().date("Invalid date format"),
   notes: z.string().max(500).optional(),
   type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]),
@@ -43,7 +42,6 @@ export const clientTransactionSchema = z
     account: z.string().min(1, "Account is required"),
     toAccount: z.string().optional().nullable(),
     date: z.string().min(1, "Date is required"),
-    merchant: z.string().min(1, "Merchant is required").max(200),
     notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
   })
   .refine(

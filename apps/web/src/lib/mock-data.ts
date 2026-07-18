@@ -28,7 +28,6 @@ export const transactions = [
   {
     id: "t1",
     date: "2026-03-08",
-    merchant: "Swiggy",
     category: "Food & Dining",
     account: "HDFC Credit",
     amount: -840,
@@ -37,7 +36,6 @@ export const transactions = [
   {
     id: "t2",
     date: "2026-03-07",
-    merchant: "Salary — Acme Corp",
     category: "Income",
     account: "HDFC Salary",
     amount: 125000,
@@ -46,7 +44,6 @@ export const transactions = [
   {
     id: "t3",
     date: "2026-03-06",
-    merchant: "BigBasket",
     category: "Groceries",
     account: "Joint Account",
     amount: -3240,
@@ -55,7 +52,6 @@ export const transactions = [
   {
     id: "t4",
     date: "2026-03-05",
-    merchant: "Uber",
     category: "Transport",
     account: "Paytm Wallet",
     amount: -420,
@@ -64,7 +60,6 @@ export const transactions = [
   {
     id: "t5",
     date: "2026-03-04",
-    merchant: "Indraprastha Gas",
     category: "Utilities",
     account: "Joint Account",
     amount: -1180,
@@ -73,7 +68,6 @@ export const transactions = [
   {
     id: "t6",
     date: "2026-03-03",
-    merchant: "Amazon",
     category: "Shopping",
     account: "HDFC Credit",
     amount: -2450,
@@ -82,7 +76,6 @@ export const transactions = [
   {
     id: "t7",
     date: "2026-03-02",
-    merchant: "Zerodha SIP — Nifty 50",
     category: "Investment",
     account: "ICICI Savings",
     amount: -15000,
@@ -91,7 +84,6 @@ export const transactions = [
   {
     id: "t8",
     date: "2026-03-01",
-    merchant: "Rent — Landlord",
     category: "Housing",
     account: "Joint Account",
     amount: -32000,

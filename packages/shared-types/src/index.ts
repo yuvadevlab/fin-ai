@@ -127,7 +127,6 @@ export interface Transaction {
   accountId: string;
   categoryId: string;
   amount: number;
-  merchant: string;
   date: string;
   notes?: string;
   type: TransactionType;

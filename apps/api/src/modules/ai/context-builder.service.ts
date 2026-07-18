@@ -39,7 +39,7 @@ export class ContextBuilderService {
       `### Recent Transactions (last 20)`,
       ...recentTxns.map(
         (t) =>
-          `- ${t.date.toISOString().slice(0, 10)} | ${t.merchant} | ${t.category?.name ?? "Unknown"} | ₹${t.amount.toLocaleString("en-IN")}`,
+          `- ${t.date.toISOString().slice(0, 10)} | ${t.category?.name ?? "Unknown"} | ₹${t.amount.toLocaleString("en-IN")}${t.notes ? ` (${t.notes})` : ""}`,
       ),
       ``,
       `### Budget Status (${budgets.length} budgets)`,

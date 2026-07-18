@@ -19,7 +19,6 @@ export interface TransactionDialogProps {
   initialValues?: {
     id?: string;
     amount?: number | string;
-    merchant?: string;
     type?: string;
     kind?: string;
     categoryId?: string;
@@ -74,7 +73,6 @@ export function TransactionDialog({
   const getFormInitialValues = () => {
     return {
       amount: initialValues?.amount !== undefined ? String(initialValues.amount) : "",
-      merchant: initialValues?.merchant ?? "",
       kind:
         initialValues?.kind ?? (initialValues?.type ? initialValues.type.toLowerCase() : "expense"),
       category:
@@ -152,7 +150,6 @@ export function TransactionDialog({
     // Map form validation values to API input payload
     const payload = {
       amount: Number(result.data.amount),
-      merchant: result.data.merchant,
       type: result.data.kind.toUpperCase() as "INCOME" | "EXPENSE" | "TRANSFER",
       categoryId: result.data.category,
       accountId: result.data.account,

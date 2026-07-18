@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog, FormDialogField, FormField } from "@finai/ui";
+import { FormDialog } from "@finai/ui";
 import { createInvestmentSchema } from "@finai/validation";
 import { useCreateInvestment } from "../api/createInvestment";
 import { useWorkspace } from "@/providers";
+import { InvestmentForm } from "./InvestmentForm";
 
 export interface InvestmentDialogProps {
   trigger?: React.ReactNode;
@@ -84,43 +85,6 @@ export function InvestmentDialog({
     }
   };
 
-  const fields: FormField[] = [
-    {
-      type: "text",
-      name: "name",
-      label: "Investment Name",
-      placeholder: "e.g. Zerodha Nifty 50 Mutual Fund",
-    },
-    {
-      type: "select",
-      name: "assetClass",
-      label: "Asset Class",
-      options: [
-        { label: "Mutual Fund", value: "MUTUAL_FUND" },
-        { label: "Stock Equities", value: "STOCK" },
-        { label: "Fixed Deposit", value: "FIXED_DEPOSIT" },
-        { label: "Gold", value: "GOLD" },
-        { label: "EPF Retirement Fund", value: "EPF" },
-        { label: "PPF Savings Fund", value: "PPF" },
-        { label: "Real Estate", value: "REAL_ESTATE" },
-        { label: "Crypto Currency", value: "CRYPTO" },
-        { label: "Other Asset", value: "OTHER" },
-      ],
-    },
-    {
-      type: "number",
-      name: "investedAmount",
-      label: "Invested Amount",
-      placeholder: "0.00",
-    },
-    {
-      type: "number",
-      name: "currentValue",
-      label: "Current Market Value",
-      placeholder: "0.00",
-    },
-  ];
-
   return (
     <FormDialog
       open={open}
@@ -139,15 +103,7 @@ export function InvestmentDialog({
         </div>
       )}
       <div className="space-y-4">
-        {fields.map((field) => (
-          <FormDialogField
-            key={field.name}
-            field={field}
-            value={values[field.name] ?? ""}
-            error={errors[field.name]}
-            onChange={(val) => handleChange(field.name, val)}
-          />
-        ))}
+        <InvestmentForm values={values} errors={errors} onChange={handleChange} />
       </div>
     </FormDialog>
   );

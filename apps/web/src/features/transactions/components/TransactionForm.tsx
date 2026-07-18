@@ -23,12 +23,7 @@ export function TransactionForm({
       name: "amount",
       label: "Amount",
       placeholder: "0.00",
-    },
-    {
-      type: "text",
-      name: "merchant",
-      label: "Merchant",
-      placeholder: "e.g. Amazon, Starbucks",
+      autoComplete: "off",
     },
     {
       type: "select",
@@ -73,6 +68,7 @@ export function TransactionForm({
       name: "notes",
       label: "Notes",
       placeholder: "Optional notes...",
+      autoComplete: "off",
       rows: 3,
     },
   ];

@@ -99,9 +99,9 @@ export function TransactionsPage() {
         className: "whitespace-nowrap text-muted-foreground font-normal",
       },
       {
-        header: "Merchant",
-        accessor: (t: Transaction) => t.merchant,
-        className: "font-semibold",
+        header: "Notes",
+        accessor: (t: Transaction) => t.notes || "-",
+        className: "text-muted-foreground font-normal max-w-[200px] truncate",
       },
       {
         header: "Category",
@@ -192,7 +192,7 @@ export function TransactionsPage() {
       <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
         <div className="relative min-w-64 flex-1">
           <SearchBar
-            placeholder="Search merchants, categories, accounts…"
+            placeholder="Search notes, categories, accounts…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             containerClassName="w-full"

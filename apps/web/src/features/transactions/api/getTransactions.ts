@@ -5,7 +5,6 @@ import { TransactionFilterInput } from "@finai/validation";
 export interface Transaction {
   id: string;
   amount: number;
-  merchant: string;
   date: string;
   notes: string | null;
   type: "INCOME" | "EXPENSE" | "TRANSFER" | "INVESTMENT";

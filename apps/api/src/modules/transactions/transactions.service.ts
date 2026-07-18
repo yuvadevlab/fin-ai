@@ -15,7 +15,7 @@ export class TransactionsService {
     const where: Prisma.TransactionWhereInput = { workspaceId };
 
     if (filter.search) {
-      where.merchant = { contains: filter.search, mode: "insensitive" };
+      where.notes = { contains: filter.search, mode: "insensitive" };
     }
     if (filter.category) where.categoryId = filter.category;
     if (filter.account) where.accountId = filter.account;
@@ -65,7 +65,6 @@ export class TransactionsService {
         accountId: input.accountId,
         toAccountId: input.toAccountId,
         categoryId: input.categoryId,
-        merchant: input.merchant,
         amount: input.amount,
         date: new Date(input.date),
         notes: input.notes,
@@ -80,7 +79,6 @@ export class TransactionsService {
     return this.prisma.client.transaction.update({
       where: { id },
       data: {
-        ...(input.merchant !== undefined && { merchant: input.merchant }),
         ...(input.amount !== undefined && { amount: input.amount }),
         ...(input.date !== undefined && { date: new Date(input.date) }),
         ...(input.categoryId !== undefined && { categoryId: input.categoryId }),

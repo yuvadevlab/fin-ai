@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { FormDialog, FormDialogField, FormField } from "@finai/ui";
+import { FormDialog } from "@finai/ui";
 import { createBudgetSchema } from "@finai/validation";
 import { useCreateBudget } from "../api/createBudget";
 import { useCategories } from "@/features/categories/api/getCategories";
 import { useWorkspace } from "@/providers";
+import { BudgetForm } from "./BudgetForm";
 
 export interface BudgetDialogProps {
   trigger?: React.ReactNode;
@@ -96,37 +97,6 @@ export function BudgetDialog({
     }
   };
 
-  const fields: FormField[] = [
-    {
-      type: "select",
-      name: "categoryId",
-      label: "Category",
-      options: categoryOptions,
-    },
-    {
-      type: "number",
-      name: "limit",
-      label: "Budget Limit",
-      placeholder: "0.00",
-    },
-    {
-      type: "select",
-      name: "period",
-      label: "Period",
-      options: [
-        { label: "Weekly", value: "WEEKLY" },
-        { label: "Monthly", value: "MONTHLY" },
-        { label: "Yearly", value: "YEARLY" },
-      ],
-    },
-    {
-      type: "text",
-      name: "startDate",
-      label: "Start Date",
-      placeholder: "YYYY-MM-DD",
-    },
-  ];
-
   return (
     <FormDialog
       open={open}
@@ -145,15 +115,12 @@ export function BudgetDialog({
         </div>
       )}
       <div className="space-y-4">
-        {fields.map((field) => (
-          <FormDialogField
-            key={field.name}
-            field={field}
-            value={values[field.name] ?? ""}
-            error={errors[field.name]}
-            onChange={(val) => handleChange(field.name, val)}
-          />
-        ))}
+        <BudgetForm
+          values={values}
+          errors={errors}
+          onChange={handleChange}
+          categories={categoryOptions}
+        />
       </div>
     </FormDialog>
   );
