@@ -9,7 +9,7 @@
 
 const SERVER_API_BASE = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-  : "http://localhost:3001/api/v1";
+  : "http://localhost:4000/api/v1";
 
 export async function serverFetch<T>(endpoint: string, token: string): Promise<T> {
   const url = `${SERVER_API_BASE}/${endpoint.replace(/^\//, "")}`;
