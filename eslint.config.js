@@ -18,6 +18,7 @@ export default tseslint.config(
       "**/.vinxi/**",
       "**/.vercel/**",
       "**/out/**",
+      "**/tsup.config.bundled*",
     ],
   },
   {
