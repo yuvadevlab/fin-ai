@@ -53,7 +53,7 @@ fin-ai/
 │   └── nginx/                 # Nginx Reverse Proxy & SSL Setup
 │
 ├── scripts/                   # PowerShell Management & Backup Automation
-├── .github/workflows/         # CI/CD Workflows (build.yml & deploy.yml)
+├── .github/workflows/         # Code Quality CI Workflow (build.yml)
 ├── docker-compose.yml         # Production Container Orchestration
 ├── package.json               # Root Workspace Scripts
 ├── pnpm-workspace.yaml        # Monorepo Workspace Configuration
