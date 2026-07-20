@@ -46,15 +46,16 @@ if (-not (Test-Path -Path $RepoPath)) {
 
 Set-Location -Path $RepoPath
 
-# Step 3: Check Environment File
+# Step 3: Check Master Environment File
 $EnvFile = Join-Path $RepoPath ".env"
 if (-not (Test-Path -Path $EnvFile)) {
-    Write-Error "[ERROR] Production '.env' file not found at $EnvFile! Copy .env.example to .env first."
+    Write-Error "[ERROR] Production master '.env' file not found at $EnvFile! Please ensure .env exists on the host server."
     exit 1
 }
 
 # Step 4: Git Synchronization
 Write-Host "[STEP 1/6] Synchronizing Git Repository ($Branch)..." -ForegroundColor Green
+git config --global --add safe.directory D:/server/repos/fin-ai 2>$null
 git fetch origin
 git checkout $Branch
 git pull origin $Branch
