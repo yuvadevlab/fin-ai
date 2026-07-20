@@ -56,15 +56,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🖥️ Execute PowerShell Deployment Script
-        shell: powershell
-        run: |
-          Set-Location -Path "D:\server\repos\fin-ai"
-          git pull origin main
-          powershell -ExecutionPolicy Bypass -File .\scripts\deploy.ps1 -Branch main
+        run: powershell -ExecutionPolicy Bypass -Command "Set-Location -Path 'D:\server\repos\fin-ai'; git pull origin main; .\scripts\deploy.ps1 -Branch main"
 
       - name: 🔄 Trigger Automatic Rollback on Failure
         if: failure()
-        shell: powershell
-        run: |
-          Set-Location -Path "D:\server\repos\fin-ai"
-          powershell -ExecutionPolicy Bypass -File .\scripts\rollback.ps1 -TargetCommit HEAD~1
+        run: powershell -ExecutionPolicy Bypass -Command "Set-Location -Path 'D:\server\repos\fin-ai'; .\scripts\rollback.ps1 -TargetCommit HEAD~1"
