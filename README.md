@@ -23,7 +23,7 @@ Click any link below to navigate to the standalone documentation for that applic
 
 ### Infrastructure & DevOps Manuals
 
-- 📖 **[`DevOps Master Guide`](../../.gemini/antigravity-ide/brain/d10b990b-26b9-40f3-acaa-b4678a1b7ff2/devops_master_guide.md)**: 19-module comprehensive production guide for Windows Server hosting (`D:\server\repos\fin-ai`).
+- 📖 **[`DevOps Master Guide`](docs/DEVOPS_MASTER_GUIDE.md)**: 19-module comprehensive production guide for Windows Server hosting (`D:\server\repos\fin-ai`).
 - 🐳 **[`docker-compose.yml`](docker-compose.yml)**: Multi-container orchestration (PostgreSQL, NestJS API, Next.js Web, Nginx reverse proxy).
 - 🚀 **[`scripts/deploy.ps1`](scripts/deploy.ps1)**: Automated Windows Server deployment script.
 - 🔄 **[`scripts/rollback.ps1`](scripts/rollback.ps1)**: Emergency deployment rollback script.
