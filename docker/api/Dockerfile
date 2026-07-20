@@ -37,7 +37,7 @@ RUN pnpm --filter @finai/database db:generate
 RUN pnpm --filter @finai/api... build
 
 # Deploy pruned production dependencies for @finai/api
-RUN pnpm --filter @finai/api deploy --prod /app/pruned
+RUN pnpm --filter @finai/api deploy --prod --legacy /app/pruned
 
 # Copy generated Prisma Client engine into the pruned deployment output
 RUN cp -R packages/database/node_modules/.prisma /app/pruned/node_modules/ 2>/dev/null || true
