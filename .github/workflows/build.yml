@@ -4,7 +4,7 @@ on:
   push:
     branches: [dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
 # ⚡ Prevents duplicate/redundant parallel workflow runs on the same PR
 concurrency:

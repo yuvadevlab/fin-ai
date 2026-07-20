@@ -69,7 +69,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/health || exit 1
 
 # Use dumb-init as pid 1 for proper Unix signal forwarding (SIGTERM / SIGINT)
-ENTRYPOINT ["/sbin/dumb-init", "--"]
+ENTRYPOINT ["dumb-init", "--"]
 
 # Start NestJS API runtime
 CMD ["node", "dist/main.js"]

@@ -25,6 +25,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 # Copy all packages & web application
 COPY packages ./packages
 COPY apps/web ./apps/web
+RUN mkdir -p apps/web/public
 
 # Install all workspace dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -67,7 +68,7 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-ENTRYPOINT ["/sbin/dumb-init", "--"]
+ENTRYPOINT ["dumb-init", "--"]
 
 # Launch Next.js standalone server
 CMD ["node", "apps/web/server.js"]
