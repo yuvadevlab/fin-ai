@@ -182,22 +182,33 @@ Nginx handles edge gateway routing on Ports `80` & `443`:
 
 ---
 
-# Module 6 — Manual PowerShell Deployment Script
+# Module 6 — Standard Pure Docker Compose Commands
 
-Run `deploy.ps1` in PowerShell on Windows to build and launch the production stack:
+Run pure, native `docker compose` commands in your terminal:
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy.ps1
+### 1. Build & Start All Containers
+
+```bash
+docker compose up -d --build
 ```
 
-Script sequence:
+### 2. View Real-Time Streaming Logs
 
-1. Creates host directories (`D:\server\docker-data\postgres`, `D:\server\logs`, `D:\server\storage`, `D:\server\backups`)
-2. Verifies master `.env` file at `D:\server\repos\fin-ai\.env`
-3. Builds Docker images in parallel (`docker compose build --parallel`)
-4. Runs database migrations (`prisma migrate deploy`)
-5. Boots containers (`docker compose up -d`)
-6. Performs service health checks
+```bash
+docker compose logs -f
+```
+
+### 3. Check Container Health Status
+
+```bash
+docker compose ps
+```
+
+### 4. Stop Stack Safely
+
+```bash
+docker compose down
+```
 
 ---
 

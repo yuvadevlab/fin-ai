@@ -21,14 +21,10 @@ Click any link below to navigate to the standalone documentation for that applic
 - ✅ **[`packages/validation`](packages/validation/README.md)**: Zod validation schemas and type inferences shared across forms and API DTOs.
 - 🏷️ **[`packages/shared-types`](packages/shared-types/README.md)**: Shared TypeScript interfaces, enums (`AccountType`, `TransactionType`), and API payload types.
 
-### Infrastructure & DevOps Manuals
+### Infrastructure & Docker Manuals
 
-- 📖 **[`DevOps Master Guide`](docs/DEVOPS_MASTER_GUIDE.md)**: 19-module comprehensive production guide for Windows Server hosting (`D:\server\repos\fin-ai`).
+- 📖 **[`DevOps Master Guide`](docs/DEVOPS_MASTER_GUIDE.md)**: Master production Docker guide for Windows Server hosting (`D:\server\repos\fin-ai`).
 - 🐳 **[`docker-compose.yml`](docker-compose.yml)**: Multi-container orchestration (PostgreSQL, NestJS API, Next.js Web, Nginx reverse proxy).
-- 🚀 **[`scripts/deploy.ps1`](scripts/deploy.ps1)**: Automated Windows Server deployment script.
-- 🔄 **[`scripts/rollback.ps1`](scripts/rollback.ps1)**: Emergency deployment rollback script.
-- 💾 **[`scripts/backup-postgres.ps1`](scripts/backup-postgres.ps1)**: Automated PostgreSQL database & uploads backup script.
-- 📦 **[`scripts/restore-postgres.ps1`](scripts/restore-postgres.ps1)**: Database restoration utility script.
 
 ---
 
@@ -52,7 +48,6 @@ fin-ai/
 │   ├── web/Dockerfile         # Multi-stage Next.js Dockerfile
 │   └── nginx/                 # Nginx Reverse Proxy & SSL Setup
 │
-├── scripts/                   # PowerShell Management & Backup Automation
 ├── .github/workflows/         # Code Quality CI Workflow (build.yml)
 ├── docker-compose.yml         # Production Container Orchestration
 ├── package.json               # Root Workspace Scripts
