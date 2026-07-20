@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# 🔒 Prevents overlapping concurrent production deployments
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   validate:
     name: 🛡️ Pre-Deployment Validation (Lint, Typecheck, Test, Build)
@@ -42,33 +47,24 @@ jobs:
         run: pnpm build
 
   deploy:
-    name: 🚀 Production Deployment to Windows Server
-    runs-on: ubuntu-latest
-    needs: [validate] # Ensures deployment only occurs after validation passes
+    name: 🚀 Production Deployment on Windows Host
+    runs-on: [self-hosted, Windows]
+    needs: [validate]
 
     steps:
       - name: 📦 Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: 🖥️ Trigger Remote Deployment on Windows Server via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.WINDOWS_SERVER_HOST }}
-          username: ${{ secrets.WINDOWS_SERVER_USER }}
-          password: ${{ secrets.WINDOWS_SERVER_PASSWORD }}
-          port: ${{ secrets.WINDOWS_SERVER_SSH_PORT || 22 }}
-          script: |
-            cd D:\server\repos\fin-ai
-            powershell -ExecutionPolicy Bypass -File .\scripts\deploy.ps1 -Branch main
+      - name: 🖥️ Execute PowerShell Deployment Script
+        shell: powershell
+        run: |
+          Set-Location -Path "D:\server\repos\fin-ai"
+          git pull origin main
+          powershell -ExecutionPolicy Bypass -File .\scripts\deploy.ps1 -Branch main
 
-      - name: 🔄 Trigger Automatic Rollback on Deployment Failure
+      - name: 🔄 Trigger Automatic Rollback on Failure
         if: failure()
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.WINDOWS_SERVER_HOST }}
-          username: ${{ secrets.WINDOWS_SERVER_USER }}
-          password: ${{ secrets.WINDOWS_SERVER_PASSWORD }}
-          port: ${{ secrets.WINDOWS_SERVER_SSH_PORT || 22 }}
-          script: |
-            cd D:\server\repos\fin-ai
-            powershell -ExecutionPolicy Bypass -File .\scripts\rollback.ps1 -TargetCommit HEAD~1
+        shell: powershell
+        run: |
+          Set-Location -Path "D:\server\repos\fin-ai"
+          powershell -ExecutionPolicy Bypass -File .\scripts\rollback.ps1 -TargetCommit HEAD~1
