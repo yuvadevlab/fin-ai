@@ -1,31 +1,166 @@
-version: "3.8"
+# ==============================================================================
+# Production Docker Compose Orchestration for FinAI Infrastructure
+# Targeted Deployment Path: D:\server\repos\fin-ai
+# ==============================================================================
+
+name: fin-ai
 
 services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL 17 Database Service
+  # ----------------------------------------------------------------------------
   postgres:
-    image: postgres:16-alpine
-    container_name: finai-postgres
-    ports:
-      - "5432:5432"
+    image: postgres:17-alpine
+    container_name: fin-ai-postgres
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: finai
+      POSTGRES_USER: ${POSTGRES_USER:-finai_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-FinAiSecurePass2026!}
+      POSTGRES_DB: ${POSTGRES_DB:-finai_db}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - fin-ai-postgres-data:/var/lib/postgresql/data
+      # Host bind mount for external database data storage & persistence
+      - D:\server\docker-data\postgres:/var/lib/postgresql/data/pgdata
+    networks:
+      - fin-ai-network
+    ports:
+      - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d finai"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finai_admin} -d ${POSTGRES_DB:-finai_db}"]
+      interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: finai-ollama
-    ports:
-      - "11434:11434"
+  # ----------------------------------------------------------------------------
+  # NestJS API Backend Service
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    container_name: fin-ai-api
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Resolves native Windows Ollama service
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-4000}
+      API_PORT: ${API_PORT:-4000}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://finai_admin:FinAiSecurePass2026!@postgres:5432/finai_db?schema=public}
+      JWT_SECRET: ${JWT_SECRET:-SuperSecretProductionJwtKey2026FinAi!}
+      JWT_EXPIRY: ${JWT_EXPIRY:-7d}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:8b}
+      WEB_URL: ${WEB_URL:-http://localhost}
+      API_CORS_ORIGIN: ${API_CORS_ORIGIN:-http://localhost}
     volumes:
-      - ollama-data:/root/.ollama
+      - D:\server\logs\api:/app/logs
+      - D:\server\storage\uploads:/app/uploads
+    networks:
+      - fin-ai-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:4000/api/health || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ----------------------------------------------------------------------------
+  # Next.js Web Frontend Service
+  # ----------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    container_name: fin-ai-web
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
+      NEXT_PUBLIC_PAGE_SETTINGS: ${NEXT_PUBLIC_PAGE_SETTINGS:-true}
+      NEXT_PUBLIC_PAGE_AI_ADVISOR: ${NEXT_PUBLIC_PAGE_AI_ADVISOR:-true}
+      NEXT_PUBLIC_FEATURE_ACCOUNTS: ${NEXT_PUBLIC_FEATURE_ACCOUNTS:-true}
+      NEXT_PUBLIC_FEATURE_AI_ADVISOR: ${NEXT_PUBLIC_FEATURE_AI_ADVISOR:-true}
+      NEXT_PUBLIC_FEATURE_AI_INSIGHT: ${NEXT_PUBLIC_FEATURE_AI_INSIGHT:-true}
+      NEXT_PUBLIC_FEATURE_BUDGETS: ${NEXT_PUBLIC_FEATURE_BUDGETS:-true}
+      NEXT_PUBLIC_FEATURE_FAMILY: ${NEXT_PUBLIC_FEATURE_FAMILY:-true}
+      NEXT_PUBLIC_FEATURE_GOALS: ${NEXT_PUBLIC_FEATURE_GOALS:-true}
+      NEXT_PUBLIC_FEATURE_HEALTH: ${NEXT_PUBLIC_FEATURE_HEALTH:-true}
+      NEXT_PUBLIC_FEATURE_INVESTMENTS: ${NEXT_PUBLIC_FEATURE_INVESTMENTS:-true}
+      NEXT_PUBLIC_FEATURE_NOTIFICATIONS: ${NEXT_PUBLIC_FEATURE_NOTIFICATIONS:-true}
+      NEXT_PUBLIC_FEATURE_REPORTS: ${NEXT_PUBLIC_FEATURE_REPORTS:-true}
+      NEXT_PUBLIC_FEATURE_SEARCH: ${NEXT_PUBLIC_FEATURE_SEARCH:-true}
+      NEXT_PUBLIC_FEATURE_SETTINGS: ${NEXT_PUBLIC_FEATURE_SETTINGS:-true}
+      NEXT_PUBLIC_FEATURE_TRANSACTIONS: ${NEXT_PUBLIC_FEATURE_TRANSACTIONS:-true}
+    volumes:
+      - D:\server\logs\web:/app/logs
+    networks:
+      - fin-ai-network
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ----------------------------------------------------------------------------
+  # Nginx Reverse Proxy & SSL Termination Service
+  # ----------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: fin-ai-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - D:\server\docker-data\nginx\certs:/etc/nginx/certs:ro
+      - D:\server\docker-data\certbot:/var/www/certbot:ro
+      - D:\server\logs\nginx:/var/log/nginx
+    networks:
+      - fin-ai-network
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "nginx -t && wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# ------------------------------------------------------------------------------
+# Isolated Docker Networks & Named Volumes
+# ------------------------------------------------------------------------------
+networks:
+  fin-ai-network:
+    name: fin-ai-network
+    driver: bridge
 
 volumes:
-  postgres-data:
-  ollama-data:
+  fin-ai-postgres-data:
+    name: fin-ai-postgres-data
+  fin-ai-nginx-data:
+    name: fin-ai-nginx-data
