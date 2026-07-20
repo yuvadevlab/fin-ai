@@ -148,7 +148,7 @@ COPY apps/api ./apps/api
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm --filter @finai/database db:generate
 RUN pnpm --filter @finai/api... build
-RUN pnpm --filter @finai/api deploy --prod /app/pruned
+RUN pnpm --filter @finai/api deploy --prod --legacy /app/pruned
 RUN cp -R packages/database/node_modules/.prisma /app/pruned/node_modules/ 2>/dev/null || true
 RUN cp -R packages/database/node_modules/@prisma /app/pruned/node_modules/ 2>/dev/null || true
 
