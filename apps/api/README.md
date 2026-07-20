@@ -1,6 +1,6 @@
 # @finai/api
 
-`@finai/api` is the primary backend REST/GraphQL service for FinAI, built with NestJS 10, Node.js 22 LTS, Prisma ORM (`@finai/database`), Passport.js JWT authentication, and native Ollama AI integration.
+`@finai/api` is the primary backend REST/GraphQL service for FinAI, built with NestJS 10, Node.js 24, Prisma ORM (`@finai/database`), Passport.js JWT authentication, and native Ollama AI integration.
 
 ---
 
