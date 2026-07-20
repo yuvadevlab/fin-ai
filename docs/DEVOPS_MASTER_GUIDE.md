@@ -190,6 +190,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.json tsconfig.json ./
 COPY packages ./packages
 COPY apps/web ./apps/web
+RUN mkdir -p apps/web/public
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production

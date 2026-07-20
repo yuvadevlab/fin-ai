@@ -25,6 +25,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 # Copy all packages & web application
 COPY packages ./packages
 COPY apps/web ./apps/web
+RUN mkdir -p apps/web/public
 
 # Install all workspace dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
