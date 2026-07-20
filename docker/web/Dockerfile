@@ -11,7 +11,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.13.0 --activate
 
-RUN apk add --no-libc6-compat dumb-init
+RUN apk add --no-cache dumb-init
 
 # ------------------------------------------------------------------------------
 # Stage 2: Build Stage

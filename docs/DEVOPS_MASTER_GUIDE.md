@@ -138,7 +138,7 @@ FROM node:24-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.13.0 --activate
-RUN apk add --no-libc6-compat openssl libc6-compat dumb-init
+RUN apk add --no-cache openssl libc6-compat dumb-init
 
 FROM base AS builder
 WORKDIR /app
@@ -183,7 +183,7 @@ FROM node:24-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.13.0 --activate
-RUN apk add --no-libc6-compat dumb-init
+RUN apk add --no-cache dumb-init
 
 FROM base AS builder
 WORKDIR /app

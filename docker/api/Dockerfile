@@ -12,7 +12,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.13.0 --activate
 
 # Install libc6-compat & OpenSSL for Prisma engine compatibility on Alpine
-RUN apk add --no-libc6-compat openssl libc6-compat dumb-init
+RUN apk add --no-cache openssl libc6-compat dumb-init
 
 # ------------------------------------------------------------------------------
 # Stage 2: Dependencies & Build Stage
