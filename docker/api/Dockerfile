@@ -40,8 +40,11 @@ RUN pnpm --filter @finai/api... build
 RUN pnpm --filter @finai/api deploy --prod --legacy /app/pruned
 
 # Copy generated Prisma Client engine into the pruned deployment output
-RUN cp -R packages/database/node_modules/.prisma /app/pruned/node_modules/ 2>/dev/null || true
-RUN cp -R packages/database/node_modules/@prisma /app/pruned/node_modules/ 2>/dev/null || true
+RUN mkdir -p /app/pruned/node_modules/.prisma /app/pruned/node_modules/@prisma
+RUN cp -R node_modules/.prisma/* /app/pruned/node_modules/.prisma/ 2>/dev/null || true
+RUN cp -R node_modules/@prisma/* /app/pruned/node_modules/@prisma/ 2>/dev/null || true
+RUN cp -R packages/database/node_modules/.prisma/* /app/pruned/node_modules/.prisma/ 2>/dev/null || true
+RUN cp -R packages/database/node_modules/@prisma/* /app/pruned/node_modules/@prisma/ 2>/dev/null || true
 
 # ------------------------------------------------------------------------------
 # Stage 3: Production Runner Stage
