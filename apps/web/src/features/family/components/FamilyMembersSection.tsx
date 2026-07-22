@@ -7,7 +7,7 @@ import {
   useRemoveMember,
   useWorkspaceInvites,
 } from "@/features/workspace/api";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { ContentCard, SectionHeader, Input, Button, toast } from "@finai/ui";
 import { UserPlus, Trash2, Mail, Users } from "lucide-react";
 

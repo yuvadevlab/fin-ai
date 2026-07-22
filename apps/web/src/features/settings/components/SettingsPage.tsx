@@ -25,8 +25,9 @@ import {
   Button,
   cn,
 } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useCategories } from "@/features/categories";
+import { SETTING_FLAGS } from "@/lib/app-constants";
 import { WorkspaceMigrationSettings } from "./WorkspaceMigrationSettings";
 import { ProfileSettings } from "./ProfileSettings";
 import { WorkspaceManagement } from "./WorkspaceManagement";
@@ -108,7 +109,30 @@ export function SettingsPage() {
       desc: "Migrate or duplicate accounts and custom categories to other workspaces.",
       body: <WorkspaceMigrationSettings />,
     },
-  ];
+  ].filter((s) => {
+    switch (s.id) {
+      case "profile":
+        return SETTING_FLAGS.PROFILE;
+      case "workspace":
+        return SETTING_FLAGS.WORKSPACE;
+      case "members":
+        return SETTING_FLAGS.MEMBERS;
+      case "notifications":
+        return SETTING_FLAGS.NOTIFICATIONS;
+      case "categories":
+        return SETTING_FLAGS.CATEGORIES;
+      case "accounts":
+        return SETTING_FLAGS.ACCOUNTS;
+      case "security":
+        return SETTING_FLAGS.SECURITY;
+      case "appearance":
+        return SETTING_FLAGS.APPEARANCE;
+      case "migration":
+        return SETTING_FLAGS.MIGRATION;
+      default:
+        return true;
+    }
+  });
 
   return (
     <PageContainer className="max-w-5xl">

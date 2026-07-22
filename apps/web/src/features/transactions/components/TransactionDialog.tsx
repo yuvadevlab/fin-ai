@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
 import { clientTransactionSchema } from "@finai/validation";
 import { TransactionForm } from "./TransactionForm";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useAccounts } from "../../accounts/api/getAccounts";
 import { useCategories } from "../../categories/api/getCategories";
 import { useCreateTransaction } from "../api/createTransaction";

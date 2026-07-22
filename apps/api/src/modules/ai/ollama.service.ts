@@ -91,6 +91,40 @@ export class OllamaService {
     }
   }
 
+  /**
+   * Non-streaming chat response from Ollama.
+   */
+  async chat(options: OllamaStreamOptions): Promise<string> {
+    const { prompt, systemPrompt, model = this.model } = options;
+
+    const body = JSON.stringify({
+      model,
+      messages: [
+        ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+        { role: "user", content: prompt },
+      ],
+      stream: false,
+    });
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ollama error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = (await response.json()) as { message?: { content: string } };
+      return data.message?.content ?? "";
+    } catch (error) {
+      this.logger.error("Ollama chat error", error);
+      throw new Error("AI service unavailable");
+    }
+  }
+
   /** @deprecated Use streamChatWithCallback instead */
   async streamChat(options: OllamaStreamOptions, res: Response): Promise<void> {
     return this.streamChatWithCallback(options, res);

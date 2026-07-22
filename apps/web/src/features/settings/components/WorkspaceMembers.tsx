@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Input, toast } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useWorkspaceMembers, useInviteMember } from "@/features/workspace/api";
 
 export function WorkspaceMembers() {

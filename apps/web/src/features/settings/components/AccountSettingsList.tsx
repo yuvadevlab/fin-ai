@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button, toast } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useAccounts } from "@/features/accounts/api/getAccounts";
 
 export function AccountSettingsList() {

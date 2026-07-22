@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
-import { Label, toast } from "@finai/ui";
+import { FormDialogField, toast } from "@finai/ui";
 import { useProfile, useUpdateProfile } from "../api/profile";
+import { useAppearance } from "@/hooks/useAppearance";
+import type { AppearancePrefs } from "@/providers/appearance/AppearanceProvider";
 
-const appearanceOptions = [
+const appearanceOptions: { key: keyof AppearancePrefs; label: string; options: string[] }[] = [
   {
     key: "theme",
     label: "Theme",
@@ -15,25 +17,19 @@ const appearanceOptions = [
     label: "Density",
     options: ["Comfortable", "Compact"],
   },
-  {
-    key: "defaultLandingTab",
-    label: "Default landing tab",
-    options: ["My Finance", "Family Finance"],
-  },
-  {
-    key: "numberFormat",
-    label: "Number format",
-    options: ["Indian (1,00,000)", "International (100,000)"],
-  },
 ];
 
 export function AppearanceSettings() {
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
+  const { apply } = useAppearance();
 
   const appearance = profile?.preferences?.appearance || {};
 
-  const handleChange = async (key: string, value: string) => {
+  const handleChange = async (key: keyof AppearancePrefs, value: string) => {
+    // Apply immediately to DOM
+    apply({ [key]: value } as Partial<AppearancePrefs>);
+
     const updatedPrefs = {
       ...profile?.preferences,
       appearance: {
@@ -44,7 +40,7 @@ export function AppearanceSettings() {
 
     try {
       await updateProfile.mutateAsync({ preferences: updatedPrefs });
-      toast.success("Appearance setting updated successfully!");
+      toast.success("Appearance updated!");
     } catch (err) {
       toast.error((err as Error).message || "Failed to update appearance");
     }
@@ -61,24 +57,17 @@ export function AppearanceSettings() {
       {appearanceOptions.map((item) => {
         const value = appearance[item.key] || item.options[0];
         return (
-          <div key={item.key} className="border-border flex flex-col gap-2 rounded-lg border p-3">
-            <Label htmlFor={item.key} className="text-sm font-semibold">
-              {item.label}
-            </Label>
-            <select
-              id={item.key}
-              value={value}
-              onChange={(e) => handleChange(item.key, e.target.value)}
-              disabled={updateProfile.isPending}
-              className="bg-background border-border text-foreground focus:ring-primary w-full rounded-lg border p-2 text-sm focus:ring-1 focus:outline-none"
-            >
-              {item.options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormDialogField
+            key={item.key}
+            field={{
+              type: "select",
+              name: item.key,
+              label: item.label,
+              options: item.options.map((opt) => ({ label: opt, value: opt })),
+            }}
+            value={value}
+            onChange={(_name, val) => handleChange(item.key, val)}
+          />
         );
       })}
     </div>

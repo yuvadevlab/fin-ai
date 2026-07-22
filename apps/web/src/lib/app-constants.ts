@@ -3,3 +3,15 @@ export const FEATURE_FLAGS = {
   NOTIFICATIONS: process.env.NEXT_PUBLIC_FEATURE_NOTIFICATIONS === "true",
   SEARCH: process.env.NEXT_PUBLIC_FEATURE_SEARCH === "true",
 };
+
+export const SETTING_FLAGS = {
+  PROFILE: process.env.NEXT_PUBLIC_SETTING_PROFILE === "true",
+  WORKSPACE: process.env.NEXT_PUBLIC_SETTING_WORKSPACE === "true",
+  MEMBERS: process.env.NEXT_PUBLIC_SETTING_MEMBERS === "true",
+  NOTIFICATIONS: process.env.NEXT_PUBLIC_SETTING_NOTIFICATIONS === "true",
+  CATEGORIES: process.env.NEXT_PUBLIC_SETTING_CATEGORIES === "true",
+  ACCOUNTS: process.env.NEXT_PUBLIC_SETTING_ACCOUNTS === "true",
+  SECURITY: process.env.NEXT_PUBLIC_SETTING_SECURITY === "true",
+  APPEARANCE: process.env.NEXT_PUBLIC_SETTING_APPEARANCE === "true",
+  MIGRATION: process.env.NEXT_PUBLIC_SETTING_MIGRATION === "true",
+};

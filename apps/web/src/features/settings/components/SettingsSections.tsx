@@ -33,7 +33,7 @@ export function ProfileSettings({ user }: { user: { name?: string; email?: strin
   );
 }
 
-import { type Workspace } from "@/hooks/useActiveWorkspace";
+import { type Workspace } from "@/hooks";
 
 export function WorkspaceManagement({
   workspaces,

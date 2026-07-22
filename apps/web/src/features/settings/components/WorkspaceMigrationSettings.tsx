@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useCategories } from "@/features/categories";
 import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { useMigrateRecords } from "@/features/workspace/api/migration";
-import { Label, Button, toast } from "@finai/ui";
+import { Label, Button, toast, FormDialogField } from "@finai/ui";
 
 export function WorkspaceMigrationSettings() {
   const { workspaces, activeWorkspace } = useActiveWorkspace();
@@ -68,24 +68,20 @@ export function WorkspaceMigrationSettings() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="target-workspace" className="text-sm font-medium">
-          Target Workspace
-        </Label>
-        <select
-          id="target-workspace"
-          value={targetWorkspaceId}
-          onChange={(e) => setTargetWorkspaceId(e.target.value)}
-          className="bg-background border-border text-foreground focus:ring-primary w-full rounded-lg border p-2 text-sm focus:ring-1 focus:outline-none"
-        >
-          <option value="">Select target workspace...</option>
-          {targetOptions.map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.name} ({w.type === "PERSONAL" ? "Personal" : "Family"})
-            </option>
-          ))}
-        </select>
-      </div>
+      <FormDialogField
+        field={{
+          type: "select",
+          name: "targetWorkspaceId",
+          label: "Target Workspace",
+          placeholder: "Select target workspace...",
+          options: targetOptions.map((w) => ({
+            label: `${w.name} (${w.type === "PERSONAL" ? "Personal" : "Family"})`,
+            value: w.id,
+          })),
+        }}
+        value={targetWorkspaceId}
+        onChange={(name, val) => setTargetWorkspaceId(val)}
+      />
 
       {accounts.length > 0 && (
         <div className="space-y-2">

@@ -1,48 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import {
-  ShoppingCart,
-  Coffee,
-  Car,
-  Zap,
-  Home,
-  ShoppingBag,
-  Film,
-  TrendingUp,
-  Heart,
-  Gift,
-  Briefcase,
-  Smile,
-  Book,
-  Tag,
-  Lock,
-  Plus,
-  Pencil,
-  Trash2,
-  Loader2,
-} from "lucide-react";
+import { Lock, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { PageContainer, PageHeader, Button, ConfirmDialog } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { Category, useCategories, useDeleteCategory } from "../api";
 import { CategoryDialog } from "./CategoryDialog";
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  "shopping-cart": ShoppingCart,
-  coffee: Coffee,
-  car: Car,
-  zap: Zap,
-  home: Home,
-  "shopping-bag": ShoppingBag,
-  film: Film,
-  "trending-up": TrendingUp,
-  heart: Heart,
-  gift: Gift,
-  briefcase: Briefcase,
-  smile: Smile,
-  book: Book,
-  tag: Tag,
-};
 
 export function CategoriesPage() {
   const { activeWorkspaceId } = useActiveWorkspace();
@@ -134,24 +97,26 @@ export function CategoriesPage() {
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {cats.map((cat) => {
-                    const IconComponent = iconMap[cat.icon || "tag"] || Tag;
                     return (
                       <div
                         key={cat.id}
                         className="bg-card border-border hover:border-primary/20 flex items-center justify-between rounded-2xl border p-4 shadow-sm transition-all"
                       >
                         <div className="flex items-center gap-3.5">
-                          <div className="bg-secondary text-secondary-foreground flex size-10 items-center justify-center rounded-xl">
-                            <IconComponent className="size-5" />
+                          <div className="bg-secondary flex size-10 items-center justify-center rounded-xl text-xl">
+                            {cat.icon || "🏷️"}
                           </div>
+
                           <div>
                             <p className="text-sm font-semibold">{cat.name}</p>
+
                             {cat.isSystem ? (
                               <span className="text-muted-foreground/80 mt-0.5 flex items-center gap-1 text-[10px]">
-                                <Lock className="size-3" /> System Default
+                                <Lock className="size-3" />
+                                System Default
                               </span>
                             ) : (
-                              <span className="text-primary/80 mt-0.5 flex items-center gap-1 text-[10px]">
+                              <span className="text-primary/80 mt-0.5 text-[10px]">
                                 Workspace Custom
                               </span>
                             )}
@@ -168,6 +133,7 @@ export function CategoriesPage() {
                             >
                               <Pencil className="size-3.5" />
                             </Button>
+
                             <Button
                               size="icon"
                               variant="ghost"

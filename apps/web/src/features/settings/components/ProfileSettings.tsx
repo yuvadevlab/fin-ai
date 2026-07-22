@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input, Label, Button, toast } from "@finai/ui";
+import { FormDialogField, Button, toast } from "@finai/ui";
 import { useProfile, useUpdateProfile, type UserProfile } from "../api/profile";
 
 export function ProfileSettings() {
@@ -40,20 +40,38 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">Full name</Label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} />
-      </div>
+      <FormDialogField
+        field={{
+          type: "text",
+          name: "name",
+          label: "Full name",
+          placeholder: "e.g. Aditya Sharma",
+        }}
+        value={name}
+        onChange={(n, v) => setName(v)}
+      />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">Email</Label>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
-      </div>
+      <FormDialogField
+        field={{
+          type: "text",
+          name: "email",
+          label: "Email",
+          placeholder: "name@family.com",
+        }}
+        value={email}
+        onChange={(n, v) => setEmail(v)}
+      />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold">Currency</Label>
-        <Input value="INR (₹)" disabled className="bg-muted text-muted-foreground" />
-      </div>
+      <FormDialogField
+        field={{
+          type: "text",
+          name: "currency",
+          label: "Currency",
+          disabled: true,
+        }}
+        value="INR (₹)"
+        onChange={() => {}}
+      />
 
       <Button
         className="mt-4 w-full cursor-pointer"

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Badge } from "@finai/ui";
-import { type Workspace } from "@/hooks/useActiveWorkspace";
+import { type Workspace } from "@/hooks";
 
 export function WorkspaceManagement({
   workspaces,

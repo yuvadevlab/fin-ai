@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
 import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
 import { TransactionDialog } from "./TransactionDialog";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { useTransactions } from "../api/getTransactions";
 import { useDeleteTransaction } from "../api/deleteTransaction";
 import { useCategories } from "@/features/categories/api/getCategories";
