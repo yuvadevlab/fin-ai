@@ -3,8 +3,3 @@ export const FEATURE_FLAGS = {
   NOTIFICATIONS: process.env.NEXT_PUBLIC_FEATURE_NOTIFICATIONS === "true",
   SEARCH: process.env.NEXT_PUBLIC_FEATURE_SEARCH === "true",
 };
-
-export const PAGE_FLAGS = {
-  AI_ADVISOR: process.env.NEXT_PUBLIC_PAGE_AI_ADVISOR === "true",
-  SETTINGS: process.env.NEXT_PUBLIC_PAGE_SETTINGS === "true",
-};
