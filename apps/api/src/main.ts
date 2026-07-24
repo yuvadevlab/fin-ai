@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import "dotenv/config";
-import morgan from "morgan";
+import { Logger, requestLogger } from "@finai/logger";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
@@ -8,11 +8,12 @@ import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new Logger("API");
+  const app = await NestFactory.create(AppModule, { logger });
 
   // Global prefix
   app.setGlobalPrefix("api/v1");
-  app.use(morgan("dev"));
+  app.use(requestLogger(new Logger("HTTP")));
 
   // CORS
   app.enableCors({
@@ -38,10 +39,8 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
-  // eslint-disable-next-line no-console
-  console.log(`🚀 FinAI API running on http://localhost:${port}`);
-  // eslint-disable-next-line no-console
-  console.log(`📖 Swagger docs: http://localhost:${port}/api/docs`);
+  logger.info(`🚀 FinAI API running on http://localhost:${port}`);
+  logger.info(`📖 Swagger docs: http://localhost:${port}/api/docs`);
 }
 
 bootstrap();

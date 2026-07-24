@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import {
   User,
   Users,
@@ -10,6 +10,7 @@ import {
   Shield,
   Palette,
   KeyRound,
+  ArrowLeftRight,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -22,50 +23,26 @@ import {
   SheetTitle,
   SheetFooter,
   Button,
-  Input,
-  Label,
-  Switch,
-  Badge,
   cn,
-  toast,
 } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
-import { type Category, useCategories } from "@/features/categories";
+import { useActiveWorkspace } from "@/hooks";
+import { useCategories } from "@/features/categories";
+import { SETTING_FLAGS } from "@/lib/app-constants";
+import { WorkspaceMigrationSettings } from "./WorkspaceMigrationSettings";
+import { ProfileSettings } from "./ProfileSettings";
+import { WorkspaceManagement } from "./WorkspaceManagement";
+import { WorkspaceMembers } from "./WorkspaceMembers";
+import { NotificationSettings } from "./NotificationSettings";
+import { AccountSettingsList } from "./AccountSettingsList";
+import { SecuritySettings } from "./SecuritySettings";
+import { AppearanceSettings } from "./AppearanceSettings";
+import { CategorySettingsList } from "./CategorySettingsList";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
-
-function Field({
-  label,
-  defaultValue,
-  type = "text",
-}: {
-  label: string;
-  defaultValue?: string;
-  type?: string;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs">{label}</Label>
-      <Input defaultValue={defaultValue} type={type} />
-    </div>
-  );
-}
-
-function getStoredUser(): { name?: string; email?: string } {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem("finai_user");
-    if (!raw) return {};
-    return JSON.parse(raw) as { name?: string; email?: string };
-  } catch {
-    return {};
-  }
-}
 
 export function SettingsPage() {
   const [active, setActive] = useState<Section | null>(null);
   const { workspaces, activeWorkspace } = useActiveWorkspace();
-  const user = getStoredUser();
   const { data: categories = [] } = useCategories(activeWorkspace?.id || null);
 
   const sections: Section[] = [
@@ -74,94 +51,28 @@ export function SettingsPage() {
       icon: User,
       label: "Profile",
       desc: "Your name, email, and personal details.",
-      body: (
-        <div className="space-y-4">
-          <Field label="Full name" defaultValue={user.name ?? "Aditya Sharma"} />
-          <Field label="Email" defaultValue={user.email ?? "aditya@sharma.family"} type="email" />
-          <Field label="Phone" defaultValue="+91 98765 43210" />
-          <Field label="Currency" defaultValue="INR (₹)" />
-        </div>
-      ),
+      body: <ProfileSettings />,
     },
     {
       id: "workspace",
       icon: Users,
       label: "Workspace Management",
       desc: "Create and switch between family workspaces.",
-      body: (
-        <ul className="space-y-3">
-          {(workspaces ?? []).map((w) => (
-            <li
-              key={w.id}
-              className="border-border flex items-center justify-between rounded-xl border p-4"
-            >
-              <div>
-                <p className="text-sm font-semibold">{w.name}</p>
-                <p className="text-muted-foreground text-xs">
-                  {w.type === "PERSONAL" ? "Just you" : "Family"} · {w.members?.length ?? 1} member
-                  {(w.members?.length ?? 1) > 1 ? "s" : ""}
-                </p>
-              </div>
-              {activeWorkspace?.id === w.id ? <Badge variant="secondary">Active</Badge> : null}
-            </li>
-          ))}
-        </ul>
-      ),
+      body: <WorkspaceManagement workspaces={workspaces || []} activeWorkspace={activeWorkspace} />,
     },
     {
       id: "members",
       icon: KeyRound,
       label: "Members",
       desc: "Invite family members and manage roles.",
-      body: (
-        <div className="space-y-4">
-          <ul className="space-y-2">
-            {[
-              { name: "Aditya Sharma", role: "Owner" },
-              { name: "Riya Sharma", role: "Admin" },
-              { name: "Papa Sharma", role: "Viewer" },
-              { name: "Anaya Sharma", role: "Viewer" },
-            ].map((m) => (
-              <li
-                key={m.name}
-                className="border-border flex items-center justify-between rounded-lg border p-3"
-              >
-                <p className="text-sm font-medium">{m.name}</p>
-                <span className="text-muted-foreground text-xs">{m.role}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex gap-2">
-            <Input placeholder="name@family.com" />
-            <Button onClick={() => toast.success("Invite sent")}>Invite</Button>
-          </div>
-        </div>
-      ),
+      body: <WorkspaceMembers />,
     },
     {
       id: "notifications",
       icon: Bell,
       label: "Notifications",
       desc: "Choose alerts for bills, budgets, and insights.",
-      body: (
-        <div className="space-y-3">
-          {[
-            "Bill due reminders",
-            "Budget hit 80%",
-            "New AI insight",
-            "Large transaction (> ₹10k)",
-            "Weekly summary",
-          ].map((l) => (
-            <div
-              key={l}
-              className="border-border flex items-center justify-between rounded-lg border p-3"
-            >
-              <Label className="text-sm">{l}</Label>
-              <Switch defaultChecked />
-            </div>
-          ))}
-        </div>
-      ),
+      body: <NotificationSettings />,
     },
     {
       id: "categories",
@@ -175,85 +86,53 @@ export function SettingsPage() {
       icon: Wallet,
       label: "Accounts",
       desc: "Manage linked bank accounts and wallets.",
-      body: (
-        <ul className="space-y-2">
-          {["HDFC Salary", "ICICI Savings", "Joint Account", "HDFC Credit", "Paytm Wallet"].map(
-            (a) => (
-              <li
-                key={a}
-                className="border-border flex items-center justify-between rounded-lg border p-3"
-              >
-                <p className="text-sm font-medium">{a}</p>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="cursor-pointer"
-                  onClick={() => toast(`${a} refreshing…`)}
-                >
-                  Sync
-                </Button>
-              </li>
-            ),
-          )}
-        </ul>
-      ),
+      body: <AccountSettingsList />,
     },
     {
       id: "security",
       icon: Shield,
       label: "Security",
       desc: "Two-factor auth, sessions, and export access.",
-      body: (
-        <div className="space-y-3">
-          <div className="border-border flex items-center justify-between rounded-lg border p-3">
-            <div>
-              <p className="text-sm font-medium">Two-factor authentication</p>
-              <p className="text-muted-foreground text-xs">Adds an extra step at sign-in.</p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <div className="border-border flex items-center justify-between rounded-lg border p-3">
-            <div>
-              <p className="text-sm font-medium">Biometric unlock</p>
-              <p className="text-muted-foreground text-xs">Use Face ID / fingerprint on mobile.</p>
-            </div>
-            <Switch />
-          </div>
-          <Button
-            variant="outline"
-            className="w-full cursor-pointer"
-            onClick={() => toast("Signed out of 3 sessions")}
-          >
-            Sign out of all other sessions
-          </Button>
-        </div>
-      ),
+      body: <SecuritySettings />,
     },
     {
       id: "appearance",
       icon: Palette,
       label: "Appearance",
       desc: "Theme, density, and dashboard preferences.",
-      body: (
-        <div className="space-y-3">
-          {[
-            { l: "Theme", v: "System" },
-            { l: "Density", v: "Comfortable" },
-            { l: "Default landing tab", v: "My Finance" },
-            { l: "Number format", v: "Indian (1,00,000)" },
-          ].map((r) => (
-            <div
-              key={r.l}
-              className="border-border flex items-center justify-between rounded-lg border p-3"
-            >
-              <Label className="text-sm">{r.l}</Label>
-              <span className="text-muted-foreground text-xs">{r.v}</span>
-            </div>
-          ))}
-        </div>
-      ),
+      body: <AppearanceSettings />,
     },
-  ];
+    {
+      id: "migration",
+      icon: ArrowLeftRight,
+      label: "Workspace Migration",
+      desc: "Migrate or duplicate accounts and custom categories to other workspaces.",
+      body: <WorkspaceMigrationSettings />,
+    },
+  ].filter((s) => {
+    switch (s.id) {
+      case "profile":
+        return SETTING_FLAGS.PROFILE;
+      case "workspace":
+        return SETTING_FLAGS.WORKSPACE;
+      case "members":
+        return SETTING_FLAGS.MEMBERS;
+      case "notifications":
+        return SETTING_FLAGS.NOTIFICATIONS;
+      case "categories":
+        return SETTING_FLAGS.CATEGORIES;
+      case "accounts":
+        return SETTING_FLAGS.ACCOUNTS;
+      case "security":
+        return SETTING_FLAGS.SECURITY;
+      case "appearance":
+        return SETTING_FLAGS.APPEARANCE;
+      case "migration":
+        return SETTING_FLAGS.MIGRATION;
+      default:
+        return true;
+    }
+  });
 
   return (
     <PageContainer className="max-w-5xl">
@@ -296,17 +175,12 @@ export function SettingsPage() {
               </SheetHeader>
               <div className="mt-6">{active.body}</div>
               <SheetFooter className="mt-6">
-                <Button variant="ghost" className="cursor-pointer" onClick={() => setActive(null)}>
-                  Close
-                </Button>
                 <Button
-                  className="cursor-pointer"
-                  onClick={() => {
-                    toast.success(`${active.label} saved`);
-                    setActive(null);
-                  }}
+                  variant="ghost"
+                  className="w-full cursor-pointer"
+                  onClick={() => setActive(null)}
                 >
-                  Save changes
+                  Close
                 </Button>
               </SheetFooter>
             </>
@@ -314,26 +188,5 @@ export function SettingsPage() {
         </SheetContent>
       </Sheet>
     </PageContainer>
-  );
-}
-
-function CategorySettingsList({ categories }: { categories: Category[] }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {categories.map((c) => (
-          <Badge key={c.id} variant="secondary" className="rounded-full px-3 py-1 text-xs">
-            {c.name}
-          </Badge>
-        ))}
-      </div>
-      <div className="pt-2">
-        <a href="/categories">
-          <Button size="sm" variant="outline" className="w-full cursor-pointer">
-            Manage Categories
-          </Button>
-        </a>
-      </div>
-    </div>
   );
 }

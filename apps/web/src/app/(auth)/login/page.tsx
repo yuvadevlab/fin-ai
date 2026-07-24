@@ -7,7 +7,7 @@ import { Sparkles } from "lucide-react";
 import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
 import { apiClient } from "@/lib/api-client";
 
-import { Workspace } from "@/hooks/useActiveWorkspace";
+import { Workspace } from "@/hooks";
 
 export default function LoginPage() {
   const router = useRouter();

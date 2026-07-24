@@ -80,13 +80,27 @@ export const NotificationType = {
 } as const;
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 
+export const WorkspaceInviteStatus = {
+  PENDING: "PENDING",
+  ACCEPTED: "ACCEPTED",
+  REJECTED: "REJECTED",
+} as const;
+export type WorkspaceInviteStatus =
+  (typeof WorkspaceInviteStatus)[keyof typeof WorkspaceInviteStatus];
 // ─── Model Types ─────────────────────────────────────────────────────────────
+
+export interface UserPreferences {
+  notifications?: Record<string, boolean>;
+  appearance?: Record<string, string>;
+  security?: Record<string, boolean>;
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
   avatarUrl?: string;
+  preferences?: UserPreferences;
   createdAt: string;
   updatedAt: string;
 }
@@ -106,6 +120,21 @@ export interface WorkspaceMember {
   role: WorkspaceRole;
   user: User;
   joinedAt: string;
+}
+
+export interface WorkspaceInvite {
+  id: string;
+  workspaceId: string;
+  email: string;
+  role: WorkspaceRole;
+  token: string;
+  invitedById: string;
+  status: WorkspaceInviteStatus;
+  acceptedAt?: string | null;
+  expiresAt: string;
+  createdAt: string;
+  workspace?: Workspace;
+  invitedBy?: User;
 }
 
 export interface Account {

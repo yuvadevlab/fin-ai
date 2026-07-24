@@ -14,12 +14,9 @@ export { AISuggestionsDialog, type AISuggestion } from "./components/AISuggestio
 export { DataTable } from "./components/DataTable";
 export { SearchBar } from "./components/SearchBar";
 export { FilterChips } from "./components/FilterChips";
-export { EmptyState } from "./components/EmptyState";
 export { LoadingState } from "./components/LoadingState";
-export { ErrorState } from "./components/ErrorState";
 export { ProgressCard } from "./components/ProgressCard";
 export { MoneyDisplay } from "./components/MoneyDisplay";
-export { PercentageBadge } from "./components/PercentageBadge";
 export { StatusBadge } from "./components/StatusBadge";
 export { ConfirmDialog } from "./components/ConfirmDialog";
 export { cn } from "./lib/utils";
@@ -47,12 +44,6 @@ export { Progress } from "./primitives/progress";
 export { Badge, badgeVariants } from "./primitives/badge";
 export { Avatar, AvatarImage, AvatarFallback } from "./primitives/avatar";
 export {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "./primitives/accordion";
-export {
   Select,
   SelectGroup,
   SelectValue,
@@ -64,17 +55,6 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from "./primitives/select";
-export { Tabs, TabsList, TabsTrigger, TabsContent } from "./primitives/tabs";
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "./primitives/table";
 export { Calendar } from "./primitives/calendar";
 export { DatePicker } from "./primitives/date-picker";
 export {
@@ -90,18 +70,6 @@ export {
   DialogDescription,
 } from "./primitives/dialog";
 export {
-  Drawer,
-  DrawerPortal,
-  DrawerOverlay,
-  DrawerTrigger,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
-} from "./primitives/drawer";
-export {
   Sheet,
   SheetPortal,
   SheetOverlay,
@@ -114,11 +82,9 @@ export {
   SheetDescription,
 } from "./primitives/sheet";
 export { Popover, PopoverTrigger, PopoverContent } from "./primitives/popover";
-export { Checkbox } from "./primitives/checkbox";
 export { Label } from "./primitives/label";
 export { Separator } from "./primitives/separator";
 export { Skeleton } from "./primitives/skeleton";
-export { Slider } from "./primitives/slider";
 export { Switch } from "./primitives/switch";
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./primitives/tooltip";
 export {
@@ -163,16 +129,4 @@ export {
 } from "./primitives/dropdown-menu";
 export { Toggle } from "./primitives/toggle";
 export { toggleVariants } from "./primitives/toggle.variants";
-export { ToggleGroup, ToggleGroupItem } from "./primitives/toggle-group";
-export {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  NavigationMenuViewport,
-  NavigationMenuIndicator,
-} from "./primitives/navigation-menu";
-export { navigationMenuTriggerStyle } from "./primitives/navigation-menu";
 export { useIsMobile } from "./hooks/use-mobile";

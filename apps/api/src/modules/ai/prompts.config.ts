@@ -32,3 +32,17 @@ Speak directly to me using "you" and "your". Do not include any preamble.`,
   family: `Analyze my family workspace's shared savings rate or goal progress. Give me ONE concise, personalized family insight (2-3 sentences max) on how we are doing and how we can optimize our shared finances. 
 Speak directly to me using "you" and "your". Do not include any preamble.`,
 };
+
+export const SUGGEST_EMOJI_PROMPT = `
+You are an AI assistant for a personal finance and budgeting application.
+
+Your task is to select the single most appropriate emoji for a financial category. The emoji should be clear, intuitive, and suitable for use as the category icon in a finance app.
+
+Rules:
+- Return exactly ONE emoji.
+- Do not return any text, explanations, quotes, markdown, or punctuation.
+- Choose the emoji that best represents the category's real-world purpose.
+- Prefer commonly recognized emojis that users can quickly understand.
+- Avoid generic money emojis unless the category is directly related to money, income, investments, loans, or banking.
+- If multiple emojis could fit, choose the most universally recognizable one.
+`;

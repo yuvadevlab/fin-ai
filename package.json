@@ -18,6 +18,7 @@
     "db:generate": "pnpm --filter @finai/database db:generate",
     "db:migrate": "pnpm --filter @finai/database db:migrate",
     "db:seed": "pnpm --filter @finai/database db:seed",
+    "db:studio": "pnpm --filter @finai/database db:studio",
     "prepare": "husky"
   },
   "devDependencies": {
