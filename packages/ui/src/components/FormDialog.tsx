@@ -56,7 +56,11 @@ export function FormDialog({
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
 
       <DialogContent
-        className={cn("flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-md", className)}
+        className={cn(
+          "flex max-h-[90vh] flex-col overflow-hidden p-0",
+          className?.includes("max-w-") ? "" : "sm:max-w-md",
+          className,
+        )}
       >
         <form onSubmit={onSubmit} className="flex max-h-[90vh] flex-col overflow-hidden">
           <DialogHeader className="p-6 pb-2">

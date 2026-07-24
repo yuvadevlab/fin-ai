@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
 import { clientTransactionSchema } from "@finai/validation";
 import { TransactionForm } from "./TransactionForm";
+import { BulkTransactionDialog } from "./BulkTransactionDialog";
 import { useActiveWorkspace } from "@/hooks";
 import { useAccounts } from "../../accounts/api/getAccounts";
 import { useCategories } from "../../categories/api/getCategories";
@@ -182,30 +183,60 @@ export function TransactionDialog({
 
   const isSaving = createTransaction.isPending || updateTransaction.isPending;
 
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+
+  const handleSwitchToBulk = () => {
+    setOpen?.(false);
+    setIsBulkOpen(true);
+  };
+
   return (
-    <FormDialog
-      open={open}
-      onOpenChange={setOpen}
-      trigger={trigger}
-      title={title}
-      description={description}
-      submitLabel={submitLabel}
-      loading={isSaving}
-      onCancel={() => setOpen?.(false)}
-      onSubmit={handleSubmit}
-    >
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-          {errors.root}
-        </div>
-      )}
-      <TransactionForm
-        values={values}
-        errors={errors}
-        onChange={handleChange}
+    <>
+      <FormDialog
+        open={open}
+        onOpenChange={setOpen}
+        trigger={trigger}
+        title={title}
+        description={description}
+        submitLabel={submitLabel}
+        loading={isSaving}
+        onCancel={() => setOpen?.(false)}
+        onSubmit={handleSubmit}
+      >
+        {mode === "add" && (
+          <div className="bg-secondary/50 mb-4 flex items-center justify-between rounded-xl p-2.5 text-xs">
+            <span className="text-muted-foreground font-semibold">
+              Adding multiple EOD expenses?
+            </span>
+            <button
+              type="button"
+              onClick={handleSwitchToBulk}
+              className="text-primary cursor-pointer font-bold hover:underline"
+            >
+              Switch to Bulk Entry Mode →
+            </button>
+          </div>
+        )}
+        {errors.root && (
+          <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
+            {errors.root}
+          </div>
+        )}
+        <TransactionForm
+          values={values}
+          errors={errors}
+          onChange={handleChange}
+          accounts={accountsOptions}
+          categories={categoriesOptions}
+        />
+      </FormDialog>
+
+      <BulkTransactionDialog
+        open={isBulkOpen}
+        onOpenChange={setIsBulkOpen}
         accounts={accountsOptions}
         categories={categoriesOptions}
       />
-    </FormDialog>
+    </>
   );
 }

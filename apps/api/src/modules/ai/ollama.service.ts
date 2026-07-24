@@ -7,6 +7,7 @@ export interface OllamaStreamOptions {
   model?: string;
   prompt: string;
   systemPrompt?: string;
+  historyMessages?: { role: string; content: string }[];
 }
 
 @Injectable()
@@ -29,12 +30,13 @@ export class OllamaService {
     res: Response,
     onToken?: (token: string) => void,
   ): Promise<void> {
-    const { prompt, systemPrompt, model = this.model } = options;
+    const { prompt, systemPrompt, historyMessages = [], model = this.model } = options;
 
     const body = JSON.stringify({
       model,
       messages: [
         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+        ...historyMessages,
         { role: "user", content: prompt },
       ],
       stream: true,

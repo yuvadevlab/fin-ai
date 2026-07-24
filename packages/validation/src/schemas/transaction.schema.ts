@@ -58,3 +58,9 @@ export const clientTransactionSchema = z
   );
 
 export type ClientTransactionInput = z.infer<typeof clientTransactionSchema>;
+
+export const createBulkTransactionsSchema = z
+  .array(createTransactionSchema)
+  .min(1, "At least one transaction is required");
+
+export type CreateBulkTransactionsInput = z.infer<typeof createBulkTransactionsSchema>;

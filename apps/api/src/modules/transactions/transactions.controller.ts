@@ -17,9 +17,11 @@ import {
   createTransactionSchema,
   updateTransactionSchema,
   transactionFilterSchema,
+  createBulkTransactionsSchema,
   CreateTransactionInput,
   UpdateTransactionInput,
   TransactionFilterInput,
+  CreateBulkTransactionsInput,
 } from "@finai/validation";
 
 @ApiTags("Transactions")
@@ -40,6 +42,16 @@ export class TransactionsController {
   @ApiOperation({ summary: "Get a single transaction" })
   findOne(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
     return this.transactionsService.findOne(id, workspaceId);
+  }
+
+  @Post("bulk")
+  @ApiOperation({ summary: "Create multiple transactions in a single bulk batch" })
+  createBulk(
+    @Param("workspaceId") workspaceId: string,
+    @Body(new ZodValidationPipe(createBulkTransactionsSchema))
+    body: CreateBulkTransactionsInput,
+  ) {
+    return this.transactionsService.createBulk(workspaceId, body);
   }
 
   @Post()

@@ -92,6 +92,16 @@ export class AiController {
       }
     }
 
+    // Fetch recent message history if conversationId exists
+    let historyMessages: { role: string; content: string }[] = [];
+    if (conversationId) {
+      const recent = await this.conversationService.getRecentMessages(conversationId, 10);
+      historyMessages = recent.reverse().map((m) => ({
+        role: m.role === "ASSISTANT" ? "assistant" : "user",
+        content: m.content,
+      }));
+    }
+
     await this.conversationService.addMessage(conversationId, "user", body.question);
 
     // Emit conversationId first so the client can track the session
@@ -101,7 +111,7 @@ export class AiController {
     let fullResponse = "";
 
     await this.ollamaService.streamChatWithCallback(
-      { prompt: body.question, systemPrompt },
+      { prompt: body.question, systemPrompt, historyMessages },
       res,
       (token) => {
         fullResponse += token;

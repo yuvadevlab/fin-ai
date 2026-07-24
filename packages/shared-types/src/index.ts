@@ -87,12 +87,23 @@ export const WorkspaceInviteStatus = {
 } as const;
 export type WorkspaceInviteStatus =
   (typeof WorkspaceInviteStatus)[keyof typeof WorkspaceInviteStatus];
+
+export const CyclePeriod = {
+  WEEKLY: "WEEKLY",
+  MONTHLY: "MONTHLY",
+  QUARTERLY: "QUARTERLY",
+  YEARLY: "YEARLY",
+} as const;
+export type CyclePeriod = (typeof CyclePeriod)[keyof typeof CyclePeriod];
+
 // ─── Model Types ─────────────────────────────────────────────────────────────
 
 export interface UserPreferences {
   notifications?: Record<string, boolean>;
   appearance?: Record<string, string>;
   security?: Record<string, boolean>;
+  cycleStartDay?: number;
+  cyclePeriod?: CyclePeriod;
 }
 
 export interface User {
