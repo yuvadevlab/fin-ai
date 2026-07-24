@@ -15,15 +15,30 @@ import {
   toast,
 } from "@finai/ui";
 
-function getStoredUser(): { name?: string; email?: string } | null {
+import React, { useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
+
+let cachedRaw: string | null = null;
+let cachedUser: { name?: string; email?: string } | null = null;
+
+function getSnapshot(): { name?: string; email?: string } | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem("finai_user");
-    if (!raw) return null;
-    return JSON.parse(raw) as { name?: string; email?: string };
+    if (raw === cachedRaw) {
+      return cachedUser;
+    }
+    cachedRaw = raw;
+    cachedUser = raw ? (JSON.parse(raw) as { name?: string; email?: string }) : null;
+    return cachedUser;
   } catch {
     return null;
   }
+}
+
+function getServerSnapshot() {
+  return null;
 }
 
 function getInitials(name?: string, email?: string): string {
@@ -38,7 +53,7 @@ function getInitials(name?: string, email?: string): string {
 
 export function ProfileMenu() {
   const router = useRouter();
-  const user = getStoredUser();
+  const user = useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
   const name = user?.name ?? "Aditya Sharma";
   const email = user?.email ?? "aditya@sharma.family";
   const initials = getInitials(user?.name, user?.email);

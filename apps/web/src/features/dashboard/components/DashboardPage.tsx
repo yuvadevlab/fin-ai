@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -78,22 +78,21 @@ export function DashboardPage() {
         ).toFixed(1)
       : null;
 
-  const customLink = useCallback(
-    ({
-      href,
-      children,
-      className,
-    }: {
-      href: string;
-      children: React.ReactNode;
-      className?: string;
-    }) => (
+  function CustomLinkComponent({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) {
+    return (
       <Link href={href} className={className}>
         {children}
       </Link>
-    ),
-    [],
-  );
+    );
+  }
 
   return (
     <PageContainer>
@@ -111,7 +110,13 @@ export function DashboardPage() {
         }
       />
 
-      <DashboardTabs pathname={pathname} LinkComponent={customLink} />
+      <div className="border-border/80 flex flex-wrap items-center justify-between gap-4 border-b pb-1">
+        <DashboardTabs
+          pathname={pathname}
+          LinkComponent={CustomLinkComponent}
+          className="border-b-0"
+        />
+      </div>
 
       <KPIGrid>
         <StatCard

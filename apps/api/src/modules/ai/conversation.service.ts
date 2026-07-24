@@ -56,4 +56,12 @@ export class ConversationService {
       },
     });
   }
+
+  async getRecentMessages(conversationId: string, limit: number = 10): Promise<Message[]> {
+    return this.prisma.client.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+  }
 }

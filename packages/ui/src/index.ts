@@ -130,3 +130,13 @@ export {
 export { Toggle } from "./primitives/toggle";
 export { toggleVariants } from "./primitives/toggle.variants";
 export { useIsMobile } from "./hooks/use-mobile";
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from "./primitives/table";

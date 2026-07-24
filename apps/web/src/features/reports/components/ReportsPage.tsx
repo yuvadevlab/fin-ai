@@ -66,7 +66,7 @@ export function ReportsPage() {
         title={`Monthly Report · ${monthLabel}`}
         description="Auto-generated summary of your finances with AI commentary."
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"

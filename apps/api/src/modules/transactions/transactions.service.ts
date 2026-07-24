@@ -125,6 +125,38 @@ export class TransactionsService {
     });
   }
 
+  async createBulk(workspaceId: string, inputs: CreateTransactionInput[]) {
+    return this.prisma.client.$transaction(async (tx) => {
+      const createdTransactions = [];
+      for (const input of inputs) {
+        const transaction = await tx.transaction.create({
+          data: {
+            workspaceId,
+            accountId: input.accountId,
+            toAccountId: input.toAccountId,
+            categoryId: input.categoryId,
+            amount: input.amount,
+            date: new Date(input.date),
+            notes: input.notes,
+            type: input.type as TransactionType,
+          },
+          include: { category: true, account: true, toAccount: true },
+        });
+
+        await this.applyImpact(
+          tx,
+          transaction.type,
+          transaction.amount,
+          transaction.accountId,
+          transaction.toAccountId,
+          1,
+        );
+        createdTransactions.push(transaction);
+      }
+      return createdTransactions;
+    });
+  }
+
   async update(id: string, workspaceId: string, input: UpdateTransactionInput) {
     return this.prisma.client.$transaction(async (tx) => {
       const oldTx = await tx.transaction.findFirst({

@@ -12,6 +12,9 @@ import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { TransactionFilterInput } from "@finai/validation";
 import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
+import { useProfile } from "@/features/settings/api/profile";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { format } from "date-fns";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
 
@@ -22,15 +25,18 @@ export function TransactionsPage() {
   const [accountId, setAccountId] = useState("all");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [dateRange, setDateRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [page, setPage] = useState(1);
 
   const { activeWorkspaceId } = useActiveWorkspace();
+  const { data: profile } = useProfile();
   const { data: categories = [] } = useCategories(activeWorkspaceId);
   const { data: accounts = [] } = useAccounts(activeWorkspaceId);
 
   const queryFilter = useMemo(() => {
     const filter: TransactionFilterInput = {
-      page: 1,
-      pageSize: 50,
+      page,
+      pageSize: 20,
       sortOrder: "desc",
     };
     if (search) filter.search = search;
@@ -39,8 +45,10 @@ export function TransactionsPage() {
     if (selectedFilter === "Transfer") filter.type = "TRANSFER";
     if (categoryId !== "all") filter.category = categoryId;
     if (accountId !== "all") filter.account = accountId;
+    if (dateRange.startDate) filter.dateFrom = format(dateRange.startDate, "yyyy-MM-dd");
+    if (dateRange.endDate) filter.dateTo = format(dateRange.endDate, "yyyy-MM-dd");
     return filter;
-  }, [selectedFilter, search, categoryId, accountId]);
+  }, [selectedFilter, search, categoryId, accountId, dateRange, page]);
 
   const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
   const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
@@ -115,6 +123,15 @@ export function TransactionsPage() {
           ) : null}
         </div>
 
+        <DateRangeFilter
+          cycleStartDay={profile?.preferences?.cycleStartDay || 1}
+          cyclePeriod={profile?.preferences?.cyclePeriod || "MONTHLY"}
+          onRangeChange={(range) => {
+            setDateRange(range);
+            setPage(1);
+          }}
+        />
+
         <TransactionFiltersPopover
           categories={categories}
           accounts={accounts}
@@ -142,7 +159,37 @@ export function TransactionsPage() {
           No transactions match your filters.
         </div>
       ) : (
-        <DataTable data={transactionsList} columns={columns} rowKey={(t) => t.id} />
+        <div className="space-y-4">
+          <DataTable data={transactionsList} columns={columns} rowKey={(t) => t.id} />
+          {response && response.totalPages > 1 && (
+            <div className="text-muted-foreground flex items-center justify-between px-2 text-xs">
+              <span>
+                Showing page {response.page} of {response.totalPages} ({response.total} total
+                transactions)
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={response.page <= 1}
+                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                  className="h-8 text-xs"
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={response.page >= response.totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="h-8 text-xs"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </PageContainer>
   );
