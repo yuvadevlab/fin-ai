@@ -7,10 +7,10 @@ import { AppShell, Sidebar, TopBar } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
 import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/components";
 import { SearchDropdown } from "../../search/components/SearchDropdown";
-import { useWorkspace } from "@/providers";
+import { useWorkspace, AppearanceSync } from "@/providers";
 import { useMenuItems } from "../api/getMenuItems";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -72,6 +72,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <AppearanceSync />
       <AppShell sidebar={sidebar} topbar={topbar}>
         {/* Search results dropdown — rendered inside the shell so it floats above content */}
         {searchQuery.trim().length >= 2 && (

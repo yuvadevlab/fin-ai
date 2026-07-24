@@ -169,7 +169,7 @@ export function Sidebar({
       <div className="p-6">
         <div className="flex items-center gap-2 px-2">
           <div className="bg-primary flex h-7 w-7 items-center justify-center rounded-md shadow-sm">
-            <div className="bg-primary-foreground/90 size-2.5 animate-pulse rounded-full" />
+            <Sparkles className={"size-4 animate-pulse"} />
           </div>
           <span className="text-foreground text-base font-bold tracking-tight">FinAI</span>
         </div>

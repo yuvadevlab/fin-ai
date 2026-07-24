@@ -70,12 +70,19 @@ enum NotificationType {
   SYSTEM
 }
 
+enum WorkspaceInviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
   id              String            @id @default(uuid())
   email           String            @unique
   name            String
   passwordHash    String            @map("password_hash")
   avatarUrl       String?           @map("avatar_url")
+  preferences     Json              @default("{}")
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   memberships     WorkspaceMember[]
@@ -269,16 +276,18 @@ model Notification {
 }
 
 model WorkspaceInvite {
-  id          String        @id @default(uuid())
-  workspaceId String        @map("workspace_id")
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  id          String                @id @default(uuid())
+  workspaceId String                @map("workspace_id")
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   email       String
-  role        WorkspaceRole @default(MEMBER)
-  token       String        @unique
-  invitedById String        @map("invited_by_id")
-  invitedBy   User          @relation("InvitedByUser", fields: [invitedById], references: [id])
-  expiresAt   DateTime      @map("expires_at")
-  createdAt   DateTime      @default(now()) @map("created_at")
+  role        WorkspaceRole         @default(MEMBER)
+  token       String                @unique
+  invitedById String                @map("invited_by_id")
+  invitedBy   User                  @relation("InvitedByUser", fields: [invitedById], references: [id])
+  status      WorkspaceInviteStatus @default(PENDING)
+  acceptedAt  DateTime?             @map("accepted_at")
+  expiresAt   DateTime              @map("expires_at")
+  createdAt   DateTime              @default(now()) @map("created_at")
 
   @@index([workspaceId])
   @@index([email])
@@ -312,4 +321,3 @@ model MenuItem {
 
   @@map("menu_items")
 }
-

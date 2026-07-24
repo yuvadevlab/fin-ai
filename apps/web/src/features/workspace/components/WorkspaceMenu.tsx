@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@finai/ui";
-import { useActiveWorkspace, type Workspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace, type Workspace } from "@/hooks";
 import { WorkspaceDialog } from "./WorkspaceDialog";
 
 function getWorkspaceRoleLabel(workspace: Workspace, userId: string | null): string {

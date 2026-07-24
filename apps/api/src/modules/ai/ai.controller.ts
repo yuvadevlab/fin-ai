@@ -7,7 +7,7 @@ import { OllamaService } from "./ollama.service";
 import { ContextBuilderService } from "./context-builder.service";
 import { ConversationService } from "./conversation.service";
 import { buildSystemPrompt } from "./prompt-builder";
-import { PAGE_INSIGHT_PROMPTS } from "./prompts.config";
+import { PAGE_INSIGHT_PROMPTS, SUGGEST_EMOJI_PROMPT } from "./prompts.config";
 
 @ApiTags("AI")
 @ApiBearerAuth()
@@ -27,6 +27,22 @@ export class AiController {
     @Query("workspaceId") workspaceId?: string,
   ): Promise<Record<string, unknown>[]> {
     return this.conversationService.getConversations(userId, workspaceId ?? "");
+  }
+
+  @Get("suggest-emoji")
+  @ApiOperation({ summary: "Suggest a relevant emoji for a category name" })
+  async suggestEmoji(@Query("category") category: string): Promise<{ emoji: string }> {
+    if (!category) {
+      throw new Error("Category name is required");
+    }
+    const prompt = `Category name: ${category}\nSuggested emoji:`;
+
+    const response = await this.ollamaService.chat({
+      systemPrompt: SUGGEST_EMOJI_PROMPT,
+      prompt,
+    });
+
+    return { emoji: response.trim() || "📁" };
   }
 
   @Get("conversations/:id")

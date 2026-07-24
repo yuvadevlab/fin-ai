@@ -5,6 +5,7 @@ import { WorkspaceProvider } from "@/providers";
 import { getServerAuth } from "@/lib/server-auth";
 import { serverFetch } from "@/lib/server-fetch";
 import { MenuItem } from "@/features/dashboard/api/getMenuItems";
+import { toast } from "@finai/ui";
 
 /**
  * Dashboard layout — server component.
@@ -30,8 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       queryFn: () => serverFetch<MenuItem[]>("menu-items", auth.token),
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("Server-side menu prefetch error:", err);
+    toast.error((err as Error).message || "Failed to prefetch menu items");
   }
 
   return (
