@@ -67,6 +67,7 @@ const config: UserConfig = {
         "web",
         "api",
         "docs",
+        "workspace",
 
         // Packages
         "ai-engine",
