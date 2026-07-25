@@ -65,30 +65,17 @@ const config: UserConfig = {
       [
         // Applications
         "web",
-        "mobile",
-        "desktop",
+        "api",
         "docs",
 
-        // Services
-        "api",
-        "database",
-        "auth",
-        "finance-engine",
-
         // Packages
-        "ui",
-        "features",
-        "shared",
+        "ai-engine",
+        "database",
+        "finance-engine",
+        "logger",
         "shared-types",
+        "ui",
         "validation",
-        "configs",
-
-        // Infrastructure
-        "workspace",
-        "infra",
-        "docker",
-        "k8s",
-        "ci",
 
         // Tooling
         "eslint",
@@ -100,6 +87,11 @@ const config: UserConfig = {
 
         // Dependencies
         "deps",
+
+        // Infra
+        "infra",
+        "docker",
+        "nginx",
       ],
     ],
 

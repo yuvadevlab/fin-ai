@@ -113,14 +113,3 @@ pnpm check
 # 5. Build production workspace artifacts
 pnpm build
 ```
-
----
-
-## Deployment Summary (Windows Server `D:\server\repos\fin-ai`)
-
-To deploy FinAI on Windows Server, execute:
-
-```powershell
-cd D:\server\repos\fin-ai
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy.ps1
-```

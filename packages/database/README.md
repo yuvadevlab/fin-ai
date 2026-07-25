@@ -55,7 +55,7 @@ pnpm --filter @finai/database db:validate
 
 ## Production Deployment & Migration Workflow
 
-During production deployments via Docker Compose or PowerShell scripts (`deploy.ps1`), migrations are automatically run before restarting the API service:
+During production deployments via Docker Compose, migrations are automatically run before restarting the API service:
 
 ```bash
 docker compose run --rm api pnpm db:migrate
