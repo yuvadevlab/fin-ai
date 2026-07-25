@@ -8,7 +8,7 @@ on:
       - closed
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -43,21 +43,46 @@ jobs:
 
       - name: 🚀 Create Reverse Sync PR
         if: steps.check.outputs.behind == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: dev
-          branch: main
-          title: "chore: sync main → dev"
-          body: |
-            ## 🔄 Automatic Reverse Sync
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
 
-            This pull request was automatically created because changes were merged into **main**.
+            // Check for an existing open PR from main -> dev
+            const existing = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              base: 'dev',
+              head: `${owner}:main`,
+            });
 
-            It synchronizes those changes back into **dev**.
+            if (existing.data.length > 0) {
+              core.info(`Reverse sync PR already exists: #${existing.data[0].number}`);
+              return;
+            }
 
-            ### Checklist
+            // Create the PR
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: 'chore: sync main → dev',
+              head: 'main',
+              base: 'dev',
+              body: [
+                "## 🔄 Automatic Reverse Sync",
+                "",
+                "This pull request was automatically created because changes were merged into **main**.",
+                "",
+                "It synchronizes the latest changes from **main** back into **dev**.",
+                "",
+                "### Checklist",
+                "",
+                "- [ ] Review merge conflicts (if any)",
+                "- [ ] Ensure CI passes",
+                "- [ ] Merge into dev"
+              ].join("\n")
+            });
 
-            - [ ] Review merge conflicts (if any)
-            - [ ] Ensure CI passes
-            - [ ] Merge into dev
+            core.info(`Created PR #${pr.data.number}`);
