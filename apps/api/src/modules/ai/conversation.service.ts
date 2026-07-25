@@ -15,7 +15,7 @@ export class ConversationService {
       include: {
         messages: { orderBy: { createdAt: "asc" }, take: 1 },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
   }
 
@@ -39,6 +39,13 @@ export class ConversationService {
     });
   }
 
+  async deleteConversation(id: string, userId: string): Promise<boolean> {
+    const res = await this.prisma.client.conversation.deleteMany({
+      where: { id, userId },
+    });
+    return res.count > 0;
+  }
+
   async addMessage(
     conversationId: string,
     role: "user" | "assistant",
@@ -48,12 +55,27 @@ export class ConversationService {
       user: MessageRole.USER,
       assistant: MessageRole.ASSISTANT,
     };
+
+    // Touch conversation updatedAt timestamp
+    await this.prisma.client.conversation.update({
+      where: { id: conversationId },
+      data: { updatedAt: new Date() },
+    });
+
     return this.prisma.client.message.create({
       data: {
         conversationId,
         role: roleMap[role] ?? MessageRole.USER,
         content,
       },
+    });
+  }
+
+  async getRecentMessages(conversationId: string, limit: number = 10): Promise<Message[]> {
+    return this.prisma.client.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
     });
   }
 }

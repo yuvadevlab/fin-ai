@@ -1,34 +1,21 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Filter, Plus, Edit2, Trash2, X } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  DataTable,
-  SearchBar,
-  FilterChips,
-  MoneyDisplay,
-  Badge,
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Label,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@finai/ui";
+import { useState, useMemo, useCallback } from "react";
+import { Plus, X } from "lucide-react";
+import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
 import { TransactionDialog } from "./TransactionDialog";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
-import { useTransactions, Transaction } from "../api/getTransactions";
+import { useActiveWorkspace } from "@/hooks";
+import { useTransactions } from "../api/getTransactions";
 import { useDeleteTransaction } from "../api/deleteTransaction";
 import { useCategories } from "@/features/categories/api/getCategories";
 import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { TransactionFilterInput } from "@finai/validation";
+import { getTransactionColumns } from "./TransactionColumns";
+import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+import { useProfile } from "@/features/settings/api/profile";
+import { format } from "date-fns";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
 
@@ -39,15 +26,19 @@ export function TransactionsPage() {
   const [accountId, setAccountId] = useState("all");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [dateRange, setDateRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   const { activeWorkspaceId } = useActiveWorkspace();
+  const { data: profile } = useProfile();
   const { data: categories = [] } = useCategories(activeWorkspaceId);
   const { data: accounts = [] } = useAccounts(activeWorkspaceId);
 
   const queryFilter = useMemo(() => {
     const filter: TransactionFilterInput = {
-      page: 1,
-      pageSize: 50,
+      page,
+      pageSize,
       sortOrder: "desc",
     };
     if (search) filter.search = search;
@@ -56,8 +47,10 @@ export function TransactionsPage() {
     if (selectedFilter === "Transfer") filter.type = "TRANSFER";
     if (categoryId !== "all") filter.category = categoryId;
     if (accountId !== "all") filter.account = accountId;
+    if (dateRange.startDate) filter.dateFrom = format(dateRange.startDate, "yyyy-MM-dd");
+    if (dateRange.endDate) filter.dateTo = format(dateRange.endDate, "yyyy-MM-dd");
     return filter;
-  }, [selectedFilter, search, categoryId, accountId]);
+  }, [selectedFilter, search, categoryId, accountId, dateRange, page, pageSize]);
 
   const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
   const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
@@ -68,12 +61,12 @@ export function TransactionsPage() {
     (minAmount ? 1 : 0) +
     (maxAmount ? 1 : 0);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setCategoryId("all");
     setAccountId("all");
     setMinAmount("");
     setMaxAmount("");
-  };
+  }, []);
 
   const transactionsList = useMemo(() => {
     const items = response?.items ?? [];
@@ -87,91 +80,14 @@ export function TransactionsPage() {
     });
   }, [response?.items, minAmount, maxAmount]);
 
-  const columns = useMemo(
-    () => [
-      {
-        header: "Date",
-        accessor: (t: Transaction) =>
-          new Date(t.date).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-          }),
-        className: "whitespace-nowrap text-muted-foreground font-normal",
-      },
-      {
-        header: "Notes",
-        accessor: (t: Transaction) => t.notes || "-",
-        className: "text-muted-foreground font-normal max-w-[200px] truncate",
-      },
-      {
-        header: "Category",
-        accessor: (t: Transaction) => (
-          <Badge variant="secondary" className="rounded-full font-normal">
-            {t.category?.name || "Uncategorized"}
-          </Badge>
-        ),
-      },
-      {
-        header: "Account",
-        accessor: (t: Transaction) =>
-          t.type === "TRANSFER" && t.toAccount
-            ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-            : t.account?.name || "Unknown",
-        className: "text-muted-foreground font-normal",
-      },
-      {
-        header: "Type",
-        accessor: (t: Transaction) => (
-          <Badge variant="outline" className="font-normal capitalize">
-            {t.type.toLowerCase()}
-          </Badge>
-        ),
-      },
-      {
-        header: "Amount",
-        accessor: (t: Transaction) => {
-          const displayAmount = t.type === "EXPENSE" ? -t.amount : t.amount;
-          return <MoneyDisplay value={displayAmount} showSign={t.type === "INCOME"} />;
-        },
-        className: "text-right whitespace-nowrap",
-      },
-      {
-        header: "Actions",
-        accessor: (t: Transaction) => (
-          <div className="flex justify-end gap-1.5">
-            <TransactionDialog
-              mode="edit"
-              transactionId={t.id}
-              initialValues={t}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground h-8 w-8 cursor-pointer"
-                >
-                  <Edit2 className="size-3.5" />
-                </Button>
-              }
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-destructive h-8 w-8 cursor-pointer"
-              onClick={() => {
-                if (confirm("Are you sure you want to delete this transaction?")) {
-                  deleteTransaction.mutate(t.id);
-                }
-              }}
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </div>
-        ),
-        className: "text-right",
-      },
-    ],
+  const handleDelete = useCallback(
+    (id: string) => {
+      deleteTransaction.mutate(id);
+    },
     [deleteTransaction],
   );
+
+  const columns = useMemo(() => getTransactionColumns(handleDelete), [handleDelete]);
 
   return (
     <PageContainer>
@@ -188,6 +104,10 @@ export function TransactionsPage() {
           />
         }
       />
+
+      <div className="mb-6">
+        <LiveAIInsightCard page="transactions" cta="Analyze spending" />
+      </div>
 
       <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
         <div className="relative min-w-64 flex-1">
@@ -208,84 +128,31 @@ export function TransactionsPage() {
             </button>
           ) : null}
         </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="cursor-pointer gap-1.5">
-              <Filter className="size-4" /> Filters
-              {activeFilterCount > 0 ? (
-                <span className="bg-primary text-primary-foreground ml-1 rounded-full px-1.5 text-[10px] font-semibold">
-                  {activeFilterCount}
-                </span>
-              ) : null}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-80 space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">Refine transactions</p>
-              {activeFilterCount > 0 ? (
-                <button
-                  type="button"
-                  className="text-primary cursor-pointer text-xs hover:underline"
-                  onClick={clearFilters}
-                >
-                  Reset
-                </button>
-              ) : null}
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Category</Label>
-              <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All categories</SelectItem>
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Account</Label>
-              <Select value={accountId} onValueChange={setAccountId}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All accounts</SelectItem>
-                  {accounts.map((a) => (
-                    <SelectItem key={a.id} value={a.id}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs">Min ₹</Label>
-                <Input
-                  value={minAmount}
-                  onChange={(e) => setMinAmount(e.target.value)}
-                  type="number"
-                  placeholder="0"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Max ₹</Label>
-                <Input
-                  value={maxAmount}
-                  onChange={(e) => setMaxAmount(e.target.value)}
-                  type="number"
-                  placeholder="∞"
-                />
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+
+        <DateRangeFilter
+          cycleStartDay={profile?.preferences?.cycleStartDay || 1}
+          cyclePeriod={profile?.preferences?.cyclePeriod || "MONTHLY"}
+          onRangeChange={(range) => {
+            setDateRange(range);
+            setPage(1);
+          }}
+        />
+
+        <TransactionFiltersPopover
+          categories={categories}
+          accounts={accounts}
+          categoryId={categoryId}
+          setCategoryId={setCategoryId}
+          accountId={accountId}
+          setAccountId={setAccountId}
+          minAmount={minAmount}
+          setMinAmount={setMinAmount}
+          maxAmount={maxAmount}
+          setMaxAmount={setMaxAmount}
+          activeFilterCount={activeFilterCount}
+          clearFilters={clearFilters}
+        />
+
         <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
       </div>
 
@@ -298,7 +165,26 @@ export function TransactionsPage() {
           No transactions match your filters.
         </div>
       ) : (
-        <DataTable data={transactionsList} columns={columns} rowKey={(t: Transaction) => t.id} />
+        <DataTable
+          data={transactionsList}
+          columns={columns}
+          rowKey={(t) => t.id}
+          pagination={
+            response
+              ? {
+                  currentPage: response.page,
+                  totalPages: response.totalPages,
+                  pageSize: response.limit || pageSize,
+                  totalItems: response.total,
+                  onPageChange: (newPage) => setPage(newPage),
+                  onPageSizeChange: (newPageSize) => {
+                    setPageSize(newPageSize);
+                    setPage(1);
+                  },
+                }
+              : undefined
+          }
+        />
       )}
     </PageContainer>
   );

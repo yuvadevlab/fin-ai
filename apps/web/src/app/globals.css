@@ -130,3 +130,32 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* ── Density ─────────────────────────────────────────────────────────────── */
+body.density-compact {
+  --spacing-scale: 0.75;
+}
+
+body.density-compact .p-5 {
+  padding: 0.75rem;
+}
+
+body.density-compact .p-4 {
+  padding: 0.6rem;
+}
+
+body.density-compact .p-3 {
+  padding: 0.5rem;
+}
+
+body.density-compact .gap-4 {
+  gap: 0.6rem;
+}
+
+body.density-compact .space-y-4 > * + * {
+  margin-top: 0.6rem;
+}
+
+body.density-compact .space-y-6 > * + * {
+  margin-top: 0.9rem;
+}

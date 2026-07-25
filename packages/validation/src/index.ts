@@ -10,10 +10,12 @@ export {
   updateTransactionSchema,
   transactionFilterSchema,
   clientTransactionSchema,
+  createBulkTransactionsSchema,
   type CreateTransactionInput,
   type UpdateTransactionInput,
   type TransactionFilterInput,
   type ClientTransactionInput,
+  type CreateBulkTransactionsInput,
 } from "./schemas/transaction.schema";
 
 export {

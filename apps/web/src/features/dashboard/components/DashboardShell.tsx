@@ -1,16 +1,32 @@
 "use client";
 
-import React, { useCallback, useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
 import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/components";
 import { SearchDropdown } from "../../search/components/SearchDropdown";
-import { useWorkspace } from "@/providers";
+import { useWorkspace, AppearanceSync } from "@/providers";
 import { useMenuItems } from "../api/getMenuItems";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
+
+function CustomLinkComponent({
+  href,
+  children,
+  className,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,24 +36,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const { data: menuItems } = useMenuItems();
-
-  const customLink = useCallback(
-    ({
-      href,
-      children,
-      className,
-    }: {
-      href: string;
-      children: React.ReactNode;
-      className?: string;
-    }) => (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    ),
-    [],
-  );
-
   const { activeWorkspace } = useActiveWorkspace();
 
   const sidebar = useMemo(() => {
@@ -48,14 +46,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
       <Sidebar
         pathname={pathname}
-        LinkComponent={customLink}
+        LinkComponent={CustomLinkComponent}
         menuItems={menuItems}
         planName={activeWorkspace?.name || planText}
         planDetails={detailsText}
         planSyncPercentage={100}
       />
     );
-  }, [pathname, customLink, menuItems, activeWorkspace]);
+  }, [pathname, menuItems, activeWorkspace]);
 
   const topbar = useMemo(
     () => (
@@ -72,6 +70,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <AppearanceSync />
       <AppShell sidebar={sidebar} topbar={topbar}>
         {/* Search results dropdown — rendered inside the shell so it floats above content */}
         {searchQuery.trim().length >= 2 && (

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { Response } from "express";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
@@ -6,8 +6,13 @@ import { CurrentUser } from "../../common/decorators/current-user.decorator";
 import { OllamaService } from "./ollama.service";
 import { ContextBuilderService } from "./context-builder.service";
 import { ConversationService } from "./conversation.service";
-import { buildSystemPrompt } from "./prompt-builder";
-import { PAGE_INSIGHT_PROMPTS } from "./prompts.config";
+import {
+  buildAdvisorSystemPrompt,
+  buildInsightSystemPrompt,
+  buildPageInsightUserPrompt,
+  buildEmojiSuggestionUserPrompt,
+  EMOJI_SUGGESTION_SYSTEM_PROMPT,
+} from "@finai/ai-engine";
 
 @ApiTags("AI")
 @ApiBearerAuth()
@@ -29,6 +34,22 @@ export class AiController {
     return this.conversationService.getConversations(userId, workspaceId ?? "");
   }
 
+  @Get("suggest-emoji")
+  @ApiOperation({ summary: "Suggest a relevant emoji for a category name" })
+  async suggestEmoji(@Query("category") category: string): Promise<{ emoji: string }> {
+    if (!category) {
+      throw new Error("Category name is required");
+    }
+    const prompt = buildEmojiSuggestionUserPrompt(category);
+
+    const response = await this.ollamaService.chat({
+      systemPrompt: EMOJI_SUGGESTION_SYSTEM_PROMPT,
+      prompt,
+    });
+
+    return { emoji: response.trim() || "📁" };
+  }
+
   @Get("conversations/:id")
   @ApiOperation({ summary: "Get a conversation with its messages" })
   getConversation(
@@ -36,6 +57,16 @@ export class AiController {
     @CurrentUser("id") userId: string,
   ): Promise<Record<string, unknown> | null> {
     return this.conversationService.getConversation(id, userId);
+  }
+
+  @Delete("conversations/:id")
+  @ApiOperation({ summary: "Delete an AI conversation" })
+  async deleteConversation(
+    @Param("id") id: string,
+    @CurrentUser("id") userId: string,
+  ): Promise<{ success: boolean }> {
+    const success = await this.conversationService.deleteConversation(id, userId);
+    return { success };
   }
 
   @Post("chat")
@@ -55,7 +86,7 @@ export class AiController {
 
     // Build financial context from DB
     const context = await this.contextBuilder.buildFinanceContext(body.workspaceId);
-    const systemPrompt = buildSystemPrompt(context);
+    const systemPrompt = buildAdvisorSystemPrompt(context);
 
     // Persist user message & resolve/create conversation
     let conversationId = body.conversationId;
@@ -76,6 +107,16 @@ export class AiController {
       }
     }
 
+    // Fetch recent message history if conversationId exists
+    let historyMessages: { role: string; content: string }[] = [];
+    if (conversationId) {
+      const recent = await this.conversationService.getRecentMessages(conversationId, 10);
+      historyMessages = recent.reverse().map((m) => ({
+        role: m.role === "ASSISTANT" ? "assistant" : "user",
+        content: m.content,
+      }));
+    }
+
     await this.conversationService.addMessage(conversationId, "user", body.question);
 
     // Emit conversationId first so the client can track the session
@@ -85,7 +126,7 @@ export class AiController {
     let fullResponse = "";
 
     await this.ollamaService.streamChatWithCallback(
-      { prompt: body.question, systemPrompt },
+      { prompt: body.question, systemPrompt, historyMessages },
       res,
       (token) => {
         fullResponse += token;
@@ -121,10 +162,8 @@ export class AiController {
 
     const context = await this.contextBuilder.buildFinanceContext(workspaceId);
 
-    const prompt =
-      PAGE_INSIGHT_PROMPTS[page as keyof typeof PAGE_INSIGHT_PROMPTS] ??
-      PAGE_INSIGHT_PROMPTS.dashboard;
-    const systemPrompt = `You are FinAI, my personal financial advisor. Respond directly to me in a helpful, friendly, one-on-one personal tone (always use "you" and "your" instead of "the user" or "their"). Respond ONLY with the requested short financial insight — no greetings, no markdown formatting, just plain prose.\n\nHere is my financial context:\n${context}`;
+    const prompt = buildPageInsightUserPrompt(page);
+    const systemPrompt = buildInsightSystemPrompt(context);
 
     await this.ollamaService.streamChatWithCallback({ prompt, systemPrompt }, res);
   }

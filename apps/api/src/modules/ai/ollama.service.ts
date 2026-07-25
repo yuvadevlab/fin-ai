@@ -7,6 +7,7 @@ export interface OllamaStreamOptions {
   model?: string;
   prompt: string;
   systemPrompt?: string;
+  historyMessages?: { role: string; content: string }[];
 }
 
 @Injectable()
@@ -29,12 +30,13 @@ export class OllamaService {
     res: Response,
     onToken?: (token: string) => void,
   ): Promise<void> {
-    const { prompt, systemPrompt, model = this.model } = options;
+    const { prompt, systemPrompt, historyMessages = [], model = this.model } = options;
 
     const body = JSON.stringify({
       model,
       messages: [
         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+        ...historyMessages,
         { role: "user", content: prompt },
       ],
       stream: true,
@@ -88,6 +90,40 @@ export class OllamaService {
         `data: ${JSON.stringify({ error: "AI service unavailable. Make sure Ollama is running." })}\n\n`,
       );
       res.end();
+    }
+  }
+
+  /**
+   * Non-streaming chat response from Ollama.
+   */
+  async chat(options: OllamaStreamOptions): Promise<string> {
+    const { prompt, systemPrompt, model = this.model } = options;
+
+    const body = JSON.stringify({
+      model,
+      messages: [
+        ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+        { role: "user", content: prompt },
+      ],
+      stream: false,
+    });
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ollama error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = (await response.json()) as { message?: { content: string } };
+      return data.message?.content ?? "";
+    } catch (error) {
+      this.logger.error("Ollama chat error", error);
+      throw new Error("AI service unavailable");
     }
   }
 

@@ -7,6 +7,7 @@ import { formatINR } from "@finai/finance-engine";
 import { useGoals } from "../api/getGoals";
 import { GoalDialog } from "./GoalDialog";
 import { ContributeDialog } from "./ContributeDialog";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useWorkspace } from "@/providers";
 
 export function GoalsPage() {
@@ -30,6 +31,10 @@ export function GoalsPage() {
           />
         }
       />
+
+      <div className="mb-6">
+        <LiveAIInsightCard page="goals" cta="Analyze goal timeline" />
+      </div>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {goals.map((g) => {

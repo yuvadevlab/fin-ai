@@ -1,17 +1,19 @@
 import React from "react";
 import { cn } from "../lib/utils";
+import { Pagination, PaginationProps } from "./Pagination";
 
-interface Column<T> {
+export interface Column<T> {
   header: string;
   accessor: (item: T) => React.ReactNode;
   className?: string;
 }
 
-interface DataTableProps<T> extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataTableProps<T> extends React.HTMLAttributes<HTMLDivElement> {
   data: T[];
   columns: Column<T>[];
   rowKey: (item: T) => string | number;
   onRowClick?: (item: T) => void;
+  pagination?: PaginationProps;
 }
 
 export function DataTable<T>({
@@ -19,6 +21,7 @@ export function DataTable<T>({
   columns,
   rowKey,
   onRowClick,
+  pagination,
   className,
   ...props
 }: DataTableProps<T>) {
@@ -69,6 +72,7 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
+      {pagination && <Pagination {...pagination} />}
     </div>
   );
 }

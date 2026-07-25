@@ -15,15 +15,30 @@ import {
   toast,
 } from "@finai/ui";
 
-function getStoredUser(): { name?: string; email?: string } | null {
+import React, { useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
+
+let cachedRaw: string | null = null;
+let cachedUser: { name?: string; email?: string } | null = null;
+
+function getSnapshot(): { name?: string; email?: string } | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem("finai_user");
-    if (!raw) return null;
-    return JSON.parse(raw) as { name?: string; email?: string };
+    if (raw === cachedRaw) {
+      return cachedUser;
+    }
+    cachedRaw = raw;
+    cachedUser = raw ? (JSON.parse(raw) as { name?: string; email?: string }) : null;
+    return cachedUser;
   } catch {
     return null;
   }
+}
+
+function getServerSnapshot() {
+  return null;
 }
 
 function getInitials(name?: string, email?: string): string {
@@ -38,7 +53,7 @@ function getInitials(name?: string, email?: string): string {
 
 export function ProfileMenu() {
   const router = useRouter();
-  const user = getStoredUser();
+  const user = useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
   const name = user?.name ?? "Aditya Sharma";
   const email = user?.email ?? "aditya@sharma.family";
   const initials = getInitials(user?.name, user?.email);
@@ -81,26 +96,24 @@ export function ProfileMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="cursor-pointer gap-2">
+          <Link href="/settings?section=profile" className="cursor-pointer gap-2">
             <User className="size-4" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="cursor-pointer gap-2">
-            <Settings className="size-4" /> Settings
+          <Link href="/settings?section=appearance" className="cursor-pointer gap-2">
+            <Moon className="size-4" /> Appearance
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => toast("Dark mode toggle coming soon")}
-          className="cursor-pointer gap-2"
-        >
-          <Moon className="size-4" /> Appearance
+        <DropdownMenuItem asChild>
+          <Link href="/settings?section=security" className="cursor-pointer gap-2">
+            <Settings className="size-4" /> Security & Privacy
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => toast("Opening help centre…")}
-          className="cursor-pointer gap-2"
-        >
-          <LifeBuoy className="size-4" /> Help & support
+        <DropdownMenuItem asChild>
+          <Link href="/settings" className="cursor-pointer gap-2">
+            <LifeBuoy className="size-4" /> All Settings
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

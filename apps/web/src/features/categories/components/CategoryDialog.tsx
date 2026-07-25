@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createCategorySchema } from "@finai/validation";
 import { useCreateCategory, useUpdateCategory, Category } from "../api";
-import { useActiveWorkspace } from "@/hooks/useActiveWorkspace";
+import { useActiveWorkspace } from "@/hooks";
 import { CategoryForm } from "./CategoryForm";
 
 export interface CategoryDialogProps {
@@ -34,7 +34,7 @@ export function CategoryDialog({
     return {
       name: category?.name ?? "",
       group: category?.group ?? "Variable Expenses",
-      icon: category?.icon ?? "tag",
+      icon: category?.icon ?? "",
     };
   };
 

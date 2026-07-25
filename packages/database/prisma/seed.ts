@@ -1,8 +1,10 @@
-/* eslint-disable no-console */
 import "dotenv/config";
 import { PrismaClient, WorkspaceType, WorkspaceRole } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import { Logger } from "@finai/logger";
+
+const logger = new Logger("DatabaseSeed");
 
 const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/finai";
@@ -11,7 +13,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("Cleaning up database...");
+  logger.info("Cleaning up database...");
   await prisma.menuItem.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.message.deleteMany();
@@ -26,7 +28,7 @@ async function main() {
   await prisma.workspace.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log("Seeding base user...");
+  logger.info("Seeding base user...");
   const user = await prisma.user.create({
     data: {
       email: "finai.user@gmail.com",
@@ -37,7 +39,7 @@ async function main() {
     },
   });
 
-  console.log("Seeding workspaces...");
+  logger.info("Seeding workspaces...");
   const personalWorkspace = await prisma.workspace.create({
     data: {
       name: "FinAI Personal Workspace",
@@ -69,7 +71,7 @@ async function main() {
     ],
   });
 
-  console.log("Seeding menu items...");
+  logger.info("Seeding menu items...");
   await prisma.menuItem.createMany({
     data: [
       {
@@ -171,12 +173,12 @@ async function main() {
     ],
   });
 
-  console.log("Database seeded successfully!");
+  logger.info("Database seeded successfully!");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    logger.error(e);
     process.exit(1);
   })
   .finally(async () => {
