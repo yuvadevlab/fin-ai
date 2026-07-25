@@ -6,6 +6,16 @@ on:
       - dev
       - main
 
+    paths-ignore:
+      - "**/*.md"
+      - ".agents/**"
+      - ".github/**/*.md"
+      - ".vscode/**"
+      - ".gitignore"
+      - ".gitattributes"
+      - ".editorconfig"
+      - ".prettierignore"
+
 permissions:
   contents: read
 
