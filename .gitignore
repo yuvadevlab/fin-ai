@@ -21,7 +21,7 @@ storybook-static/
 Thumbs.db
 
 # Prisma
-packages/database/prisma/migrations/
+packages/database/src/generated/
 
 # Logs
 *.log
