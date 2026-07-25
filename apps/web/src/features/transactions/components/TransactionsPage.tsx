@@ -12,8 +12,9 @@ import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { TransactionFilterInput } from "@finai/validation";
 import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
-import { useProfile } from "@/features/settings/api/profile";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+import { useProfile } from "@/features/settings/api/profile";
 import { format } from "date-fns";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
@@ -27,6 +28,7 @@ export function TransactionsPage() {
   const [maxAmount, setMaxAmount] = useState("");
   const [dateRange, setDateRange] = useState<{ startDate?: Date; endDate?: Date }>({});
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   const { activeWorkspaceId } = useActiveWorkspace();
   const { data: profile } = useProfile();
@@ -36,7 +38,7 @@ export function TransactionsPage() {
   const queryFilter = useMemo(() => {
     const filter: TransactionFilterInput = {
       page,
-      pageSize: 20,
+      pageSize,
       sortOrder: "desc",
     };
     if (search) filter.search = search;
@@ -48,7 +50,7 @@ export function TransactionsPage() {
     if (dateRange.startDate) filter.dateFrom = format(dateRange.startDate, "yyyy-MM-dd");
     if (dateRange.endDate) filter.dateTo = format(dateRange.endDate, "yyyy-MM-dd");
     return filter;
-  }, [selectedFilter, search, categoryId, accountId, dateRange, page]);
+  }, [selectedFilter, search, categoryId, accountId, dateRange, page, pageSize]);
 
   const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
   const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
@@ -102,6 +104,10 @@ export function TransactionsPage() {
           />
         }
       />
+
+      <div className="mb-6">
+        <LiveAIInsightCard page="transactions" cta="Analyze spending" />
+      </div>
 
       <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
         <div className="relative min-w-64 flex-1">
@@ -159,37 +165,26 @@ export function TransactionsPage() {
           No transactions match your filters.
         </div>
       ) : (
-        <div className="space-y-4">
-          <DataTable data={transactionsList} columns={columns} rowKey={(t) => t.id} />
-          {response && response.totalPages > 1 && (
-            <div className="text-muted-foreground flex items-center justify-between px-2 text-xs">
-              <span>
-                Showing page {response.page} of {response.totalPages} ({response.total} total
-                transactions)
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={response.page <= 1}
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                  className="h-8 text-xs"
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={response.page >= response.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="h-8 text-xs"
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        <DataTable
+          data={transactionsList}
+          columns={columns}
+          rowKey={(t) => t.id}
+          pagination={
+            response
+              ? {
+                  currentPage: response.page,
+                  totalPages: response.totalPages,
+                  pageSize: response.limit || pageSize,
+                  totalItems: response.total,
+                  onPageChange: (newPage) => setPage(newPage),
+                  onPageSizeChange: (newPageSize) => {
+                    setPageSize(newPageSize);
+                    setPage(1);
+                  },
+                }
+              : undefined
+          }
+        />
       )}
     </PageContainer>
   );

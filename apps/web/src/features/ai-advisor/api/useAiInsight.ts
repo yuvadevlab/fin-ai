@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/lib/api-client";
 
-export type InsightPage = "dashboard" | "budgets" | "reports" | "family";
+export type InsightPage =
+  "dashboard" | "transactions" | "budgets" | "investments" | "goals" | "reports" | "family";
 
 interface UseAiInsightOptions {
   workspaceId: string | null;

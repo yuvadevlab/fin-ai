@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   User,
   Users,
@@ -41,7 +42,9 @@ import { CategorySettingsList } from "./CategorySettingsList";
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
 
 export function SettingsPage() {
-  const [active, setActive] = useState<Section | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const sectionQuery = searchParams.get("section");
   const { workspaces, activeWorkspace } = useActiveWorkspace();
   const { data: categories = [] } = useCategories(activeWorkspace?.id || null);
 
@@ -134,6 +137,8 @@ export function SettingsPage() {
     }
   });
 
+  const active = sections.find((s) => s.id === (selectedId ?? sectionQuery)) || null;
+
   return (
     <PageContainer className="max-w-5xl">
       <PageHeader
@@ -146,7 +151,7 @@ export function SettingsPage() {
           <button
             key={s.id}
             type="button"
-            onClick={() => setActive(s)}
+            onClick={() => setSelectedId(s.id)}
             className={cn(
               "group bg-card ring-border/50 hover:ring-primary/20 focus-visible:ring-ring flex cursor-pointer items-start gap-4 rounded-2xl p-5 text-left shadow-sm ring-1 transition outline-none hover:shadow-md",
             )}
@@ -165,7 +170,7 @@ export function SettingsPage() {
         ))}
       </section>
 
-      <Sheet open={!!active} onOpenChange={(open) => !open && setActive(null)}>
+      <Sheet open={!!active} onOpenChange={(open) => !open && setSelectedId("")}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-md">
           {active ? (
             <>
@@ -178,7 +183,7 @@ export function SettingsPage() {
                 <Button
                   variant="ghost"
                   className="w-full cursor-pointer"
-                  onClick={() => setActive(null)}
+                  onClick={() => setSelectedId("")}
                 >
                   Close
                 </Button>
