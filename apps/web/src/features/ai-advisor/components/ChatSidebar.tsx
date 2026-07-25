@@ -1,5 +1,6 @@
 "use client";
 
+import { Trash2, MessageSquare } from "lucide-react";
 import { ContentCard, MoneyDisplay } from "@finai/ui";
 import type { AiConversation } from "../api/useConversations";
 import type { DashboardStats } from "@/features/dashboard/api/getDashboardStats";
@@ -14,22 +15,46 @@ const SUGGESTED_PROMPTS = [
   "What should we improve next month?",
 ];
 
+function formatRelativeTime(dateInput: string | Date): string {
+  const date = new Date(dateInput);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return "Just now";
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? "min" : "mins"} ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks} ${diffInWeeks === 1 ? "week" : "weeks"} ago`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
+}
+
 interface ChatSidebarProps {
   showHistory: boolean;
+  activeConversationId?: string | null;
   conversations: AiConversation[] | undefined;
   stats: DashboardStats | undefined;
   investments: InvestmentsResponse | undefined;
   onPromptClick: (prompt: string) => void;
   onConversationClick: (convo: AiConversation) => void;
+  onDeleteConversation?: (id: string, e: React.MouseEvent) => void;
 }
 
 export function ChatSidebar({
   showHistory,
+  activeConversationId,
   conversations,
   stats,
   investments,
   onPromptClick,
   onConversationClick,
+  onDeleteConversation,
 }: ChatSidebarProps) {
   return (
     <aside className="space-y-6">
@@ -37,28 +62,54 @@ export function ChatSidebar({
       {showHistory ? (
         <ContentCard>
           <h3 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
-            Past conversations
+            Past Conversations
           </h3>
           {!conversations || conversations.length === 0 ? (
-            <p className="text-muted-foreground text-xs">No conversations yet.</p>
+            <p className="text-muted-foreground py-4 text-center text-xs">
+              No saved conversations yet.
+            </p>
           ) : (
-            <div className="flex max-h-56 flex-col gap-1.5 overflow-y-auto">
-              {conversations.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => onConversationClick(c)}
-                  className="bg-secondary text-muted-foreground hover:bg-secondary/60 hover:text-foreground cursor-pointer truncate rounded-lg px-3 py-2 text-left text-xs transition outline-none"
-                >
-                  {c.title || "Untitled conversation"}
-                </button>
-              ))}
+            <div className="flex max-h-72 flex-col gap-1.5 overflow-y-auto">
+              {conversations.map((c) => {
+                const isActive = c.id === activeConversationId;
+                const formattedDate = formatRelativeTime(c.updatedAt || c.createdAt);
+
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => onConversationClick(c)}
+                    className={`group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-xs transition ${
+                      isActive
+                        ? "bg-primary text-primary-foreground font-medium"
+                        : "bg-secondary/70 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <MessageSquare className="size-3.5 shrink-0 opacity-70" />
+                      <div className="truncate">
+                        <p className="truncate text-xs font-medium">{c.title || "Untitled Chat"}</p>
+                        <p className="text-[10px] opacity-75">{formattedDate}</p>
+                      </div>
+                    </div>
+                    {onDeleteConversation && (
+                      <button
+                        onClick={(e) => onDeleteConversation(c.id, e)}
+                        title="Delete chat"
+                        className="hover:text-destructive p-1 opacity-0 transition group-hover:opacity-100"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </ContentCard>
       ) : (
         <ContentCard>
           <h3 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
-            Suggested prompts
+            Suggested Prompts
           </h3>
           <div className="flex flex-col gap-2">
             {SUGGESTED_PROMPTS.map((p) => (
@@ -77,7 +128,7 @@ export function ChatSidebar({
       {/* Live stats */}
       <ContentCard>
         <h3 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
-          This month at a glance
+          This Month at a Glance
         </h3>
         <ul className="space-y-3 text-sm">
           {(

@@ -96,26 +96,24 @@ export function ProfileMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="cursor-pointer gap-2">
+          <Link href="/settings?section=profile" className="cursor-pointer gap-2">
             <User className="size-4" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="cursor-pointer gap-2">
-            <Settings className="size-4" /> Settings
+          <Link href="/settings?section=appearance" className="cursor-pointer gap-2">
+            <Moon className="size-4" /> Appearance
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => toast("Dark mode toggle coming soon")}
-          className="cursor-pointer gap-2"
-        >
-          <Moon className="size-4" /> Appearance
+        <DropdownMenuItem asChild>
+          <Link href="/settings?section=security" className="cursor-pointer gap-2">
+            <Settings className="size-4" /> Security & Privacy
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => toast("Opening help centre…")}
-          className="cursor-pointer gap-2"
-        >
-          <LifeBuoy className="size-4" /> Help & support
+        <DropdownMenuItem asChild>
+          <Link href="/settings" className="cursor-pointer gap-2">
+            <LifeBuoy className="size-4" /> All Settings
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { API_BASE_URL } from "@/lib/api-client";
+import { API_BASE_URL, apiClient } from "@/lib/api-client";
 import type { AiConversation } from "./useConversations";
 
 export interface ChatMessage {
@@ -169,14 +169,37 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
     setMessages([]);
   }, []);
 
-  const loadConversation = useCallback((convo: AiConversation) => {
-    setConversationId(convo.id);
-    setMessages(
-      convo.messages.map((m) => ({
-        role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
-        text: m.content,
-      })),
-    );
+  const loadConversation = useCallback(async (convoOrId: AiConversation | string) => {
+    const id = typeof convoOrId === "string" ? convoOrId : convoOrId.id;
+    setConversationId(id);
+
+    // Initial fallback if object passed
+    if (
+      typeof convoOrId !== "string" &&
+      Array.isArray(convoOrId.messages) &&
+      convoOrId.messages.length > 0
+    ) {
+      setMessages(
+        convoOrId.messages.map((m) => ({
+          role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
+          text: m.content,
+        })),
+      );
+    }
+
+    try {
+      const full = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
+      if (full && Array.isArray(full.messages)) {
+        setMessages(
+          full.messages.map((m) => ({
+            role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
+            text: m.content,
+          })),
+        );
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   return {

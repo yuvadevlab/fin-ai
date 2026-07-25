@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@finai/ai-engine": "workspace:*",
     "@finai/database": "workspace:*",
     "@finai/finance-engine": "workspace:*",
     "@finai/logger": "workspace:*",

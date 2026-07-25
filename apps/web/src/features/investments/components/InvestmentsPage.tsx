@@ -17,6 +17,7 @@ import {
 } from "@finai/ui";
 import { useInvestments, Investment } from "../api/getInvestments";
 import { InvestmentDialog } from "./InvestmentDialog";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useWorkspace } from "@/providers";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
@@ -131,6 +132,10 @@ export function InvestmentsPage() {
           />
         }
       />
+
+      <div className="mb-6">
+        <LiveAIInsightCard page="investments" cta="Evaluate portfolio" />
+      </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard

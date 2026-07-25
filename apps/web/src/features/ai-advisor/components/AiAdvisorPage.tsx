@@ -5,7 +5,7 @@ import { History, MessageSquarePlus } from "lucide-react";
 import { PageContainer, PageHeader, Button } from "@finai/ui";
 import { useWorkspace } from "@/providers";
 import { useAiChat } from "../api/useAiChat";
-import { useConversations } from "../api/useConversations";
+import { useConversations, useDeleteConversation } from "../api/useConversations";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useInvestments } from "@/features/investments/api/getInvestments";
 import { ChatMessages } from "./ChatMessages";
@@ -20,6 +20,7 @@ export function AiAdvisorPage() {
   const {
     messages,
     isStreaming,
+    conversationId,
     sendMessage,
     stopStreaming,
     startNewConversation,
@@ -27,6 +28,8 @@ export function AiAdvisorPage() {
   } = useAiChat({ workspaceId });
 
   const { data: conversations } = useConversations(workspaceId);
+  const deleteConversationMutation = useDeleteConversation(workspaceId);
+
   const { data: stats } = useDashboardStats(workspaceId);
   const { data: investments } = useInvestments(workspaceId);
 
@@ -38,6 +41,19 @@ export function AiAdvisorPage() {
     await sendMessage(q);
   };
 
+  const handleFollowUpClick = async (question: string) => {
+    if (isStreaming) return;
+    await sendMessage(question);
+  };
+
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await deleteConversationMutation.mutateAsync(id);
+    if (conversationId === id) {
+      startNewConversation();
+    }
+  };
+
   return (
     <PageContainer>
       <PageHeader
@@ -46,20 +62,23 @@ export function AiAdvisorPage() {
         actions={
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
+              variant={showHistory ? "default" : "outline"}
               size="sm"
               onClick={() => setShowHistory((v) => !v)}
-              className="gap-1.5"
+              className="cursor-pointer gap-1.5"
             >
               <History className="size-3.5" />
-              History
+              {showHistory ? "Hide History" : "Chat History"}
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={startNewConversation}
-              className="gap-1.5"
-              disabled={messages.length === 0}
+              onClick={() => {
+                startNewConversation();
+                setShowHistory(false);
+              }}
+              className="cursor-pointer gap-1.5"
+              disabled={messages.length === 0 && !conversationId}
             >
               <MessageSquarePlus className="size-3.5" />
               New Chat
@@ -70,9 +89,9 @@ export function AiAdvisorPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         {/* Chat panel */}
-        <div className="bg-card ring-border/50 flex h-[70vh] flex-col overflow-hidden rounded-2xl shadow-sm ring-1">
+        <div className="bg-card ring-border/50 flex h-[72vh] flex-col overflow-hidden rounded-2xl shadow-sm ring-1">
           <div className="flex-1 overflow-y-auto p-6">
-            <ChatMessages messages={messages} />
+            <ChatMessages messages={messages} onSelectFollowUp={handleFollowUpClick} />
           </div>
           <ChatInput
             value={input}
@@ -86,6 +105,7 @@ export function AiAdvisorPage() {
         {/* Sidebar */}
         <ChatSidebar
           showHistory={showHistory}
+          activeConversationId={conversationId}
           conversations={conversations}
           stats={stats}
           investments={investments}
@@ -94,6 +114,7 @@ export function AiAdvisorPage() {
             loadConversation(c);
             setShowHistory(false);
           }}
+          onDeleteConversation={handleDeleteConversation}
         />
       </div>
     </PageContainer>

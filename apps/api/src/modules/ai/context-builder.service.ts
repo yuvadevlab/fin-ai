@@ -13,9 +13,9 @@ export class ContextBuilderService {
       }),
       this.prisma.client.transaction.findMany({
         where: { workspaceId },
-        include: { category: { select: { name: true } } },
+        include: { category: { select: { name: true, group: true } } },
         orderBy: { date: "desc" },
-        take: 20,
+        take: 30,
       }),
       this.prisma.client.budget.findMany({
         where: { workspaceId },
@@ -28,29 +28,61 @@ export class ContextBuilderService {
     const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
     const totalInvestments = investments.reduce((sum, i) => sum + i.currentValue, 0);
 
+    // Calculate category spending breakdown for recent transactions
+    const categoryTotals: Record<string, number> = {};
+    let totalIncome = 0;
+    let totalExpenses = 0;
+
+    recentTxns.forEach((t) => {
+      if (t.type === "INCOME") {
+        totalIncome += t.amount;
+      } else if (t.type === "EXPENSE") {
+        totalExpenses += t.amount;
+        const catName = t.category?.name ?? "Other";
+        categoryTotals[catName] = (categoryTotals[catName] ?? 0) + t.amount;
+      }
+    });
+
+    const topCategories = Object.entries(categoryTotals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
     const lines = [
-      `## User Financial Context`,
-      `Total bank balance: ₹${totalBalance.toLocaleString("en-IN")}`,
-      `Total investments: ₹${totalInvestments.toLocaleString("en-IN")}`,
+      `## FinAI User Financial Context`,
+      `Total Liquidity / Bank Balance: ₹${totalBalance.toLocaleString("en-IN")}`,
+      `Total Portfolio Investments: ₹${totalInvestments.toLocaleString("en-IN")}`,
+      `Recent Income (sample): ₹${totalIncome.toLocaleString("en-IN")}`,
+      `Recent Expenses (sample): ₹${totalExpenses.toLocaleString("en-IN")}`,
+      `Net Cash Flow (sample): ₹${(totalIncome - totalExpenses).toLocaleString("en-IN")}`,
       ``,
       `### Accounts (${accounts.length})`,
       ...accounts.map((a) => `- ${a.name} (${a.type}): ₹${a.balance.toLocaleString("en-IN")}`),
       ``,
-      `### Recent Transactions (last 20)`,
+      `### Top Expense Categories (recent)`,
+      ...topCategories.map(([cat, amt]) => `- ${cat}: ₹${amt.toLocaleString("en-IN")}`),
+      ``,
+      `### Recent Transactions (last 30)`,
       ...recentTxns.map(
         (t) =>
-          `- ${t.date.toISOString().slice(0, 10)} | ${t.category?.name ?? "Unknown"} | ₹${t.amount.toLocaleString("en-IN")}${t.notes ? ` (${t.notes})` : ""}`,
+          `- ${t.date.toISOString().slice(0, 10)} | [${t.type}] | ${t.category?.name ?? "General"} | ₹${t.amount.toLocaleString("en-IN")}${t.notes ? ` (${t.notes})` : ""}`,
       ),
       ``,
-      `### Budget Status (${budgets.length} budgets)`,
+      `### Active Budgets (${budgets.length})`,
       ...budgets.map(
-        (b) => `- ${b.category?.name ?? "Unknown"}: limit ₹${b.limit.toLocaleString("en-IN")}`,
+        (b) =>
+          `- ${b.category?.name ?? "Category"}: Limit ₹${b.limit.toLocaleString("en-IN")} (${b.period})`,
       ),
       ``,
-      `### Financial Goals (${goals.length} goals)`,
+      `### Financial Savings Goals (${goals.length})`,
       ...goals.map(
         (g) =>
-          `- ${g.name}: ₹${g.currentAmount.toLocaleString("en-IN")} / ₹${g.targetAmount.toLocaleString("en-IN")} (deadline: ${g.deadline?.toISOString().slice(0, 10) ?? "none"})`,
+          `- ${g.name} [${g.type}]: Saved ₹${g.currentAmount.toLocaleString("en-IN")} of ₹${g.targetAmount.toLocaleString("en-IN")} (Target Date: ${g.deadline ? g.deadline.toISOString().slice(0, 10) : "N/A"})`,
+      ),
+      ``,
+      `### Investments Portfolio (${investments.length})`,
+      ...investments.map(
+        (inv) =>
+          `- ${inv.name} (${inv.assetClass}): Value ₹${inv.currentValue.toLocaleString("en-IN")} (Invested: ₹${inv.investedAmount.toLocaleString("en-IN")})`,
       ),
     ];
 
