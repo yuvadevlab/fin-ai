@@ -1,19 +1,21 @@
 name: 🛡️ Build & Quality Validation
 
 on:
-  push:
-    branches: [dev]
   pull_request:
-    branches: [main, dev]
+    branches:
+      - dev
+      - main
 
-# ⚡ Prevents duplicate/redundant parallel workflow runs on the same PR
+permissions:
+  contents: read
+
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   validate:
-    name: 🔍 Lint, Typecheck, Test & Build Monorepo
+    name: 🔍 Lint, Typecheck, Test & Build
     runs-on: ubuntu-latest
 
     steps:
