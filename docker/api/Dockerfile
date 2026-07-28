@@ -43,9 +43,10 @@ RUN pnpm --filter @finai/api deploy --prod --legacy /app/pruned
 RUN mkdir -p /app/pruned/prisma
 RUN cp -R apps/api/prisma/* /app/pruned/prisma/ 2>/dev/null || true
 
-# Copy entrypoint script for automated migration and seed
+# Copy entrypoint script for automated migration and seed (convert CRLF to LF for Windows compatibility)
 COPY docker/api/entrypoint.sh /app/pruned/entrypoint.sh
-RUN chmod +x /app/pruned/entrypoint.sh
+RUN sed -i 's/\r$//' /app/pruned/entrypoint.sh && chmod +x /app/pruned/entrypoint.sh
+
 
 # ------------------------------------------------------------------------------
 # Stage 3: Production Runner Stage
