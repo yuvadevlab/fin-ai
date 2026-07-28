@@ -1,6 +1,6 @@
 import { Controller, Get, Patch, Req, Body, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Prisma } from "@finai/database";
+import { Prisma } from "@prisma/client";
 import { UserPreferences } from "@finai/shared-types";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";

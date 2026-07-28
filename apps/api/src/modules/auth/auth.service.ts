@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/co
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcryptjs";
-import { WorkspaceType, WorkspaceRole } from "@finai/database";
+import { WorkspaceType, WorkspaceRole } from "@prisma/client";
 import { LoginInput, RegisterInput } from "@finai/validation";
 
 @Injectable()

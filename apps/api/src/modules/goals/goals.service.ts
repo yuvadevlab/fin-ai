@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateGoalInput, UpdateGoalInput } from "@finai/validation";
 import { calculateGoalProgress } from "@finai/finance-engine";
-import { GoalType } from "@finai/database";
+import { GoalType } from "@prisma/client";
 
 @Injectable()
 export class GoalsService {

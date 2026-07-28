@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AccountType } from "@finai/database";
+import { AccountType } from "@prisma/client";
 import { CreateAccountInput, UpdateAccountInput } from "@finai/validation";
 
 @Injectable()

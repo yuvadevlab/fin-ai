@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";
-import { BudgetPeriod, TransactionType } from "@finai/database";
+import { BudgetPeriod, TransactionType } from "@prisma/client";
 
 @Injectable()
 export class BudgetsService {

@@ -30,8 +30,8 @@ COPY apps/api ./apps/api
 # Install dependencies for the workspace
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Generate Prisma Client
-RUN pnpm --filter @finai/database db:generate
+# Generate Prisma Client directly for @finai/api
+RUN pnpm --filter @finai/api db:generate
 
 # Build packages and NestJS API
 RUN pnpm --filter @finai/api... build
@@ -39,12 +39,13 @@ RUN pnpm --filter @finai/api... build
 # Deploy pruned production dependencies for @finai/api
 RUN pnpm --filter @finai/api deploy --prod --legacy /app/pruned
 
-# Copy generated Prisma Client engine into the pruned deployment output
-RUN mkdir -p /app/pruned/node_modules/.prisma /app/pruned/node_modules/@prisma
-RUN cp -R node_modules/.prisma/* /app/pruned/node_modules/.prisma/ 2>/dev/null || true
-RUN cp -R node_modules/@prisma/* /app/pruned/node_modules/@prisma/ 2>/dev/null || true
-RUN cp -R packages/database/node_modules/.prisma/* /app/pruned/node_modules/.prisma/ 2>/dev/null || true
-RUN cp -R packages/database/node_modules/@prisma/* /app/pruned/node_modules/@prisma/ 2>/dev/null || true
+# Copy Prisma schema & migrations folder into pruned directory for runtime migrations
+RUN mkdir -p /app/pruned/prisma
+RUN cp -R apps/api/prisma/* /app/pruned/prisma/ 2>/dev/null || true
+
+# Copy entrypoint script for automated migration and seed
+COPY docker/api/entrypoint.sh /app/pruned/entrypoint.sh
+RUN chmod +x /app/pruned/entrypoint.sh
 
 # ------------------------------------------------------------------------------
 # Stage 3: Production Runner Stage
@@ -71,8 +72,9 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/health || exit 1
 
-# Use dumb-init as pid 1 for proper Unix signal forwarding (SIGTERM / SIGINT)
-ENTRYPOINT ["dumb-init", "--"]
+# Use dumb-init and entrypoint script for signal handling & automatic migrations
+ENTRYPOINT ["dumb-init", "--", "/app/entrypoint.sh"]
 
 # Start NestJS API runtime
 CMD ["node", "dist/main.js"]
+

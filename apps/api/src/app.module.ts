@@ -14,7 +14,10 @@ import { CategoriesModule } from "./modules/categories/categories.module";
 import { SearchModule } from "./modules/search/search.module";
 import { MenuItemsModule } from "./modules/menu-items/menu-items.module";
 
+import { AppController } from "./app.controller";
+
 @Module({
+  controllers: [AppController],
   imports: [
     // Configuration
     ConfigModule.forRoot({

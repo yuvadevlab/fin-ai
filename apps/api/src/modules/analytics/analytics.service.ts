@@ -6,7 +6,7 @@ import {
   calculateSavingsRate,
   calculateFinancialHealthScore,
 } from "@finai/finance-engine";
-import { TransactionType } from "@finai/database";
+import { TransactionType } from "@prisma/client";
 
 @Injectable()
 export class AnalyticsService {

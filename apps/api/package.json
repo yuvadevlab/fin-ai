@@ -6,6 +6,9 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "node --loader ts-node/esm prisma/seed.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "clean": "rm -rf dist .turbo",
     "typecheck": "tsc --noEmit",
@@ -13,7 +16,6 @@
   },
   "dependencies": {
     "@finai/ai-engine": "workspace:*",
-    "@finai/database": "workspace:*",
     "@finai/finance-engine": "workspace:*",
     "@finai/logger": "workspace:*",
     "@finai/shared-types": "workspace:*",
@@ -26,6 +28,8 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/swagger": "^7.4.2",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
@@ -33,6 +37,8 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "pg": "^8.22.0",
+    "prisma": "^7.8.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^3.24.2"
@@ -44,6 +50,8 @@
     "@types/node": "^22.10.1",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
+    "@types/pg": "^8.20.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.1"
   }

@@ -15,10 +15,10 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "pnpm --filter @finai/database db:generate",
-    "db:migrate": "pnpm --filter @finai/database db:migrate",
-    "db:seed": "pnpm --filter @finai/database db:seed",
-    "db:studio": "pnpm --filter @finai/database db:studio",
+    "db:generate": "pnpm --filter @finai/api db:generate",
+    "db:migrate": "pnpm --filter @finai/api db:migrate",
+    "db:seed": "pnpm --filter @finai/api db:seed",
+    "db:studio": "pnpm --filter @finai/api exec prisma studio --schema=prisma/schema.prisma",
     "prepare": "husky"
   },
   "devDependencies": {

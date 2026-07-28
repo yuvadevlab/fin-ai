@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma, TransactionType } from "@finai/database";
+import { Prisma, TransactionType } from "@prisma/client";
 import {
   CreateTransactionInput,
   UpdateTransactionInput,

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateInvestmentInput } from "@finai/validation";
 import { calculateAssetAllocation, calculatePortfolioValue } from "@finai/finance-engine";
-import { AssetClass } from "@finai/database";
+import { AssetClass } from "@prisma/client";
 
 @Injectable()
 export class InvestmentsService {

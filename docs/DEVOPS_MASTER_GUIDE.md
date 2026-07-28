@@ -70,16 +70,14 @@ docker compose up -d --build
 docker compose ps
 ```
 
-### Step 3: Schema Migrations & Data Initialization
+### Step 3: Zero-Manual-Input Automated Database Initialization
 
-Execute Prisma ORM database migrations and initial seed scripts:
+Database migrations and initial seed data are **100% automated on container startup** via `entrypoint.sh`. When `docker compose up -d` launches `fin-ai-api`, pending schema migrations and system seed data run automatically.
+
+_(Optional manual verification / override command if needed)_:
 
 ```powershell
-# Apply database schema migrations
-docker exec -it fin-ai-api npx prisma migrate deploy --schema=packages/database/prisma/schema.prisma
-
-# Seed initial system categories and default workspace assets
-docker exec -it fin-ai-api npx prisma db seed --schema=packages/database/prisma/schema.prisma
+docker exec -it fin-ai-api npx prisma migrate deploy
 ```
 
 ---
