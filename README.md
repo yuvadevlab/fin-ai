@@ -54,11 +54,6 @@ Click any link below to navigate to the standalone documentation for that applic
 - ✅ **[`packages/validation`](packages/validation/README.md)**: Zod validation schemas and type inferences shared across forms and API DTOs.
 - 🏷️ **[`packages/shared-types`](packages/shared-types/README.md)**: Shared TypeScript interfaces, enums (`AccountType`, `TransactionType`), and API payload types.
 
-### Infrastructure & Docker Manuals
-
-- 📖 **[`DevOps Master Guide`](docs/DEVOPS_MASTER_GUIDE.md)**: Master production Docker guide for Windows Server hosting (`D:\server\repos\fin-ai`).
-- 🐳 **[`docker-compose.yml`](docker-compose.yml)**: Multi-container orchestration (PostgreSQL, NestJS API, Next.js Web, Nginx reverse proxy).
-
 ---
 
 ## Monorepo Architecture Map
