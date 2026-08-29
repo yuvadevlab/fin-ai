@@ -10,6 +10,7 @@ import { AppearanceSync, useAuth } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
+import { useIsClient } from "@/hooks";
 
 function CustomLinkComponent({
   href,
@@ -34,8 +35,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // useIsClient returns false on the server and true on the client (see hooks/useIsClient.ts).
+  // This ensures both server and initial client renders agree on the "Personal Vault"
+  // fallback, preventing a hydration mismatch when user is loaded from localStorage.
+  const isClient = useIsClient();
+
   const sidebar = useMemo(() => {
-    const userName = user?.name ? `${user.name}'s FinAI` : "Personal Vault";
+    const userName = isClient && user?.name ? `${user.name}'s FinAI` : "Personal Vault";
     return (
       <Sidebar
         pathname={pathname}
@@ -45,7 +51,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         planSyncPercentage={100}
       />
     );
-  }, [pathname, user]);
+  }, [pathname, user, isClient]);
 
   const topbar = useMemo(
     () => (

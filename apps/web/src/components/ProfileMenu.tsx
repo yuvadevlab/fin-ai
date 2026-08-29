@@ -13,19 +13,25 @@ import {
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/providers";
+import { useIsClient } from "@/hooks";
 
 export function ProfileMenu() {
   const { user, logout } = useAuth();
+  const isClient = useIsClient();
 
-  const name = user?.name || "User";
-  const email = user?.email || "";
+  // Guard with isClient so server + initial client render agree on fallbacks,
+  // preventing a hydration mismatch when user is loaded from localStorage.
+  const name = isClient ? (user?.name ?? "User") : "User";
+  const email = isClient ? (user?.email ?? "") : "";
   const initials =
-    name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2) || "U";
+    (isClient && user?.name
+      ? user.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : null) ?? "U";
 
   return (
     <DropdownMenu>
