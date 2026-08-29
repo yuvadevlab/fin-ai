@@ -33,7 +33,8 @@ export function inrShort(n: number): string {
   const sign = n < 0 ? "-" : "";
   if (abs >= 100000) return sign + "₹" + (abs / 100000).toFixed(1) + "L";
   if (abs >= 1000) return sign + "₹" + Math.round(abs / 1000) + "k";
-  return sign + "₹" + abs;
+  const showDecimals = Number(abs.toFixed(2)) % 1 !== 0;
+  return sign + "₹" + (showDecimals ? abs.toFixed(2) : abs.toString());
 }
 
 export const CHART_COLORS = PIE_COLORS;

@@ -2,7 +2,6 @@
 
 import { RefreshCw } from "lucide-react";
 import { AIInsightCard, AISuggestionsDialog, type AISuggestion } from "@finai/ui";
-import { useWorkspace } from "@/providers";
 import { useAiInsight, type InsightPage } from "../api/useAiInsight";
 
 interface LiveAIInsightCardProps {
@@ -29,9 +28,7 @@ export function LiveAIInsightCard({
   suggestionsTitle,
   suggestionsDescription,
 }: LiveAIInsightCardProps) {
-  const { workspaceId } = useWorkspace();
   const { text, isStreaming, isError, refetch } = useAiInsight({
-    workspaceId,
     page,
     enabled: false, // Don't auto-generate on mount
   });

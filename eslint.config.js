@@ -19,6 +19,7 @@ export default tseslint.config(
       "**/.vercel/**",
       "**/out/**",
       "**/tsup.config.bundled*",
+      "**/next-env.d.ts",
     ],
   },
   {

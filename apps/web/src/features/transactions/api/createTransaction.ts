@@ -4,19 +4,16 @@ import { CreateTransactionInput } from "@finai/validation";
 import { toast } from "@finai/ui";
 import { Transaction } from "./getTransactions";
 
-export function useCreateTransaction(workspaceId: string | null) {
+export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation<Transaction, Error, CreateTransactionInput>({
-    mutationFn: (input) =>
-      apiClient.post<Transaction>(`workspaces/${workspaceId}/transactions`, input),
+    mutationFn: (input) => apiClient.post<Transaction>("transactions", input),
     onSuccess: () => {
-      // Invalidate transactions query
-      queryClient.invalidateQueries({ queryKey: ["transactions", workspaceId] });
-      // Invalidate accounts to update balances
-      queryClient.invalidateQueries({ queryKey: ["accounts", workspaceId] });
-      // Invalidate analytics query for dashboard
-      queryClient.invalidateQueries({ queryKey: ["analytics", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       toast.success("Transaction created successfully");
     },
     onError: (error) => {

@@ -17,12 +17,15 @@
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "node --loader ts-node/esm prisma/seed.ts",
+    "db:seed": "ts-node --esm prisma/seed.ts",
     "db:studio": "prisma studio",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "build": "tsup",
     "clean": "rm -rf .turbo dist"
+  },
+  "prisma": {
+    "seed": "ts-node --esm prisma/seed.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

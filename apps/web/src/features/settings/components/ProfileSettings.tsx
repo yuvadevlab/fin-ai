@@ -56,7 +56,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
           type: "text",
           name: "email",
           label: "Email",
-          placeholder: "name@family.com",
+          placeholder: "name@example.com",
         }}
         value={email}
         onChange={(n, v) => setEmail(v)}

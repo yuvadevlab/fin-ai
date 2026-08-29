@@ -36,7 +36,7 @@ export const PAGE_INSIGHT_PROMPTS = {
 
   reports: `Compare my income, expenses, and savings rate this month with my prior financial stats. Give me ONE concise, personalized report insight (2-3 sentences max) highlighting the most significant shift. Speak directly to me using "you" and "your".`,
 
-  family: `Analyze my family workspace's shared balance, goals, or budgets. Give me ONE concise, personalized family insight (2-3 sentences max) on how we are doing and how we can optimize our shared family finances. Speak directly to me using "you" and "your".`,
+  health: `Analyze my overall financial health score, net worth, savings rate, and budget adherence. Give me ONE concise, personalized insight (2-3 sentences max) on my biggest strength and one area to improve. Speak directly to me using "you" and "your".`,
 } as const;
 
 export type InsightPage = keyof typeof PAGE_INSIGHT_PROMPTS;

@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
 import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
 import { TransactionDialog } from "./TransactionDialog";
-import { useActiveWorkspace } from "@/hooks";
 import { useTransactions } from "../api/getTransactions";
 import { useDeleteTransaction } from "../api/deleteTransaction";
 import { useCategories } from "@/features/categories/api/getCategories";
@@ -14,7 +13,6 @@ import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
-import { useProfile } from "@/features/settings/api/profile";
 import { format } from "date-fns";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
@@ -30,10 +28,8 @@ export function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const { activeWorkspaceId } = useActiveWorkspace();
-  const { data: profile } = useProfile();
-  const { data: categories = [] } = useCategories(activeWorkspaceId);
-  const { data: accounts = [] } = useAccounts(activeWorkspaceId);
+  const { data: categories = [] } = useCategories();
+  const { data: accounts = [] } = useAccounts();
 
   const queryFilter = useMemo(() => {
     const filter: TransactionFilterInput = {
@@ -52,8 +48,8 @@ export function TransactionsPage() {
     return filter;
   }, [selectedFilter, search, categoryId, accountId, dateRange, page, pageSize]);
 
-  const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
-  const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
+  const { data: response, isLoading } = useTransactions(queryFilter);
+  const deleteTransaction = useDeleteTransaction();
 
   const activeFilterCount =
     (categoryId !== "all" ? 1 : 0) +
@@ -93,7 +89,7 @@ export function TransactionsPage() {
     <PageContainer>
       <PageHeader
         title="Transactions"
-        description="All income, expenses, and transfers across your workspaces."
+        description="All income, expenses, and transfers."
         actions={
           <TransactionDialog
             trigger={
@@ -130,8 +126,6 @@ export function TransactionsPage() {
         </div>
 
         <DateRangeFilter
-          cycleStartDay={profile?.preferences?.cycleStartDay || 1}
-          cyclePeriod={profile?.preferences?.cyclePeriod || "MONTHLY"}
           onRangeChange={(range) => {
             setDateRange(range);
             setPage(1);

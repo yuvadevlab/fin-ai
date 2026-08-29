@@ -14,25 +14,18 @@ export interface DashboardStats {
   goalCount: number;
 }
 
-export const dashboardStatsQueryKey = (workspaceId: string) =>
-  ["analytics", "dashboard", workspaceId] as const;
+export const dashboardStatsQueryKey = () => ["analytics", "dashboard"] as const;
 
-export function useDashboardStats(workspaceId: string | null) {
+export function useDashboardStats() {
   return useQuery<DashboardStats>({
-    queryKey: dashboardStatsQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<DashboardStats>(`workspaces/${workspaceId}/analytics/dashboard`),
-    enabled: !!workspaceId,
+    queryKey: dashboardStatsQueryKey(),
+    queryFn: () => apiClient.get<DashboardStats>("analytics/dashboard"),
   });
 }
 
-export async function prefetchDashboardStats(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchDashboardStats(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: dashboardStatsQueryKey(workspaceId),
-    queryFn: () =>
-      serverFetch<DashboardStats>(`workspaces/${workspaceId}/analytics/dashboard`, token),
+    queryKey: dashboardStatsQueryKey(),
+    queryFn: () => serverFetch<DashboardStats>("analytics/dashboard", token),
   });
 }

@@ -8,6 +8,8 @@ export interface TransactionFormProps {
   onChange: (name: string, value: string) => void;
   accounts: { label: string; value: string }[];
   categories: { label: string; value: string }[];
+  onAddCategory?: (initialName?: string) => void;
+  onAddAccount?: (initialName?: string) => void;
 }
 
 export function TransactionForm({
@@ -16,6 +18,8 @@ export function TransactionForm({
   onChange,
   accounts,
   categories,
+  onAddCategory,
+  onAddAccount,
 }: TransactionFormProps) {
   const fields: FormField[] = [
     {
@@ -40,12 +44,20 @@ export function TransactionForm({
       name: "category",
       label: "Category",
       options: categories,
+      searchable: true,
+      searchPlaceholder: "Search category...",
+      onAddNew: onAddCategory,
+      addNewLabel: "+ Add Category",
     },
     {
       type: "select",
       name: "account",
       label: "Account",
       options: accounts,
+      searchable: true,
+      searchPlaceholder: "Search account...",
+      onAddNew: onAddAccount,
+      addNewLabel: "+ Link Account",
     },
     // Dynamically show "To Account" if kind is transfer
     ...(values.kind === "transfer"
@@ -55,6 +67,10 @@ export function TransactionForm({
             name: "toAccount",
             label: "To Account",
             options: accounts,
+            searchable: true,
+            searchPlaceholder: "Search destination account...",
+            onAddNew: onAddAccount,
+            addNewLabel: "+ Link Account",
           },
         ]
       : []),
@@ -69,7 +85,7 @@ export function TransactionForm({
       label: "Notes",
       placeholder: "Optional notes...",
       autoComplete: "off",
-      rows: 3,
+      rows: 2,
     },
   ];
 

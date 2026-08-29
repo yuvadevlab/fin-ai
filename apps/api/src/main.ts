@@ -30,7 +30,7 @@ async function bootstrap() {
   // Swagger / OpenAPI
   const config = new DocumentBuilder()
     .setTitle("FinAI API")
-    .setDescription("AI-powered Personal & Family Finance Platform API")
+    .setDescription("AI-powered Personal Finance Platform API")
     .setVersion("1.0")
     .addBearerAuth()
     .build();

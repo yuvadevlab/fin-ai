@@ -10,6 +10,7 @@ import { Textarea } from "../primitives/textarea";
 import { Label } from "@radix-ui/react-label";
 import React from "react";
 import { DatePicker } from "../primitives/date-picker";
+import { SearchableSelect } from "../primitives/searchable-select";
 
 export interface BaseField {
   name: string;
@@ -37,7 +38,12 @@ export interface SelectField
   options: {
     label: string;
     value: string;
+    group?: string;
   }[];
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  onAddNew?: (searchQuery: string) => void;
+  addNewLabel?: string;
 }
 
 export type FormField = InputField | TextareaField | SelectField;
@@ -70,24 +76,37 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
           onChange={(e) => onChange?.(field.name, e.target.value)}
         />
       ) : field.type === "select" ? (
-        <Select
-          name={field.name}
-          value={value}
-          required={field.required}
-          onValueChange={(val) => onChange?.(field.name, val)}
-        >
-          <SelectTrigger id={field.id || field.name}>
-            <SelectValue placeholder={field.placeholder ?? "Select an option"} />
-          </SelectTrigger>
+        field.searchable || field.onAddNew || field.options.length > 6 ? (
+          <SearchableSelect
+            id={field.id || field.name}
+            options={field.options}
+            value={value}
+            onChange={(val) => onChange?.(field.name, val)}
+            placeholder={field.placeholder ?? "Select an option"}
+            searchPlaceholder={field.searchPlaceholder ?? `Search ${field.label.toLowerCase()}...`}
+            onAddNew={field.onAddNew}
+            addNewLabel={field.addNewLabel ?? `Add new ${field.label.toLowerCase()}`}
+          />
+        ) : (
+          <Select
+            name={field.name}
+            value={value}
+            required={field.required}
+            onValueChange={(val) => onChange?.(field.name, val)}
+          >
+            <SelectTrigger id={field.id || field.name}>
+              <SelectValue placeholder={field.placeholder ?? "Select an option"} />
+            </SelectTrigger>
 
-          <SelectContent>
-            {field.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectContent>
+              {field.options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )
       ) : field.type === "date" ? (
         <DatePicker
           value={value}

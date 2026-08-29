@@ -5,12 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
 import { TransactionDialog } from "../../transactions/components";
-import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/components";
 import { SearchDropdown } from "../../search/components/SearchDropdown";
-import { useWorkspace, AppearanceSync } from "@/providers";
-import { useMenuItems } from "../api/getMenuItems";
+import { AppearanceSync, useAuth } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
-import { useActiveWorkspace } from "@/hooks";
+import { ProfileMenu } from "@/components/ProfileMenu";
+import { NotificationsMenu } from "@/components/NotificationsMenu";
 
 function CustomLinkComponent({
   href,
@@ -30,35 +29,27 @@ function CustomLinkComponent({
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { workspaceId } = useWorkspace();
+  const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { data: menuItems } = useMenuItems();
-  const { activeWorkspace } = useActiveWorkspace();
-
   const sidebar = useMemo(() => {
-    const memberCount = activeWorkspace?.members?.length ?? 1;
-    const planText = activeWorkspace?.type === "FAMILY" ? "Family Plan" : "Personal Workspace";
-    const detailsText = `${memberCount} member${memberCount > 1 ? "s" : ""} · 100% synced`;
-
+    const userName = user?.name ? `${user.name}'s FinAI` : "Personal Vault";
     return (
       <Sidebar
         pathname={pathname}
         LinkComponent={CustomLinkComponent}
-        menuItems={menuItems}
-        planName={activeWorkspace?.name || planText}
-        planDetails={detailsText}
+        planName={userName}
+        planDetails="Personal Edition · 100% Synced"
         planSyncPercentage={100}
       />
     );
-  }, [pathname, menuItems, activeWorkspace]);
+  }, [pathname, user]);
 
   const topbar = useMemo(
     () => (
       <TopBar
-        workspaceMenu={<WorkspaceMenu />}
         notificationsMenu={FEATURE_FLAGS.NOTIFICATIONS ? <NotificationsMenu /> : null}
         profileMenu={<ProfileMenu />}
         onAddTransactionClick={() => setIsDialogOpen(true)}
@@ -72,18 +63,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <>
       <AppearanceSync />
       <AppShell sidebar={sidebar} topbar={topbar}>
-        {/* Search results dropdown — rendered inside the shell so it floats above content */}
+        {/* Search results dropdown — floats above content */}
         {searchQuery.trim().length >= 2 && (
           <div
             ref={searchRef}
             className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4 md:px-8"
           >
             <div className="pointer-events-auto w-full max-w-lg">
-              <SearchDropdown
-                workspaceId={workspaceId}
-                query={searchQuery}
-                onClose={() => setSearchQuery("")}
-              />
+              <SearchDropdown query={searchQuery} onClose={() => setSearchQuery("")} />
             </div>
           </div>
         )}

@@ -4,29 +4,28 @@ import { serverFetch } from "@/lib/server-fetch";
 
 export interface Goal {
   id: string;
-  workspaceId: string;
+  userId: string;
   name: string;
   targetAmount: number;
   currentAmount: number;
-  deadline: string;
-  type: "PERSONAL" | "FAMILY";
+  deadline?: string | null;
+  type?: "PERSONAL";
   createdAt: string;
   updatedAt: string;
 }
 
-export const goalsQueryKey = (workspaceId: string) => ["goals", workspaceId] as const;
+export const goalsQueryKey = () => ["goals"] as const;
 
-export function useGoals(workspaceId: string | null) {
+export function useGoals() {
   return useQuery<Goal[]>({
-    queryKey: goalsQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<Goal[]>(`workspaces/${workspaceId}/goals`),
-    enabled: !!workspaceId,
+    queryKey: goalsQueryKey(),
+    queryFn: () => apiClient.get<Goal[]>("goals"),
   });
 }
 
-export async function prefetchGoals(queryClient: QueryClient, workspaceId: string, token: string) {
+export async function prefetchGoals(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: goalsQueryKey(workspaceId),
-    queryFn: () => serverFetch<Goal[]>(`workspaces/${workspaceId}/goals`, token),
+    queryKey: goalsQueryKey(),
+    queryFn: () => serverFetch<Goal[]>("goals", token),
   });
 }

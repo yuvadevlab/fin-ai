@@ -11,9 +11,21 @@ export interface CategoryFormProps {
   values: Record<string, string>;
   errors: Record<string, string>;
   onChange: (name: string, value: string) => void;
+  groupOptions?: { label: string; value: string }[];
 }
 
-export function CategoryForm({ values, errors, onChange }: CategoryFormProps) {
+export function CategoryForm({
+  values,
+  errors,
+  onChange,
+  groupOptions = [
+    { label: "Income", value: "Income" },
+    { label: "Fixed Expenses", value: "Fixed Expenses" },
+    { label: "Variable Expenses", value: "Variable Expenses" },
+    { label: "Savings & Investments", value: "Savings & Investments" },
+    { label: "Transfer", value: "Transfer" },
+  ],
+}: CategoryFormProps) {
   const [isSuggesting, setIsSuggesting] = useState(false);
   const { mutate: suggestEmoji } = useSuggestEmoji();
 
@@ -21,7 +33,7 @@ export function CategoryForm({ values, errors, onChange }: CategoryFormProps) {
     try {
       const categoryName = values["name"];
       if (!categoryName) {
-        alert("Please enter a category name first");
+        toast.error("Please enter a category name first");
         return;
       }
 
@@ -57,13 +69,8 @@ export function CategoryForm({ values, errors, onChange }: CategoryFormProps) {
     {
       type: "select",
       name: "group",
-      label: "Group",
-      options: [
-        { label: "Fixed Expenses", value: "Fixed Expenses" },
-        { label: "Variable Expenses", value: "Variable Expenses" },
-        { label: "Savings & Investments", value: "Savings & Investments" },
-        { label: "Income", value: "Income" },
-      ],
+      label: "Category Group",
+      options: groupOptions,
     },
   ];
 

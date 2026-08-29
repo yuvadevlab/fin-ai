@@ -7,12 +7,10 @@ import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { formatINR } from "@finai/finance-engine";
 import { useBudgets } from "../api/getBudgets";
 import { BudgetDialog } from "./BudgetDialog";
-import { useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 
 export function BudgetsPage() {
-  const { workspaceId } = useWorkspace();
-  const { data: rawBudgets } = useBudgets(workspaceId);
+  const { data: rawBudgets } = useBudgets();
   // Guard against non-array during hydration
   const budgets = Array.isArray(rawBudgets) ? rawBudgets : [];
 

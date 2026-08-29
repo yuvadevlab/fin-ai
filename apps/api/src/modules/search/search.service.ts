@@ -29,7 +29,7 @@ export interface SearchResults {
 export class SearchService {
   constructor(private prisma: PrismaService) {}
 
-  async search(workspaceId: string, q: string): Promise<SearchResults> {
+  async search(userId: string, q: string): Promise<SearchResults> {
     if (!q || q.trim().length < 2) {
       return { transactions: [], accounts: [], goals: [] };
     }
@@ -40,7 +40,7 @@ export class SearchService {
       // Search transactions by notes, category name, or account name
       this.prisma.client.transaction.findMany({
         where: {
-          workspaceId,
+          userId,
           OR: [
             { notes: { contains: query, mode: "insensitive" } },
             { category: { name: { contains: query, mode: "insensitive" } } },
@@ -58,7 +58,7 @@ export class SearchService {
       // Search accounts by name
       this.prisma.client.account.findMany({
         where: {
-          workspaceId,
+          userId,
           isActive: true,
           name: { contains: query, mode: "insensitive" },
         },
@@ -69,7 +69,7 @@ export class SearchService {
       // Search goals by name
       this.prisma.client.goal.findMany({
         where: {
-          workspaceId,
+          userId,
           name: { contains: query, mode: "insensitive" },
         },
         select: { id: true, name: true, targetAmount: true, currentAmount: true },

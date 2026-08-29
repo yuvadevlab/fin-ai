@@ -5,7 +5,7 @@ import { SectionHeader } from "./SectionHeader";
 
 interface ChartCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
-  hint?: string;
+  hint?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -14,7 +14,7 @@ export function ChartCard({ title, hint, children, className, ...props }: ChartC
     <ContentCard className={cn("p-6", className)} {...props}>
       <div className="mb-4 flex items-center justify-between">
         <SectionHeader title={title} className="mb-0" />
-        {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
+        {hint && <div className="text-muted-foreground text-xs">{hint}</div>}
       </div>
       <div className="w-full">{children}</div>
     </ContentCard>

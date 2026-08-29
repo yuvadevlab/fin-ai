@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { History, MessageSquarePlus } from "lucide-react";
 import { PageContainer, PageHeader, Button } from "@finai/ui";
-import { useWorkspace } from "@/providers";
 import { useAiChat } from "../api/useAiChat";
 import { useConversations, useDeleteConversation } from "../api/useConversations";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
@@ -13,7 +12,6 @@ import { ChatInput } from "./ChatInput";
 import { ChatSidebar } from "./ChatSidebar";
 
 export function AiAdvisorPage() {
-  const { workspaceId } = useWorkspace();
   const [input, setInput] = useState("");
   const [showHistory, setShowHistory] = useState(false);
 
@@ -22,16 +20,16 @@ export function AiAdvisorPage() {
     isStreaming,
     conversationId,
     sendMessage,
-    stopStreaming,
-    startNewConversation,
+    startNewChat,
     loadConversation,
-  } = useAiChat({ workspaceId });
+    stopStreaming,
+  } = useAiChat();
 
-  const { data: conversations } = useConversations(workspaceId);
-  const deleteConversationMutation = useDeleteConversation(workspaceId);
+  const { data: conversations } = useConversations();
+  const deleteConversationMutation = useDeleteConversation();
 
-  const { data: stats } = useDashboardStats(workspaceId);
-  const { data: investments } = useInvestments(workspaceId);
+  const { data: stats } = useDashboardStats();
+  const { data: investments } = useInvestments();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +48,7 @@ export function AiAdvisorPage() {
     e.stopPropagation();
     await deleteConversationMutation.mutateAsync(id);
     if (conversationId === id) {
-      startNewConversation();
+      startNewChat();
     }
   };
 
@@ -74,7 +72,7 @@ export function AiAdvisorPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                startNewConversation();
+                startNewChat();
                 setShowHistory(false);
               }}
               className="cursor-pointer gap-1.5"
@@ -111,7 +109,7 @@ export function AiAdvisorPage() {
           investments={investments}
           onPromptClick={(p) => setInput(p)}
           onConversationClick={(c) => {
-            loadConversation(c);
+            loadConversation(c.id);
             setShowHistory(false);
           }}
           onDeleteConversation={handleDeleteConversation}

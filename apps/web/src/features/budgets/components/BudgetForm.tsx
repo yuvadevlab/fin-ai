@@ -7,37 +7,33 @@ export interface BudgetFormProps {
   errors: Record<string, string>;
   onChange: (name: string, value: string) => void;
   categories: { label: string; value: string }[];
+  onAddCategory?: (initialName?: string) => void;
 }
 
-export function BudgetForm({ values, errors, onChange, categories }: BudgetFormProps) {
+export function BudgetForm({
+  values,
+  errors,
+  onChange,
+  categories,
+  onAddCategory,
+}: BudgetFormProps) {
   const fields: FormField[] = [
     {
       type: "select",
       name: "categoryId",
       label: "Category",
       options: categories,
+      searchable: true,
+      searchPlaceholder: "Search category...",
+      onAddNew: onAddCategory,
+      addNewLabel: "+ Add Category",
     },
     {
       type: "number",
       name: "limit",
-      label: "Budget Limit",
-      placeholder: "0.00",
+      label: "Monthly Budget Limit (₹)",
+      placeholder: "e.g. 15000",
       autoComplete: "off",
-    },
-    {
-      type: "select",
-      name: "period",
-      label: "Period",
-      options: [
-        { label: "Weekly", value: "WEEKLY" },
-        { label: "Monthly", value: "MONTHLY" },
-        { label: "Yearly", value: "YEARLY" },
-      ],
-    },
-    {
-      type: "date",
-      name: "startDate",
-      label: "Start Date",
     },
   ];
 

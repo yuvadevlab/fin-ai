@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, ArrowUpRight, PieChart as PieIcon } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -24,17 +24,15 @@ import { TransactionDialog } from "../../transactions/components";
 import { useDashboardStats } from "../api/getDashboardStats";
 import { useMonthlyAnalytics } from "../api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "../api/getCategoryBreakdown";
-import { useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 
 export function DashboardPage() {
   const pathname = usePathname();
-  const { workspaceId } = useWorkspace();
 
-  const { data: stats } = useDashboardStats(workspaceId);
-  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(workspaceId);
-  const { data: rawCategoryBreakdown } = useCategoryBreakdown(workspaceId);
+  const { data: stats } = useDashboardStats();
+  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics();
+  const { data: rawCategoryBreakdown } = useCategoryBreakdown();
 
   // Guard against non-array API responses during hydration
   const monthlyCashFlow = useMemo(
@@ -46,6 +44,7 @@ export function DashboardPage() {
     () => (Array.isArray(rawCategoryBreakdown) ? rawCategoryBreakdown : []),
     [rawCategoryBreakdown],
   );
+
   const expenseData = useMemo(
     () => monthlyCashFlow.map((m) => ({ month: m.month, expense: m.expense })),
     [monthlyCashFlow],
@@ -60,10 +59,46 @@ export function DashboardPage() {
     [monthlyCashFlow],
   );
 
-  const pieData = useMemo(
-    () => categoryBreakdown.map((c) => ({ name: c.name, value: c.total })),
-    [categoryBreakdown],
-  );
+  // Group top 4 categories and bucket the rest into "Other" to keep pie chart & list compact
+  const { pieData, displayCategories, totalExpense } = useMemo(() => {
+    const sorted = [...categoryBreakdown]
+      .filter((c) => c.total > 0)
+      .sort((a, b) => b.total - a.total);
+    const total = sorted.reduce((sum, c) => sum + c.total, 0);
+
+    if (sorted.length <= 5) {
+      const items = sorted.map((c) => ({
+        ...c,
+        percentage: total > 0 ? Math.round((c.total / total) * 100) : 0,
+      }));
+      return {
+        pieData: sorted.map((c) => ({ name: c.name, value: c.total })),
+        displayCategories: items,
+        totalExpense: total,
+      };
+    }
+
+    const top4 = sorted.slice(0, 4);
+    const otherTotal = sorted.slice(4).reduce((sum, c) => sum + c.total, 0);
+    const combined = [
+      ...top4.map((c) => ({
+        ...c,
+        percentage: total > 0 ? Math.round((c.total / total) * 100) : 0,
+      })),
+      {
+        categoryId: "other-categories",
+        name: `Other (${sorted.length - 4} more)`,
+        total: otherTotal,
+        percentage: total > 0 ? Math.round((otherTotal / total) * 100) : 0,
+      },
+    ];
+
+    return {
+      pieData: combined.map((c) => ({ name: c.name, value: c.total })),
+      displayCategories: combined,
+      totalExpense: total,
+    };
+  }, [categoryBreakdown]);
 
   const savingsRate = stats?.savingsRate ?? 0;
   const incomeChange =
@@ -98,7 +133,7 @@ export function DashboardPage() {
     <PageContainer>
       <PageHeader
         title="Financial Overview"
-        description="Your aggregated wealth across accounts, investments, and goals in this workspace."
+        description="Your aggregated wealth across personal accounts, investments, and goals."
         actions={
           <TransactionDialog
             trigger={
@@ -160,11 +195,14 @@ export function DashboardPage() {
         </StatCard>
       </KPIGrid>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Main Charts & Analytics Grid */}
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+        {/* Left Column: Cash Flow & Trends (2 Cols) */}
         <div className="space-y-6 lg:col-span-2">
           <ChartCard title="Monthly Cash Flow" hint="Last 6 months">
             <CashFlowChart data={monthlyCashFlow} />
           </ChartCard>
+
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <ChartCard title="Expense Trend" hint="Monthly total">
               <ExpenseBarChart data={expenseData} />
@@ -175,33 +213,68 @@ export function DashboardPage() {
           </div>
         </div>
 
+        {/* Right Column: AI Insight & Category Allocation (1 Col) */}
         <div className="space-y-6">
           {FEATURE_FLAGS.AI_INSIGHT && <LiveAIInsightCard page="dashboard" cta="Review details" />}
-          <ChartCard title="Category Allocation" hint="This month">
-            <CategoryPie data={pieData} />
-            <ul className="mt-4 space-y-3">
-              {categoryBreakdown.map((c, i) => (
-                <li
-                  key={c.categoryId ?? c.name}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="size-2 rounded-full"
-                      style={{
-                        background: CHART_COLORS[i % CHART_COLORS.length],
-                      }}
-                    />
-                    <span className="text-muted-foreground">{c.name}</span>
-                  </div>
-                  <MoneyDisplay value={c.total} className="text-foreground font-medium" />
-                </li>
-              ))}
-            </ul>
+
+          <ChartCard
+            title="Category Allocation"
+            hint={
+              <Link
+                href="/categories"
+                className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
+              >
+                View all <ArrowUpRight className="size-3" />
+              </Link>
+            }
+          >
+            {pieData.length > 0 && totalExpense > 0 ? (
+              <div className="space-y-4">
+                <CategoryPie data={pieData} />
+
+                {/* Compact, fixed-height scrollable category breakdown */}
+                <div className="border-border/60 max-h-[175px] space-y-2.5 overflow-y-auto border-t pt-3 pr-1">
+                  {displayCategories.map((c, i) => (
+                    <div
+                      key={c.categoryId ?? c.name}
+                      className="flex items-center justify-between text-xs"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span
+                          className="size-2 shrink-0 rounded-full"
+                          style={{
+                            background: CHART_COLORS[i % CHART_COLORS.length],
+                          }}
+                        />
+                        <span className="text-foreground truncate font-medium">{c.name}</span>
+                        <span className="text-muted-foreground/80 text-[10px]">
+                          ({c.percentage}%)
+                        </span>
+                      </div>
+                      <MoneyDisplay
+                        value={c.total}
+                        className="text-foreground shrink-0 font-semibold"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-muted-foreground flex flex-col items-center justify-center py-10 text-center">
+                <div className="bg-secondary/60 mb-3 flex size-12 items-center justify-center rounded-full">
+                  <PieIcon className="text-muted-foreground/60 size-6" />
+                </div>
+                <p className="text-xs font-medium">No expenses logged this month</p>
+                <p className="text-muted-foreground/70 mt-0.5 text-[11px]">
+                  Add transactions to see category distribution
+                </p>
+              </div>
+            )}
           </ChartCard>
         </div>
       </div>
 
+      {/* Bottom Summary Stats */}
       <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <MiniStat
           label="Investment Value"

@@ -1,35 +1,33 @@
 import React from "react";
-import { Bell, ChevronDown, Plus, Search } from "lucide-react";
+import { Bell, Plus, Search } from "lucide-react";
 import { Button } from "../primitives/button";
 import { Input } from "../primitives/input";
 import { Avatar, AvatarFallback } from "../primitives/avatar";
 import { cn } from "../lib/utils";
 
 interface TopBarProps extends React.HTMLAttributes<HTMLElement> {
+  leftContent?: React.ReactNode;
   workspaceMenu?: React.ReactNode;
   notificationsMenu?: React.ReactNode;
   profileMenu?: React.ReactNode;
-  workspaceName?: string;
   avatarFallback?: string;
   searchPlaceholder?: string;
   onSearchChange?: (value: string) => void;
   onAddTransactionClick?: () => void;
   onNotificationsClick?: () => void;
-  onWorkspaceClick?: () => void;
   hasNotifications?: boolean;
 }
 
 export function TopBar({
+  leftContent,
   workspaceMenu,
   notificationsMenu,
   profileMenu,
-  workspaceName = "Sharma Family",
   avatarFallback = "AS",
-  searchPlaceholder = "Search transactions, insights…",
+  searchPlaceholder = "Search transactions, categories…",
   onSearchChange,
   onAddTransactionClick,
   onNotificationsClick,
-  onWorkspaceClick,
   hasNotifications = true,
   className,
   ...props
@@ -43,15 +41,11 @@ export function TopBar({
       {...props}
     >
       <div className="flex items-center gap-4">
-        {workspaceMenu ?? (
-          <button
-            onClick={onWorkspaceClick}
-            className="bg-secondary ring-border/80 hover:bg-secondary/80 focus-visible:ring-ring flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 ring-1 transition outline-none"
-          >
-            <span className="bg-primary size-2 rounded-full" />
-            <span className="text-foreground text-xs font-semibold">{workspaceName}</span>
-            <ChevronDown className="text-muted-foreground size-3" />
-          </button>
+        {leftContent ?? workspaceMenu ?? (
+          <div className="flex items-center gap-2">
+            <span className="bg-primary ring-primary/20 size-2.5 rounded-full ring-2" />
+            <span className="text-foreground text-sm font-semibold tracking-tight">FinAI</span>
+          </div>
         )}
       </div>
 

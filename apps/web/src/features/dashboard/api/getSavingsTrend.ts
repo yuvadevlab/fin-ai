@@ -7,32 +7,20 @@ export interface SavingsTrendPoint {
   value: number;
 }
 
-export const savingsTrendQueryKey = (workspaceId: string, months: number) =>
-  ["analytics", "savings-trend", workspaceId, months] as const;
+export const savingsTrendQueryKey = (months: number) =>
+  ["analytics", "savings-trend", months] as const;
 
-export function useSavingsTrend(workspaceId: string | null, months = 6) {
+export function useSavingsTrend(months = 6) {
   return useQuery<SavingsTrendPoint[]>({
-    queryKey: savingsTrendQueryKey(workspaceId ?? "", months),
-    queryFn: () =>
-      apiClient.get<SavingsTrendPoint[]>(
-        `workspaces/${workspaceId}/analytics/savings-trend?months=${months}`,
-      ),
-    enabled: !!workspaceId,
+    queryKey: savingsTrendQueryKey(months),
+    queryFn: () => apiClient.get<SavingsTrendPoint[]>(`analytics/savings-trend?months=${months}`),
   });
 }
 
-export async function prefetchSavingsTrend(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-  months = 6,
-) {
+export async function prefetchSavingsTrend(queryClient: QueryClient, token: string, months = 6) {
   await queryClient.prefetchQuery({
-    queryKey: savingsTrendQueryKey(workspaceId, months),
+    queryKey: savingsTrendQueryKey(months),
     queryFn: () =>
-      serverFetch<SavingsTrendPoint[]>(
-        `workspaces/${workspaceId}/analytics/savings-trend?months=${months}`,
-        token,
-      ),
+      serverFetch<SavingsTrendPoint[]>(`analytics/savings-trend?months=${months}`, token),
   });
 }

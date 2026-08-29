@@ -4,12 +4,11 @@ import { serverFetch } from "@/lib/server-fetch";
 
 export interface Budget {
   id: string;
-  workspaceId: string;
+  userId: string;
   categoryId: string;
   limit: number;
-  period: "WEEKLY" | "MONTHLY" | "YEARLY";
   startDate: string;
-  /** Computed by the API: total spent in this budget period */
+  /** Computed by the API: total spent in this month */
   spent?: number;
   /** Computed by the API: ON_TRACK | NEAR_LIMIT | OVER */
   status?: string;
@@ -20,23 +19,18 @@ export interface Budget {
   };
 }
 
-export const budgetsQueryKey = (workspaceId: string) => ["budgets", workspaceId] as const;
+export const budgetsQueryKey = () => ["budgets"] as const;
 
-export function useBudgets(workspaceId: string | null) {
+export function useBudgets() {
   return useQuery<Budget[]>({
-    queryKey: budgetsQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<Budget[]>(`workspaces/${workspaceId}/budgets`),
-    enabled: !!workspaceId,
+    queryKey: budgetsQueryKey(),
+    queryFn: () => apiClient.get<Budget[]>("budgets"),
   });
 }
 
-export async function prefetchBudgets(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchBudgets(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: budgetsQueryKey(workspaceId),
-    queryFn: () => serverFetch<Budget[]>(`workspaces/${workspaceId}/budgets`, token),
+    queryKey: budgetsQueryKey(),
+    queryFn: () => serverFetch<Budget[]>("budgets", token),
   });
 }

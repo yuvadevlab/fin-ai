@@ -7,13 +7,12 @@ import { MoneyDisplay, cn } from "@finai/ui";
 import { useSearch } from "../api/useSearch";
 
 interface SearchDropdownProps {
-  workspaceId: string | null;
   query: string;
   onClose: () => void;
 }
 
-export function SearchDropdown({ workspaceId, query, onClose }: SearchDropdownProps) {
-  const { data, isFetching } = useSearch(workspaceId, query);
+export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
+  const { data, isFetching } = useSearch(query);
 
   const hasResults =
     (data?.transactions?.length ?? 0) + (data?.accounts?.length ?? 0) + (data?.goals?.length ?? 0) >

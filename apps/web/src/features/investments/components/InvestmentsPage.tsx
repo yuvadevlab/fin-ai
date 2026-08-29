@@ -18,7 +18,6 @@ import {
 import { useInvestments, Investment } from "../api/getInvestments";
 import { InvestmentDialog } from "./InvestmentDialog";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
-import { useWorkspace } from "@/providers";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
   MUTUAL_FUND: "Mutual Fund",
@@ -33,8 +32,7 @@ const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
 };
 
 export function InvestmentsPage() {
-  const { workspaceId } = useWorkspace();
-  const { data: rawInvestments } = useInvestments(workspaceId);
+  const { data: rawInvestments } = useInvestments();
   // Guard against non-array during hydration
   const investments: Investment[] = useMemo(
     () =>

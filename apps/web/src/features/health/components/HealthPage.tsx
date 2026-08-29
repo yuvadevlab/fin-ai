@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PageContainer, PageHeader, DashboardTabs, ContentCard, Progress, cn } from "@finai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
-import { useWorkspace } from "@/providers";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -22,8 +21,7 @@ const RATING_LABEL: Record<string, string> = {
 
 export function HealthPage() {
   const pathname = usePathname();
-  const { workspaceId } = useWorkspace();
-  const { data: healthData } = useHealthScore(workspaceId);
+  const { data: healthData } = useHealthScore();
 
   const score = healthData?.score ?? 0;
   const metrics = useMemo(

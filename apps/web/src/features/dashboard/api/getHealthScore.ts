@@ -14,25 +14,18 @@ export interface HealthScoreData {
   rating: string;
 }
 
-export const healthScoreQueryKey = (workspaceId: string) =>
-  ["analytics", "health", workspaceId] as const;
+export const healthScoreQueryKey = () => ["analytics", "health"] as const;
 
-export function useHealthScore(workspaceId: string | null) {
+export function useHealthScore() {
   return useQuery<HealthScoreData>({
-    queryKey: healthScoreQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<HealthScoreData>(`workspaces/${workspaceId}/analytics/health`),
-    enabled: !!workspaceId,
+    queryKey: healthScoreQueryKey(),
+    queryFn: () => apiClient.get<HealthScoreData>("analytics/health"),
   });
 }
 
-export async function prefetchHealthScore(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchHealthScore(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: healthScoreQueryKey(workspaceId),
-    queryFn: () =>
-      serverFetch<HealthScoreData>(`workspaces/${workspaceId}/analytics/health`, token),
+    queryKey: healthScoreQueryKey(),
+    queryFn: () => serverFetch<HealthScoreData>("analytics/health", token),
   });
 }

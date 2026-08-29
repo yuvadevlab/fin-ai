@@ -6,7 +6,7 @@ export const createTransactionSchema = z.object({
   categoryId: z.string().uuid("Invalid category ID"),
   amount: z.number().refine((v) => v !== 0, "Amount cannot be zero"),
   date: z.string().date("Invalid date format"),
-  notes: z.string().max(500).optional(),
+  notes: z.string().max(500).optional().nullable(),
   type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]),
 });
 
@@ -17,7 +17,6 @@ export const updateTransactionSchema = createTransactionSchema.partial();
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;
 
 export const transactionFilterSchema = z.object({
-  workspace: z.string().optional(),
   category: z.string().optional(),
   account: z.string().optional(),
   type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),

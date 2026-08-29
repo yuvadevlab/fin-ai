@@ -10,7 +10,6 @@ import {
   Sparkles,
   Settings,
   Tag,
-  Users,
   HeartPulse,
   type LucideIcon,
 } from "lucide-react";
@@ -27,29 +26,8 @@ const IconMap: Record<string, LucideIcon> = {
   Sparkles,
   Settings,
   Tag,
-  Users,
   HeartPulse,
 };
-
-const routeFeatures = {
-  "/transactions": process.env.NEXT_PUBLIC_FEATURE_TRANSACTIONS === "true",
-  "/accounts": process.env.NEXT_PUBLIC_FEATURE_ACCOUNTS === "true",
-  "/budgets": process.env.NEXT_PUBLIC_FEATURE_BUDGETS === "true",
-  "/goals": process.env.NEXT_PUBLIC_FEATURE_GOALS === "true",
-  "/categories": process.env.NEXT_PUBLIC_FEATURE_CATEGORIES === "true",
-  "/investments": process.env.NEXT_PUBLIC_FEATURE_INVESTMENTS === "true",
-  "/reports": process.env.NEXT_PUBLIC_FEATURE_REPORTS === "true",
-  "/family": process.env.NEXT_PUBLIC_FEATURE_FAMILY === "true",
-  "/health": process.env.NEXT_PUBLIC_FEATURE_HEALTH === "true",
-  "/ai-advisor": process.env.NEXT_PUBLIC_FEATURE_AI_ADVISOR === "true",
-  "/settings": process.env.NEXT_PUBLIC_FEATURE_SETTINGS === "true",
-} as const;
-
-function isRouteEnabled(href: string) {
-  if (href === "/") return true;
-
-  return routeFeatures[href as keyof typeof routeFeatures] ?? true;
-}
 
 type NavItem = {
   href: string;
@@ -59,12 +37,13 @@ type NavItem = {
 
 const primaryNav: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { href: "/accounts", label: "Accounts", icon: Wallet },
-  { href: "/categories", label: "Categories", icon: Tag },
+  { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { href: "/budgets", label: "Budgets", icon: PiggyBank },
   { href: "/goals", label: "Goals", icon: Target },
   { href: "/investments", label: "Investments", icon: TrendingUp },
+  { href: "/health", label: "Financial Health", icon: HeartPulse },
+  { href: "/categories", label: "Categories", icon: Tag },
   { href: "/reports", label: "Reports", icon: FileBarChart },
 ];
 
@@ -101,9 +80,9 @@ export function Sidebar({
       {children}
     </a>
   ),
-  planName = "Family Plan",
-  planDetails = "3 members · 92% synced",
-  planSyncPercentage = 92,
+  planName = "Personal Vault",
+  planDetails = "Personal Edition · 100% Synced",
+  planSyncPercentage = 100,
   menuItems,
   className,
   ...props
@@ -131,31 +110,33 @@ export function Sidebar({
     );
   };
 
-  // Compute navigation lists dynamically if menuItems are loaded, otherwise fallback
+  // Compute navigation lists dynamically if menuItems are loaded, otherwise use built-in nav
   const visiblePrimaryNav = React.useMemo(() => {
     if (menuItems && menuItems.length > 0) {
-      return menuItems
-        .filter((item) => item.group === "OVERVIEW" && item.isActive)
+      const filtered = menuItems
+        .filter((item) => item.group.toUpperCase() === "OVERVIEW" && item.isActive)
         .map((item) => ({
           href: item.href,
           label: item.label,
           icon: IconMap[item.icon] ?? Settings,
         }));
+      if (filtered.length > 0) return filtered;
     }
-    return primaryNav.filter((item) => isRouteEnabled(item.href));
+    return primaryNav;
   }, [menuItems]);
 
   const visibleAdvancedNav = React.useMemo(() => {
     if (menuItems && menuItems.length > 0) {
-      return menuItems
-        .filter((item) => item.group === "INTELLIGENCE" && item.isActive)
+      const filtered = menuItems
+        .filter((item) => item.group.toUpperCase() === "INTELLIGENCE" && item.isActive)
         .map((item) => ({
           href: item.href,
           label: item.label,
           icon: IconMap[item.icon] ?? Settings,
         }));
+      if (filtered.length > 0) return filtered;
     }
-    return advancedNav.filter((item) => isRouteEnabled(item.href));
+    return advancedNav;
   }, [menuItems]);
 
   return (

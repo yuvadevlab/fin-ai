@@ -275,10 +275,10 @@ export function AccountDialog({
 
 1. **System Persona & Brand Limits**:
    - The AI advisor IS FinAI. NEVER recommend external apps or Google tools (e.g. Google Sheets, Excel, Mint, YNAB).
-   - Refer directly to FinAI's built-in features (FinAI Budgets, FinAI Goals, FinAI Portfolio Investments, Category Manager, Family Workspace).
+   - Refer directly to FinAI's built-in personal features: FinAI Accounts, FinAI Transactions, FinAI Budgets, FinAI Goals, FinAI Investments, FinAI AI Advisor, and Category Manager.
    - Format all currency figures using Indian Rupees (₹).
 2. **Strict Domain Scope Enforcement**:
-   - The AI advisor is EXCLUSIVELY a personal and family financial advisor.
+   - The AI advisor is EXCLUSIVELY a personal financial advisor.
    - IF A USER ASKS NON-FINANCIAL QUESTIONS (e.g. politics, trivia like "who is Tamil Nadu CM", coding/programming tasks, general writing, sports, recipes), THE AI MUST POLITELY DECLINE using the standard refusal template in `prompts.config.ts`.
 3. **Follow-Up Directives**:
    - Conclude interactive chat responses with 2 to 3 relevant follow-up questions under `### Follow-up Suggestions:`.
@@ -293,6 +293,28 @@ Before declaring a task resolved, every AI agent MUST verify:
 - [ ] Financial formulas & math reside in `@finai/finance-engine` (zero side-effects and zero I/O).
 - [ ] No inline Zod schemas created (all reside in `@finai/validation`).
 - [ ] Modals adhere to the 2-file feature pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`).
-- [ ] React Query mutations invalidate relevant workspace cache keys.
+- [ ] React Query mutations invalidate relevant user cache keys.
 - [ ] Tailwind classes use semantic color tokens (no hardcoded hex values or arbitrary colors).
 - [ ] Code passes typechecks (`pnpm --filter @finai/web typecheck`) and linting (`pnpm lint`).
+- [ ] Seed commands were NOT run automatically — user was instructed to run them manually.
+
+---
+
+## 8. Database & Seed Management Rules
+
+### Seed Script
+
+- The seed file lives at `packages/database/prisma/seed.ts`.
+- Run manually with: `pnpm --filter @finai/database db:seed`
+
+### CRITICAL: Agents MUST NEVER run seed commands automatically
+
+> **AI agents (Antigravity, Copilot, Claude) MUST NOT execute `db:seed`, `prisma db seed`, or any seed-related command without explicit user instruction.**
+
+1. If seed data is missing or stale, **tell the user** and provide the exact command to run:
+   ```bash
+   pnpm --filter @finai/database db:seed
+   ```
+2. **Never auto-seed** during `db:migrate`, `db:push`, or any other automated step.
+3. **Never delete or truncate** existing records. The seed script uses `upsert` exclusively.
+4. If a new seed entry is needed, add it to `packages/database/prisma/seed.ts` using `upsert`, then instruct the user to run the seed manually.

@@ -102,6 +102,9 @@ describe("formatters", () => {
   it("formats INR with Indian grouping", () => {
     expect(formatINR(125000)).toBe("₹1,25,000");
     expect(formatINR(-840)).toBe("-₹840");
+    expect(formatINR(125000.5)).toBe("₹1,25,000.50");
+    expect(formatINR(1234.56)).toBe("₹1,234.56");
+    expect(formatINR(-840.75)).toBe("-₹840.75");
   });
 
   it("formats short currency", () => {

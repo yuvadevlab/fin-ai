@@ -17,11 +17,12 @@ export function MoneyDisplay({
   const isNegative = value < 0;
   const isPositive = value > 0;
   const absValue = Math.abs(value);
+  const showDecimals = Number(absValue.toFixed(2)) % 1 !== 0;
   const formatted = absValue.toLocaleString("en-IN", {
     style: "currency",
     currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: showDecimals ? 2 : 0,
+    maximumFractionDigits: 2,
   });
 
   const sign = isNegative ? "-" : showSign && isPositive ? "+" : "";

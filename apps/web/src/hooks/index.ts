@@ -1,2 +1,2 @@
-export { useActiveWorkspace, type Workspace, type WorkspaceMember } from "./useActiveWorkspace";
+export { useTheme } from "./useTheme";
 export { useAppearance } from "./useAppearance";

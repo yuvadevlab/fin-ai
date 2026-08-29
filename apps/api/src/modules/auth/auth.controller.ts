@@ -2,7 +2,16 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UsePipes } from "@nestjs/
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
-import { loginSchema, registerSchema, LoginInput, RegisterInput } from "@finai/validation";
+import {
+  loginSchema,
+  registerSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  LoginInput,
+  RegisterInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+} from "@finai/validation";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -23,5 +32,21 @@ export class AuthController {
   @ApiOperation({ summary: "Register a new user" })
   register(@Body() body: RegisterInput) {
     return this.authService.register(body);
+  }
+
+  @Post("forgot-password")
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(forgotPasswordSchema))
+  @ApiOperation({ summary: "Request a password reset token" })
+  forgotPassword(@Body() body: ForgotPasswordInput) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post("reset-password")
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(resetPasswordSchema))
+  @ApiOperation({ summary: "Reset password using token" })
+  resetPassword(@Body() body: ResetPasswordInput) {
+    return this.authService.resetPassword(body.token, body.password);
   }
 }

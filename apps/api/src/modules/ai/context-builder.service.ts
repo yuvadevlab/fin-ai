@@ -1,28 +1,29 @@
 import { Injectable } from "@nestjs/common";
+import { formatINR } from "@finai/finance-engine";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class ContextBuilderService {
   constructor(private prisma: PrismaService) {}
 
-  async buildFinanceContext(workspaceId: string): Promise<string> {
+  async buildFinanceContext(userId: string): Promise<string> {
     const [accounts, recentTxns, budgets, goals, investments] = await Promise.all([
       this.prisma.client.account.findMany({
-        where: { workspaceId, isActive: true },
+        where: { userId, isActive: true },
         select: { name: true, type: true, balance: true },
       }),
       this.prisma.client.transaction.findMany({
-        where: { workspaceId },
+        where: { userId },
         include: { category: { select: { name: true, group: true } } },
         orderBy: { date: "desc" },
         take: 30,
       }),
       this.prisma.client.budget.findMany({
-        where: { workspaceId },
+        where: { userId },
         include: { category: { select: { name: true } } },
       }),
-      this.prisma.client.goal.findMany({ where: { workspaceId } }),
-      this.prisma.client.investment.findMany({ where: { workspaceId } }),
+      this.prisma.client.goal.findMany({ where: { userId } }),
+      this.prisma.client.investment.findMany({ where: { userId } }),
     ]);
 
     const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
@@ -49,40 +50,39 @@ export class ContextBuilderService {
 
     const lines = [
       `## FinAI User Financial Context`,
-      `Total Liquidity / Bank Balance: ₹${totalBalance.toLocaleString("en-IN")}`,
-      `Total Portfolio Investments: ₹${totalInvestments.toLocaleString("en-IN")}`,
-      `Recent Income (sample): ₹${totalIncome.toLocaleString("en-IN")}`,
-      `Recent Expenses (sample): ₹${totalExpenses.toLocaleString("en-IN")}`,
-      `Net Cash Flow (sample): ₹${(totalIncome - totalExpenses).toLocaleString("en-IN")}`,
+      `Total Liquidity / Bank Balance: ${formatINR(totalBalance)}`,
+      `Total Portfolio Investments: ${formatINR(totalInvestments)}`,
+      `Recent Income (sample): ${formatINR(totalIncome)}`,
+      `Recent Expenses (sample): ${formatINR(totalExpenses)}`,
+      `Net Cash Flow (sample): ${formatINR(totalIncome - totalExpenses)}`,
       ``,
       `### Accounts (${accounts.length})`,
-      ...accounts.map((a) => `- ${a.name} (${a.type}): ₹${a.balance.toLocaleString("en-IN")}`),
+      ...accounts.map((a) => `- ${a.name} (${a.type}): ${formatINR(a.balance)}`),
       ``,
       `### Top Expense Categories (recent)`,
-      ...topCategories.map(([cat, amt]) => `- ${cat}: ₹${amt.toLocaleString("en-IN")}`),
+      ...topCategories.map(([cat, amt]) => `- ${cat}: ${formatINR(amt)}`),
       ``,
       `### Recent Transactions (last 30)`,
       ...recentTxns.map(
         (t) =>
-          `- ${t.date.toISOString().slice(0, 10)} | [${t.type}] | ${t.category?.name ?? "General"} | ₹${t.amount.toLocaleString("en-IN")}${t.notes ? ` (${t.notes})` : ""}`,
+          `- ${t.date.toISOString().slice(0, 10)} | [${t.type}] | ${t.category?.name ?? "General"} | ${formatINR(t.amount)}${t.notes ? ` (${t.notes})` : ""}`,
       ),
       ``,
       `### Active Budgets (${budgets.length})`,
       ...budgets.map(
-        (b) =>
-          `- ${b.category?.name ?? "Category"}: Limit ₹${b.limit.toLocaleString("en-IN")} (${b.period})`,
+        (b) => `- ${b.category?.name ?? "Category"}: Monthly Limit ${formatINR(b.limit)}`,
       ),
       ``,
       `### Financial Savings Goals (${goals.length})`,
       ...goals.map(
         (g) =>
-          `- ${g.name} [${g.type}]: Saved ₹${g.currentAmount.toLocaleString("en-IN")} of ₹${g.targetAmount.toLocaleString("en-IN")} (Target Date: ${g.deadline ? g.deadline.toISOString().slice(0, 10) : "N/A"})`,
+          `- ${g.name}: Saved ${formatINR(g.currentAmount)} of ${formatINR(g.targetAmount)} (Target Date: ${g.deadline ? g.deadline.toISOString().slice(0, 10) : "N/A"})`,
       ),
       ``,
       `### Investments Portfolio (${investments.length})`,
       ...investments.map(
         (inv) =>
-          `- ${inv.name} (${inv.assetClass}): Value ₹${inv.currentValue.toLocaleString("en-IN")} (Invested: ₹${inv.investedAmount.toLocaleString("en-IN")})`,
+          `- ${inv.name} (${inv.assetClass}): Value ${formatINR(inv.currentValue)} (Invested: ${formatINR(inv.investedAmount)})`,
       ),
     ];
 

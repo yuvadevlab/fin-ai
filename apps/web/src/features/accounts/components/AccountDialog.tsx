@@ -4,34 +4,51 @@ import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createAccountSchema } from "@finai/validation";
 import { useCreateAccount } from "../api/createAccount";
-import { useWorkspace } from "@/providers";
 import { AccountForm } from "./AccountForm";
+import { Account } from "../api/getAccounts";
 
 export interface AccountDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  initialName?: string;
+  onSuccess?: (createdAccount: Account) => void;
 }
 
 export function AccountDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  initialName = "",
+  onSuccess,
 }: AccountDialogProps) {
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
-  const { workspaceId } = useWorkspace();
-  const createAccount = useCreateAccount(workspaceId);
+  const createAccount = useCreateAccount();
 
   const [values, setValues] = useState<Record<string, string>>({
-    name: "",
+    name: initialName,
     type: "BANK",
     balance: "0",
     currency: "INR",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setValues({
+        name: initialName,
+        type: "BANK",
+        balance: "0",
+        currency: "INR",
+      });
+      setErrors({});
+    }
+  }
 
   const handleChange = (name: string, value: string) => {
     setValues((prev) => ({
@@ -68,7 +85,8 @@ export function AccountDialog({
     }
 
     try {
-      await createAccount.mutateAsync(parseResult.data);
+      const createdAccount = await createAccount.mutateAsync(parseResult.data);
+      onSuccess?.(createdAccount);
       setOpen?.(false);
       // Reset form
       setValues({
@@ -91,7 +109,7 @@ export function AccountDialog({
       onOpenChange={setOpen}
       trigger={trigger}
       title="Link Account"
-      description="Link a new bank account, credit card, or wallet to your workspace."
+      description="Link a new bank account, credit card, or wallet."
       submitLabel="Link Account"
       loading={createAccount.isPending}
       onCancel={() => setOpen?.(false)}

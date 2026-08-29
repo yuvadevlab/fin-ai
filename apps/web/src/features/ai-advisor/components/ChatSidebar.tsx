@@ -8,11 +8,11 @@ import type { InvestmentsResponse } from "@/features/investments/api/getInvestme
 
 const SUGGESTED_PROMPTS = [
   "Where did I overspend this month?",
-  "Can I increase my SIP?",
+  "Can I increase my monthly savings / SIP?",
   "Compare this month with last month",
-  "Can we afford a vacation to Bali?",
-  "How is our family budget performing?",
-  "What should we improve next month?",
+  "Can I afford my upcoming goal?",
+  "How is my monthly budget performing?",
+  "What should I optimize next month?",
 ];
 
 function formatRelativeTime(dateInput: string | Date): string {

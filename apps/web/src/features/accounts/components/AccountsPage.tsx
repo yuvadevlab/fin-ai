@@ -4,13 +4,12 @@ import React, { useMemo } from "react";
 import { Plus } from "lucide-react";
 import { PageContainer, PageHeader, ContentCard, MoneyDisplay, Button } from "@finai/ui";
 import { cn } from "@finai/ui";
+import { formatINR } from "@finai/finance-engine";
 import { useAccounts } from "../api/getAccounts";
 import { AccountDialog } from "./AccountDialog";
-import { useWorkspace } from "@/providers";
 
 export function AccountsPage() {
-  const { workspaceId } = useWorkspace();
-  const { data: rawAccounts } = useAccounts(workspaceId);
+  const { data: rawAccounts } = useAccounts();
   // Guard against non-array during hydration
   const accounts = useMemo(() => (Array.isArray(rawAccounts) ? rawAccounts : []), [rawAccounts]);
 
@@ -35,7 +34,7 @@ export function AccountsPage() {
     <PageContainer>
       <PageHeader
         title="Accounts"
-        description={`Consolidated net position across ${accounts.length} accounts: ${total >= 0 ? "" : "-"}${Math.abs(total).toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 })}.`}
+        description={`Consolidated net position across ${accounts.length} accounts: ${formatINR(total)}.`}
         actions={
           <AccountDialog
             trigger={

@@ -8,9 +8,9 @@ import { GoalType } from "@finai/database";
 export class GoalsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(workspaceId: string) {
+  async findAll(userId: string) {
     const goals = await this.prisma.client.goal.findMany({
-      where: { workspaceId },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -20,29 +20,29 @@ export class GoalsService {
     }));
   }
 
-  async findOne(id: string, workspaceId: string) {
+  async findOne(id: string, userId: string) {
     const goal = await this.prisma.client.goal.findFirst({
-      where: { id, workspaceId },
+      where: { id, userId },
     });
     if (!goal) throw new NotFoundException(`Goal ${id} not found`);
     return goal;
   }
 
-  async create(workspaceId: string, input: CreateGoalInput) {
+  async create(userId: string, input: CreateGoalInput) {
     return this.prisma.client.goal.create({
       data: {
-        workspaceId,
+        userId,
         name: input.name,
         targetAmount: input.targetAmount,
         currentAmount: input.currentAmount ?? 0,
         deadline: input.deadline ? new Date(input.deadline) : null,
-        type: (input.type as GoalType) ?? GoalType.PERSONAL,
+        type: GoalType.PERSONAL,
       },
     });
   }
 
-  async update(id: string, workspaceId: string, input: UpdateGoalInput) {
-    await this.findOne(id, workspaceId);
+  async update(id: string, userId: string, input: UpdateGoalInput) {
+    await this.findOne(id, userId);
     return this.prisma.client.goal.update({
       where: { id },
       data: {
@@ -54,14 +54,14 @@ export class GoalsService {
           currentAmount: input.currentAmount,
         }),
         ...(input.deadline !== undefined && {
-          deadline: new Date(input.deadline),
+          deadline: input.deadline ? new Date(input.deadline) : null,
         }),
       },
     });
   }
 
-  async contribute(id: string, workspaceId: string, amount: number) {
-    const goal = await this.findOne(id, workspaceId);
+  async contribute(id: string, userId: string, amount: number) {
+    const goal = await this.findOne(id, userId);
     const newAmount = Math.min(goal.currentAmount + amount, goal.targetAmount);
     return this.prisma.client.goal.update({
       where: { id },
@@ -69,8 +69,8 @@ export class GoalsService {
     });
   }
 
-  async remove(id: string, workspaceId: string) {
-    await this.findOne(id, workspaceId);
+  async remove(id: string, userId: string) {
+    await this.findOne(id, userId);
     await this.prisma.client.goal.delete({ where: { id } });
     return { deleted: true };
   }

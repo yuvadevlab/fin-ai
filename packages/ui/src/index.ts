@@ -59,6 +59,11 @@ export {
 export { Calendar } from "./primitives/calendar";
 export { DatePicker } from "./primitives/date-picker";
 export {
+  SearchableSelect,
+  type SearchableSelectOption,
+  type SearchableSelectProps,
+} from "./primitives/searchable-select";
+export {
   Dialog,
   DialogPortal,
   DialogOverlay,

@@ -5,11 +5,12 @@ import { FormDialog } from "@finai/ui";
 import { clientTransactionSchema } from "@finai/validation";
 import { TransactionForm } from "./TransactionForm";
 import { BulkTransactionDialog } from "./BulkTransactionDialog";
-import { useActiveWorkspace } from "@/hooks";
 import { useAccounts } from "../../accounts/api/getAccounts";
 import { useCategories } from "../../categories/api/getCategories";
 import { useCreateTransaction } from "../api/createTransaction";
 import { useUpdateTransaction } from "../api/updateTransaction";
+import { useInlineEntityCreation } from "../hooks/useInlineEntityCreation";
+import { InlineEntityDialogs } from "./InlineEntityDialogs";
 
 export interface TransactionDialogProps {
   trigger?: React.ReactNode;
@@ -47,15 +48,13 @@ export function TransactionDialog({
   const open = isControlled ? controlledOpen : localOpen;
   const setOpen = isControlled ? controlledOnOpenChange : setLocalOpen;
 
-  const { activeWorkspaceId } = useActiveWorkspace();
-
   // Queries for select dropdown options
-  const { data: accountsData } = useAccounts(activeWorkspaceId);
-  const { data: categoriesData } = useCategories(activeWorkspaceId);
+  const { data: accountsData } = useAccounts();
+  const { data: categoriesData } = useCategories();
 
   // Mutations
-  const createTransaction = useCreateTransaction(activeWorkspaceId);
-  const updateTransaction = useUpdateTransaction(activeWorkspaceId);
+  const createTransaction = useCreateTransaction();
+  const updateTransaction = useUpdateTransaction();
 
   const accountsOptions = useMemo(() => {
     return (accountsData || []).map((acc) => ({
@@ -185,6 +184,22 @@ export function TransactionDialog({
 
   const [isBulkOpen, setIsBulkOpen] = useState(false);
 
+  const {
+    isAddCategoryOpen,
+    setIsAddCategoryOpen,
+    addCategoryInitialName,
+    openAddCategory,
+    handleCategoryCreated,
+    isAddAccountOpen,
+    setIsAddAccountOpen,
+    addAccountInitialName,
+    openAddAccount,
+    handleAccountCreated,
+  } = useInlineEntityCreation({
+    onCategoryCreated: (createdCategory) => handleChange("category", createdCategory.id),
+    onAccountCreated: (createdAccount) => handleChange("account", createdAccount.id),
+  });
+
   const handleSwitchToBulk = () => {
     setOpen?.(false);
     setIsBulkOpen(true);
@@ -206,14 +221,14 @@ export function TransactionDialog({
         {mode === "add" && (
           <div className="bg-secondary/50 mb-4 flex items-center justify-between rounded-xl p-2.5 text-xs">
             <span className="text-muted-foreground font-semibold">
-              Adding multiple EOD expenses?
+              Have multiple transactions to log or import from Excel?
             </span>
             <button
               type="button"
               onClick={handleSwitchToBulk}
               className="text-primary cursor-pointer font-bold hover:underline"
             >
-              Switch to Bulk Entry Mode →
+              Switch to Bulk Import & Upload Mode →
             </button>
           </div>
         )}
@@ -228,6 +243,8 @@ export function TransactionDialog({
           onChange={handleChange}
           accounts={accountsOptions}
           categories={categoriesOptions}
+          onAddCategory={openAddCategory}
+          onAddAccount={openAddAccount}
         />
       </FormDialog>
 
@@ -236,6 +253,17 @@ export function TransactionDialog({
         onOpenChange={setIsBulkOpen}
         accounts={accountsOptions}
         categories={categoriesOptions}
+      />
+
+      <InlineEntityDialogs
+        isAddCategoryOpen={isAddCategoryOpen}
+        onCategoryOpenChange={setIsAddCategoryOpen}
+        addCategoryInitialName={addCategoryInitialName}
+        onCategoryCreated={handleCategoryCreated}
+        isAddAccountOpen={isAddAccountOpen}
+        onAccountOpenChange={setIsAddAccountOpen}
+        addAccountInitialName={addAccountInitialName}
+        onAccountCreated={handleAccountCreated}
       />
     </>
   );

@@ -2,24 +2,15 @@
 
 import React from "react";
 import { Button, toast } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks";
+import { formatINR } from "@finai/finance-engine";
 import { useAccounts } from "@/features/accounts/api/getAccounts";
 
 export function AccountSettingsList() {
-  const { activeWorkspace } = useActiveWorkspace();
-  const { data: accounts = [], isLoading } = useAccounts(activeWorkspace?.id || null);
+  const { data: accounts = [], isLoading } = useAccounts();
 
   const handleSync = (name: string) => {
     toast.success(`${name} synced successfully!`);
   };
-
-  if (!activeWorkspace) {
-    return (
-      <div className="text-muted-foreground py-4 text-center text-sm">
-        No active workspace selected
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -30,7 +21,7 @@ export function AccountSettingsList() {
   if (accounts.length === 0) {
     return (
       <div className="text-muted-foreground border-border rounded-lg border border-dashed py-4 text-center text-sm">
-        No accounts linked in this workspace.
+        No accounts linked yet.
       </div>
     );
   }
@@ -45,7 +36,7 @@ export function AccountSettingsList() {
           <div>
             <p className="text-sm font-medium">{a.name}</p>
             <p className="text-muted-foreground text-xs">
-              {a.type} · ₹{a.balance.toLocaleString("en-IN")}
+              {a.type} · {formatINR(a.balance)}
             </p>
           </div>
           <Button

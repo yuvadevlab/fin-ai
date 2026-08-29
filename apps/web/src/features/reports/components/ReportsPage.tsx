@@ -20,15 +20,12 @@ import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "@/features/dashboard/api/getCategoryBreakdown";
-import { useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 
 export function ReportsPage() {
-  const { workspaceId } = useWorkspace();
-
-  const { data: stats } = useDashboardStats(workspaceId);
-  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(workspaceId);
-  const { data: rawCategoryBreakdown } = useCategoryBreakdown(workspaceId);
+  const { data: stats } = useDashboardStats();
+  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics();
+  const { data: rawCategoryBreakdown } = useCategoryBreakdown();
 
   const monthlyCashFlow = useMemo(
     () => (Array.isArray(rawMonthlyCashFlow) ? rawMonthlyCashFlow : []),

@@ -1,32 +1,24 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label } from "@finai/ui";
 import { format } from "date-fns";
-import { getAccountingCycleRange, getPresetDateRanges } from "@/lib/dateCycle";
-import type { CyclePeriod } from "@finai/shared-types";
+import { getPresetDateRanges } from "@/lib/dateCycle";
 
 export interface DateRangeFilterProps {
-  cycleStartDay?: number;
-  cyclePeriod?: CyclePeriod;
   onRangeChange: (range: { startDate: Date; endDate: Date }) => void;
   className?: string;
 }
 
-export function DateRangeFilter({
-  cycleStartDay = 1,
-  cyclePeriod = "MONTHLY",
-  onRangeChange,
-  className,
-}: DateRangeFilterProps) {
-  const presets = getPresetDateRanges(cycleStartDay, cyclePeriod);
-  const [selectedPreset, setSelectedPreset] = useState<string>("DEFAULT_CYCLE");
+export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterProps) {
+  const presets = useMemo(() => getPresetDateRanges(), []);
+  const [selectedPreset, setSelectedPreset] = useState<string>("THIS_MONTH");
   const [customStart, setCustomStart] = useState<string>(
-    format(presets.DEFAULT_CYCLE.startDate, "yyyy-MM-dd"),
+    format(presets.THIS_MONTH.startDate, "yyyy-MM-dd"),
   );
   const [customEnd, setCustomEnd] = useState<string>(
-    format(presets.DEFAULT_CYCLE.endDate, "yyyy-MM-dd"),
+    format(presets.THIS_MONTH.endDate, "yyyy-MM-dd"),
   );
   const [open, setOpen] = useState(false);
 
@@ -35,14 +27,13 @@ export function DateRangeFilter({
     onRangeChangeRef.current = onRangeChange;
   });
 
-  // Trigger default on mount or preference changes
+  // Trigger default (This Month) on mount
   useEffect(() => {
-    const defaultRange = getAccountingCycleRange(cycleStartDay, cyclePeriod);
     onRangeChangeRef.current({
-      startDate: defaultRange.startDate,
-      endDate: defaultRange.endDate,
+      startDate: presets.THIS_MONTH.startDate,
+      endDate: presets.THIS_MONTH.endDate,
     });
-  }, [cycleStartDay, cyclePeriod]);
+  }, [presets]);
 
   const handleSelectPreset = (key: string) => {
     setSelectedPreset(key);

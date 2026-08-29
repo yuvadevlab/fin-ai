@@ -4,29 +4,25 @@ import { serverFetch } from "@/lib/server-fetch";
 
 export interface Category {
   id: string;
+  userId: string;
   name: string;
   group: string;
   icon: string | null;
-  isSystem: boolean;
+  isDefault?: boolean;
 }
 
-export const categoriesQueryKey = (workspaceId: string) => ["categories", workspaceId] as const;
+export const categoriesQueryKey = () => ["categories"] as const;
 
-export function useCategories(workspaceId: string | null) {
+export function useCategories() {
   return useQuery<Category[]>({
-    queryKey: categoriesQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<Category[]>(`workspaces/${workspaceId}/categories`),
-    enabled: !!workspaceId,
+    queryKey: categoriesQueryKey(),
+    queryFn: () => apiClient.get<Category[]>("categories"),
   });
 }
 
-export async function prefetchCategories(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchCategories(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: categoriesQueryKey(workspaceId),
-    queryFn: () => serverFetch<Category[]>(`workspaces/${workspaceId}/categories`, token),
+    queryKey: categoriesQueryKey(),
+    queryFn: () => serverFetch<Category[]>("categories", token),
   });
 }

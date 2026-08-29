@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { useWorkspace } from "@/providers";
+import { FormDialog, toast } from "@finai/ui";
 import { useCreateBulkTransactions } from "../api/createBulkTransactions";
 import { BulkTransactionForm, BulkRow } from "./BulkTransactionForm";
 import { format } from "date-fns";
+import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils/excelImport";
+import { useInlineEntityCreation } from "../hooks/useInlineEntityCreation";
+import { InlineEntityDialogs } from "./InlineEntityDialogs";
 
 function generateRowId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -48,8 +50,7 @@ export function BulkTransactionDialog({
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
-  const { workspaceId } = useWorkspace();
-  const createBulk = useCreateBulkTransactions(workspaceId);
+  const createBulk = useCreateBulkTransactions();
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const defaultAccount = accounts[0]?.value || "";
@@ -59,6 +60,26 @@ export function BulkTransactionDialog({
     createEmptyRow(defaultAccount, defaultCategory, todayStr),
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const {
+    isAddCategoryOpen,
+    setIsAddCategoryOpen,
+    addCategoryInitialName,
+    openAddCategory,
+    handleCategoryCreated,
+    isAddAccountOpen,
+    setIsAddAccountOpen,
+    addAccountInitialName,
+    openAddAccount,
+    handleAccountCreated,
+  } = useInlineEntityCreation({
+    onCategoryCreated: (createdCategory, targetRowId) => {
+      if (targetRowId) handleChangeRow(targetRowId, "category", createdCategory.id);
+    },
+    onAccountCreated: (createdAccount, targetRowId) => {
+      if (targetRowId) handleChangeRow(targetRowId, "account", createdAccount.id);
+    },
+  });
 
   const handleAddRow = () => {
     const lastRow = rows[rows.length - 1];
@@ -89,6 +110,27 @@ export function BulkTransactionDialog({
 
   const handleFillTodayDate = () => {
     setRows((prev) => prev.map((r) => ({ ...r, date: todayStr })));
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      await downloadExcelTemplateFromApi();
+      toast.success("Excel upload template with in-cell dropdowns downloaded!");
+    } catch {
+      toast.error("Failed to generate Excel template.");
+    }
+  };
+
+  const handleUploadExcel = async (file: File) => {
+    try {
+      const importedRows = await parseExcelOrCsvFile(file, accounts, categories);
+      setRows(importedRows);
+      setErrors({});
+      toast.success(`Successfully imported ${importedRows.length} transactions from Excel!`);
+    } catch (err: unknown) {
+      const apiErr = err as { message?: string };
+      toast.error(apiErr?.message || "Error reading Excel file.");
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -137,28 +179,45 @@ export function BulkTransactionDialog({
   };
 
   return (
-    <FormDialog
-      open={open}
-      onOpenChange={setOpen}
-      trigger={trigger}
-      title="EOD Bulk Transaction Entry"
-      description="Add multiple daily expenses and income entries at once."
-      submitLabel={`Save All (${rows.length}) Transactions`}
-      loading={createBulk.isPending}
-      onCancel={() => setOpen?.(false)}
-      onSubmit={handleSubmit}
-      className="w-full max-w-5xl"
-    >
-      <BulkTransactionForm
-        rows={rows}
-        onChangeRow={handleChangeRow}
-        onAddRow={handleAddRow}
-        onRemoveRow={handleRemoveRow}
-        onFillTodayDate={handleFillTodayDate}
-        accounts={accounts}
-        categories={categories}
-        errors={errors}
+    <>
+      <FormDialog
+        open={open}
+        onOpenChange={setOpen}
+        trigger={trigger}
+        title="Bulk Import & Transaction Upload"
+        description="Import transactions via Excel spreadsheet (.xlsx, .csv) or batch enter multiple rows."
+        submitLabel={`Save All (${rows.length}) Transactions`}
+        loading={createBulk.isPending}
+        onCancel={() => setOpen?.(false)}
+        onSubmit={handleSubmit}
+        className="w-full max-w-5xl"
+      >
+        <BulkTransactionForm
+          rows={rows}
+          onChangeRow={handleChangeRow}
+          onAddRow={handleAddRow}
+          onRemoveRow={handleRemoveRow}
+          onFillTodayDate={handleFillTodayDate}
+          onDownloadTemplate={handleDownloadTemplate}
+          onUploadExcel={handleUploadExcel}
+          onAddCategory={openAddCategory}
+          onAddAccount={openAddAccount}
+          accounts={accounts}
+          categories={categories}
+          errors={errors}
+        />
+      </FormDialog>
+
+      <InlineEntityDialogs
+        isAddCategoryOpen={isAddCategoryOpen}
+        onCategoryOpenChange={setIsAddCategoryOpen}
+        addCategoryInitialName={addCategoryInitialName}
+        onCategoryCreated={handleCategoryCreated}
+        isAddAccountOpen={isAddAccountOpen}
+        onAccountOpenChange={setIsAddAccountOpen}
+        addAccountInitialName={addAccountInitialName}
+        onAccountCreated={handleAccountCreated}
       />
-    </FormDialog>
+    </>
   );
 }

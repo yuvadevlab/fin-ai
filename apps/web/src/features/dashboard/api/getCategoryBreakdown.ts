@@ -8,26 +8,18 @@ export interface CategoryBreakdownItem {
   total: number;
 }
 
-export const categoryBreakdownQueryKey = (workspaceId: string) =>
-  ["analytics", "categories", workspaceId] as const;
+export const categoryBreakdownQueryKey = () => ["analytics", "categories"] as const;
 
-export function useCategoryBreakdown(workspaceId: string | null) {
+export function useCategoryBreakdown() {
   return useQuery<CategoryBreakdownItem[]>({
-    queryKey: categoryBreakdownQueryKey(workspaceId ?? ""),
-    queryFn: () =>
-      apiClient.get<CategoryBreakdownItem[]>(`workspaces/${workspaceId}/analytics/categories`),
-    enabled: !!workspaceId,
+    queryKey: categoryBreakdownQueryKey(),
+    queryFn: () => apiClient.get<CategoryBreakdownItem[]>("analytics/categories"),
   });
 }
 
-export async function prefetchCategoryBreakdown(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchCategoryBreakdown(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: categoryBreakdownQueryKey(workspaceId),
-    queryFn: () =>
-      serverFetch<CategoryBreakdownItem[]>(`workspaces/${workspaceId}/analytics/categories`, token),
+    queryKey: categoryBreakdownQueryKey(),
+    queryFn: () => serverFetch<CategoryBreakdownItem[]>("analytics/categories", token),
   });
 }

@@ -11,9 +11,9 @@ export default async function Page() {
 
   if (auth) {
     await Promise.allSettled([
-      prefetchDashboardStats(queryClient, auth.workspaceId, auth.token),
-      prefetchMonthlyAnalytics(queryClient, auth.workspaceId, auth.token),
-      prefetchCategoryBreakdown(queryClient, auth.workspaceId, auth.token),
+      prefetchDashboardStats(queryClient, auth.token),
+      prefetchMonthlyAnalytics(queryClient, auth.token),
+      prefetchCategoryBreakdown(queryClient, auth.token),
     ]);
   }
 
