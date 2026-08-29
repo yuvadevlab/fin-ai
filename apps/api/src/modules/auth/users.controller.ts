@@ -2,9 +2,9 @@ import { Controller, Get, Patch, Body, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Prisma } from "@finai/database";
 import { UserPreferences } from "@finai/shared-types";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { PrismaService } from "../prisma/prisma.service";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/modules/analytics/analytics.service";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 
 @ApiTags("Users")
 @ApiBearerAuth()

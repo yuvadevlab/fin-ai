@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UsePipes } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { AuthService } from "./auth.service";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
+import { AuthService } from "@/modules/auth/auth.service";
 import {
   loginSchema,
   registerSchema,

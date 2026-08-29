@@ -2,59 +2,62 @@
 
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
-import { createAccountSchema } from "@finai/validation";
+import { createAccountSchema, updateAccountSchema } from "@finai/validation";
 import { useCreateAccount } from "../api/createAccount";
+import { useUpdateAccount } from "../api/updateAccount";
 import { AccountForm } from "./AccountForm";
 import { Account } from "../api/getAccounts";
 
 export interface AccountDialogProps {
+  /** Trigger element that opens the dialog (create mode only). */
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** When provided, dialog switches to edit mode. */
+  account?: Account;
   initialName?: string;
-  onSuccess?: (createdAccount: Account) => void;
+  onSuccess?: (account: Account) => void;
 }
+
+const defaultValues = (account?: Account, initialName = ""): Record<string, string> => ({
+  name: account?.name ?? initialName,
+  type: account?.type ?? "BANK",
+  balance: account !== undefined ? String(account.balance) : "0",
+  currency: account?.currency ?? "INR",
+});
 
 export function AccountDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  account,
   initialName = "",
   onSuccess,
 }: AccountDialogProps) {
+  const isEditMode = account !== undefined;
+
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
   const createAccount = useCreateAccount();
+  const updateAccount = useUpdateAccount();
 
-  const [values, setValues] = useState<Record<string, string>>({
-    name: initialName,
-    type: "BANK",
-    balance: "0",
-    currency: "INR",
-  });
+  const [values, setValues] = useState<Record<string, string>>(defaultValues(account, initialName));
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Reset form when dialog opens / when account changes
   const [prevOpen, setPrevOpen] = useState(open);
   if (open !== prevOpen) {
     setPrevOpen(open);
     if (open) {
-      setValues({
-        name: initialName,
-        type: "BANK",
-        balance: "0",
-        currency: "INR",
-      });
+      setValues(defaultValues(account, initialName));
       setErrors({});
     }
   }
 
   const handleChange = (name: string, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setValues((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -67,6 +70,36 @@ export function AccountDialog({
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (isEditMode) {
+      // Edit mode — partial update, name only (balance is read-only once created)
+      const parseResult = updateAccountSchema.safeParse({
+        name: values.name,
+      });
+
+      if (!parseResult.success) {
+        const fieldErrors: Record<string, string> = {};
+        parseResult.error.issues.forEach((issue) => {
+          fieldErrors[issue.path[0] as string] = issue.message;
+        });
+        setErrors(fieldErrors);
+        return;
+      }
+
+      try {
+        const updated = await updateAccount.mutateAsync({
+          id: account.id,
+          input: parseResult.data,
+        });
+        onSuccess?.(updated);
+        setOpen?.(false);
+      } catch (err) {
+        const apiErr = err as { message?: string };
+        setErrors({ root: apiErr?.message || "Failed to update account." });
+      }
+      return;
+    }
+
+    // Create mode
     const parseResult = createAccountSchema.safeParse({
       name: values.name,
       type: values.type,
@@ -77,41 +110,38 @@ export function AccountDialog({
     if (!parseResult.success) {
       const fieldErrors: Record<string, string> = {};
       parseResult.error.issues.forEach((issue) => {
-        const path = issue.path[0] as string;
-        fieldErrors[path] = issue.message;
+        fieldErrors[issue.path[0] as string] = issue.message;
       });
       setErrors(fieldErrors);
       return;
     }
 
     try {
-      const createdAccount = await createAccount.mutateAsync(parseResult.data);
-      onSuccess?.(createdAccount);
+      const created = await createAccount.mutateAsync(parseResult.data);
+      onSuccess?.(created);
       setOpen?.(false);
-      // Reset form
-      setValues({
-        name: "",
-        type: "BANK",
-        balance: "0",
-        currency: "INR",
-      });
+      setValues(defaultValues());
     } catch (err) {
       const apiErr = err as { message?: string };
-      setErrors({
-        root: apiErr?.message || "An error occurred while linking the account.",
-      });
+      setErrors({ root: apiErr?.message || "An error occurred while linking the account." });
     }
   };
+
+  const isPending = isEditMode ? updateAccount.isPending : createAccount.isPending;
 
   return (
     <FormDialog
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title="Link Account"
-      description="Link a new bank account, credit card, or wallet."
-      submitLabel="Link Account"
-      loading={createAccount.isPending}
+      title={isEditMode ? "Edit Account" : "Link Account"}
+      description={
+        isEditMode
+          ? "Update the account name. Balance is adjusted via transactions."
+          : "Link a new bank account, credit card, or wallet."
+      }
+      submitLabel={isEditMode ? "Save Changes" : "Link Account"}
+      loading={isPending}
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}
     >
@@ -121,7 +151,13 @@ export function AccountDialog({
         </div>
       )}
       <div className="space-y-4">
-        <AccountForm values={values} errors={errors} onChange={handleChange} />
+        <AccountForm
+          values={values}
+          errors={errors}
+          onChange={handleChange}
+          /* In edit mode only name is editable — type/balance/currency are fixed */
+          editMode={isEditMode}
+        />
       </div>
     </FormDialog>
   );

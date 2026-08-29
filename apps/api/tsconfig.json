@@ -17,7 +17,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "baseUrl": ""
   },
   "exclude": ["node_modules", "dist", ".turbo"],
   "include": ["src/**/*"]

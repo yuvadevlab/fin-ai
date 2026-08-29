@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api-client";
-import { BulkRow } from "../components/BulkTransactionForm";
+import { BulkRow } from "@/features/transactions/components/BulkTransactionForm";
 
 export interface SelectOption {
   label: string;

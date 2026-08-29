@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { BudgetsService } from "./budgets.service";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
+import { BudgetsService } from "@/modules/budgets/budgets.service";
 import {
   createBudgetSchema,
   updateBudgetSchema,

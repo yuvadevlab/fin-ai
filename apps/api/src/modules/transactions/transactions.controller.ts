@@ -13,9 +13,9 @@ import {
 import { Response } from "express";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransactionsService } from "./transactions.service";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/modules/analytics/analytics.service";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import {
   createTransactionSchema,
   updateTransactionSchema,

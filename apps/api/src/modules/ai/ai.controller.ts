@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { Response } from "express";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { OllamaService } from "./ollama.service";
-import { ContextBuilderService } from "./context-builder.service";
-import { ConversationService } from "./conversation.service";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { OllamaService } from "@/modules/ai/ollama.service";
+import { ContextBuilderService } from "@/modules/ai/context-builder.service";
+import { ConversationService } from "@/modules/ai/conversation.service";
 import {
   buildAdvisorSystemPrompt,
   buildInsightSystemPrompt,
