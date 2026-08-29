@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Label, Switch, toast } from "@finai/ui";
-import { useProfile, useUpdateProfile } from "../api/profile";
+import { useProfile, useUpdateProfile } from "../api";
 
 const defaultSettings = [
   { key: "billDueReminders", label: "Bill due reminders" },

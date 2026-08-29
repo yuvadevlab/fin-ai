@@ -5,10 +5,9 @@ import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
 import { PageContainer, PageHeader, MoneyDisplay, Button, ConfirmDialog } from "@finai/ui";
 import { cn } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
-import { useAccounts, Account } from "../api/getAccounts";
-import { useDeleteAccount } from "../api/deleteAccount";
-import { AccountDialog } from "./AccountDialog";
 import { useIsClient } from "@/hooks";
+import { AccountDialog } from "./AccountDialog";
+import { Account, useAccounts, useDeleteAccount } from "../api";
 
 export function AccountsPage() {
   const isClient = useIsClient();

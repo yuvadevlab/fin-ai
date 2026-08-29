@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { FormDialog, toast } from "@finai/ui";
-import { useCreateBulkTransactions } from "../api/createBulkTransactions";
-import { BulkTransactionForm, BulkRow } from "./BulkTransactionForm";
 import { format } from "date-fns";
-import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils/excelImport";
-import { useInlineEntityCreation } from "../hooks/useInlineEntityCreation";
+import { useCreateBulkTransactions } from "../api";
+import { useInlineEntityCreation } from "../hooks";
+import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils";
+import { BulkTransactionForm, type BulkRow } from "./BulkTransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
 
 function generateRowId(): string {

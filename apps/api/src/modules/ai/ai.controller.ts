@@ -103,10 +103,10 @@ export class AiController {
       }
     }
 
-    // Fetch recent message history if conversationId exists
+    // Fetch recent message history if conversationId exists (up to 20 turns)
     let historyMessages: { role: string; content: string }[] = [];
     if (conversationId) {
-      const recent = await this.conversationService.getRecentMessages(conversationId, 10);
+      const recent = await this.conversationService.getRecentMessages(conversationId, 20);
       historyMessages = recent.reverse().map((m) => ({
         role: m.role === "ASSISTANT" ? "assistant" : "user",
         content: m.content,

@@ -4,10 +4,10 @@ import React from "react";
 import { Plus, Target, Landmark } from "lucide-react";
 import { PageContainer, PageHeader, ProgressCard, Button } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
-import { useGoals } from "../api/getGoals";
+import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+import { useGoals } from "../api";
 import { GoalDialog } from "./GoalDialog";
 import { ContributeDialog } from "./ContributeDialog";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 
 export function GoalsPage() {
   const { data: rawGoals } = useGoals();

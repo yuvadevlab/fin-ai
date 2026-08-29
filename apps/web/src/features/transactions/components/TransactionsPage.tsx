@@ -3,17 +3,16 @@
 import { useState, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
 import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
-import { TransactionDialog } from "./TransactionDialog";
-import { useTransactions } from "../api/getTransactions";
-import { useDeleteTransaction } from "../api/deleteTransaction";
-import { useCategories } from "@/features/categories/api/getCategories";
-import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { TransactionFilterInput } from "@finai/validation";
-import { getTransactionColumns } from "./TransactionColumns";
-import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
+import { format } from "date-fns";
+import { useCategories } from "@/features/categories/api";
+import { useAccounts } from "@/features/accounts/api";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
-import { format } from "date-fns";
+import { useTransactions, useDeleteTransaction } from "../api";
+import { TransactionDialog } from "./TransactionDialog";
+import { getTransactionColumns } from "./TransactionColumns";
+import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
 

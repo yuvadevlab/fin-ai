@@ -11,6 +11,7 @@ import {
   Settings,
   Tag,
   HeartPulse,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -67,28 +68,30 @@ interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
     children: React.ReactNode;
     className?: string;
   }>;
-  planName?: string;
-  planDetails?: string;
-  planSyncPercentage?: number;
   menuItems?: DbMenuItem[];
 }
 
+const DefaultLink = ({
+  href,
+  children,
+  className,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <a href={href} className={className}>
+    {children}
+  </a>
+);
+
 export function Sidebar({
   pathname,
-  LinkComponent = ({ href, children, className }) => (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  ),
-  planName = "Personal Vault",
-  planDetails = "Personal Edition · 100% Synced",
-  planSyncPercentage = 100,
+  LinkComponent: Link = DefaultLink,
   menuItems,
   className,
   ...props
 }: SidebarProps) {
-  const Link = LinkComponent;
-
   const renderLink = (item: NavItem) => {
     const Icon = item.icon;
     const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -150,7 +153,7 @@ export function Sidebar({
       <div className="p-6">
         <div className="flex items-center gap-2 px-2">
           <div className="bg-primary flex h-7 w-7 items-center justify-center rounded-md shadow-sm">
-            <Sparkles className={"size-4 animate-pulse"} />
+            <Sparkles className="size-4 text-white" />
           </div>
           <span className="text-foreground text-base font-bold tracking-tight">FinAI</span>
         </div>
@@ -174,17 +177,32 @@ export function Sidebar({
         )}
       </nav>
 
+      {/* AI Advisor Quick Status Widget */}
       <div className="p-4">
-        <div className="border-border/60 bg-secondary/40 rounded-xl border p-4">
-          <p className="text-foreground text-xs font-bold">{planName}</p>
-          <p className="text-muted-foreground mt-1 text-[11px]">{planDetails}</p>
-          <div className="bg-border/60 mt-3 h-1 w-full overflow-hidden rounded-full">
-            <div
-              className="bg-primary h-full transition-all duration-500"
-              style={{ width: `${planSyncPercentage}%` }}
-            />
+        <Link
+          href="/ai-advisor"
+          className="group border-border/70 hover:border-primary/40 bg-secondary/30 hover:bg-secondary/60 relative block overflow-hidden rounded-2xl border p-3.5 transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-foreground text-xs font-semibold">AI Advisor</span>
+            </div>
+            <span className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-[10px] font-medium">
+              Ready
+            </span>
           </div>
-        </div>
+          <p className="text-muted-foreground mt-1.5 text-[11px] leading-snug">
+            Get personalized insights & wealth optimization.
+          </p>
+          <div className="text-primary mt-2.5 flex items-center gap-1 text-xs font-medium group-hover:underline">
+            <span>Ask question</span>
+            <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+          </div>
+        </Link>
       </div>
     </aside>
   );

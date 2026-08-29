@@ -3,10 +3,8 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createAccountSchema, updateAccountSchema } from "@finai/validation";
-import { useCreateAccount } from "../api/createAccount";
-import { useUpdateAccount } from "../api/updateAccount";
+import { useCreateAccount, useUpdateAccount, Account } from "../api";
 import { AccountForm } from "./AccountForm";
-import { Account } from "../api/getAccounts";
 
 export interface AccountDialogProps {
   /** Trigger element that opens the dialog (create mode only). */

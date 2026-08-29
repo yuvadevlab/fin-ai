@@ -3,9 +3,9 @@
 import { useRef, useEffect } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@finai/ui";
-import type { ChatMessage } from "../api/useAiChat";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { extractFollowUpQuestions } from "@finai/ai-engine";
+import type { ChatMessage } from "../api";
 
 interface ChatMessagesProps {
   messages: ChatMessage[];

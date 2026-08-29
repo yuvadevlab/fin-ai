@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createGoalSchema } from "@finai/validation";
-import { useCreateGoal } from "../api/createGoal";
+import { useCreateGoal } from "../api";
 import { GoalForm } from "./GoalForm";
 
 export interface GoalDialogProps {

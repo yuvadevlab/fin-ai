@@ -3,10 +3,10 @@
 import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
 import { createBudgetSchema } from "@finai/validation";
-import { useCreateBudget } from "../api/createBudget";
-import { useCategories } from "@/features/categories/api/getCategories";
-import { BudgetForm } from "./BudgetForm";
+import { useCategories } from "@/features/categories/api";
 import { CategoryDialog } from "@/features/categories/components/CategoryDialog";
+import { useCreateBudget } from "../api";
+import { BudgetForm } from "./BudgetForm";
 
 export interface BudgetDialogProps {
   trigger?: React.ReactNode;

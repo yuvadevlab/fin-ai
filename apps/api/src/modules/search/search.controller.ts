@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { SearchService } from "./search.service";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
-import { CurrentUser } from "@/modules/analytics/analytics.service";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
 
 @ApiTags("Search")
 @ApiBearerAuth()

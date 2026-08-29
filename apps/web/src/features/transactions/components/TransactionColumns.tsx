@@ -1,8 +1,8 @@
 import React from "react";
 import { Badge, Button, MoneyDisplay } from "@finai/ui";
 import { Edit2, Trash2 } from "lucide-react";
+import { Transaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
-import { Transaction } from "../api/getTransactions";
 
 export function getTransactionColumns(onDelete: (id: string) => void) {
   return [
@@ -23,7 +23,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Category",
       accessor: (t: Transaction) => (
-        <Badge variant="secondary" className="rounded-full font-normal">
+        <Badge variant="secondary" className="rounded-full font-normal whitespace-nowrap">
           {t.category?.name || "Uncategorized"}
         </Badge>
       ),

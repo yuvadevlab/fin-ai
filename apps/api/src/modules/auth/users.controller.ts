@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Prisma } from "@finai/database";
 import { UserPreferences } from "@finai/shared-types";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
-import { CurrentUser } from "@/modules/analytics/analytics.service";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
 @ApiTags("Users")

@@ -2,9 +2,9 @@
 
 import React from "react";
 import { FormDialogField, toast } from "@finai/ui";
-import { useProfile, useUpdateProfile } from "../api/profile";
 import { useAppearance } from "@/hooks/useAppearance";
 import type { AppearancePrefs } from "@/providers/appearance/AppearanceProvider";
+import { useProfile, useUpdateProfile } from "../api";
 
 const appearanceOptions: { key: keyof AppearancePrefs; label: string; options: string[] }[] = [
   {

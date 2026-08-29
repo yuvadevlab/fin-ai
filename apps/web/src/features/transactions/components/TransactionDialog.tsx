@@ -3,14 +3,13 @@
 import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
 import { clientTransactionSchema } from "@finai/validation";
+import { useAccounts } from "@/features/accounts/api";
+import { useCategories } from "@/features/categories/api";
+import { useCreateTransaction, useUpdateTransaction } from "../api";
+import { useInlineEntityCreation } from "../hooks";
 import { TransactionForm } from "./TransactionForm";
-import { BulkTransactionDialog } from "./BulkTransactionDialog";
-import { useAccounts } from "../../accounts/api/getAccounts";
-import { useCategories } from "../../categories/api/getCategories";
-import { useCreateTransaction } from "../api/createTransaction";
-import { useUpdateTransaction } from "../api/updateTransaction";
-import { useInlineEntityCreation } from "../hooks/useInlineEntityCreation";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
+import { BulkTransactionDialog } from "./BulkTransactionDialog";
 
 export interface TransactionDialogProps {
   trigger?: React.ReactNode;

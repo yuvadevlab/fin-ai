@@ -12,7 +12,11 @@ interface MarkdownMessageProps {
  */
 export function MarkdownMessage({ content }: MarkdownMessageProps) {
   // Separate content from follow-up suggestions section if present
-  const mainContent = content.split(/###\s*Follow-up Suggestions:/i)[0].trim();
+  const mainContent = content
+    .split(
+      /###\s*(?:Follow-?[uU]p|Suggested|Recommended)\s*(?:Suggestions|Questions|Next Steps|Follow-ups)?[:\s]*/i,
+    )[0]
+    .trim();
 
   return (
     <div className="prose prose-invert max-w-none text-sm leading-relaxed">

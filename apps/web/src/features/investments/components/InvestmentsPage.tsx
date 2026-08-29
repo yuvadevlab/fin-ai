@@ -15,9 +15,9 @@ import {
   cn,
   Button,
 } from "@finai/ui";
-import { useInvestments, Investment } from "../api/getInvestments";
-import { InvestmentDialog } from "./InvestmentDialog";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+import { useInvestments, Investment } from "../api";
+import { InvestmentDialog } from "./InvestmentDialog";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
   MUTUAL_FUND: "Mutual Fund",

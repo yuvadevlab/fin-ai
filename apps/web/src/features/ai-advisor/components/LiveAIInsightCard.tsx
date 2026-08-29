@@ -2,7 +2,7 @@
 
 import { RefreshCw } from "lucide-react";
 import { AIInsightCard, AISuggestionsDialog, type AISuggestion } from "@finai/ui";
-import { useAiInsight, type InsightPage } from "../api/useAiInsight";
+import { useAiInsight, type InsightPage } from "../api";
 
 interface LiveAIInsightCardProps {
   page: InsightPage;

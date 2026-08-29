@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Receipt, Wallet, Target, SearchX } from "lucide-react";
 import { MoneyDisplay, cn } from "@finai/ui";
-import { useSearch } from "../api/useSearch";
+import { useSearch } from "../api";
 
 interface SearchDropdownProps {
   query: string;
@@ -22,7 +22,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
 
   return (
     <div
-      className="border-border/60 bg-background/95 ring-border/40 absolute top-[calc(100%+8px)] right-0 left-0 z-50 max-h-[420px] overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
+      className="border-border/60 bg-background/95 ring-border/40 absolute top-[calc(100%+8px)] right-0 left-0 z-50 max-h-105 overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
       role="listbox"
       aria-label="Search results"
     >

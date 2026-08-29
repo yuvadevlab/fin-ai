@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
-import { useContributeGoal } from "../api/createGoal";
-import { ContributeForm } from "./ContributeForm";
 import { contributeSchema } from "@finai/validation";
+import { useContributeGoal } from "../api";
+import { ContributeForm } from "./ContributeForm";
 
 export interface ContributeDialogProps {
   goalId: string;

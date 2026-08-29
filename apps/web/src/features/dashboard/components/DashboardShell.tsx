@@ -4,13 +4,12 @@ import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar } from "@finai/ui";
-import { TransactionDialog } from "../../transactions/components";
-import { SearchDropdown } from "../../search/components/SearchDropdown";
-import { AppearanceSync, useAuth } from "@/providers";
+import { TransactionDialog } from "@/features/transactions/components";
+import { SearchDropdown } from "@/features/search/components/SearchDropdown";
+import { AppearanceSync } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
-import { useIsClient } from "@/hooks";
 
 function CustomLinkComponent({
   href,
@@ -30,28 +29,14 @@ function CustomLinkComponent({
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // useIsClient returns false on the server and true on the client (see hooks/useIsClient.ts).
-  // This ensures both server and initial client renders agree on the "Personal Vault"
-  // fallback, preventing a hydration mismatch when user is loaded from localStorage.
-  const isClient = useIsClient();
-
-  const sidebar = useMemo(() => {
-    const userName = isClient && user?.name ? `${user.name}'s FinAI` : "Personal Vault";
-    return (
-      <Sidebar
-        pathname={pathname}
-        LinkComponent={CustomLinkComponent}
-        planName={userName}
-        planDetails="Personal Edition · 100% Synced"
-        planSyncPercentage={100}
-      />
-    );
-  }, [pathname, user, isClient]);
+  const sidebar = useMemo(
+    () => <Sidebar pathname={pathname} LinkComponent={CustomLinkComponent} />,
+    [pathname],
+  );
 
   const topbar = useMemo(
     () => (

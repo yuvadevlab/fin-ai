@@ -3,3 +3,4 @@ export * from "./createCategory";
 export * from "./updateCategory";
 export * from "./deleteCategory";
 export * from "./getCategoryGroups";
+export * from "./suggestEmoji";

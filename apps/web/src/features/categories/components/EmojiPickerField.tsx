@@ -33,8 +33,23 @@ export function EmojiPickerField({ value, onChange }: EmojiPickerFieldProps) {
           <Smile className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full border-none p-0 shadow-lg">
-        <EmojiPicker theme={theme as Theme} onEmojiClick={onEmojiClick} autoFocusSearch={false} />
+      <PopoverContent
+        align="start"
+        sideOffset={4}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        className="w-auto border-none p-0 shadow-2xl"
+      >
+        <div onWheel={(e) => e.stopPropagation()} className="overscroll-contain">
+          <EmojiPicker
+            theme={theme as Theme}
+            onEmojiClick={onEmojiClick}
+            autoFocusSearch={false}
+            lazyLoadEmojis={true}
+            width={320}
+            height={380}
+          />
+        </div>
       </PopoverContent>
     </Popover>
   );

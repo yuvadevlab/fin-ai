@@ -5,7 +5,7 @@ import { EmojiPickerField } from "./EmojiPickerField";
 import { Button } from "@finai/ui";
 import { Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useSuggestEmoji } from "../api/suggestEmoji";
+import { useSuggestEmoji } from "../api";
 
 export interface CategoryFormProps {
   values: Record<string, string>;

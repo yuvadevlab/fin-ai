@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createInvestmentSchema } from "@finai/validation";
-import { useCreateInvestment } from "../api/createInvestment";
+import { useCreateInvestment } from "../api";
 import { InvestmentForm } from "./InvestmentForm";
 
 export interface InvestmentDialogProps {

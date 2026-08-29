@@ -13,7 +13,7 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
-import { CurrentUser } from "@/modules/analytics/analytics.service";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import {

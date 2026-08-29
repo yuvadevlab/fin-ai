@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Plus, Check, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Input } from "./input";
@@ -37,14 +37,16 @@ export function SearchableSelect({
   className,
   id,
 }: SearchableSelectProps) {
-  const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(0);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption = React.useMemo(() => {
+  const selectedOption = useMemo(() => {
     return options.find((opt) => opt.value === value);
   }, [options, value]);
 
-  const filteredOptions = React.useMemo(() => {
+  const filteredOptions = useMemo(() => {
     if (!search.trim()) return options;
     const q = search.toLowerCase();
     return options.filter(
@@ -53,8 +55,33 @@ export function SearchableSelect({
     );
   }, [options, search]);
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      const idx = filteredOptions.findIndex((opt) => opt.value === value);
+      setHighlightedIndex(idx >= 0 ? idx : 0);
+    } else {
+      setSearch("");
+    }
+  };
+
+  const handleSearchChange = (newSearch: string) => {
+    setSearch(newSearch);
+    setHighlightedIndex(0);
+  };
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (open && listRef.current) {
+      const activeEl = listRef.current.querySelector<HTMLElement>("[data-highlighted='true']");
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightedIndex, open]);
+
   // Group options if group field is present
-  const groupedOptions = React.useMemo(() => {
+  const groupedOptions = useMemo(() => {
     const hasGroups = filteredOptions.some((opt) => opt.group);
     if (!hasGroups) return { Default: filteredOptions };
 
@@ -75,10 +102,50 @@ export function SearchableSelect({
   const handleAddNew = () => {
     onAddNew?.(search.trim());
     setOpen(false);
+    setSearch("");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!open) {
+      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleOpenChange(true);
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : prev));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (filteredOptions.length > 0 && filteredOptions[highlightedIndex]) {
+          handleSelect(filteredOptions[highlightedIndex].value);
+        } else if (onAddNew && search.trim()) {
+          handleAddNew();
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        handleOpenChange(false);
+        break;
+      case "Tab":
+        handleOpenChange(false);
+        break;
+    }
+  };
+
+  // Flattened index helper for grouped list
+  let currentIndex = 0;
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           id={id}
@@ -86,6 +153,7 @@ export function SearchableSelect({
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
+          onKeyDown={handleKeyDown}
           className={cn(
             "bg-background border-input hover:bg-accent/50 h-10 w-full justify-between px-3 text-left font-normal",
             !selectedOption && "text-muted-foreground",
@@ -99,19 +167,24 @@ export function SearchableSelect({
       <PopoverContent
         align="start"
         className="border-border bg-popover w-[var(--radix-popover-trigger-width)] min-w-[220px] border p-0 shadow-lg"
+        onKeyDown={handleKeyDown}
       >
         <div className="border-border flex items-center gap-2 border-b p-2">
           <Search className="text-muted-foreground h-4 w-4 shrink-0 opacity-50" />
           <Input
             placeholder={searchPlaceholder}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="h-8 border-none bg-transparent px-1 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
             autoFocus
           />
         </div>
 
-        <div className="max-h-60 overflow-y-auto p-1 text-sm">
+        <div
+          ref={listRef}
+          onWheel={(e) => e.stopPropagation()}
+          className="max-h-60 overflow-y-auto overscroll-contain p-1 text-sm"
+        >
           {Object.keys(groupedOptions).length === 0 ||
           (filteredOptions.length === 0 && !onAddNew) ? (
             <div className="text-muted-foreground py-6 text-center text-xs">
@@ -127,13 +200,21 @@ export function SearchableSelect({
                 )}
                 {groupOpts.map((option) => {
                   const isSelected = option.value === value;
+                  const itemIndex = currentIndex++;
+                  const isHighlighted = itemIndex === highlightedIndex;
+
                   return (
                     <div
                       key={option.value}
+                      data-highlighted={isHighlighted}
                       onClick={() => handleSelect(option.value)}
+                      onMouseEnter={() => setHighlightedIndex(itemIndex)}
                       className={cn(
-                        "hover:bg-accent hover:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2.5 py-1.5 text-sm transition-colors outline-none select-none",
-                        isSelected && "bg-accent/60 text-accent-foreground font-medium",
+                        "relative flex cursor-pointer items-center rounded-sm px-2.5 py-1.5 text-sm transition-colors outline-none select-none",
+                        isHighlighted && "bg-accent text-accent-foreground font-medium",
+                        isSelected &&
+                          !isHighlighted &&
+                          "bg-accent/40 text-accent-foreground font-medium",
                       )}
                     >
                       <span className="flex-1 truncate">{option.label}</span>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FormDialogField, Button, toast } from "@finai/ui";
-import { useProfile, useUpdateProfile, type UserProfile } from "../api/profile";
+import { useProfile, useUpdateProfile, type UserProfile } from "../api";
 
 export function ProfileSettings() {
   const { data: profile, isLoading } = useProfile();

@@ -20,10 +20,8 @@ import {
   TrendLine,
   CHART_COLORS,
 } from "@finai/ui";
-import { TransactionDialog } from "../../transactions/components";
-import { useDashboardStats } from "../api/getDashboardStats";
-import { useMonthlyAnalytics } from "../api/getMonthlyAnalytics";
-import { useCategoryBreakdown } from "../api/getCategoryBreakdown";
+import { TransactionDialog } from "@/features/transactions/components";
+import { useCategoryBreakdown, useDashboardStats, useMonthlyAnalytics } from "../api";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 
@@ -233,7 +231,7 @@ export function DashboardPage() {
                 <CategoryPie data={pieData} />
 
                 {/* Compact, fixed-height scrollable category breakdown */}
-                <div className="border-border/60 max-h-[175px] space-y-2.5 overflow-y-auto border-t pt-3 pr-1">
+                <div className="border-border/60 max-h-43.75 space-y-2.5 overflow-y-auto border-t pt-3 pr-1">
                   {displayCategories.map((c, i) => (
                     <div
                       key={c.categoryId ?? c.name}

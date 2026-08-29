@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button, Switch, toast } from "@finai/ui";
-import { useProfile, useUpdateProfile } from "../api/profile";
+import { useProfile, useUpdateProfile } from "../api";
 
 export function SecuritySettings() {
   const { data: profile, isLoading } = useProfile();

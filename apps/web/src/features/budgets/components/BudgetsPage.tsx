@@ -5,9 +5,9 @@ import { Plus } from "lucide-react";
 import { PageContainer, PageHeader, ProgressCard, StatusBadge, Button } from "@finai/ui";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { formatINR } from "@finai/finance-engine";
-import { useBudgets } from "../api/getBudgets";
-import { BudgetDialog } from "./BudgetDialog";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
+import { useBudgets } from "../api";
+import { BudgetDialog } from "./BudgetDialog";
 
 export function BudgetsPage() {
   const { data: rawBudgets } = useBudgets();
