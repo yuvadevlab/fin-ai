@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { Plus, Calendar, Sparkles } from "lucide-react";
+import React, { useRef } from "react";
+import { Plus, Calendar, Sparkles, Upload, Download } from "lucide-react";
+import { formatINR } from "@finai/finance-engine";
 import { Button, Table, TableHeader, TableBody, TableHead, TableRow } from "@finai/ui";
 import { BulkTransactionRow } from "./BulkTransactionRow";
 
@@ -22,6 +23,10 @@ export interface BulkTransactionFormProps {
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
   onFillTodayDate: () => void;
+  onUploadExcel?: (file: File) => void;
+  onDownloadTemplate?: () => void;
+  onAddCategory?: (initialName?: string, rowId?: string) => void;
+  onAddAccount?: (initialName?: string, rowId?: string) => void;
   accounts: { label: string; value: string }[];
   categories: { label: string; value: string }[];
   errors: Record<string, string>;
@@ -33,14 +38,35 @@ export function BulkTransactionForm({
   onAddRow,
   onRemoveRow,
   onFillTodayDate,
+  onUploadExcel,
+  onDownloadTemplate,
+  onAddCategory,
+  onAddAccount,
   accounts,
   categories,
   errors,
 }: BulkTransactionFormProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const totalAmount = rows.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUploadExcel?.(file);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="space-y-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx, .xls, .csv"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {/* Top summary & toolbar bar */}
       <div className="bg-secondary/40 border-border/80 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3.5 shadow-xs">
         <div className="flex items-center gap-2.5">
@@ -49,23 +75,45 @@ export function BulkTransactionForm({
           </div>
           <div>
             <h4 className="text-foreground text-xs font-bold tracking-wider uppercase">
-              EOD Batch Mode
+              Bulk Upload & Import Queue
             </h4>
             <p className="text-muted-foreground text-[11px]">
-              {rows.length} {rows.length === 1 ? "entry" : "entries"} in queue
+              {rows.length} {rows.length === 1 ? "entry" : "entries"} ready for submit
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-right">
+        <div className="flex items-center gap-2.5">
+          <div className="mr-2 text-right">
             <span className="text-muted-foreground block text-[10px] font-semibold tracking-wider uppercase">
               Batch Total
             </span>
             <span className="text-foreground font-mono text-sm font-extrabold">
-              ₹{totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              {formatINR(totalAmount)}
             </span>
           </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onDownloadTemplate}
+            className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs font-medium"
+            title="Download formatted Excel sheet template pre-filled with your accounts & categories"
+          >
+            <Download className="text-primary size-3.5" /> Template (.xlsx)
+          </Button>
+
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            className="h-8 cursor-pointer gap-1.5 text-xs font-semibold"
+            title="Upload Excel spreadsheet (.xlsx, .csv)"
+          >
+            <Upload className="size-3.5" /> Upload Excel
+          </Button>
 
           <Button
             type="button"
@@ -109,6 +157,8 @@ export function BulkTransactionForm({
                 idx={idx}
                 onChangeRow={onChangeRow}
                 onRemoveRow={onRemoveRow}
+                onAddCategory={onAddCategory}
+                onAddAccount={onAddAccount}
                 accounts={accounts}
                 categories={categories}
                 errors={errors}

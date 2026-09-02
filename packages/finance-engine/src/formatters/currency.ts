@@ -8,7 +8,16 @@
  */
 export function formatINR(value: number): string {
   const sign = value < 0 ? "-" : "";
-  return sign + "₹" + Math.abs(value).toLocaleString("en-IN");
+  const abs = Math.abs(value);
+  const showDecimals = Number(abs.toFixed(2)) % 1 !== 0;
+  return (
+    sign +
+    "₹" +
+    abs.toLocaleString("en-IN", {
+      minimumFractionDigits: showDecimals ? 2 : 0,
+      maximumFractionDigits: 2,
+    })
+  );
 }
 
 /**

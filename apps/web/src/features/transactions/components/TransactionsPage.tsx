@@ -2,20 +2,24 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
-import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
-import { TransactionDialog } from "./TransactionDialog";
-import { useActiveWorkspace } from "@/hooks";
-import { useTransactions } from "../api/getTransactions";
-import { useDeleteTransaction } from "../api/deleteTransaction";
-import { useCategories } from "@/features/categories/api/getCategories";
-import { useAccounts } from "@/features/accounts/api/getAccounts";
+import {
+  TablePageContainer,
+  PageHeader,
+  DataTable,
+  SearchBar,
+  FilterChips,
+  Button,
+} from "@finai/ui";
 import { TransactionFilterInput } from "@finai/validation";
-import { getTransactionColumns } from "./TransactionColumns";
-import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
+import { format } from "date-fns";
+import { useCategories } from "@/features/categories/api";
+import { useAccounts } from "@/features/accounts/api";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
-import { useProfile } from "@/features/settings/api/profile";
-import { format } from "date-fns";
+import { useTransactions, useDeleteTransaction } from "../api";
+import { TransactionDialog } from "./TransactionDialog";
+import { getTransactionColumns } from "./TransactionColumns";
+import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
 
 const chips = ["All", "Income", "Expenses", "Transfer"];
 
@@ -30,10 +34,8 @@ export function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const { activeWorkspaceId } = useActiveWorkspace();
-  const { data: profile } = useProfile();
-  const { data: categories = [] } = useCategories(activeWorkspaceId);
-  const { data: accounts = [] } = useAccounts(activeWorkspaceId);
+  const { data: categories = [] } = useCategories();
+  const { data: accounts = [] } = useAccounts();
 
   const queryFilter = useMemo(() => {
     const filter: TransactionFilterInput = {
@@ -52,8 +54,8 @@ export function TransactionsPage() {
     return filter;
   }, [selectedFilter, search, categoryId, accountId, dateRange, page, pageSize]);
 
-  const { data: response, isLoading } = useTransactions(activeWorkspaceId, queryFilter);
-  const deleteTransaction = useDeleteTransaction(activeWorkspaceId);
+  const { data: response, isLoading } = useTransactions(queryFilter);
+  const deleteTransaction = useDeleteTransaction();
 
   const activeFilterCount =
     (categoryId !== "all" ? 1 : 0) +
@@ -90,82 +92,84 @@ export function TransactionsPage() {
   const columns = useMemo(() => getTransactionColumns(handleDelete), [handleDelete]);
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Transactions"
-        description="All income, expenses, and transfers across your workspaces."
-        actions={
-          <TransactionDialog
-            trigger={
-              <Button size="sm" className="cursor-pointer gap-1.5">
-                <Plus className="size-4" /> Add Transaction
-              </Button>
+    <TablePageContainer
+      header={
+        <>
+          <PageHeader
+            title="Transactions"
+            description="All income, expenses, and transfers."
+            actions={
+              <TransactionDialog
+                trigger={
+                  <Button size="sm" className="cursor-pointer gap-1.5">
+                    <Plus className="size-4" /> Add Transaction
+                  </Button>
+                }
+              />
             }
           />
-        }
-      />
 
-      <div className="mb-6">
-        <LiveAIInsightCard page="transactions" cta="Analyze spending" />
-      </div>
+          <LiveAIInsightCard page="transactions" cta="Analyze spending" />
 
-      <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
-        <div className="relative min-w-64 flex-1">
-          <SearchBar
-            placeholder="Search notes, categories, accounts…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            containerClassName="w-full"
-            className="pr-9"
-          />
-          {search ? (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="text-muted-foreground hover:bg-secondary absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1"
-            >
-              <X className="size-3.5" />
-            </button>
-          ) : null}
-        </div>
+          {/* Filter toolbar */}
+          <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
+            <div className="relative min-w-64 flex-1">
+              <SearchBar
+                placeholder="Search notes, categories, accounts…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                containerClassName="w-full"
+                className="pr-9"
+              />
+              {search ? (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="text-muted-foreground hover:bg-secondary absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1"
+                >
+                  <X className="size-3.5" />
+                </button>
+              ) : null}
+            </div>
 
-        <DateRangeFilter
-          cycleStartDay={profile?.preferences?.cycleStartDay || 1}
-          cyclePeriod={profile?.preferences?.cyclePeriod || "MONTHLY"}
-          onRangeChange={(range) => {
-            setDateRange(range);
-            setPage(1);
-          }}
-        />
+            <DateRangeFilter
+              onRangeChange={(range) => {
+                setDateRange(range);
+                setPage(1);
+              }}
+            />
 
-        <TransactionFiltersPopover
-          categories={categories}
-          accounts={accounts}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
-          accountId={accountId}
-          setAccountId={setAccountId}
-          minAmount={minAmount}
-          setMinAmount={setMinAmount}
-          maxAmount={maxAmount}
-          setMaxAmount={setMaxAmount}
-          activeFilterCount={activeFilterCount}
-          clearFilters={clearFilters}
-        />
+            <TransactionFiltersPopover
+              categories={categories}
+              accounts={accounts}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              accountId={accountId}
+              setAccountId={setAccountId}
+              minAmount={minAmount}
+              setMinAmount={setMinAmount}
+              maxAmount={maxAmount}
+              setMaxAmount={setMaxAmount}
+              activeFilterCount={activeFilterCount}
+              clearFilters={clearFilters}
+            />
 
-        <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
-      </div>
-
+            <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
+          </div>
+        </>
+      }
+    >
       {isLoading ? (
-        <div className="text-muted-foreground flex items-center justify-center p-12">
-          Loading transactions...
+        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+          <p className="text-muted-foreground text-sm">Loading transactions…</p>
         </div>
       ) : transactionsList.length === 0 ? (
-        <div className="text-muted-foreground flex items-center justify-center p-12 text-sm">
-          No transactions match your filters.
+        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+          <p className="text-muted-foreground text-sm">No transactions match your filters.</p>
         </div>
       ) : (
         <DataTable
+          fillViewport
           data={transactionsList}
           columns={columns}
           rowKey={(t) => t.id}
@@ -186,6 +190,6 @@ export function TransactionsPage() {
           }
         />
       )}
-    </PageContainer>
+    </TablePageContainer>
   );
 }

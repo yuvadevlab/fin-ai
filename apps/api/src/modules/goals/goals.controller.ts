@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { GoalsService } from "./goals.service";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
+import { GoalsService } from "@/modules/goals/goals.service";
 import {
   createGoalSchema,
   updateGoalSchema,
@@ -13,54 +14,54 @@ import {
 @ApiTags("Goals")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller("workspaces/:workspaceId/goals")
+@Controller("goals")
 export class GoalsController {
   constructor(private readonly goalsService: GoalsService) {}
 
   @Get()
-  @ApiOperation({ summary: "List all goals in a workspace" })
-  findAll(@Param("workspaceId") workspaceId: string) {
-    return this.goalsService.findAll(workspaceId);
+  @ApiOperation({ summary: "List all goals for the current user" })
+  findAll(@CurrentUser("id") userId: string) {
+    return this.goalsService.findAll(userId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single goal" })
-  findOne(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
-    return this.goalsService.findOne(id, workspaceId);
+  findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.goalsService.findOne(id, userId);
   }
 
   @Post()
   @ApiOperation({ summary: "Create a goal" })
   create(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(createGoalSchema)) body: CreateGoalInput,
   ) {
-    return this.goalsService.create(workspaceId, body);
+    return this.goalsService.create(userId, body);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Update a goal" })
   update(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateGoalSchema)) body: UpdateGoalInput,
   ) {
-    return this.goalsService.update(id, workspaceId, body);
+    return this.goalsService.update(id, userId, body);
   }
 
   @Post(":id/contribute")
   @ApiOperation({ summary: "Add money to a goal" })
   contribute(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Param("id") id: string,
     @Body("amount") amount: number,
   ) {
-    return this.goalsService.contribute(id, workspaceId, amount);
+    return this.goalsService.contribute(id, userId, amount);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a goal" })
-  remove(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
-    return this.goalsService.remove(id, workspaceId);
+  remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.goalsService.remove(id, userId);
   }
 }

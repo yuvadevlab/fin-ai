@@ -37,10 +37,10 @@ export interface PaginatedTransactions {
   totalPages: number;
 }
 
-export const transactionsQueryKey = (workspaceId: string, filter?: TransactionFilterInput) =>
-  ["transactions", workspaceId, filter] as const;
+export const transactionsQueryKey = (filter?: TransactionFilterInput) =>
+  ["transactions", filter] as const;
 
-export function useTransactions(workspaceId: string | null, filter?: TransactionFilterInput) {
+export function useTransactions(filter?: TransactionFilterInput) {
   const queryParams = new URLSearchParams();
   if (filter?.search) queryParams.append("search", filter.search);
   if (filter?.category) queryParams.append("category", filter.category);
@@ -52,24 +52,21 @@ export function useTransactions(workspaceId: string | null, filter?: Transaction
   if (filter?.pageSize) queryParams.append("pageSize", String(filter.pageSize));
 
   const queryStr = queryParams.toString();
-  const endpoint = `workspaces/${workspaceId}/transactions${queryStr ? `?${queryStr}` : ""}`;
+  const endpoint = `transactions${queryStr ? `?${queryStr}` : ""}`;
 
   return useQuery<PaginatedTransactions>({
-    queryKey: transactionsQueryKey(workspaceId ?? "", filter),
+    queryKey: transactionsQueryKey(filter),
     queryFn: () => apiClient.get<PaginatedTransactions>(endpoint),
-    enabled: !!workspaceId,
   });
 }
 
 export async function prefetchTransactions(
   queryClient: QueryClient,
-  workspaceId: string,
   token: string,
   filter?: TransactionFilterInput,
 ) {
   await queryClient.prefetchQuery({
-    queryKey: transactionsQueryKey(workspaceId, filter),
-    queryFn: () =>
-      serverFetch<PaginatedTransactions>(`workspaces/${workspaceId}/transactions`, token),
+    queryKey: transactionsQueryKey(filter),
+    queryFn: () => serverFetch<PaginatedTransactions>("transactions", token),
   });
 }

@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createGoalSchema } from "@finai/validation";
-import { useCreateGoal } from "../api/createGoal";
-import { useWorkspace } from "@/providers";
+import { useCreateGoal } from "../api";
 import { GoalForm } from "./GoalForm";
 
 export interface GoalDialogProps {
@@ -22,8 +21,7 @@ export function GoalDialog({
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
-  const { workspaceId } = useWorkspace();
-  const createGoal = useCreateGoal(workspaceId);
+  const createGoal = useCreateGoal();
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
@@ -32,7 +30,6 @@ export function GoalDialog({
     deadline: new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate())
       .toISOString()
       .split("T")[0],
-    type: "PERSONAL",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -57,8 +54,7 @@ export function GoalDialog({
       name: values.name,
       targetAmount: Number(values.targetAmount || 0),
       currentAmount: Number(values.currentAmount || 0),
-      deadline: values.deadline,
-      type: values.type,
+      deadline: values.deadline || null,
     });
 
     if (!parseResult.success) {
@@ -86,7 +82,6 @@ export function GoalDialog({
         )
           .toISOString()
           .split("T")[0],
-        type: "PERSONAL",
       });
     } catch (err) {
       const apiErr = err as { message?: string };

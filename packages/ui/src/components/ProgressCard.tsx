@@ -3,7 +3,7 @@ import { Progress } from "../primitives/progress";
 import { cn } from "../lib/utils";
 import { ContentCard } from "./ContentCard";
 
-interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   subtitle?: React.ReactNode;
   value: number;
@@ -14,6 +14,8 @@ interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> {
   footerRight?: React.ReactNode;
   statusBadge?: React.ReactNode;
   progressColorClass?: string;
+  masked?: boolean;
+  maskPlaceholder?: string;
 }
 
 export function ProgressCard({
@@ -27,9 +29,27 @@ export function ProgressCard({
   footerRight,
   statusBadge,
   progressColorClass,
+  masked = false,
+  maskPlaceholder = "••••••",
   className,
   ...props
 }: ProgressCardProps) {
+  const showValueDecimals = Number(Math.abs(value).toFixed(2)) % 1 !== 0;
+  const showTargetDecimals = Number(Math.abs(target).toFixed(2)) % 1 !== 0;
+
+  const formattedValue = masked
+    ? maskPlaceholder
+    : value.toLocaleString("en-IN", {
+        minimumFractionDigits: showValueDecimals ? 2 : 0,
+        maximumFractionDigits: 2,
+      });
+  const formattedTarget = masked
+    ? maskPlaceholder
+    : target.toLocaleString("en-IN", {
+        minimumFractionDigits: showTargetDecimals ? 2 : 0,
+        maximumFractionDigits: 2,
+      });
+
   return (
     <ContentCard className={cn("p-5", className)} {...props}>
       <div className="flex items-start justify-between">
@@ -42,11 +62,11 @@ export function ProgressCard({
       <div className="mt-5 flex items-baseline justify-between">
         <span className="text-2xl font-bold tracking-tight tabular-nums">
           {unit}
-          {value.toLocaleString("en-IN")}
+          {formattedValue}
         </span>
         <span className="text-muted-foreground text-sm">
           of {unit}
-          {target.toLocaleString("en-IN")}
+          {formattedTarget}
         </span>
       </div>
       <Progress

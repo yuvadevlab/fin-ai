@@ -7,8 +7,6 @@ import { Sparkles } from "lucide-react";
 import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
 import { apiClient } from "@/lib/api-client";
 
-import { Workspace } from "@/hooks";
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -29,13 +27,6 @@ export default function LoginPage() {
       localStorage.setItem("finai_user", JSON.stringify(response.user));
       document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
 
-      // Fetch user's workspaces
-      const workspaces = await apiClient.get<Workspace[]>("workspaces");
-      if (workspaces && workspaces.length > 0) {
-        localStorage.setItem("finai_workspace_id", workspaces[0].id);
-        document.cookie = `finai_workspace_id=${workspaces[0].id}; path=/; max-age=604800; SameSite=Lax`;
-      }
-
       toast.success("Welcome back! Login successful.");
       router.push("/");
     } catch (err) {
@@ -55,7 +46,7 @@ export default function LoginPage() {
           </div>
           <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
           <p className="text-muted-foreground text-sm">
-            Sign in to your FinAI dashboard to manage family wealth
+            Sign in to your FinAI dashboard to manage your wealth
           </p>
         </div>
 
@@ -82,9 +73,12 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-primary text-xs font-semibold hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-primary text-xs font-semibold hover:underline"
+                >
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <Input
                 id="password"

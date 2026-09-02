@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
 import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
 import { apiClient } from "@/lib/api-client";
-import { Workspace } from "@/hooks";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -38,13 +37,6 @@ export default function RegisterPage() {
       localStorage.setItem("finai_user", JSON.stringify(response.user));
       document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
 
-      // Fetch user's workspaces
-      const workspaces = await apiClient.get<Workspace[]>("workspaces");
-      if (workspaces && workspaces.length > 0) {
-        localStorage.setItem("finai_workspace_id", workspaces[0].id);
-        document.cookie = `finai_workspace_id=${workspaces[0].id}; path=/; max-age=604800; SameSite=Lax`;
-      }
-
       toast.success("Account created successfully!");
       router.push("/");
     } catch (err) {
@@ -64,7 +56,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-2xl font-bold tracking-tight">Create your account</h2>
           <p className="text-muted-foreground text-sm">
-            Get started with AI-powered personal and family wealth management
+            Get started with AI-powered personal wealth management
           </p>
         </div>
 

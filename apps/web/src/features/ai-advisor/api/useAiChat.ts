@@ -10,20 +10,21 @@ export interface ChatMessage {
   streaming?: boolean;
 }
 
-interface UseAiChatOptions {
-  workspaceId: string | null;
-}
-
-export function useAiChat({ workspaceId }: UseAiChatOptions) {
+export function useAiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
 
+  const stopStreaming = useCallback(() => {
+    abortRef.current?.abort();
+    setIsStreaming(false);
+  }, []);
+
   const sendMessage = useCallback(
     async (question: string) => {
-      if (!workspaceId || isStreaming) return;
+      if (isStreaming) return;
 
       // Add user turn immediately
       setMessages((prev) => [...prev, { role: "user", text: question }]);
@@ -45,7 +46,6 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
           },
           body: JSON.stringify({
             question,
-            workspaceId,
             conversationId: conversationId ?? undefined,
           }),
           signal: abortRef.current.signal,
@@ -58,16 +58,12 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let accumulated = "";
-        let serverConversationId: string | null = null;
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
           buffer += decoder.decode(value, { stream: true });
-
-          // Process complete SSE lines
           const lines = buffer.split("\n");
           buffer = lines.pop() ?? "";
 
@@ -78,9 +74,9 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
 
             try {
               const parsed = JSON.parse(raw) as {
+                conversationId?: string;
                 token?: string;
                 done?: boolean;
-                conversationId?: string;
                 error?: string;
               };
 
@@ -88,10 +84,10 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
                 setMessages((prev) => {
                   const copy = [...prev];
                   const last = copy[copy.length - 1];
-                  if (last?.streaming) {
+                  if (last && last.role === "assistant") {
                     copy[copy.length - 1] = {
-                      ...last,
-                      text: "⚠️ AI service is unavailable. Make sure Ollama is running.",
+                      role: "assistant",
+                      text: `Error: ${parsed.error}`,
                       streaming: false,
                     };
                   }
@@ -100,54 +96,39 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
                 return;
               }
 
-              if (parsed.conversationId) {
-                serverConversationId = parsed.conversationId;
+              if (parsed.conversationId && !conversationId) {
                 setConversationId(parsed.conversationId);
               }
 
               if (parsed.token) {
-                accumulated += parsed.token;
-                const snapshot = accumulated;
                 setMessages((prev) => {
                   const copy = [...prev];
                   const last = copy[copy.length - 1];
-                  if (last?.streaming) {
-                    copy[copy.length - 1] = { ...last, text: snapshot };
-                  }
-                  return copy;
-                });
-              }
-
-              if (parsed.done) {
-                setMessages((prev) => {
-                  const copy = [...prev];
-                  const last = copy[copy.length - 1];
-                  if (last?.streaming) {
-                    copy[copy.length - 1] = { ...last, streaming: false };
+                  if (last && last.role === "assistant") {
+                    copy[copy.length - 1] = {
+                      role: "assistant",
+                      text: last.text + parsed.token,
+                      streaming: true,
+                    };
                   }
                   return copy;
                 });
               }
             } catch {
-              // skip malformed JSON chunks
+              // skip malformed chunks
             }
           }
         }
-
-        // Invalidate conversation list so sidebar updates
-        if (serverConversationId) {
-          await queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
-        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") return;
-
+        const msg = err instanceof Error ? err.message : "Failed to connect to AI advisor";
         setMessages((prev) => {
           const copy = [...prev];
           const last = copy[copy.length - 1];
-          if (last?.streaming) {
+          if (last && last.role === "assistant") {
             copy[copy.length - 1] = {
-              ...last,
-              text: "⚠️ Could not reach the AI service. Please try again.",
+              role: "assistant",
+              text: `⚠️ ${msg}. Please ensure Ollama is running with qwen2.5:7b.`,
               streaming: false,
             };
           }
@@ -155,51 +136,44 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
         });
       } finally {
         setIsStreaming(false);
+        setMessages((prev) => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last && last.role === "assistant") {
+            copy[copy.length - 1] = { ...last, streaming: false };
+          }
+          return copy;
+        });
+        queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
       }
     },
-    [workspaceId, isStreaming, conversationId, queryClient],
+    [conversationId, isStreaming, queryClient],
   );
 
-  const stopStreaming = useCallback(() => {
-    abortRef.current?.abort();
-  }, []);
-
-  const startNewConversation = useCallback(() => {
-    setConversationId(null);
-    setMessages([]);
-  }, []);
-
-  const loadConversation = useCallback(async (convoOrId: AiConversation | string) => {
-    const id = typeof convoOrId === "string" ? convoOrId : convoOrId.id;
-    setConversationId(id);
-
-    // Initial fallback if object passed
-    if (
-      typeof convoOrId !== "string" &&
-      Array.isArray(convoOrId.messages) &&
-      convoOrId.messages.length > 0
-    ) {
-      setMessages(
-        convoOrId.messages.map((m) => ({
-          role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
+  const loadConversation = useCallback(
+    async (id: string) => {
+      if (isStreaming) return;
+      try {
+        const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
+        if (!convo) return;
+        setConversationId(convo.id);
+        const mapped: ChatMessage[] = (convo.messages ?? []).map((m) => ({
+          role: m.role === "USER" ? "user" : "assistant",
           text: m.content,
-        })),
-      );
-    }
-
-    try {
-      const full = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
-      if (full && Array.isArray(full.messages)) {
-        setMessages(
-          full.messages.map((m) => ({
-            role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
-            text: m.content,
-          })),
-        );
+        }));
+        setMessages(mapped);
+      } catch {
+        // failed to load
       }
-    } catch {
-      // ignore
-    }
+    },
+    [isStreaming],
+  );
+
+  const startNewChat = useCallback(() => {
+    abortRef.current?.abort();
+    setMessages([]);
+    setConversationId(null);
+    setIsStreaming(false);
   }, []);
 
   return {
@@ -207,8 +181,9 @@ export function useAiChat({ workspaceId }: UseAiChatOptions) {
     isStreaming,
     conversationId,
     sendMessage,
-    stopStreaming,
-    startNewConversation,
     loadConversation,
+    startNewChat,
+    startNewConversation: startNewChat,
+    stopStreaming,
   };
 }

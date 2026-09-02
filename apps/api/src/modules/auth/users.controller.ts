@@ -1,10 +1,10 @@
-import { Controller, Get, Patch, Req, Body, UseGuards } from "@nestjs/common";
+import { Controller, Get, Patch, Body, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Prisma } from "@finai/database";
 import { UserPreferences } from "@finai/shared-types";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { PrismaService } from "../prisma/prisma.service";
-import { AuthenticatedRequest } from "../workspaces/workspaces.controller";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 
 @ApiTags("Users")
 @ApiBearerAuth()
@@ -15,9 +15,9 @@ export class UsersController {
 
   @Get("profile")
   @ApiOperation({ summary: "Get current user profile and preferences" })
-  async getProfile(@Req() req: AuthenticatedRequest) {
+  async getProfile(@CurrentUser("id") userId: string) {
     const user = await this.prisma.client.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: userId },
       select: {
         id: true,
         email: true,
@@ -32,7 +32,7 @@ export class UsersController {
   @Patch("profile")
   @ApiOperation({ summary: "Update current user profile and preferences" })
   async updateProfile(
-    @Req() req: AuthenticatedRequest,
+    @CurrentUser("id") userId: string,
     @Body() body: { name?: string; email?: string; preferences?: UserPreferences },
   ) {
     const data: Prisma.UserUpdateInput = {};
@@ -41,7 +41,7 @@ export class UsersController {
 
     if (body.preferences !== undefined) {
       const user = await this.prisma.client.user.findUnique({
-        where: { id: req.user.id },
+        where: { id: userId },
         select: { preferences: true },
       });
       const currentPrefs = (user?.preferences as unknown as UserPreferences) || {};
@@ -65,7 +65,7 @@ export class UsersController {
     }
 
     const updated = await this.prisma.client.user.update({
-      where: { id: req.user.id },
+      where: { id: userId },
       data,
       select: {
         id: true,

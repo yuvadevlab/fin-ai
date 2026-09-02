@@ -11,20 +11,16 @@ export interface AiMessage {
 export interface AiConversation {
   id: string;
   title: string;
-  workspaceId: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
   messages: AiMessage[];
 }
 
-export function useConversations(workspaceId: string | null) {
+export function useConversations() {
   return useQuery<AiConversation[]>({
-    queryKey: ["ai", "conversations", workspaceId],
-    queryFn: () =>
-      apiClient.get<AiConversation[]>(
-        `ai/conversations${workspaceId ? `?workspaceId=${workspaceId}` : ""}`,
-      ),
-    enabled: !!workspaceId,
+    queryKey: ["ai", "conversations"],
+    queryFn: () => apiClient.get<AiConversation[]>("ai/conversations"),
     staleTime: 10_000,
   });
 }
@@ -37,14 +33,14 @@ export function useConversation(conversationId: string | null) {
   });
 }
 
-export function useDeleteConversation(workspaceId: string | null) {
+export function useDeleteConversation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (conversationId: string) =>
       apiClient.delete<{ success: boolean }>(`ai/conversations/${conversationId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai", "conversations", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
     },
   });
 }

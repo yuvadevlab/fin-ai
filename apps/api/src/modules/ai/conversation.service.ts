@@ -1,17 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 import { MessageRole, Conversation, Message } from "@finai/database";
 
 @Injectable()
 export class ConversationService {
   constructor(private prisma: PrismaService) {}
 
-  async getConversations(
-    userId: string,
-    workspaceId: string,
-  ): Promise<(Conversation & { messages: Message[] })[]> {
+  async getConversations(userId: string): Promise<(Conversation & { messages: Message[] })[]> {
     return this.prisma.client.conversation.findMany({
-      where: { userId, workspaceId },
+      where: { userId },
       include: {
         messages: { orderBy: { createdAt: "asc" }, take: 1 },
       },
@@ -29,13 +26,9 @@ export class ConversationService {
     });
   }
 
-  async createConversation(
-    userId: string,
-    workspaceId: string,
-    title: string,
-  ): Promise<Conversation> {
+  async createConversation(userId: string, title: string): Promise<Conversation> {
     return this.prisma.client.conversation.create({
-      data: { userId, workspaceId, title },
+      data: { userId, title },
     });
   }
 

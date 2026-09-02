@@ -4,19 +4,18 @@ import { CreateInvestmentInput } from "@finai/validation";
 import { toast } from "@finai/ui";
 import { Investment } from "./getInvestments";
 
-export function useCreateInvestment(workspaceId: string | null) {
+export function useCreateInvestment() {
   const queryClient = useQueryClient();
 
   return useMutation<Investment, Error, CreateInvestmentInput>({
-    mutationFn: (input) =>
-      apiClient.post<Investment>(`workspaces/${workspaceId}/investments`, input),
+    mutationFn: (input) => apiClient.post<Investment>("investments", input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["investments", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["analytics", workspaceId] });
-      toast.success("Investment tracked successfully");
+      queryClient.invalidateQueries({ queryKey: ["investments"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      toast.success("Investment added successfully");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to track investment");
+      toast.error(error.message || "Failed to add investment");
     },
   });
 }

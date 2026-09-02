@@ -8,7 +8,7 @@ export default async function Page() {
   const queryClient = new QueryClient();
 
   if (auth) {
-    await prefetchHealthScore(queryClient, auth.workspaceId, auth.token);
+    await prefetchHealthScore(queryClient, auth.token);
   }
 
   return (

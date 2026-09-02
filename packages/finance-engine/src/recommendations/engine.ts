@@ -1,7 +1,4 @@
-/**
- * Recommendation engine — pure functions.
- * Generates actionable financial recommendations from data.
- */
+import { formatINR } from "../formatters/currency";
 
 export interface Recommendation {
   id: string;
@@ -40,7 +37,7 @@ export function generateRecommendations(input: RecommendationInput): Recommendat
         category: "budget",
         priority: "high",
         title: `${cat.name} over budget`,
-        description: `You've exceeded your ${cat.name} budget by ₹${over.toLocaleString("en-IN")}. Consider reducing spending in this category.`,
+        description: `You've exceeded your ${cat.name} budget by ${formatINR(over)}. Consider reducing spending in this category.`,
         potentialSavings: over,
       });
     } else if (cat.spent > cat.limit * 0.85) {
@@ -108,7 +105,7 @@ export function generateRecommendations(input: RecommendationInput): Recommendat
         category: "goal",
         priority: "medium",
         title: `${goal.name} deadline approaching`,
-        description: `You need ₹${Math.round(requiredMonthly).toLocaleString("en-IN")}/month to reach your ${goal.name} goal by the deadline.`,
+        description: `You need ${formatINR(requiredMonthly)}/month to reach your ${goal.name} goal by the deadline.`,
       });
     }
   }

@@ -10,6 +10,8 @@ export interface BulkTransactionRowProps {
   idx: number;
   onChangeRow: (id: string, field: keyof BulkRow, value: string) => void;
   onRemoveRow: (id: string) => void;
+  onAddCategory?: (initialName?: string, rowId?: string) => void;
+  onAddAccount?: (initialName?: string, rowId?: string) => void;
   accounts: { label: string; value: string }[];
   categories: { label: string; value: string }[];
   errors: Record<string, string>;
@@ -21,6 +23,8 @@ export function BulkTransactionRow({
   idx,
   onChangeRow,
   onRemoveRow,
+  onAddCategory,
+  onAddAccount,
   accounts,
   categories,
   errors,
@@ -75,6 +79,10 @@ export function BulkTransactionRow({
             name: "category",
             label: "",
             options: categories,
+            searchable: true,
+            searchPlaceholder: "Search category...",
+            onAddNew: (query) => onAddCategory?.(query, row.id),
+            addNewLabel: "+ Create Category",
           }}
           value={row.category}
           error={errors[`${row.id}_category`]}
@@ -90,6 +98,10 @@ export function BulkTransactionRow({
             name: "account",
             label: "",
             options: accounts,
+            searchable: true,
+            searchPlaceholder: "Search account...",
+            onAddNew: (query) => onAddAccount?.(query, row.id),
+            addNewLabel: "+ Link Account",
           }}
           value={row.account}
           error={errors[`${row.id}_account`]}

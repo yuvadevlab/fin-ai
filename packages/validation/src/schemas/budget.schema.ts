@@ -3,7 +3,6 @@ import { z } from "zod";
 export const createBudgetSchema = z.object({
   categoryId: z.string().uuid("Invalid category ID"),
   limit: z.number().positive("Budget limit must be positive"),
-  period: z.enum(["WEEKLY", "MONTHLY", "YEARLY"]).default("MONTHLY"),
   startDate: z.string().date("Invalid date format").optional(),
 });
 

@@ -12,8 +12,6 @@ export const updatePreferencesSchema = z.object({
   theme: z.enum(["light", "dark", "system"]).optional(),
   currency: z.string().length(3).optional(),
   locale: z.string().max(10).optional(),
-  cycleStartDay: z.number().int().min(1).max(31).optional(),
-  cyclePeriod: z.enum(["MONTHLY", "WEEKLY", "QUARTERLY", "YEARLY"]).optional(),
   notifications: z
     .object({
       budgetAlerts: z.boolean().optional(),

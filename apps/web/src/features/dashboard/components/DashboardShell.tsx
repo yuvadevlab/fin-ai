@@ -3,26 +3,29 @@
 import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AppShell, Sidebar, TopBar } from "@finai/ui";
-import { TransactionDialog } from "../../transactions/components";
-import { WorkspaceMenu, NotificationsMenu, ProfileMenu } from "../../workspace/components";
-import { SearchDropdown } from "../../search/components/SearchDropdown";
-import { useWorkspace, AppearanceSync } from "@/providers";
-import { useMenuItems } from "../api/getMenuItems";
+import { AppShell, Sidebar, TopBar, Sheet, SheetContent, SheetTitle } from "@finai/ui";
+import { TransactionDialog } from "@/features/transactions/components";
+import { SearchDropdown } from "@/features/search/components/SearchDropdown";
+import { AppearanceSync } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
-import { useActiveWorkspace } from "@/hooks";
+import { ProfileMenu } from "@/components/ProfileMenu";
+import { NotificationsMenu } from "@/components/NotificationsMenu";
+import { PrivacyToggle } from "@/components/PrivacyToggle";
+import { useSidebarState } from "@/hooks";
 
 function CustomLinkComponent({
   href,
   children,
   className,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }) {
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={className} onClick={onClick}>
       {children}
     </Link>
   );
@@ -30,60 +33,72 @@ function CustomLinkComponent({
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { workspaceId } = useWorkspace();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { data: menuItems } = useMenuItems();
-  const { activeWorkspace } = useActiveWorkspace();
+  const { isCollapsed, toggleCollapse } = useSidebarState();
 
-  const sidebar = useMemo(() => {
-    const memberCount = activeWorkspace?.members?.length ?? 1;
-    const planText = activeWorkspace?.type === "FAMILY" ? "Family Plan" : "Personal Workspace";
-    const detailsText = `${memberCount} member${memberCount > 1 ? "s" : ""} · 100% synced`;
+  // Close mobile drawer on route transition during render
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsMobileMenuOpen(false);
+  }
 
-    return (
+  const sidebar = useMemo(
+    () => (
       <Sidebar
         pathname={pathname}
         LinkComponent={CustomLinkComponent}
-        menuItems={menuItems}
-        planName={activeWorkspace?.name || planText}
-        planDetails={detailsText}
-        planSyncPercentage={100}
+        collapsed={isCollapsed}
+        onToggleCollapse={toggleCollapse}
       />
-    );
-  }, [pathname, menuItems, activeWorkspace]);
+    ),
+    [pathname, isCollapsed, toggleCollapse],
+  );
 
   const topbar = useMemo(
     () => (
       <TopBar
-        workspaceMenu={<WorkspaceMenu />}
+        actions={<PrivacyToggle />}
+        onMenuClick={() => setIsMobileMenuOpen(true)}
+        onToggleSidebar={toggleCollapse}
+        isSidebarCollapsed={isCollapsed}
         notificationsMenu={FEATURE_FLAGS.NOTIFICATIONS ? <NotificationsMenu /> : null}
         profileMenu={<ProfileMenu />}
         onAddTransactionClick={() => setIsDialogOpen(true)}
         onSearchChange={FEATURE_FLAGS.SEARCH ? (val) => setSearchQuery(val) : undefined}
       />
     ),
-    [],
+    [isCollapsed, toggleCollapse],
   );
 
   return (
     <>
       <AppearanceSync />
       <AppShell sidebar={sidebar} topbar={topbar}>
-        {/* Search results dropdown — rendered inside the shell so it floats above content */}
+        {/* Mobile Navigation Drawer */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetContent side="left" className="border-border/80 w-72 border-r p-0">
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <Sidebar
+              pathname={pathname}
+              LinkComponent={CustomLinkComponent}
+              isMobile
+              onNavigate={() => setIsMobileMenuOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
+        {/* Search results dropdown — floats above content */}
         {searchQuery.trim().length >= 2 && (
           <div
             ref={searchRef}
             className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4 md:px-8"
           >
             <div className="pointer-events-auto w-full max-w-lg">
-              <SearchDropdown
-                workspaceId={workspaceId}
-                query={searchQuery}
-                onClose={() => setSearchQuery("")}
-              />
+              <SearchDropdown query={searchQuery} onClose={() => setSearchQuery("")} />
             </div>
           </div>
         )}

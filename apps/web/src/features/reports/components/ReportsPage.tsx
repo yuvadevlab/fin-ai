@@ -9,26 +9,23 @@ import {
   StatCard,
   ContentCard,
   SectionHeader,
-  MoneyDisplay,
   CashFlowChart,
   CategoryPie,
   Button,
   toast,
   CHART_COLORS,
 } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "@/features/dashboard/api/getCategoryBreakdown";
-import { useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 
 export function ReportsPage() {
-  const { workspaceId } = useWorkspace();
-
-  const { data: stats } = useDashboardStats(workspaceId);
-  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(workspaceId);
-  const { data: rawCategoryBreakdown } = useCategoryBreakdown(workspaceId);
+  const { data: stats } = useDashboardStats();
+  const { data: rawMonthlyCashFlow } = useMonthlyAnalytics();
+  const { data: rawCategoryBreakdown } = useCategoryBreakdown();
 
   const monthlyCashFlow = useMemo(
     () => (Array.isArray(rawMonthlyCashFlow) ? rawMonthlyCashFlow : []),
@@ -89,7 +86,7 @@ export function ReportsPage() {
       <KPIGrid>
         <StatCard
           label="Total Income"
-          value={<MoneyDisplay value={stats?.monthlyIncome ?? 0} />}
+          value={<PrivacyMoney value={stats?.monthlyIncome ?? 0} />}
           trend={
             incomeChange !== null
               ? {
@@ -101,7 +98,7 @@ export function ReportsPage() {
         />
         <StatCard
           label="Total Expenses"
-          value={<MoneyDisplay value={stats?.monthlyExpenses ?? 0} />}
+          value={<PrivacyMoney value={stats?.monthlyExpenses ?? 0} />}
           trend={
             expenseChange !== null
               ? {
@@ -113,7 +110,7 @@ export function ReportsPage() {
         />
         <StatCard
           label="Net Saved"
-          value={<MoneyDisplay value={netSaved} />}
+          value={<PrivacyMoney value={netSaved} />}
           trend={{
             value: `${stats?.savingsRate?.toFixed(1) ?? 0}% savings rate`,
             kind: (stats?.savingsRate ?? 0) > 40 ? "up" : "flat",
@@ -155,7 +152,7 @@ export function ReportsPage() {
                   />
                   {c.name}
                 </span>
-                <MoneyDisplay value={c.total} className="font-semibold" />
+                <PrivacyMoney value={c.total} className="font-semibold" />
               </li>
             ))}
           </ul>

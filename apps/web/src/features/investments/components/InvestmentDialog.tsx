@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createInvestmentSchema } from "@finai/validation";
-import { useCreateInvestment } from "../api/createInvestment";
-import { useWorkspace } from "@/providers";
+import { useCreateInvestment } from "../api";
 import { InvestmentForm } from "./InvestmentForm";
 
 export interface InvestmentDialogProps {
@@ -22,8 +21,7 @@ export function InvestmentDialog({
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
-  const { workspaceId } = useWorkspace();
-  const createInvestment = useCreateInvestment(workspaceId);
+  const createInvestment = useCreateInvestment();
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",

@@ -1,32 +1,26 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label } from "@finai/ui";
 import { format } from "date-fns";
-import { getAccountingCycleRange, getPresetDateRanges } from "@/lib/dateCycle";
-import type { CyclePeriod } from "@finai/shared-types";
+import { getPresetDateRanges, PresetDateRangeKeys } from "@/lib/dateCycle";
 
 export interface DateRangeFilterProps {
-  cycleStartDay?: number;
-  cyclePeriod?: CyclePeriod;
   onRangeChange: (range: { startDate: Date; endDate: Date }) => void;
   className?: string;
 }
 
-export function DateRangeFilter({
-  cycleStartDay = 1,
-  cyclePeriod = "MONTHLY",
-  onRangeChange,
-  className,
-}: DateRangeFilterProps) {
-  const presets = getPresetDateRanges(cycleStartDay, cyclePeriod);
-  const [selectedPreset, setSelectedPreset] = useState<string>("DEFAULT_CYCLE");
+export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterProps) {
+  const presets = useMemo(() => getPresetDateRanges(), []);
+  const [selectedPreset, setSelectedPreset] = useState<PresetDateRangeKeys | "CUSTOM">(
+    "LAST_30_DAYS",
+  );
   const [customStart, setCustomStart] = useState<string>(
-    format(presets.DEFAULT_CYCLE.startDate, "yyyy-MM-dd"),
+    format(presets.LAST_30_DAYS.startDate, "yyyy-MM-dd"),
   );
   const [customEnd, setCustomEnd] = useState<string>(
-    format(presets.DEFAULT_CYCLE.endDate, "yyyy-MM-dd"),
+    format(presets.LAST_30_DAYS.endDate, "yyyy-MM-dd"),
   );
   const [open, setOpen] = useState(false);
 
@@ -35,16 +29,15 @@ export function DateRangeFilter({
     onRangeChangeRef.current = onRangeChange;
   });
 
-  // Trigger default on mount or preference changes
+  // Trigger default (This Month) on mount
   useEffect(() => {
-    const defaultRange = getAccountingCycleRange(cycleStartDay, cyclePeriod);
     onRangeChangeRef.current({
-      startDate: defaultRange.startDate,
-      endDate: defaultRange.endDate,
+      startDate: presets.LAST_30_DAYS.startDate,
+      endDate: presets.LAST_30_DAYS.endDate,
     });
-  }, [cycleStartDay, cyclePeriod]);
+  }, [presets]);
 
-  const handleSelectPreset = (key: string) => {
+  const handleSelectPreset = (key: PresetDateRangeKeys | "CUSTOM") => {
     setSelectedPreset(key);
     if (key !== "CUSTOM") {
       const preset = presets[key];
@@ -82,7 +75,7 @@ export function DateRangeFilter({
           className={`border-border bg-card text-foreground hover:bg-secondary/60 h-9 gap-2 font-medium ${className}`}
         >
           <CalendarIcon className="text-primary size-4 shrink-0" />
-          <span className="max-w-[200px] truncate">{currentLabel}</span>
+          <span className="max-w-50 truncate">{currentLabel}</span>
           <ChevronDown className="ml-auto size-3.5 shrink-0 opacity-60" />
         </Button>
       </PopoverTrigger>
@@ -97,7 +90,7 @@ export function DateRangeFilter({
           {Object.entries(presets).map(([key, item]) => (
             <button
               key={key}
-              onClick={() => handleSelectPreset(key)}
+              onClick={() => handleSelectPreset(key as PresetDateRangeKeys)}
               className={`w-full rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
                 selectedPreset === key
                   ? "bg-primary text-primary-foreground font-semibold"

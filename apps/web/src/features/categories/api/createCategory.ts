@@ -4,13 +4,13 @@ import { CreateCategoryInput } from "@finai/validation";
 import { toast } from "@finai/ui";
 import { Category } from "./getCategories";
 
-export function useCreateCategory(workspaceId: string | null) {
+export function useCreateCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<Category, Error, CreateCategoryInput>({
-    mutationFn: (input) => apiClient.post<Category>(`workspaces/${workspaceId}/categories`, input),
+    mutationFn: (input) => apiClient.post<Category>("categories", input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success("Category created successfully");
     },
     onError: (error) => {

@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { AccountsService } from "./accounts.service";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
+import { AccountsService } from "@/modules/accounts/accounts.service";
 import {
   createAccountSchema,
   updateAccountSchema,
@@ -13,44 +14,44 @@ import {
 @ApiTags("Accounts")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller("workspaces/:workspaceId/accounts")
+@Controller("accounts")
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
   @Get()
-  @ApiOperation({ summary: "List all accounts in a workspace" })
-  findAll(@Param("workspaceId") workspaceId: string) {
-    return this.accountsService.findAll(workspaceId);
+  @ApiOperation({ summary: "List all accounts for the current user" })
+  findAll(@CurrentUser("id") userId: string) {
+    return this.accountsService.findAll(userId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single account" })
-  findOne(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
-    return this.accountsService.findOne(id, workspaceId);
+  findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.accountsService.findOne(id, userId);
   }
 
   @Post()
   @ApiOperation({ summary: "Create an account" })
   create(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(createAccountSchema)) body: CreateAccountInput,
   ) {
-    return this.accountsService.create(workspaceId, body);
+    return this.accountsService.create(userId, body);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Update an account" })
   update(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateAccountSchema)) body: UpdateAccountInput,
   ) {
-    return this.accountsService.update(id, workspaceId, body);
+    return this.accountsService.update(id, userId, body);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Soft-delete an account" })
-  remove(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
-    return this.accountsService.remove(id, workspaceId);
+  remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.accountsService.remove(id, userId);
   }
 }

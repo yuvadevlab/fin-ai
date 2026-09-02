@@ -14,20 +14,20 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
       type: "text",
       name: "name",
       label: "Goal Name",
-      placeholder: "e.g. Dream House, New Car, Vacation",
+      placeholder: "e.g. Emergency Fund, Dream Vacation, New Home",
       autoComplete: "off",
     },
     {
       type: "number",
       name: "targetAmount",
-      label: "Target Amount",
+      label: "Target Amount (₹)",
       placeholder: "0.00",
       autoComplete: "off",
     },
     {
       type: "number",
       name: "currentAmount",
-      label: "Initial Savings",
+      label: "Current Amount Saved (₹)",
       placeholder: "0.00",
       autoComplete: "off",
     },
@@ -36,15 +36,6 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
       name: "deadline",
       label: "Target Deadline",
       autoComplete: "off",
-    },
-    {
-      type: "select",
-      name: "type",
-      label: "Scope",
-      options: [
-        { label: "Personal Goal", value: "PERSONAL" },
-        { label: "Family / Shared Goal", value: "FAMILY" },
-      ],
     },
   ];
 

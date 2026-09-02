@@ -4,25 +4,16 @@ import { UpdateTransactionInput } from "@finai/validation";
 import { toast } from "@finai/ui";
 import { Transaction } from "./getTransactions";
 
-export interface UpdateTransactionParams {
-  id: string;
-  input: UpdateTransactionInput;
-}
-
-export function useUpdateTransaction(workspaceId: string | null) {
+export function useUpdateTransaction() {
   const queryClient = useQueryClient();
 
-  return useMutation<Transaction, Error, UpdateTransactionParams>({
-    mutationFn: ({ id, input }) =>
-      apiClient.patch<Transaction>(`workspaces/${workspaceId}/transactions/${id}`, input),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["accounts", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["analytics", workspaceId] });
-      // Also update single transaction query if any
-      queryClient.invalidateQueries({
-        queryKey: ["transaction", workspaceId, data.id],
-      });
+  return useMutation<Transaction, Error, { id: string; input: UpdateTransactionInput }>({
+    mutationFn: ({ id, input }) => apiClient.patch<Transaction>(`transactions/${id}`, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       toast.success("Transaction updated successfully");
     },
     onError: (error) => {

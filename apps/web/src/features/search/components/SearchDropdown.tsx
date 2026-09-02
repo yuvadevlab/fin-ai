@@ -3,17 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Receipt, Wallet, Target, SearchX } from "lucide-react";
-import { MoneyDisplay, cn } from "@finai/ui";
-import { useSearch } from "../api/useSearch";
+import { cn } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
+import { useSearch } from "../api";
 
 interface SearchDropdownProps {
-  workspaceId: string | null;
   query: string;
   onClose: () => void;
 }
 
-export function SearchDropdown({ workspaceId, query, onClose }: SearchDropdownProps) {
-  const { data, isFetching } = useSearch(workspaceId, query);
+export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
+  const { data, isFetching } = useSearch(query);
 
   const hasResults =
     (data?.transactions?.length ?? 0) + (data?.accounts?.length ?? 0) + (data?.goals?.length ?? 0) >
@@ -23,7 +23,7 @@ export function SearchDropdown({ workspaceId, query, onClose }: SearchDropdownPr
 
   return (
     <div
-      className="border-border/60 bg-background/95 ring-border/40 absolute top-[calc(100%+8px)] right-0 left-0 z-50 max-h-[420px] overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
+      className="border-border/60 bg-background/95 ring-border/40 absolute top-[calc(100%+8px)] right-0 left-0 z-50 max-h-105 overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
       role="listbox"
       aria-label="Search results"
     >
@@ -72,7 +72,7 @@ export function SearchDropdown({ workspaceId, query, onClose }: SearchDropdownPr
                   t.type === "EXPENSE" ? "text-destructive" : "text-primary",
                 )}
               >
-                <MoneyDisplay value={t.amount} />
+                <PrivacyMoney value={t.amount} />
               </span>
             </Link>
           ))}
@@ -106,7 +106,7 @@ export function SearchDropdown({ workspaceId, query, onClose }: SearchDropdownPr
                   {a.type.toLowerCase().replace("_", " ")}
                 </p>
               </div>
-              <MoneyDisplay value={a.balance} className="shrink-0 text-sm font-semibold" />
+              <PrivacyMoney value={a.balance} className="shrink-0 text-sm font-semibold" />
             </Link>
           ))}
         </section>

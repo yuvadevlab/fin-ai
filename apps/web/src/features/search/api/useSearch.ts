@@ -42,16 +42,14 @@ function useDebounce<T>(value: T, delay: number): T {
   return debounced;
 }
 
-export function useSearch(workspaceId: string | null, query: string) {
+export function useSearch(query: string) {
   const debouncedQuery = useDebounce(query, 300);
-  const enabled = !!workspaceId && debouncedQuery.trim().length >= 2;
+  const enabled = debouncedQuery.trim().length >= 2;
 
   return useQuery<SearchResults>({
-    queryKey: ["search", workspaceId, debouncedQuery],
+    queryKey: ["search", debouncedQuery],
     queryFn: () =>
-      apiClient.get<SearchResults>(
-        `workspaces/${workspaceId}/search?q=${encodeURIComponent(debouncedQuery.trim())}`,
-      ),
+      apiClient.get<SearchResults>(`search?q=${encodeURIComponent(debouncedQuery.trim())}`),
     enabled,
     staleTime: 10_000,
   });

@@ -25,29 +25,8 @@ export type BudgetStatus = (typeof BudgetStatus)[keyof typeof BudgetStatus];
 
 export const GoalType = {
   PERSONAL: "PERSONAL",
-  FAMILY: "FAMILY",
 } as const;
 export type GoalType = (typeof GoalType)[keyof typeof GoalType];
-
-export const BudgetPeriod = {
-  WEEKLY: "WEEKLY",
-  MONTHLY: "MONTHLY",
-  YEARLY: "YEARLY",
-} as const;
-export type BudgetPeriod = (typeof BudgetPeriod)[keyof typeof BudgetPeriod];
-
-export const WorkspaceType = {
-  PERSONAL: "PERSONAL",
-  FAMILY: "FAMILY",
-} as const;
-export type WorkspaceType = (typeof WorkspaceType)[keyof typeof WorkspaceType];
-
-export const WorkspaceRole = {
-  OWNER: "OWNER",
-  ADMIN: "ADMIN",
-  MEMBER: "MEMBER",
-} as const;
-export type WorkspaceRole = (typeof WorkspaceRole)[keyof typeof WorkspaceRole];
 
 export const MessageRole = {
   USER: "USER",
@@ -75,35 +54,16 @@ export const NotificationType = {
   GOAL_COMPLETED: "GOAL_COMPLETED",
   GOAL_MILESTONE: "GOAL_MILESTONE",
   AI_INSIGHT: "AI_INSIGHT",
-  WORKSPACE_INVITE: "WORKSPACE_INVITE",
   SYSTEM: "SYSTEM",
 } as const;
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
-
-export const WorkspaceInviteStatus = {
-  PENDING: "PENDING",
-  ACCEPTED: "ACCEPTED",
-  REJECTED: "REJECTED",
-} as const;
-export type WorkspaceInviteStatus =
-  (typeof WorkspaceInviteStatus)[keyof typeof WorkspaceInviteStatus];
-
-export const CyclePeriod = {
-  WEEKLY: "WEEKLY",
-  MONTHLY: "MONTHLY",
-  QUARTERLY: "QUARTERLY",
-  YEARLY: "YEARLY",
-} as const;
-export type CyclePeriod = (typeof CyclePeriod)[keyof typeof CyclePeriod];
 
 // ─── Model Types ─────────────────────────────────────────────────────────────
 
 export interface UserPreferences {
   notifications?: Record<string, boolean>;
-  appearance?: Record<string, string>;
+  appearance?: Record<string, string | boolean>;
   security?: Record<string, boolean>;
-  cycleStartDay?: number;
-  cyclePeriod?: CyclePeriod;
 }
 
 export interface User {
@@ -116,41 +76,9 @@ export interface User {
   updatedAt: string;
 }
 
-export interface Workspace {
-  id: string;
-  name: string;
-  type: WorkspaceType;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface WorkspaceMember {
-  workspaceId: string;
-  userId: string;
-  role: WorkspaceRole;
-  user: User;
-  joinedAt: string;
-}
-
-export interface WorkspaceInvite {
-  id: string;
-  workspaceId: string;
-  email: string;
-  role: WorkspaceRole;
-  token: string;
-  invitedById: string;
-  status: WorkspaceInviteStatus;
-  acceptedAt?: string | null;
-  expiresAt: string;
-  createdAt: string;
-  workspace?: Workspace;
-  invitedBy?: User;
-}
-
 export interface Account {
   id: string;
-  workspaceId: string;
+  userId: string;
   name: string;
   type: AccountType;
   balance: number;
@@ -163,7 +91,7 @@ export interface Account {
 
 export interface Transaction {
   id: string;
-  workspaceId: string;
+  userId: string;
   accountId: string;
   categoryId: string;
   amount: number;
@@ -176,41 +104,47 @@ export interface Transaction {
   updatedAt: string;
 }
 
+export interface CategoryGroup {
+  id: string;
+  name: string;
+  order: number;
+}
+
 export interface Category {
   id: string;
-  workspaceId?: string;
+  userId: string;
   name: string;
   group: string;
-  icon?: string;
-  isSystem: boolean;
+  groupId?: string | null;
+  icon?: string | null;
+  isDefault?: boolean;
 }
 
 export interface Budget {
   id: string;
-  workspaceId: string;
+  userId: string;
   categoryId: string;
   limit: number;
   spent: number;
-  period: BudgetPeriod;
   startDate: string;
   category?: Category;
 }
 
 export interface Goal {
   id: string;
-  workspaceId: string;
+  userId: string;
   name: string;
   targetAmount: number;
   currentAmount: number;
-  deadline: string;
-  type: GoalType;
+  deadline?: string | null;
+  type?: GoalType;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Investment {
   id: string;
-  workspaceId: string;
+  userId: string;
   name: string;
   assetClass: AssetClass;
   currentValue: number;
@@ -236,7 +170,6 @@ export interface HealthScore {
 export interface Conversation {
   id: string;
   userId: string;
-  workspaceId: string;
   title?: string;
   createdAt: string;
   updatedAt: string;
@@ -297,7 +230,6 @@ export interface SortParams {
 }
 
 export interface TransactionFilterParams extends PaginationParams, SortParams {
-  workspace?: string;
   category?: string;
   account?: string;
   type?: TransactionType;
@@ -349,29 +281,11 @@ export interface DashboardSummary {
   monthlySavings: number;
 }
 
-export interface FamilyDashboardSummary {
-  combinedIncome: number;
-  combinedExpenses: number;
-  familySavings: number;
-  sharedBudgetUsage: number;
-  cashFlow: CashFlowDataPoint[];
-  savingsTrend: SavingsTrendPoint[];
-  categoryBreakdown: CategoryBreakdownItem[];
-  upcomingBills: UpcomingBill[];
-}
-
-export interface UpcomingBill {
-  name: string;
-  due: string;
-  amount: number;
-}
-
 // ─── AI Types ────────────────────────────────────────────────────────────────
 
 export interface ChatRequest {
   message: string;
   conversationId?: string;
-  workspaceId: string;
 }
 
 export interface ChatStreamEvent {
