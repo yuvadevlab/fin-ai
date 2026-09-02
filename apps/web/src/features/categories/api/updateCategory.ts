@@ -9,14 +9,13 @@ interface UpdateCategoryParams {
   input: UpdateCategoryInput;
 }
 
-export function useUpdateCategory(workspaceId: string | null) {
+export function useUpdateCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<Category, Error, UpdateCategoryParams>({
-    mutationFn: ({ id, input }) =>
-      apiClient.patch<Category>(`workspaces/${workspaceId}/categories/${id}`, input),
+    mutationFn: ({ id, input }) => apiClient.patch<Category>(`categories/${id}`, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success("Category updated successfully");
     },
     onError: (error) => {

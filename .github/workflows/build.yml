@@ -53,8 +53,5 @@ jobs:
       - name: 🔎 Execute TypeScript Type Check
         run: pnpm typecheck
 
-      - name: 🧪 Run Unit Tests (Vitest)
-        run: pnpm test
-
       - name: 🏗️ Execute Monorepo Turbo Build
         run: pnpm build

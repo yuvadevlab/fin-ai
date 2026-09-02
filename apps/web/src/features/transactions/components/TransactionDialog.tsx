@@ -2,14 +2,16 @@
 
 import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
-import { clientTransactionSchema } from "@finai/validation";
+import { useAccounts } from "@/features/accounts/api";
+import { useCategories } from "@/features/categories/api";
+import {
+  useInlineEntityCreation,
+  useTransactionDialogForm,
+  type TransactionInitialValues,
+} from "../hooks";
 import { TransactionForm } from "./TransactionForm";
+import { InlineEntityDialogs } from "./InlineEntityDialogs";
 import { BulkTransactionDialog } from "./BulkTransactionDialog";
-import { useActiveWorkspace } from "@/hooks";
-import { useAccounts } from "../../accounts/api/getAccounts";
-import { useCategories } from "../../categories/api/getCategories";
-import { useCreateTransaction } from "../api/createTransaction";
-import { useUpdateTransaction } from "../api/updateTransaction";
 
 export interface TransactionDialogProps {
   trigger?: React.ReactNode;
@@ -17,20 +19,7 @@ export interface TransactionDialogProps {
   onOpenChange?: (open: boolean) => void;
   mode?: "add" | "edit";
   transactionId?: string; // Passed in edit mode
-  initialValues?: {
-    id?: string;
-    amount?: number | string;
-    type?: string;
-    kind?: string;
-    categoryId?: string;
-    category?: string | { id: string; name: string; group: string };
-    accountId?: string;
-    account?: string | { id: string; name: string; type: string };
-    toAccountId?: string | null;
-    toAccount?: string | { id: string; name: string; type: string } | null;
-    date?: string;
-    notes?: string | null;
-  };
+  initialValues?: TransactionInitialValues;
 }
 
 export function TransactionDialog({
@@ -42,20 +31,15 @@ export function TransactionDialog({
   initialValues,
 }: TransactionDialogProps) {
   const [localOpen, setLocalOpen] = useState(false);
-
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : localOpen;
   const setOpen = isControlled ? controlledOnOpenChange : setLocalOpen;
 
-  const { activeWorkspaceId } = useActiveWorkspace();
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
 
   // Queries for select dropdown options
-  const { data: accountsData } = useAccounts(activeWorkspaceId);
-  const { data: categoriesData } = useCategories(activeWorkspaceId);
-
-  // Mutations
-  const createTransaction = useCreateTransaction(activeWorkspaceId);
-  const updateTransaction = useUpdateTransaction(activeWorkspaceId);
+  const { data: accountsData } = useAccounts();
+  const { data: categoriesData } = useCategories();
 
   const accountsOptions = useMemo(() => {
     return (accountsData || []).map((acc) => ({
@@ -71,124 +55,39 @@ export function TransactionDialog({
     }));
   }, [categoriesData]);
 
-  const getFormInitialValues = () => {
-    return {
-      amount: initialValues?.amount !== undefined ? String(initialValues.amount) : "",
-      kind:
-        initialValues?.kind ?? (initialValues?.type ? initialValues.type.toLowerCase() : "expense"),
-      category:
-        (initialValues?.category && typeof initialValues.category === "object"
-          ? initialValues.category.id
-          : (initialValues?.category as string | undefined)) ??
-        initialValues?.categoryId ??
-        "",
-      account:
-        (initialValues?.account && typeof initialValues.account === "object"
-          ? initialValues.account.id
-          : (initialValues?.account as string | undefined)) ??
-        initialValues?.accountId ??
-        "",
-      toAccount:
-        (initialValues?.toAccount && typeof initialValues.toAccount === "object"
-          ? initialValues.toAccount.id
-          : (initialValues?.toAccount as string | undefined)) ??
-        initialValues?.toAccountId ??
-        "",
-      date: initialValues?.date
-        ? new Date(initialValues.date).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      notes: initialValues?.notes ?? "",
-    };
-  };
+  const { values, errors, handleChange, handleSubmit, isSaving } = useTransactionDialogForm({
+    open,
+    setOpen,
+    mode,
+    transactionId,
+    initialValues,
+  });
 
-  const [values, setValues] = useState<Record<string, string>>(getFormInitialValues);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const {
+    isAddCategoryOpen,
+    setIsAddCategoryOpen,
+    addCategoryInitialName,
+    openAddCategory,
+    handleCategoryCreated,
+    isAddAccountOpen,
+    setIsAddAccountOpen,
+    addAccountInitialName,
+    openAddAccount,
+    handleAccountCreated,
+  } = useInlineEntityCreation({
+    onCategoryCreated: (createdCategory) => handleChange("category", createdCategory.id),
+    onAccountCreated: (createdAccount) => handleChange("account", createdAccount.id),
+  });
 
-  const [prevOpen, setPrevOpen] = useState(open);
-  const [prevInitialValuesKey, setPrevInitialValuesKey] = useState(() =>
-    JSON.stringify(initialValues),
-  );
-
-  const currentInitialValuesKey = JSON.stringify(initialValues);
-
-  if (open !== prevOpen || currentInitialValuesKey !== prevInitialValuesKey) {
-    setPrevOpen(open);
-    setPrevInitialValuesKey(currentInitialValuesKey);
-    if (open) {
-      setValues(getFormInitialValues());
-      setErrors({});
-    }
-  }
-
-  const handleChange = (name: string, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[name];
-        return next;
-      });
-    }
-  };
-
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const result = clientTransactionSchema.safeParse(values);
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        const path = issue.path[0] as string;
-        fieldErrors[path] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    // Map form validation values to API input payload
-    const payload = {
-      amount: Number(result.data.amount),
-      type: result.data.kind.toUpperCase() as "INCOME" | "EXPENSE" | "TRANSFER",
-      categoryId: result.data.category,
-      accountId: result.data.account,
-      toAccountId: result.data.kind === "transfer" ? result.data.toAccount || null : null,
-      date: result.data.date,
-      notes: result.data.notes || "",
-    };
-
-    try {
-      if (mode === "edit" && (transactionId || initialValues?.id)) {
-        const id = transactionId || initialValues?.id;
-        if (!id) throw new Error("Transaction ID is missing for edit mode.");
-        await updateTransaction.mutateAsync({ id, input: payload });
-      } else {
-        await createTransaction.mutateAsync(payload);
-      }
-      setOpen?.(false);
-    } catch (err) {
-      const apiErr = err as { message?: string };
-      setErrors({
-        root: apiErr?.message || "An error occurred while saving the transaction.",
-      });
-    }
+  const handleSwitchToBulk = () => {
+    setOpen?.(false);
+    setIsBulkOpen(true);
   };
 
   const title = mode === "add" ? "Add Transaction" : "Edit Transaction";
   const description =
     mode === "add" ? "Log a new expense, income or transfer." : "Update transaction details.";
   const submitLabel = mode === "add" ? "Save Transaction" : "Update Transaction";
-
-  const isSaving = createTransaction.isPending || updateTransaction.isPending;
-
-  const [isBulkOpen, setIsBulkOpen] = useState(false);
-
-  const handleSwitchToBulk = () => {
-    setOpen?.(false);
-    setIsBulkOpen(true);
-  };
 
   return (
     <>
@@ -206,14 +105,14 @@ export function TransactionDialog({
         {mode === "add" && (
           <div className="bg-secondary/50 mb-4 flex items-center justify-between rounded-xl p-2.5 text-xs">
             <span className="text-muted-foreground font-semibold">
-              Adding multiple EOD expenses?
+              Have multiple transactions to log or import from Excel?
             </span>
             <button
               type="button"
               onClick={handleSwitchToBulk}
               className="text-primary cursor-pointer font-bold hover:underline"
             >
-              Switch to Bulk Entry Mode →
+              Switch to Bulk Import & Upload Mode →
             </button>
           </div>
         )}
@@ -228,6 +127,8 @@ export function TransactionDialog({
           onChange={handleChange}
           accounts={accountsOptions}
           categories={categoriesOptions}
+          onAddCategory={openAddCategory}
+          onAddAccount={openAddAccount}
         />
       </FormDialog>
 
@@ -236,6 +137,17 @@ export function TransactionDialog({
         onOpenChange={setIsBulkOpen}
         accounts={accountsOptions}
         categories={categoriesOptions}
+      />
+
+      <InlineEntityDialogs
+        isAddCategoryOpen={isAddCategoryOpen}
+        onCategoryOpenChange={setIsAddCategoryOpen}
+        addCategoryInitialName={addCategoryInitialName}
+        onCategoryCreated={handleCategoryCreated}
+        isAddAccountOpen={isAddAccountOpen}
+        onAccountOpenChange={setIsAddAccountOpen}
+        addAccountInitialName={addAccountInitialName}
+        onAccountCreated={handleAccountCreated}
       />
     </>
   );

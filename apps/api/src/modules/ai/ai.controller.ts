@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { Response } from "express";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { OllamaService } from "./ollama.service";
-import { ContextBuilderService } from "./context-builder.service";
-import { ConversationService } from "./conversation.service";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { OllamaService } from "@/modules/ai/ollama.service";
+import { ContextBuilderService } from "@/modules/ai/context-builder.service";
+import { ConversationService } from "@/modules/ai/conversation.service";
 import {
   buildAdvisorSystemPrompt,
   buildInsightSystemPrompt,
@@ -27,11 +27,8 @@ export class AiController {
 
   @Get("conversations")
   @ApiOperation({ summary: "List all AI conversations for the current user" })
-  getConversations(
-    @CurrentUser("id") userId: string,
-    @Query("workspaceId") workspaceId?: string,
-  ): Promise<Record<string, unknown>[]> {
-    return this.conversationService.getConversations(userId, workspaceId ?? "");
+  getConversations(@CurrentUser("id") userId: string): Promise<Record<string, unknown>[]> {
+    return this.conversationService.getConversations(userId);
   }
 
   @Get("suggest-emoji")
@@ -73,7 +70,7 @@ export class AiController {
   @ApiOperation({ summary: "Stream an AI response via SSE" })
   async chat(
     @Body()
-    body: { question: string; workspaceId: string; conversationId?: string },
+    body: { question: string; conversationId?: string },
     @CurrentUser("id") userId: string,
     @Res() res: Response,
   ) {
@@ -84,8 +81,8 @@ export class AiController {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.flushHeaders();
 
-    // Build financial context from DB
-    const context = await this.contextBuilder.buildFinanceContext(body.workspaceId);
+    // Build financial context from DB for user
+    const context = await this.contextBuilder.buildFinanceContext(userId);
     const systemPrompt = buildAdvisorSystemPrompt(context);
 
     // Persist user message & resolve/create conversation
@@ -93,7 +90,6 @@ export class AiController {
     if (!conversationId) {
       const convo = await this.conversationService.createConversation(
         userId,
-        body.workspaceId,
         body.question.slice(0, 80),
       );
       conversationId = convo.id;
@@ -107,10 +103,10 @@ export class AiController {
       }
     }
 
-    // Fetch recent message history if conversationId exists
+    // Fetch recent message history if conversationId exists (up to 20 turns)
     let historyMessages: { role: string; content: string }[] = [];
     if (conversationId) {
-      const recent = await this.conversationService.getRecentMessages(conversationId, 10);
+      const recent = await this.conversationService.getRecentMessages(conversationId, 20);
       historyMessages = recent.reverse().map((m) => ({
         role: m.role === "ASSISTANT" ? "assistant" : "user",
         content: m.content,
@@ -144,7 +140,7 @@ export class AiController {
     summary: "Stream a short AI insight for a given page context via SSE",
   })
   async insight(
-    @Query("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Query("page") page: string = "dashboard",
     @Res() res: Response,
   ) {
@@ -154,13 +150,7 @@ export class AiController {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.flushHeaders();
 
-    if (!workspaceId) {
-      res.write(`data: ${JSON.stringify({ error: "workspaceId is required" })}\n\n`);
-      res.end();
-      return;
-    }
-
-    const context = await this.contextBuilder.buildFinanceContext(workspaceId);
+    const context = await this.contextBuilder.buildFinanceContext(userId);
 
     const prompt = buildPageInsightUserPrompt(page);
     const systemPrompt = buildInsightSystemPrompt(context);

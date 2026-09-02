@@ -3,17 +3,14 @@
 import { useState } from "react";
 import { History, MessageSquarePlus } from "lucide-react";
 import { PageContainer, PageHeader, Button } from "@finai/ui";
-import { useWorkspace } from "@/providers";
-import { useAiChat } from "../api/useAiChat";
-import { useConversations, useDeleteConversation } from "../api/useConversations";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useInvestments } from "@/features/investments/api/getInvestments";
-import { ChatMessages } from "./ChatMessages";
+import { useConversations, useDeleteConversation, useAiChat } from "../api";
 import { ChatInput } from "./ChatInput";
+import { ChatMessages } from "./ChatMessages";
 import { ChatSidebar } from "./ChatSidebar";
 
 export function AiAdvisorPage() {
-  const { workspaceId } = useWorkspace();
   const [input, setInput] = useState("");
   const [showHistory, setShowHistory] = useState(false);
 
@@ -22,16 +19,16 @@ export function AiAdvisorPage() {
     isStreaming,
     conversationId,
     sendMessage,
-    stopStreaming,
-    startNewConversation,
+    startNewChat,
     loadConversation,
-  } = useAiChat({ workspaceId });
+    stopStreaming,
+  } = useAiChat();
 
-  const { data: conversations } = useConversations(workspaceId);
-  const deleteConversationMutation = useDeleteConversation(workspaceId);
+  const { data: conversations } = useConversations();
+  const deleteConversationMutation = useDeleteConversation();
 
-  const { data: stats } = useDashboardStats(workspaceId);
-  const { data: investments } = useInvestments(workspaceId);
+  const { data: stats } = useDashboardStats();
+  const { data: investments } = useInvestments();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +47,7 @@ export function AiAdvisorPage() {
     e.stopPropagation();
     await deleteConversationMutation.mutateAsync(id);
     if (conversationId === id) {
-      startNewConversation();
+      startNewChat();
     }
   };
 
@@ -74,7 +71,7 @@ export function AiAdvisorPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                startNewConversation();
+                startNewChat();
                 setShowHistory(false);
               }}
               className="cursor-pointer gap-1.5"
@@ -87,9 +84,9 @@ export function AiAdvisorPage() {
         }
       />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-6 lg:h-[75vh] lg:grid-cols-[1fr_340px]">
         {/* Chat panel */}
-        <div className="bg-card ring-border/50 flex h-[72vh] flex-col overflow-hidden rounded-2xl shadow-sm ring-1">
+        <div className="bg-card ring-border/50 flex h-[75vh] flex-col overflow-hidden rounded-2xl shadow-sm ring-1">
           <div className="flex-1 overflow-y-auto p-6">
             <ChatMessages messages={messages} onSelectFollowUp={handleFollowUpClick} />
           </div>
@@ -102,20 +99,22 @@ export function AiAdvisorPage() {
           />
         </div>
 
-        {/* Sidebar */}
-        <ChatSidebar
-          showHistory={showHistory}
-          activeConversationId={conversationId}
-          conversations={conversations}
-          stats={stats}
-          investments={investments}
-          onPromptClick={(p) => setInput(p)}
-          onConversationClick={(c) => {
-            loadConversation(c);
-            setShowHistory(false);
-          }}
-          onDeleteConversation={handleDeleteConversation}
-        />
+        {/* Sidebar — aligned with equal 100% height */}
+        <div className="h-[75vh] min-h-0">
+          <ChatSidebar
+            showHistory={showHistory}
+            activeConversationId={conversationId}
+            conversations={conversations}
+            stats={stats}
+            investments={investments}
+            onPromptClick={(p) => setInput(p)}
+            onConversationClick={(c) => {
+              loadConversation(c.id);
+              setShowHistory(false);
+            }}
+            onDeleteConversation={handleDeleteConversation}
+          />
+        </div>
       </div>
     </PageContainer>
   );

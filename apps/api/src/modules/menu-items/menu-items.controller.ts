@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { MenuItemsService } from "./menu-items.service";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 
 @ApiTags("Menu Items")
 @ApiBearerAuth()

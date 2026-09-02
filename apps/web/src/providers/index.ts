@@ -1,20 +1,9 @@
 export { QueryProvider } from "./query/QueryProvider";
-export { WorkspaceProvider } from "./workspace/WorkspaceProvider";
+export { AuthProvider } from "./auth/AuthProvider";
+export { useAuth, AuthContext, type AuthContextValue, type AuthUser } from "./auth/auth-context";
 export {
   AppearanceProvider,
   type AppearancePrefs,
   type AppearanceContextValue,
 } from "./appearance/AppearanceProvider";
 export { AppearanceSync } from "./appearance/AppearanceSync";
-export {
-  useWorkspace,
-  WorkspaceContext,
-  type WorkspaceContextValue,
-} from "./workspace/workspace-context";
-export {
-  getServerSnapshot,
-  getTokenSnapshot,
-  getWorkspaceIdSnapshot,
-  subscribe,
-  writeWorkspaceId,
-} from "./workspace/workspace-store";

@@ -1,12 +1,22 @@
-import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 import * as bcrypt from "bcryptjs";
-import { WorkspaceType, WorkspaceRole } from "@finai/database";
+import * as crypto from "crypto";
+import { Logger } from "@finai/logger";
 import { LoginInput, RegisterInput } from "@finai/validation";
+import { DEFAULT_CATEGORIES } from "@/modules/categories/default-categories";
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger("AuthService");
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -57,22 +67,15 @@ export class AuthService {
       },
     });
 
-    // Create default personal workspace for the user
-    const workspace = await this.prisma.client.workspace.create({
-      data: {
-        name: `${user.name}'s Workspace`,
-        type: WorkspaceType.PERSONAL,
-        ownerId: user.id,
-      },
-    });
-
-    // Add user as OWNER member of the workspace
-    await this.prisma.client.workspaceMember.create({
-      data: {
-        workspaceId: workspace.id,
+    // Seed default categories for the new user
+    await this.prisma.client.category.createMany({
+      data: DEFAULT_CATEGORIES.map((cat) => ({
         userId: user.id,
-        role: WorkspaceRole.OWNER,
-      },
+        name: cat.name,
+        group: cat.group,
+        icon: cat.icon,
+        isDefault: true,
+      })),
     });
 
     const payload = { sub: user.id, email: user.email };
@@ -84,5 +87,71 @@ export class AuthService {
         name: user.name,
       },
     };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.prisma.client.user.findUnique({ where: { email } });
+
+    // Always return success to prevent email enumeration attacks
+    if (!user) {
+      return { message: "If an account exists with that email, a reset link has been sent." };
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    await this.prisma.client.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: token,
+        resetPasswordExpires: expires,
+      },
+    });
+
+    // In production, send this via email. For now, return the token in the response
+    // so the dev/demo flow works without an email provider.
+    const resetUrl = `${process.env.FRONTEND_URL ?? "http://localhost:3000"}/reset-password?token=${token}`;
+
+    this.logger.info(`Password reset link for ${email}: ${resetUrl}`);
+
+    return {
+      message: "If an account exists with that email, a reset link has been sent.",
+      // Remove the next line in production (after setting up email delivery)
+      resetToken: token,
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.prisma.client.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("Invalid or expired reset token. Please request a new one.");
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.client.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+    });
+
+    return { message: "Password has been reset successfully. You can now log in." };
+  }
+
+  async validateUserById(userId: string) {
+    const user = await this.prisma.client.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+    return user;
   }
 }

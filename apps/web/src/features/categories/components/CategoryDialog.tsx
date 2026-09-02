@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createCategorySchema } from "@finai/validation";
 import { useCreateCategory, useUpdateCategory, Category } from "../api";
-import { useActiveWorkspace } from "@/hooks";
 import { CategoryForm } from "./CategoryForm";
 
 export interface CategoryDialogProps {
@@ -13,6 +12,8 @@ export interface CategoryDialogProps {
   onOpenChange?: (open: boolean) => void;
   mode?: "add" | "edit";
   category?: Category | null;
+  initialName?: string;
+  onSuccess?: (createdCategory: Category) => void;
 }
 
 export function CategoryDialog({
@@ -21,18 +22,19 @@ export function CategoryDialog({
   onOpenChange: controlledOnOpenChange,
   mode = "add",
   category,
+  initialName = "",
+  onSuccess,
 }: CategoryDialogProps) {
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
-  const { activeWorkspaceId } = useActiveWorkspace();
-  const createCategory = useCreateCategory(activeWorkspaceId);
-  const updateCategory = useUpdateCategory(activeWorkspaceId);
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
 
   const getFormInitialValues = () => {
     return {
-      name: category?.name ?? "",
+      name: category?.name ?? initialName ?? "",
       group: category?.group ?? "Variable Expenses",
       icon: category?.icon ?? "",
     };
@@ -68,7 +70,7 @@ export function CategoryDialog({
     }
   };
 
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const result = createCategorySchema.safeParse(values);
@@ -84,19 +86,21 @@ export function CategoryDialog({
 
     try {
       if (mode === "edit" && category) {
-        await updateCategory.mutateAsync({
+        const updated = await updateCategory.mutateAsync({
           id: category.id,
           input: result.data,
         });
+        onSuccess?.(updated);
       } else {
-        await createCategory.mutateAsync(result.data);
+        const created = await createCategory.mutateAsync(result.data);
+        onSuccess?.(created);
       }
       setOpen?.(false);
       // Reset form on success
       setValues({
         name: "",
         group: "Variable Expenses",
-        icon: "tag",
+        icon: "",
       });
     } catch (err) {
       const apiErr = err as { message?: string };

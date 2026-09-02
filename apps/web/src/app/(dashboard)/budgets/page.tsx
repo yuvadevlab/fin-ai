@@ -8,7 +8,7 @@ export default async function Page() {
   const queryClient = new QueryClient();
 
   if (auth) {
-    await prefetchBudgets(queryClient, auth.workspaceId, auth.token);
+    await prefetchBudgets(queryClient, auth.token);
   }
 
   return (

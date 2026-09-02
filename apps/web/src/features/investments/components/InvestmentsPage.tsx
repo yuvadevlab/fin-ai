@@ -7,7 +7,6 @@ import {
   PageHeader,
   StatCard,
   ContentCard,
-  MoneyDisplay,
   DataTable,
   SectionHeader,
   CategoryPie,
@@ -15,10 +14,10 @@ import {
   cn,
   Button,
 } from "@finai/ui";
-import { useInvestments, Investment } from "../api/getInvestments";
-import { InvestmentDialog } from "./InvestmentDialog";
+import { PrivacyMoney } from "@/components";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
-import { useWorkspace } from "@/providers";
+import { useInvestments, Investment } from "../api";
+import { InvestmentDialog } from "./InvestmentDialog";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
   MUTUAL_FUND: "Mutual Fund",
@@ -33,8 +32,7 @@ const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
 };
 
 export function InvestmentsPage() {
-  const { workspaceId } = useWorkspace();
-  const { data: rawInvestments } = useInvestments(workspaceId);
+  const { data: rawInvestments } = useInvestments();
   // Guard against non-array during hydration
   const investments: Investment[] = useMemo(
     () =>
@@ -86,12 +84,12 @@ export function InvestmentsPage() {
       },
       {
         header: "Invested",
-        accessor: (a: Investment) => <MoneyDisplay value={a.investedAmount ?? 0} />,
+        accessor: (a: Investment) => <PrivacyMoney value={a.investedAmount ?? 0} />,
         className: "text-right",
       },
       {
         header: "Current Value",
-        accessor: (a: Investment) => <MoneyDisplay value={a.currentValue ?? 0} />,
+        accessor: (a: Investment) => <PrivacyMoney value={a.currentValue ?? 0} />,
         className: "text-right",
       },
       {
@@ -140,17 +138,17 @@ export function InvestmentsPage() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           label="Total Value"
-          value={<MoneyDisplay value={totalValue} />}
+          value={<PrivacyMoney value={totalValue} />}
           hint="Current market value"
         />
         <StatCard
           label="Total Invested"
-          value={<MoneyDisplay value={totalInvested} />}
+          value={<PrivacyMoney value={totalInvested} />}
           hint="Principal amount"
         />
         <StatCard
           label="Unrealised P&L"
-          value={<MoneyDisplay value={Math.abs(unrealisedPL)} />}
+          value={<PrivacyMoney value={Math.abs(unrealisedPL)} />}
           trend={
             unrealisedPL >= 0 ? { value: "Gain", kind: "up" } : { value: "Loss", kind: "down" }
           }

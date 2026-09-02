@@ -8,32 +8,23 @@ export interface MonthlyCashFlow {
   expense: number;
 }
 
-export const monthlyAnalyticsQueryKey = (workspaceId: string, months: number) =>
-  ["analytics", "monthly", workspaceId, months] as const;
+export const monthlyAnalyticsQueryKey = (months: number) =>
+  ["analytics", "monthly", months] as const;
 
-export function useMonthlyAnalytics(workspaceId: string | null, months = 6) {
+export function useMonthlyAnalytics(months = 6) {
   return useQuery<MonthlyCashFlow[]>({
-    queryKey: monthlyAnalyticsQueryKey(workspaceId ?? "", months),
-    queryFn: () =>
-      apiClient.get<MonthlyCashFlow[]>(
-        `workspaces/${workspaceId}/analytics/monthly?months=${months}`,
-      ),
-    enabled: !!workspaceId,
+    queryKey: monthlyAnalyticsQueryKey(months),
+    queryFn: () => apiClient.get<MonthlyCashFlow[]>(`analytics/monthly?months=${months}`),
   });
 }
 
 export async function prefetchMonthlyAnalytics(
   queryClient: QueryClient,
-  workspaceId: string,
   token: string,
   months = 6,
 ) {
   await queryClient.prefetchQuery({
-    queryKey: monthlyAnalyticsQueryKey(workspaceId, months),
-    queryFn: () =>
-      serverFetch<MonthlyCashFlow[]>(
-        `workspaces/${workspaceId}/analytics/monthly?months=${months}`,
-        token,
-      ),
+    queryKey: monthlyAnalyticsQueryKey(months),
+    queryFn: () => serverFetch<MonthlyCashFlow[]>(`analytics/monthly?months=${months}`, token),
   });
 }

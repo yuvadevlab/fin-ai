@@ -8,7 +8,7 @@ export default async function Page() {
   const queryClient = new QueryClient();
 
   if (auth) {
-    await prefetchAccounts(queryClient, auth.workspaceId, auth.token);
+    await prefetchAccounts(queryClient, auth.token);
   }
 
   return (

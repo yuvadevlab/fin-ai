@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FormDialogField, Button, toast } from "@finai/ui";
-import { useProfile, useUpdateProfile, type UserProfile } from "../api/profile";
+import { useProfile, useUpdateProfile, type UserProfile } from "../api";
 
 export function ProfileSettings() {
   const { data: profile, isLoading } = useProfile();
@@ -56,7 +56,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
           type: "text",
           name: "email",
           label: "Email",
-          placeholder: "name@family.com",
+          placeholder: "name@example.com",
         }}
         value={email}
         onChange={(n, v) => setEmail(v)}

@@ -9,9 +9,14 @@ export function PageContainer({ children, className, ...props }: PageContainerPr
   return (
     <div
       className={cn(
-        "animate-in fade-in mx-auto w-full max-w-7xl space-y-8 p-6 duration-300 md:p-8",
+        "animate-in fade-in mx-auto w-full space-y-6 duration-300 xl:space-y-8",
         className,
       )}
+      style={{
+        paddingInline: "var(--page-padding-x)",
+        paddingBlock: "var(--page-padding-y)",
+        maxWidth: "var(--page-max-width)",
+      }}
       {...props}
     >
       {children}

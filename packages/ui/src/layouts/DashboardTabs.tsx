@@ -2,8 +2,7 @@ import React from "react";
 import { cn } from "../lib/utils";
 
 const tabs = [
-  { href: "/", label: "My Finance" },
-  { href: "/family", label: "Family" },
+  { href: "/", label: "Overview" },
   { href: "/health", label: "Financial Health" },
 ];
 

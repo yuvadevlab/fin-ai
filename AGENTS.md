@@ -275,17 +275,30 @@ export function AccountDialog({
 
 1. **System Persona & Brand Limits**:
    - The AI advisor IS FinAI. NEVER recommend external apps or Google tools (e.g. Google Sheets, Excel, Mint, YNAB).
-   - Refer directly to FinAI's built-in features (FinAI Budgets, FinAI Goals, FinAI Portfolio Investments, Category Manager, Family Workspace).
+   - Refer directly to FinAI's built-in personal features: FinAI Accounts, FinAI Transactions, FinAI Budgets, FinAI Goals, FinAI Investments, FinAI AI Advisor, and Category Manager.
    - Format all currency figures using Indian Rupees (₹).
 2. **Strict Domain Scope Enforcement**:
-   - The AI advisor is EXCLUSIVELY a personal and family financial advisor.
+   - The AI advisor is EXCLUSIVELY a personal financial advisor.
    - IF A USER ASKS NON-FINANCIAL QUESTIONS (e.g. politics, trivia like "who is Tamil Nadu CM", coding/programming tasks, general writing, sports, recipes), THE AI MUST POLITELY DECLINE using the standard refusal template in `prompts.config.ts`.
 3. **Follow-Up Directives**:
    - Conclude interactive chat responses with 2 to 3 relevant follow-up questions under `### Follow-up Suggestions:`.
 
 ---
 
-## 7. Workflow Checklist for AI Agents Before Committing Code
+## 7. Component Granularity & Maximum 250-Line Hard Rule
+
+1. **Strict 250-Line Maximum**: NO component, page, or hook file in `apps/web` or `packages/ui` may exceed **250 lines of code**.
+2. **Proactive Decomposition**: Whenever a component approaches or exceeds 200 lines, immediately break it down into modular, well-scoped subcomponents or custom hooks:
+   - **Form Logic & State**: Extract form initialization, change handling, and mutation orchestration into a custom hook (e.g., `use<Entity>Form.ts` or `use<Entity>DialogState.ts`).
+   - **Composite Views / Dashboard Pages**: Extract distinct UI sections (e.g. KPI grids, charts, summary rows, filter toolbars) into dedicated subcomponents within the feature's `components/` directory (e.g. `DashboardKpiCards.tsx`, `DashboardCategoryCard.tsx`).
+   - **Navigation & Layouts**: Keep layout coordinators clean by extracting item renderers (e.g. `SidebarItem.tsx`), feature cards (`SidebarAiCard.tsx`), and static nav configs (`sidebarNavItems.ts`).
+3. **Move Reusable Elements to `@finai/ui`**:
+   - Any presentation elements, gauges, dials, progress indicators, or formatted displays that are generic or can be reused across multiple pages MUST live in `@finai/ui` (and be exported from `packages/ui/src/index.ts`).
+   - **No Inline Graphic SVGs in Pages**: Complex graphic SVGs (gauges, progress arcs, dials) MUST NEVER be inlined directly in feature page files. Move them into dedicated components in `@finai/ui` (like `<ScoreGauge />`) with full ARIA accessibility (`role="progressbar"`, `aria-valuenow`, `aria-label`).
+
+---
+
+## 8. Workflow Checklist for AI Agents Before Committing Code
 
 Before declaring a task resolved, every AI agent MUST verify:
 
@@ -293,6 +306,30 @@ Before declaring a task resolved, every AI agent MUST verify:
 - [ ] Financial formulas & math reside in `@finai/finance-engine` (zero side-effects and zero I/O).
 - [ ] No inline Zod schemas created (all reside in `@finai/validation`).
 - [ ] Modals adhere to the 2-file feature pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`).
-- [ ] React Query mutations invalidate relevant workspace cache keys.
+- [ ] All modified/new component files are strictly under 250 lines of code (split proactively).
+- [ ] No raw inline graphic SVGs in page components (moved to `@finai/ui` as reusable components).
+- [ ] React Query mutations invalidate relevant user cache keys.
 - [ ] Tailwind classes use semantic color tokens (no hardcoded hex values or arbitrary colors).
 - [ ] Code passes typechecks (`pnpm --filter @finai/web typecheck`) and linting (`pnpm lint`).
+- [ ] Seed commands were NOT run automatically — user was instructed to run them manually.
+
+---
+
+## 9. Database & Seed Management Rules
+
+### Seed Script
+
+- The seed file lives at `packages/database/prisma/seed.ts`.
+- Run manually with: `pnpm --filter @finai/database db:seed`
+
+### CRITICAL: Agents MUST NEVER run seed commands automatically
+
+> **AI agents (Antigravity, Copilot, Claude) MUST NOT execute `db:seed`, `prisma db seed`, or any seed-related command without explicit user instruction.**
+
+1. If seed data is missing or stale, **tell the user** and provide the exact command to run:
+   ```bash
+   pnpm --filter @finai/database db:seed
+   ```
+2. **Never auto-seed** during `db:migrate`, `db:push`, or any other automated step.
+3. **Never delete or truncate** existing records. The seed script uses `upsert` exclusively.
+4. If a new seed entry is needed, add it to `packages/database/prisma/seed.ts` using `upsert`, then instruct the user to run the seed manually.

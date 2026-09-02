@@ -5,14 +5,14 @@ import { Plus } from "lucide-react";
 import { PageContainer, PageHeader, ProgressCard, StatusBadge, Button } from "@finai/ui";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { formatINR } from "@finai/finance-engine";
-import { useBudgets } from "../api/getBudgets";
-import { BudgetDialog } from "./BudgetDialog";
-import { useWorkspace } from "@/providers";
+import { usePrivacyMode } from "@/hooks";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
+import { useBudgets } from "../api";
+import { BudgetDialog } from "./BudgetDialog";
 
 export function BudgetsPage() {
-  const { workspaceId } = useWorkspace();
-  const { data: rawBudgets } = useBudgets(workspaceId);
+  const { isPrivacyMode } = usePrivacyMode();
+  const { data: rawBudgets } = useBudgets();
   // Guard against non-array during hydration
   const budgets = Array.isArray(rawBudgets) ? rawBudgets : [];
 
@@ -41,6 +41,8 @@ export function BudgetsPage() {
             const warn = pct > 85 && !over;
             const status = over ? "OVER" : warn ? "NEAR_LIMIT" : "ON_TRACK";
             const name = b.category?.name || "Uncategorized";
+            const diff = over ? spent - b.limit : b.limit - spent;
+            const formattedDiff = isPrivacyMode ? "₹ ••••••" : formatINR(diff);
 
             return (
               <ProgressCard
@@ -50,12 +52,11 @@ export function BudgetsPage() {
                 target={b.limit}
                 unit="₹"
                 percentage={pct}
+                masked={isPrivacyMode}
                 progressColorClass={over ? "[&>div]:bg-destructive" : ""}
                 statusBadge={<StatusBadge status={status} />}
                 footerLeft={
-                  over
-                    ? `${formatINR(spent - b.limit)} over limit`
-                    : `${formatINR(b.limit - spent)} remaining this month`
+                  over ? `${formattedDiff} over limit` : `${formattedDiff} remaining this month`
                 }
               />
             );

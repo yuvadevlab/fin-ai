@@ -42,7 +42,8 @@ export function Pagination({
     totalItems !== undefined && pageSize ? Math.min(currentPage * pageSize, totalItems) : 0;
 
   return (
-    <div
+    <nav
+      aria-label="Pagination"
       className={cn(
         "border-border/60 text-muted-foreground flex flex-wrap items-center justify-between gap-4 border-t px-6 py-3.5 text-xs",
         className,
@@ -50,7 +51,7 @@ export function Pagination({
       {...props}
     >
       <div className="flex items-center gap-4">
-        <span className="font-medium">
+        <span className="font-medium" aria-current="page">
           Page <span className="text-foreground font-semibold">{currentPage}</span> of{" "}
           <span className="text-foreground font-semibold">{totalPages || 1}</span>
           {totalItems !== undefined && (
@@ -65,7 +66,7 @@ export function Pagination({
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline">Per page:</span>
             <Select value={String(pageSize)} onValueChange={(val) => onPageSizeChange(Number(val))}>
-              <SelectTrigger className="h-8 w-[70px] text-xs">
+              <SelectTrigger className="h-8 w-[70px] text-xs" aria-label="Rows per page">
                 <SelectValue placeholder={String(pageSize)} />
               </SelectTrigger>
               <SelectContent>
@@ -87,8 +88,9 @@ export function Pagination({
           disabled={isFirstPage}
           onClick={() => onPageChange(currentPage - 1)}
           className="h-8 gap-1 px-2.5 text-xs"
+          aria-label="Go to previous page"
         >
-          <ChevronLeft className="size-3.5" />
+          <ChevronLeft className="size-3.5" aria-hidden="true" />
           <span>Prev</span>
         </Button>
         <Button
@@ -97,11 +99,12 @@ export function Pagination({
           disabled={isLastPage}
           onClick={() => onPageChange(currentPage + 1)}
           className="h-8 gap-1 px-2.5 text-xs"
+          aria-label="Go to next page"
         >
           <span>Next</span>
-          <ChevronRight className="size-3.5" />
+          <ChevronRight className="size-3.5" aria-hidden="true" />
         </Button>
       </div>
-    </div>
+    </nav>
   );
 }

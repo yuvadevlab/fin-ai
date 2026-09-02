@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useProfile } from "@/features/settings/api/profile";
-import { useAppearance } from "@/hooks/useAppearance";
+import { useAppearance } from "@/hooks";
 import type { AppearancePrefs } from "@/providers/appearance/appearance-context";
 
 /**

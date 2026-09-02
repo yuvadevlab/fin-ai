@@ -4,14 +4,14 @@ import { CreateGoalInput } from "@finai/validation";
 import { toast } from "@finai/ui";
 import { Goal } from "./getGoals";
 
-export function useCreateGoal(workspaceId: string | null) {
+export function useCreateGoal() {
   const queryClient = useQueryClient();
 
   return useMutation<Goal, Error, CreateGoalInput>({
-    mutationFn: (input) => apiClient.post<Goal>(`workspaces/${workspaceId}/goals`, input),
+    mutationFn: (input) => apiClient.post<Goal>("goals", input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["goals", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["analytics", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Goal created successfully");
     },
     onError: (error) => {
@@ -25,16 +25,15 @@ export interface ContributeGoalParams {
   amount: number;
 }
 
-export function useContributeGoal(workspaceId: string | null) {
+export function useContributeGoal() {
   const queryClient = useQueryClient();
 
   return useMutation<Goal, Error, ContributeGoalParams>({
-    mutationFn: ({ id, amount }) =>
-      apiClient.post<Goal>(`workspaces/${workspaceId}/goals/${id}/contribute`, { amount }),
+    mutationFn: ({ id, amount }) => apiClient.post<Goal>(`goals/${id}/contribute`, { amount }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["goals", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["accounts", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["analytics", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Contribution recorded successfully");
     },
     onError: (error) => {

@@ -1,8 +1,9 @@
 import React from "react";
-import { Badge, Button, MoneyDisplay } from "@finai/ui";
+import { Badge, Button } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import { Edit2, Trash2 } from "lucide-react";
+import { Transaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
-import { Transaction } from "../api/getTransactions";
 
 export function getTransactionColumns(onDelete: (id: string) => void) {
   return [
@@ -23,7 +24,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Category",
       accessor: (t: Transaction) => (
-        <Badge variant="secondary" className="rounded-full font-normal">
+        <Badge variant="secondary" className="rounded-full font-normal whitespace-nowrap">
           {t.category?.name || "Uncategorized"}
         </Badge>
       ),
@@ -48,7 +49,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
       header: "Amount",
       accessor: (t: Transaction) => {
         const displayAmount = t.type === "EXPENSE" ? -t.amount : t.amount;
-        return <MoneyDisplay value={displayAmount} showSign={t.type === "INCOME"} />;
+        return <PrivacyMoney value={displayAmount} showSign={t.type === "INCOME"} />;
       },
       className: "text-right whitespace-nowrap",
     },

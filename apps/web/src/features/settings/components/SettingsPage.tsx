@@ -2,18 +2,7 @@
 
 import React, { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  User,
-  Users,
-  Bell,
-  Tag,
-  Wallet,
-  Shield,
-  Palette,
-  KeyRound,
-  ArrowLeftRight,
-  type LucideIcon,
-} from "lucide-react";
+import { User, Palette, type LucideIcon } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -26,18 +15,8 @@ import {
   Button,
   cn,
 } from "@finai/ui";
-import { useActiveWorkspace } from "@/hooks";
-import { useCategories } from "@/features/categories";
-import { SETTING_FLAGS } from "@/lib/app-constants";
-import { WorkspaceMigrationSettings } from "./WorkspaceMigrationSettings";
 import { ProfileSettings } from "./ProfileSettings";
-import { WorkspaceManagement } from "./WorkspaceManagement";
-import { WorkspaceMembers } from "./WorkspaceMembers";
-import { NotificationSettings } from "./NotificationSettings";
-import { AccountSettingsList } from "./AccountSettingsList";
-import { SecuritySettings } from "./SecuritySettings";
 import { AppearanceSettings } from "./AppearanceSettings";
-import { CategorySettingsList } from "./CategorySettingsList";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
 
@@ -45,8 +24,6 @@ export function SettingsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const sectionQuery = searchParams.get("section");
-  const { workspaces, activeWorkspace } = useActiveWorkspace();
-  const { data: categories = [] } = useCategories(activeWorkspace?.id || null);
 
   const sections: Section[] = [
     {
@@ -57,94 +34,19 @@ export function SettingsPage() {
       body: <ProfileSettings />,
     },
     {
-      id: "workspace",
-      icon: Users,
-      label: "Workspace Management",
-      desc: "Create and switch between family workspaces.",
-      body: <WorkspaceManagement workspaces={workspaces || []} activeWorkspace={activeWorkspace} />,
-    },
-    {
-      id: "members",
-      icon: KeyRound,
-      label: "Members",
-      desc: "Invite family members and manage roles.",
-      body: <WorkspaceMembers />,
-    },
-    {
-      id: "notifications",
-      icon: Bell,
-      label: "Notifications",
-      desc: "Choose alerts for bills, budgets, and insights.",
-      body: <NotificationSettings />,
-    },
-    {
-      id: "categories",
-      icon: Tag,
-      label: "Categories",
-      desc: "Customise categories for personal and shared spending.",
-      body: <CategorySettingsList categories={categories} />,
-    },
-    {
-      id: "accounts",
-      icon: Wallet,
-      label: "Accounts",
-      desc: "Manage linked bank accounts and wallets.",
-      body: <AccountSettingsList />,
-    },
-    {
-      id: "security",
-      icon: Shield,
-      label: "Security",
-      desc: "Two-factor auth, sessions, and export access.",
-      body: <SecuritySettings />,
-    },
-    {
       id: "appearance",
       icon: Palette,
       label: "Appearance",
-      desc: "Theme, density, and dashboard preferences.",
+      desc: "Theme, density, and display preferences.",
       body: <AppearanceSettings />,
     },
-    {
-      id: "migration",
-      icon: ArrowLeftRight,
-      label: "Workspace Migration",
-      desc: "Migrate or duplicate accounts and custom categories to other workspaces.",
-      body: <WorkspaceMigrationSettings />,
-    },
-  ].filter((s) => {
-    switch (s.id) {
-      case "profile":
-        return SETTING_FLAGS.PROFILE;
-      case "workspace":
-        return SETTING_FLAGS.WORKSPACE;
-      case "members":
-        return SETTING_FLAGS.MEMBERS;
-      case "notifications":
-        return SETTING_FLAGS.NOTIFICATIONS;
-      case "categories":
-        return SETTING_FLAGS.CATEGORIES;
-      case "accounts":
-        return SETTING_FLAGS.ACCOUNTS;
-      case "security":
-        return SETTING_FLAGS.SECURITY;
-      case "appearance":
-        return SETTING_FLAGS.APPEARANCE;
-      case "migration":
-        return SETTING_FLAGS.MIGRATION;
-      default:
-        return true;
-    }
-  });
+  ];
 
   const active = sections.find((s) => s.id === (selectedId ?? sectionQuery)) || null;
 
   return (
     <PageContainer className="max-w-5xl">
-      <PageHeader
-        title="Settings"
-        description="Preferences for your account, family workspaces, and integrations."
-      />
+      <PageHeader title="Settings" description="Preferences for your personal account" />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sections.map((s) => (

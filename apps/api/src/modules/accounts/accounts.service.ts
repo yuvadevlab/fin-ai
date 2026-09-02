@@ -1,31 +1,31 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
 import { AccountType } from "@finai/database";
 import { CreateAccountInput, UpdateAccountInput } from "@finai/validation";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 
 @Injectable()
 export class AccountsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(workspaceId: string) {
+  async findAll(userId: string) {
     return this.prisma.client.account.findMany({
-      where: { workspaceId, isActive: true },
+      where: { userId, isActive: true },
       orderBy: { name: "asc" },
     });
   }
 
-  async findOne(id: string, workspaceId: string) {
+  async findOne(id: string, userId: string) {
     const account = await this.prisma.client.account.findFirst({
-      where: { id, workspaceId },
+      where: { id, userId },
     });
     if (!account) throw new NotFoundException(`Account ${id} not found`);
     return account;
   }
 
-  async create(workspaceId: string, input: CreateAccountInput) {
+  async create(userId: string, input: CreateAccountInput) {
     return this.prisma.client.account.create({
       data: {
-        workspaceId,
+        userId,
         name: input.name,
         type: input.type as AccountType,
         balance: input.balance ?? 0,
@@ -34,8 +34,8 @@ export class AccountsService {
     });
   }
 
-  async update(id: string, workspaceId: string, input: UpdateAccountInput) {
-    await this.findOne(id, workspaceId);
+  async update(id: string, userId: string, input: UpdateAccountInput) {
+    await this.findOne(id, userId);
     return this.prisma.client.account.update({
       where: { id },
       data: {
@@ -45,8 +45,8 @@ export class AccountsService {
     });
   }
 
-  async remove(id: string, workspaceId: string) {
-    await this.findOne(id, workspaceId);
+  async remove(id: string, userId: string) {
+    await this.findOne(id, userId);
     await this.prisma.client.account.update({
       where: { id },
       data: { isActive: false },

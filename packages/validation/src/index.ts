@@ -1,8 +1,12 @@
 export {
   loginSchema,
   registerSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
   type LoginInput,
   type RegisterInput,
+  type ForgotPasswordInput,
+  type ResetPasswordInput,
 } from "./schemas/auth.schema";
 
 export {
@@ -45,13 +49,6 @@ export {
   type CreateInvestmentInput,
   type UpdateInvestmentInput,
 } from "./schemas/investment.schema";
-
-export {
-  createWorkspaceSchema,
-  inviteMemberSchema,
-  type CreateWorkspaceInput,
-  type InviteMemberInput,
-} from "./schemas/workspace.schema";
 
 export {
   updateProfileSchema,

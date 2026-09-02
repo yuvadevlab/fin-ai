@@ -4,7 +4,7 @@ import { serverFetch } from "@/lib/server-fetch";
 
 export interface Investment {
   id: string;
-  workspaceId: string;
+  userId: string;
   name: string;
   assetClass:
     | "MUTUAL_FUND"
@@ -29,23 +29,18 @@ export interface InvestmentsResponse {
   totalValue: number;
 }
 
-export const investmentsQueryKey = (workspaceId: string) => ["investments", workspaceId] as const;
+export const investmentsQueryKey = () => ["investments"] as const;
 
-export function useInvestments(workspaceId: string | null) {
+export function useInvestments() {
   return useQuery<InvestmentsResponse>({
-    queryKey: investmentsQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<InvestmentsResponse>(`workspaces/${workspaceId}/investments`),
-    enabled: !!workspaceId,
+    queryKey: investmentsQueryKey(),
+    queryFn: () => apiClient.get<InvestmentsResponse>("investments"),
   });
 }
 
-export async function prefetchInvestments(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchInvestments(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: investmentsQueryKey(workspaceId),
-    queryFn: () => serverFetch<InvestmentsResponse>(`workspaces/${workspaceId}/investments`, token),
+    queryKey: investmentsQueryKey(),
+    queryFn: () => serverFetch<InvestmentsResponse>("investments", token),
   });
 }

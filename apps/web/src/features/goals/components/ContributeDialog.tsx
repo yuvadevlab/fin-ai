@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
-import { useContributeGoal } from "../api/createGoal";
-import { useWorkspace } from "@/providers";
-import { ContributeForm } from "./ContributeForm";
 import { contributeSchema } from "@finai/validation";
+import { useContributeGoal } from "../api";
+import { ContributeForm } from "./ContributeForm";
 
 export interface ContributeDialogProps {
   goalId: string;
@@ -15,8 +14,7 @@ export interface ContributeDialogProps {
 
 export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialogProps) {
   const [open, setOpen] = useState(false);
-  const { workspaceId } = useWorkspace();
-  const contributeGoal = useContributeGoal(workspaceId);
+  const contributeGoal = useContributeGoal();
 
   const [values, setValues] = useState<Record<string, string>>({
     amount: "",
@@ -68,7 +66,7 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
       onOpenChange={setOpen}
       trigger={trigger}
       title={`Contribute to ${goalName}`}
-      description="Add funds from your workspace accounts toward this goal."
+      description="Add funds from your accounts toward this goal."
       submitLabel="Record Contribution"
       loading={contributeGoal.isPending}
       onCancel={() => setOpen(false)}

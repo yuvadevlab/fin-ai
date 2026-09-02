@@ -3,9 +3,16 @@
 import React, { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PageContainer, PageHeader, DashboardTabs, ContentCard, Progress, cn } from "@finai/ui";
+import {
+  PageContainer,
+  PageHeader,
+  DashboardTabs,
+  ContentCard,
+  Progress,
+  ScoreGauge,
+  cn,
+} from "@finai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
-import { useWorkspace } from "@/providers";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -22,8 +29,7 @@ const RATING_LABEL: Record<string, string> = {
 
 export function HealthPage() {
   const pathname = usePathname();
-  const { workspaceId } = useWorkspace();
-  const { data: healthData } = useHealthScore(workspaceId);
+  const { data: healthData } = useHealthScore();
 
   const score = healthData?.score ?? 0;
   const metrics = useMemo(
@@ -48,9 +54,6 @@ export function HealthPage() {
     [],
   );
 
-  // SVG arc circumference for r=52
-  const CIRCUMFERENCE = 326.7;
-
   return (
     <PageContainer>
       <PageHeader
@@ -62,32 +65,12 @@ export function HealthPage() {
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ContentCard className="flex flex-col items-center justify-center p-8 text-center">
-          <div className="relative">
-            <svg viewBox="0 0 120 120" className="size-40 -rotate-90">
-              <circle cx="60" cy="60" r="52" stroke="var(--border)" strokeWidth="10" fill="none" />
-              <circle
-                cx="60"
-                cy="60"
-                r="52"
-                stroke="oklch(0.63 0.14 156)"
-                strokeWidth="10"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray={`${(score / 100) * CIRCUMFERENCE} ${CIRCUMFERENCE}`}
-                style={{ transition: "stroke-dasharray 0.8s ease" }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-foreground text-4xl font-bold tracking-tight">{score}</span>
-              <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
-                out of 100
-              </span>
-            </div>
-          </div>
-          <p className="text-primary mt-6 text-sm font-bold">
-            {RATING_LABEL[healthData?.rating ?? ""] ?? "—"}
-          </p>
-          <p className="text-muted-foreground mt-1 text-xs">Based on your live financial data</p>
+          <ScoreGauge
+            score={score}
+            rating={RATING_LABEL[healthData?.rating ?? ""] ?? "—"}
+            showRating
+          />
+          <p className="text-muted-foreground mt-2 text-xs">Based on your live financial data</p>
         </ContentCard>
 
         <div className="space-y-4 lg:col-span-2">

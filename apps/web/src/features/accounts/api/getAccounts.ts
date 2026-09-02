@@ -10,23 +10,18 @@ export interface Account {
   currency: string;
 }
 
-export const accountsQueryKey = (workspaceId: string) => ["accounts", workspaceId] as const;
+export const accountsQueryKey = () => ["accounts"] as const;
 
-export function useAccounts(workspaceId: string | null) {
+export function useAccounts() {
   return useQuery<Account[]>({
-    queryKey: accountsQueryKey(workspaceId ?? ""),
-    queryFn: () => apiClient.get<Account[]>(`workspaces/${workspaceId}/accounts`),
-    enabled: !!workspaceId,
+    queryKey: accountsQueryKey(),
+    queryFn: () => apiClient.get<Account[]>("accounts"),
   });
 }
 
-export async function prefetchAccounts(
-  queryClient: QueryClient,
-  workspaceId: string,
-  token: string,
-) {
+export async function prefetchAccounts(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
-    queryKey: accountsQueryKey(workspaceId),
-    queryFn: () => serverFetch<Account[]>(`workspaces/${workspaceId}/accounts`, token),
+    queryKey: accountsQueryKey(),
+    queryFn: () => serverFetch<Account[]>("accounts", token),
   });
 }

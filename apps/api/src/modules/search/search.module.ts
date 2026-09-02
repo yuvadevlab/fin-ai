@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { SearchController } from "./search.controller";
-import { SearchService } from "./search.service";
-import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaModule } from "@/modules/prisma/prisma.module";
+import { SearchController } from "@/modules/search/search.controller";
+import { SearchService } from "@/modules/search/search.service";
 
 @Module({
   imports: [PrismaModule],

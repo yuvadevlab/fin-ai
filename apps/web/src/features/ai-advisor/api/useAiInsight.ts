@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/lib/api-client";
 
 export type InsightPage =
-  "dashboard" | "transactions" | "budgets" | "investments" | "goals" | "reports" | "family";
+  "dashboard" | "transactions" | "budgets" | "investments" | "goals" | "reports";
 
 interface UseAiInsightOptions {
-  workspaceId: string | null;
   page: InsightPage;
   /** Set false to skip auto-fetch on mount (e.g. behind a feature flag check) */
   enabled?: boolean;
@@ -22,11 +21,7 @@ interface UseAiInsightResult {
  * Streams a short AI-generated insight for a specific page.
  * Uses the GET /ai/insight SSE endpoint.
  */
-export function useAiInsight({
-  workspaceId,
-  page,
-  enabled = true,
-}: UseAiInsightOptions): UseAiInsightResult {
+export function useAiInsight({ page, enabled = true }: UseAiInsightOptions): UseAiInsightResult {
   const [text, setText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -34,8 +29,6 @@ export function useAiInsight({
   const fetchedRef = useRef(false);
 
   const fetchInsight = useCallback(async () => {
-    if (!workspaceId) return;
-
     // Abort any in-flight request
     abortRef.current?.abort();
     abortRef.current = new AbortController();
@@ -47,7 +40,7 @@ export function useAiInsight({
     const token = typeof window !== "undefined" ? localStorage.getItem("finai_token") : null;
 
     try {
-      const url = `${API_BASE_URL}/ai/insight?workspaceId=${encodeURIComponent(workspaceId)}&page=${page}`;
+      const url = `${API_BASE_URL}/ai/insight?page=${page}`;
       const res = await fetch(url, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -102,17 +95,17 @@ export function useAiInsight({
     } finally {
       setIsStreaming(false);
     }
-  }, [workspaceId, page]);
+  }, [page]);
 
   useEffect(() => {
-    if (!enabled || !workspaceId || fetchedRef.current) return;
+    if (!enabled || fetchedRef.current) return;
     fetchedRef.current = true;
     fetchInsight();
 
     return () => {
       abortRef.current?.abort();
     };
-  }, [enabled, workspaceId, fetchInsight]);
+  }, [enabled, fetchInsight]);
 
   const refetch = useCallback(() => {
     fetchedRef.current = false;

@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";
-import { BudgetPeriod, TransactionType } from "@finai/database";
+import { TransactionType } from "@finai/database";
 
 @Injectable()
 export class BudgetsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(workspaceId: string) {
+  async findAll(userId: string) {
     const budgets = await this.prisma.client.budget.findMany({
-      where: { workspaceId },
+      where: { userId },
       include: { category: true },
       orderBy: { category: { name: "asc" } },
     });
@@ -22,7 +22,7 @@ export class BudgetsService {
       budgets.map(async (budget) => {
         const agg = await this.prisma.client.transaction.aggregate({
           where: {
-            workspaceId,
+            userId,
             categoryId: budget.categoryId,
             type: TransactionType.EXPENSE,
             date: {
@@ -41,44 +41,40 @@ export class BudgetsService {
     );
   }
 
-  async findOne(id: string, workspaceId: string) {
+  async findOne(id: string, userId: string) {
     const budget = await this.prisma.client.budget.findFirst({
-      where: { id, workspaceId },
+      where: { id, userId },
       include: { category: true },
     });
     if (!budget) throw new NotFoundException(`Budget ${id} not found`);
     return budget;
   }
 
-  async create(workspaceId: string, input: CreateBudgetInput) {
+  async create(userId: string, input: CreateBudgetInput) {
     return this.prisma.client.budget.create({
       data: {
-        workspaceId,
+        userId,
         categoryId: input.categoryId,
         limit: input.limit,
-        period: (input.period as BudgetPeriod) ?? BudgetPeriod.MONTHLY,
         startDate: input.startDate ? new Date(input.startDate) : new Date(),
       },
       include: { category: true },
     });
   }
 
-  async update(id: string, workspaceId: string, input: UpdateBudgetInput) {
-    await this.findOne(id, workspaceId);
+  async update(id: string, userId: string, input: UpdateBudgetInput) {
+    await this.findOne(id, userId);
     return this.prisma.client.budget.update({
       where: { id },
       data: {
         ...(input.limit !== undefined && { limit: input.limit }),
-        ...(input.period !== undefined && {
-          period: input.period as BudgetPeriod,
-        }),
       },
       include: { category: true },
     });
   }
 
-  async remove(id: string, workspaceId: string) {
-    await this.findOne(id, workspaceId);
+  async remove(id: string, userId: string) {
+    await this.findOne(id, userId);
     await this.prisma.client.budget.delete({ where: { id } });
     return { deleted: true };
   }

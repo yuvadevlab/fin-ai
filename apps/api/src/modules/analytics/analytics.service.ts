@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/modules/prisma/prisma.service";
 import {
   calculateCashFlow,
   calculateNetWorth,
@@ -12,7 +12,7 @@ import { TransactionType } from "@finai/database";
 export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
 
-  async getDashboard(workspaceId: string) {
+  async getDashboard(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -20,26 +20,26 @@ export class AnalyticsService {
 
     const [accounts, allTxns, lastMonthTxns, goals, investments] = await Promise.all([
       this.prisma.client.account.findMany({
-        where: { workspaceId, isActive: true },
+        where: { userId, isActive: true },
         select: { balance: true },
       }),
       this.prisma.client.transaction.findMany({
-        where: { workspaceId, date: { gte: startOfMonth } },
+        where: { userId, date: { gte: startOfMonth } },
         select: { amount: true, date: true, type: true },
       }),
       this.prisma.client.transaction.findMany({
         where: {
-          workspaceId,
+          userId,
           date: { gte: startOfLastMonth, lte: endOfLastMonth },
         },
         select: { amount: true, date: true, type: true },
       }),
       this.prisma.client.goal.findMany({
-        where: { workspaceId },
+        where: { userId },
         select: { id: true },
       }),
       this.prisma.client.investment.findMany({
-        where: { workspaceId },
+        where: { userId },
         select: { currentValue: true },
       }),
     ]);
@@ -74,10 +74,10 @@ export class AnalyticsService {
     };
   }
 
-  async getMonthlyAnalytics(workspaceId: string, months = 6) {
+  async getMonthlyAnalytics(userId: string, months = 6) {
     const txns = await this.prisma.client.transaction.findMany({
       where: {
-        workspaceId,
+        userId,
         date: {
           gte: new Date(new Date().getFullYear(), new Date().getMonth() - (months - 1), 1),
         },
@@ -94,14 +94,14 @@ export class AnalyticsService {
     return calculateCashFlow(normalized, months);
   }
 
-  async getCategoryBreakdown(workspaceId: string) {
+  async getCategoryBreakdown(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const result = await this.prisma.client.transaction.groupBy({
       by: ["categoryId"],
       where: {
-        workspaceId,
+        userId,
         date: { gte: startOfMonth },
         type: TransactionType.EXPENSE,
       },
@@ -124,32 +124,32 @@ export class AnalyticsService {
     }));
   }
 
-  async getHealthScore(workspaceId: string) {
+  async getHealthScore(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const [accounts, investments, budgets, txns, emergencyGoal] = await Promise.all([
       this.prisma.client.account.findMany({
-        where: { workspaceId, isActive: true },
+        where: { userId, isActive: true },
         select: { balance: true },
       }),
       this.prisma.client.investment.findMany({
-        where: { workspaceId },
+        where: { userId },
         select: { currentValue: true, assetClass: true },
       }),
       this.prisma.client.budget.findMany({
-        where: { workspaceId },
+        where: { userId },
         include: {
           category: { select: { id: true } },
         },
       }),
       this.prisma.client.transaction.findMany({
-        where: { workspaceId, date: { gte: startOfMonth } },
+        where: { userId, date: { gte: startOfMonth } },
         select: { amount: true, date: true, type: true },
       }),
       // Look for an emergency fund goal
       this.prisma.client.goal.findFirst({
-        where: { workspaceId, name: { contains: "Emergency", mode: "insensitive" } },
+        where: { userId, name: { contains: "Emergency", mode: "insensitive" } },
         select: { currentAmount: true, targetAmount: true },
       }),
     ]);
@@ -171,7 +171,7 @@ export class AnalyticsService {
         budgets.map((b) =>
           this.prisma.client.transaction.aggregate({
             where: {
-              workspaceId,
+              userId,
               categoryId: b.categoryId,
               type: TransactionType.EXPENSE,
               date: { gte: startOfMonth },
@@ -192,7 +192,6 @@ export class AnalyticsService {
     if (emergencyGoal && expense > 0) {
       emergencyFundMonths = emergencyGoal.currentAmount / expense;
     } else if (emergencyGoal) {
-      // If no expenses this month, estimate from goal
       emergencyFundMonths = emergencyGoal.currentAmount > 0 ? 3 : 0;
     }
 
@@ -215,8 +214,8 @@ export class AnalyticsService {
     return result;
   }
 
-  async getSavingsTrend(workspaceId: string, months = 6) {
-    const cashFlow = await this.getMonthlyAnalytics(workspaceId, months);
+  async getSavingsTrend(userId: string, months = 6) {
+    const cashFlow = await this.getMonthlyAnalytics(userId, months);
     return cashFlow.map((m) => ({
       month: m.month,
       value: Math.max(0, m.income - m.expense),

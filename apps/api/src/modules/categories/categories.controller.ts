@@ -4,7 +4,6 @@ import {
   ConflictException,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -13,48 +12,75 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
-import { PrismaService } from "../prisma/prisma.service";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { PrismaService } from "@/modules/prisma/prisma.service";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import {
   createCategorySchema,
   updateCategorySchema,
   CreateCategoryInput,
   UpdateCategoryInput,
 } from "@finai/validation";
+import { DEFAULT_CATEGORIES } from "./default-categories";
 
 @ApiTags("Categories")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller("workspaces/:workspaceId/categories")
+@Controller("categories")
 export class CategoriesController {
   constructor(private prisma: PrismaService) {}
 
+  @Get("groups")
+  @ApiOperation({ summary: "Get all global category groups" })
+  async getCategoryGroups() {
+    return this.prisma.client.categoryGroup.findMany({
+      orderBy: { order: "asc" },
+    });
+  }
+
   @Get()
-  @ApiOperation({ summary: "Get all categories for a workspace" })
-  async getCategories(@Param("workspaceId") workspaceId: string) {
-    return this.prisma.client.category.findMany({
-      where: {
-        OR: [{ workspaceId }, { workspaceId: null }],
-      },
+  @ApiOperation({ summary: "Get all categories for current user" })
+  async getCategories(@CurrentUser("id") userId: string) {
+    let categories = await this.prisma.client.category.findMany({
+      where: { userId },
+      include: { categoryGroup: { select: { id: true, name: true, order: true } } },
       orderBy: { name: "asc" },
     });
+
+    // Auto-seed default categories if user has none
+    if (categories.length === 0) {
+      await this.prisma.client.category.createMany({
+        data: DEFAULT_CATEGORIES.map((cat) => ({
+          userId,
+          name: cat.name,
+          group: cat.group,
+          icon: cat.icon,
+          isDefault: true,
+        })),
+        skipDuplicates: true,
+      });
+
+      categories = await this.prisma.client.category.findMany({
+        where: { userId },
+        include: { categoryGroup: { select: { id: true, name: true, order: true } } },
+        orderBy: { name: "asc" },
+      });
+    }
+
+    return categories;
   }
 
   @Post()
   @ApiOperation({ summary: "Create a custom category" })
   async createCategory(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(createCategorySchema)) body: CreateCategoryInput,
   ) {
-    // Check if category name already exists in this workspace or is a system category
     const existing = await this.prisma.client.category.findFirst({
       where: {
-        name: {
-          equals: body.name,
-          mode: "insensitive",
-        },
-        OR: [{ workspaceId }, { workspaceId: null }],
+        name: { equals: body.name, mode: "insensitive" },
+        userId,
       },
     });
 
@@ -62,13 +88,23 @@ export class CategoriesController {
       throw new ConflictException("Category with this name already exists");
     }
 
+    let groupName = body.group ?? "Variable Expenses";
+    if (body.groupId) {
+      const grp = await this.prisma.client.categoryGroup.findUnique({
+        where: { id: body.groupId },
+      });
+      if (!grp) throw new NotFoundException("Category group not found");
+      groupName = grp.name;
+    }
+
     return this.prisma.client.category.create({
       data: {
-        workspaceId,
+        userId,
         name: body.name,
-        group: body.group,
+        group: groupName,
+        groupId: body.groupId || null,
         icon: body.icon || null,
-        isSystem: false,
+        isDefault: false,
       },
     });
   }
@@ -76,33 +112,24 @@ export class CategoriesController {
   @Patch(":id")
   @ApiOperation({ summary: "Update a custom category" })
   async updateCategory(
-    @Param("workspaceId") workspaceId: string,
+    @CurrentUser("id") userId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateCategorySchema)) body: UpdateCategoryInput,
   ) {
-    const category = await this.prisma.client.category.findUnique({
-      where: { id },
+    const category = await this.prisma.client.category.findFirst({
+      where: { id, userId },
     });
 
-    if (!category || category.workspaceId !== workspaceId) {
+    if (!category) {
       throw new NotFoundException("Category not found");
-    }
-
-    if (category.isSystem) {
-      throw new ForbiddenException("System categories cannot be modified");
     }
 
     if (body.name) {
       const existing = await this.prisma.client.category.findFirst({
         where: {
-          name: {
-            equals: body.name,
-            mode: "insensitive",
-          },
-          OR: [{ workspaceId }, { workspaceId: null }],
-          NOT: {
-            id,
-          },
+          name: { equals: body.name, mode: "insensitive" },
+          userId,
+          NOT: { id },
         },
       });
 
@@ -111,32 +138,37 @@ export class CategoriesController {
       }
     }
 
+    let groupName = body.group;
+    if (body.groupId) {
+      const grp = await this.prisma.client.categoryGroup.findUnique({
+        where: { id: body.groupId },
+      });
+      if (!grp) throw new NotFoundException("Category group not found");
+      groupName = grp.name;
+    }
+
     return this.prisma.client.category.update({
       where: { id },
       data: {
-        name: body.name,
-        group: body.group,
-        icon: body.icon,
+        ...(body.name ? { name: body.name } : {}),
+        ...(groupName ? { group: groupName } : {}),
+        ...(body.groupId !== undefined ? { groupId: body.groupId } : {}),
+        ...(body.icon !== undefined ? { icon: body.icon } : {}),
       },
     });
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a custom category" })
-  async deleteCategory(@Param("workspaceId") workspaceId: string, @Param("id") id: string) {
-    const category = await this.prisma.client.category.findUnique({
-      where: { id },
+  async deleteCategory(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    const category = await this.prisma.client.category.findFirst({
+      where: { id, userId },
     });
 
-    if (!category || category.workspaceId !== workspaceId) {
+    if (!category) {
       throw new NotFoundException("Category not found");
     }
 
-    if (category.isSystem) {
-      throw new ForbiddenException("System categories cannot be deleted");
-    }
-
-    // Check if category is used in any transactions or budgets
     const transactionsCount = await this.prisma.client.transaction.count({
       where: { categoryId: id },
     });
