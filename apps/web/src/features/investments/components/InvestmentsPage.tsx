@@ -7,7 +7,6 @@ import {
   PageHeader,
   StatCard,
   ContentCard,
-  MoneyDisplay,
   DataTable,
   SectionHeader,
   CategoryPie,
@@ -15,6 +14,7 @@ import {
   cn,
   Button,
 } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useInvestments, Investment } from "../api";
 import { InvestmentDialog } from "./InvestmentDialog";
@@ -84,12 +84,12 @@ export function InvestmentsPage() {
       },
       {
         header: "Invested",
-        accessor: (a: Investment) => <MoneyDisplay value={a.investedAmount ?? 0} />,
+        accessor: (a: Investment) => <PrivacyMoney value={a.investedAmount ?? 0} />,
         className: "text-right",
       },
       {
         header: "Current Value",
-        accessor: (a: Investment) => <MoneyDisplay value={a.currentValue ?? 0} />,
+        accessor: (a: Investment) => <PrivacyMoney value={a.currentValue ?? 0} />,
         className: "text-right",
       },
       {
@@ -138,17 +138,17 @@ export function InvestmentsPage() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           label="Total Value"
-          value={<MoneyDisplay value={totalValue} />}
+          value={<PrivacyMoney value={totalValue} />}
           hint="Current market value"
         />
         <StatCard
           label="Total Invested"
-          value={<MoneyDisplay value={totalInvested} />}
+          value={<PrivacyMoney value={totalInvested} />}
           hint="Principal amount"
         />
         <StatCard
           label="Unrealised P&L"
-          value={<MoneyDisplay value={Math.abs(unrealisedPL)} />}
+          value={<PrivacyMoney value={Math.abs(unrealisedPL)} />}
           trend={
             unrealisedPL >= 0 ? { value: "Gain", kind: "up" } : { value: "Loss", kind: "down" }
           }

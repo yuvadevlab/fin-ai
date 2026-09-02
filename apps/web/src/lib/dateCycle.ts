@@ -6,6 +6,9 @@ export interface DateRange {
   label: string;
 }
 
+export type PresetDateRangeKeys =
+  "THIS_MONTH" | "LAST_MONTH" | "LAST_30_DAYS" | "THIS_YEAR" | "ALL_TIME";
+
 /**
  * Calculates the monthly date range (start of month to end of month).
  */
@@ -24,7 +27,7 @@ export function getAccountingCycleRange(referenceDate: Date = new Date()): DateR
  * Returns standard preset date ranges for financial dashboards and transactions.
  * Default is always "This Month" (calendar month).
  */
-export function getPresetDateRanges(): Record<string, DateRange> {
+export function getPresetDateRanges(): Record<PresetDateRangeKeys, DateRange> {
   const now = new Date();
   const thisMonthStart = startOfMonth(now);
   const thisMonthEnd = endOfMonth(now);

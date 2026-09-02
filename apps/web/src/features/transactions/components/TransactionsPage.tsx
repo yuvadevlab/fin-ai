@@ -2,7 +2,14 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { Plus, X } from "lucide-react";
-import { PageContainer, PageHeader, DataTable, SearchBar, FilterChips, Button } from "@finai/ui";
+import {
+  TablePageContainer,
+  PageHeader,
+  DataTable,
+  SearchBar,
+  FilterChips,
+  Button,
+} from "@finai/ui";
 import { TransactionFilterInput } from "@finai/validation";
 import { format } from "date-fns";
 import { useCategories } from "@/features/categories/api";
@@ -85,80 +92,84 @@ export function TransactionsPage() {
   const columns = useMemo(() => getTransactionColumns(handleDelete), [handleDelete]);
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Transactions"
-        description="All income, expenses, and transfers."
-        actions={
-          <TransactionDialog
-            trigger={
-              <Button size="sm" className="cursor-pointer gap-1.5">
-                <Plus className="size-4" /> Add Transaction
-              </Button>
+    <TablePageContainer
+      header={
+        <>
+          <PageHeader
+            title="Transactions"
+            description="All income, expenses, and transfers."
+            actions={
+              <TransactionDialog
+                trigger={
+                  <Button size="sm" className="cursor-pointer gap-1.5">
+                    <Plus className="size-4" /> Add Transaction
+                  </Button>
+                }
+              />
             }
           />
-        }
-      />
 
-      <div className="mb-6">
-        <LiveAIInsightCard page="transactions" cta="Analyze spending" />
-      </div>
+          <LiveAIInsightCard page="transactions" cta="Analyze spending" />
 
-      <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
-        <div className="relative min-w-64 flex-1">
-          <SearchBar
-            placeholder="Search notes, categories, accounts…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            containerClassName="w-full"
-            className="pr-9"
-          />
-          {search ? (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="text-muted-foreground hover:bg-secondary absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1"
-            >
-              <X className="size-3.5" />
-            </button>
-          ) : null}
-        </div>
+          {/* Filter toolbar */}
+          <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
+            <div className="relative min-w-64 flex-1">
+              <SearchBar
+                placeholder="Search notes, categories, accounts…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                containerClassName="w-full"
+                className="pr-9"
+              />
+              {search ? (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="text-muted-foreground hover:bg-secondary absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1"
+                >
+                  <X className="size-3.5" />
+                </button>
+              ) : null}
+            </div>
 
-        <DateRangeFilter
-          onRangeChange={(range) => {
-            setDateRange(range);
-            setPage(1);
-          }}
-        />
+            <DateRangeFilter
+              onRangeChange={(range) => {
+                setDateRange(range);
+                setPage(1);
+              }}
+            />
 
-        <TransactionFiltersPopover
-          categories={categories}
-          accounts={accounts}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
-          accountId={accountId}
-          setAccountId={setAccountId}
-          minAmount={minAmount}
-          setMinAmount={setMinAmount}
-          maxAmount={maxAmount}
-          setMaxAmount={setMaxAmount}
-          activeFilterCount={activeFilterCount}
-          clearFilters={clearFilters}
-        />
+            <TransactionFiltersPopover
+              categories={categories}
+              accounts={accounts}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              accountId={accountId}
+              setAccountId={setAccountId}
+              minAmount={minAmount}
+              setMinAmount={setMinAmount}
+              maxAmount={maxAmount}
+              setMaxAmount={setMaxAmount}
+              activeFilterCount={activeFilterCount}
+              clearFilters={clearFilters}
+            />
 
-        <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
-      </div>
-
+            <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
+          </div>
+        </>
+      }
+    >
       {isLoading ? (
-        <div className="text-muted-foreground flex items-center justify-center p-12">
-          Loading transactions...
+        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+          <p className="text-muted-foreground text-sm">Loading transactions…</p>
         </div>
       ) : transactionsList.length === 0 ? (
-        <div className="text-muted-foreground flex items-center justify-center p-12 text-sm">
-          No transactions match your filters.
+        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+          <p className="text-muted-foreground text-sm">No transactions match your filters.</p>
         </div>
       ) : (
         <DataTable
+          fillViewport
           data={transactionsList}
           columns={columns}
           rowKey={(t) => t.id}
@@ -179,6 +190,6 @@ export function TransactionsPage() {
           }
         />
       )}
-    </PageContainer>
+    </TablePageContainer>
   );
 }

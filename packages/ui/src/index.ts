@@ -3,6 +3,7 @@ import "./styles.css";
 
 // ─── Custom Layout & Display Components ─────────────────────────────────────────
 export { PageContainer } from "./components/PageContainer";
+export { TablePageContainer } from "./components/TablePageContainer";
 export { PageHeader } from "./components/PageHeader";
 export { SectionHeader } from "./components/SectionHeader";
 export { ContentCard } from "./components/ContentCard";
@@ -16,8 +17,10 @@ export { Pagination, type PaginationProps } from "./components/Pagination";
 export { SearchBar } from "./components/SearchBar";
 export { FilterChips } from "./components/FilterChips";
 export { LoadingState } from "./components/LoadingState";
-export { ProgressCard } from "./components/ProgressCard";
-export { MoneyDisplay } from "./components/MoneyDisplay";
+export { ProgressCard, type ProgressCardProps } from "./components/ProgressCard";
+export { MoneyDisplay, type MoneyDisplayProps } from "./components/MoneyDisplay";
+export { MaskedValue, type MaskedValueProps } from "./components/MaskedValue";
+export { ScoreGauge, type ScoreGaugeProps } from "./components/ScoreGauge";
 export { StatusBadge } from "./components/StatusBadge";
 export { ConfirmDialog } from "./components/ConfirmDialog";
 export { cn } from "./lib/utils";

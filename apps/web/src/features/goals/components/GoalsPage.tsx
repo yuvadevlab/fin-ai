@@ -4,12 +4,14 @@ import React from "react";
 import { Plus, Target, Landmark } from "lucide-react";
 import { PageContainer, PageHeader, ProgressCard, Button } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
+import { usePrivacyMode } from "@/hooks";
 import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { useGoals } from "../api";
 import { GoalDialog } from "./GoalDialog";
 import { ContributeDialog } from "./ContributeDialog";
 
 export function GoalsPage() {
+  const { isPrivacyMode } = usePrivacyMode();
   const { data: rawGoals } = useGoals();
   // Guard against non-array during hydration
   const goals = Array.isArray(rawGoals) ? rawGoals : [];
@@ -61,13 +63,16 @@ export function GoalsPage() {
               target={target}
               unit="₹"
               percentage={pct}
+              masked={isPrivacyMode}
               statusBadge={
                 <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-xs font-bold">
                   {pct}%
                 </span>
               }
               footerLeft={
-                current >= target ? "Goal Completed!" : `${formatINR(target - current)} to go`
+                current >= target
+                  ? "Goal Completed!"
+                  : `${isPrivacyMode ? "₹ ••••••" : formatINR(target - current)} to go`
               }
               footerRight={
                 current >= target ? null : (

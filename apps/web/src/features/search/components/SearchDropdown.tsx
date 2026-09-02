@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Receipt, Wallet, Target, SearchX } from "lucide-react";
-import { MoneyDisplay, cn } from "@finai/ui";
+import { cn } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import { useSearch } from "../api";
 
 interface SearchDropdownProps {
@@ -71,7 +72,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
                   t.type === "EXPENSE" ? "text-destructive" : "text-primary",
                 )}
               >
-                <MoneyDisplay value={t.amount} />
+                <PrivacyMoney value={t.amount} />
               </span>
             </Link>
           ))}
@@ -105,7 +106,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
                   {a.type.toLowerCase().replace("_", " ")}
                 </p>
               </div>
-              <MoneyDisplay value={a.balance} className="shrink-0 text-sm font-semibold" />
+              <PrivacyMoney value={a.balance} className="shrink-0 text-sm font-semibold" />
             </Link>
           ))}
         </section>

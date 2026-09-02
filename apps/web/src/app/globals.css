@@ -131,6 +131,50 @@
   }
 }
 
+/* ── Theme-init transition suppressor ──────────────────────────────────────── */
+/*
+ * Added to <html> by the blocking script for the very first frame.
+ * Disables ALL transitions so the dark class change is instant —
+ * no color animation flash on sidebar active items or any element.
+ * Removed via double requestAnimationFrame after the first paint.
+ */
+.finai-no-transition * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ── Layout Design Tokens ─────────────────────────────────────────────────── */
+/* All layout dimensions as CSS variables so calc() works throughout the shell */
+:root {
+  --header-height: 4rem; /* 64px  ← TopBar h-16                  */
+  --sidebar-width: 16rem; /* 256px ← Sidebar expanded w-64        */
+  --sidebar-rail-width: 4.5rem; /* 72px  ← Sidebar collapsed rail w-18  */
+
+  --page-padding-x: 1.5rem; /* 24px horizontal page padding         */
+  --page-padding-y: 1.5rem; /* 24px vertical page padding           */
+  --page-max-width: 96rem; /* 1536px max content width             */
+
+  /* Derived — reference these in components instead of duplicating maths */
+  --content-height: calc(100dvh - var(--header-height));
+}
+
+/* ── Large monitor overrides (≥ 1536px / 2xl) ───────────────────────────── */
+/* On 27"/29" monitors add more breathing room and expand max-width         */
+@media (min-width: 1536px) {
+  :root {
+    --page-padding-x: 2.5rem; /* 40px — more air on wide screens      */
+    --page-padding-y: 2rem; /* 32px                                 */
+    --page-max-width: 120rem; /* 1920px — fill ultra-wide monitors    */
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --page-padding-x: 3.5rem;
+    --page-max-width: 160rem; /* 2560px — native for 4K / 32" displays */
+  }
+}
+
 /* ── Density ─────────────────────────────────────────────────────────────── */
 body.density-compact {
   --spacing-scale: 0.75;
@@ -158,4 +202,19 @@ body.density-compact .space-y-4 > * + * {
 
 body.density-compact .space-y-6 > * + * {
   margin-top: 0.9rem;
+}
+
+/* ── Privacy Mode — pre-hydration CSS mask ────────────────────────────────── */
+/*
+ * When html[data-privacy="on"] is set by the blocking inline script in layout.tsx,
+ * all [data-privacy-sensitive] elements are blurred immediately — before React
+ * even mounts. This eliminates the flash of real numbers on page load.
+ *
+ * React takes over cleanly after hydration and applies the masked prop,
+ * at which point this CSS rule is superseded by the React-rendered masked content.
+ */
+html[data-privacy="on"] [data-privacy-sensitive] {
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
 }

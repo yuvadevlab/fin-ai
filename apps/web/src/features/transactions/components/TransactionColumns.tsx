@@ -1,5 +1,6 @@
 import React from "react";
-import { Badge, Button, MoneyDisplay } from "@finai/ui";
+import { Badge, Button } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import { Edit2, Trash2 } from "lucide-react";
 import { Transaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
@@ -48,7 +49,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
       header: "Amount",
       accessor: (t: Transaction) => {
         const displayAmount = t.type === "EXPENSE" ? -t.amount : t.amount;
-        return <MoneyDisplay value={displayAmount} showSign={t.type === "INCOME"} />;
+        return <PrivacyMoney value={displayAmount} showSign={t.type === "INCOME"} />;
       },
       className: "text-right whitespace-nowrap",
     },

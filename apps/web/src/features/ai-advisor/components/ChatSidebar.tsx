@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2, MessageSquare } from "lucide-react";
-import { MoneyDisplay } from "@finai/ui";
+import { PrivacyMoney } from "@/components";
 import type { DashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import type { InvestmentsResponse } from "@/features/investments/api/getInvestments";
 import type { AiConversation } from "../api";
@@ -183,7 +183,7 @@ export function ChatSidebar({
             <li key={label} className="flex items-center justify-between">
               <span className="text-muted-foreground">{label}</span>
               {value !== undefined ? (
-                <MoneyDisplay value={value} className={className} />
+                <PrivacyMoney value={value} className={className} />
               ) : (
                 <span className="text-muted-foreground text-xs">—</span>
               )}

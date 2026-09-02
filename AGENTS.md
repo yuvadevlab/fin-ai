@@ -285,7 +285,20 @@ export function AccountDialog({
 
 ---
 
-## 7. Workflow Checklist for AI Agents Before Committing Code
+## 7. Component Granularity & Maximum 250-Line Hard Rule
+
+1. **Strict 250-Line Maximum**: NO component, page, or hook file in `apps/web` or `packages/ui` may exceed **250 lines of code**.
+2. **Proactive Decomposition**: Whenever a component approaches or exceeds 200 lines, immediately break it down into modular, well-scoped subcomponents or custom hooks:
+   - **Form Logic & State**: Extract form initialization, change handling, and mutation orchestration into a custom hook (e.g., `use<Entity>Form.ts` or `use<Entity>DialogState.ts`).
+   - **Composite Views / Dashboard Pages**: Extract distinct UI sections (e.g. KPI grids, charts, summary rows, filter toolbars) into dedicated subcomponents within the feature's `components/` directory (e.g. `DashboardKpiCards.tsx`, `DashboardCategoryCard.tsx`).
+   - **Navigation & Layouts**: Keep layout coordinators clean by extracting item renderers (e.g. `SidebarItem.tsx`), feature cards (`SidebarAiCard.tsx`), and static nav configs (`sidebarNavItems.ts`).
+3. **Move Reusable Elements to `@finai/ui`**:
+   - Any presentation elements, gauges, dials, progress indicators, or formatted displays that are generic or can be reused across multiple pages MUST live in `@finai/ui` (and be exported from `packages/ui/src/index.ts`).
+   - **No Inline Graphic SVGs in Pages**: Complex graphic SVGs (gauges, progress arcs, dials) MUST NEVER be inlined directly in feature page files. Move them into dedicated components in `@finai/ui` (like `<ScoreGauge />`) with full ARIA accessibility (`role="progressbar"`, `aria-valuenow`, `aria-label`).
+
+---
+
+## 8. Workflow Checklist for AI Agents Before Committing Code
 
 Before declaring a task resolved, every AI agent MUST verify:
 
@@ -293,6 +306,8 @@ Before declaring a task resolved, every AI agent MUST verify:
 - [ ] Financial formulas & math reside in `@finai/finance-engine` (zero side-effects and zero I/O).
 - [ ] No inline Zod schemas created (all reside in `@finai/validation`).
 - [ ] Modals adhere to the 2-file feature pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`).
+- [ ] All modified/new component files are strictly under 250 lines of code (split proactively).
+- [ ] No raw inline graphic SVGs in page components (moved to `@finai/ui` as reusable components).
 - [ ] React Query mutations invalidate relevant user cache keys.
 - [ ] Tailwind classes use semantic color tokens (no hardcoded hex values or arbitrary colors).
 - [ ] Code passes typechecks (`pnpm --filter @finai/web typecheck`) and linting (`pnpm lint`).
@@ -300,7 +315,7 @@ Before declaring a task resolved, every AI agent MUST verify:
 
 ---
 
-## 8. Database & Seed Management Rules
+## 9. Database & Seed Management Rules
 
 ### Seed Script
 

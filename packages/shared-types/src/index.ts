@@ -62,7 +62,7 @@ export type NotificationType = (typeof NotificationType)[keyof typeof Notificati
 
 export interface UserPreferences {
   notifications?: Record<string, boolean>;
-  appearance?: Record<string, string>;
+  appearance?: Record<string, string | boolean>;
   security?: Record<string, boolean>;
 }
 

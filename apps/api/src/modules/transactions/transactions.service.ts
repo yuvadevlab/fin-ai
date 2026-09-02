@@ -40,7 +40,7 @@ export class TransactionsService {
           account: { select: { id: true, name: true, type: true } },
           toAccount: { select: { id: true, name: true, type: true } },
         },
-        orderBy: { date: "desc" },
+        orderBy: [{ date: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),

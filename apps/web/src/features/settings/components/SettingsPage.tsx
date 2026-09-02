@@ -2,7 +2,7 @@
 
 import React, { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { User, Bell, Tag, Wallet, Shield, Palette, type LucideIcon } from "lucide-react";
+import { User, Palette, type LucideIcon } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -15,14 +15,8 @@ import {
   Button,
   cn,
 } from "@finai/ui";
-import { useCategories } from "@/features/categories";
-import { SETTING_FLAGS } from "@/lib/app-constants";
 import { ProfileSettings } from "./ProfileSettings";
-import { NotificationSettings } from "./NotificationSettings";
-import { AccountSettingsList } from "./AccountSettingsList";
-import { SecuritySettings } from "./SecuritySettings";
 import { AppearanceSettings } from "./AppearanceSettings";
-import { CategorySettingsList } from "./CategorySettingsList";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
 
@@ -30,7 +24,6 @@ export function SettingsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const sectionQuery = searchParams.get("section");
-  const { data: categories = [] } = useCategories();
 
   const sections: Section[] = [
     {
@@ -41,67 +34,19 @@ export function SettingsPage() {
       body: <ProfileSettings />,
     },
     {
-      id: "categories",
-      icon: Tag,
-      label: "Categories",
-      desc: "Customise your spending and income categories.",
-      body: <CategorySettingsList categories={categories} />,
-    },
-    {
-      id: "accounts",
-      icon: Wallet,
-      label: "Accounts",
-      desc: "Manage linked bank accounts, cards, and wallets.",
-      body: <AccountSettingsList />,
-    },
-    {
-      id: "notifications",
-      icon: Bell,
-      label: "Notifications",
-      desc: "Choose alerts for budgets, goals, and insights.",
-      body: <NotificationSettings />,
-    },
-    {
-      id: "security",
-      icon: Shield,
-      label: "Security",
-      desc: "Password, sessions, and account protection.",
-      body: <SecuritySettings />,
-    },
-    {
       id: "appearance",
       icon: Palette,
       label: "Appearance",
       desc: "Theme, density, and display preferences.",
       body: <AppearanceSettings />,
     },
-  ].filter((s) => {
-    switch (s.id) {
-      case "profile":
-        return SETTING_FLAGS.PROFILE;
-      case "notifications":
-        return SETTING_FLAGS.NOTIFICATIONS;
-      case "categories":
-        return SETTING_FLAGS.CATEGORIES;
-      case "accounts":
-        return SETTING_FLAGS.ACCOUNTS;
-      case "security":
-        return SETTING_FLAGS.SECURITY;
-      case "appearance":
-        return SETTING_FLAGS.APPEARANCE;
-      default:
-        return true;
-    }
-  });
+  ];
 
   const active = sections.find((s) => s.id === (selectedId ?? sectionQuery)) || null;
 
   return (
     <PageContainer className="max-w-5xl">
-      <PageHeader
-        title="Settings"
-        description="Preferences for your personal account, categories, and security."
-      />
+      <PageHeader title="Settings" description="Preferences for your personal account" />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sections.map((s) => (

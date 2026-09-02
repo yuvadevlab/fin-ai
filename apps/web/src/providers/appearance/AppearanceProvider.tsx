@@ -8,6 +8,8 @@ const STORAGE_KEY = "finai_appearance";
 const defaults: AppearancePrefs = {
   theme: "System",
   density: "Comfortable",
+  numberFormat: "US",
+  privacyMode: false,
 };
 
 function resolveTheme(theme: string): "dark" | "light" {
@@ -43,18 +45,49 @@ function saveStored(prefs: Partial<AppearancePrefs>) {
 }
 
 export function AppearanceProvider({ children }: { children: React.ReactNode }) {
-  const apply = useCallback((incoming: Partial<AppearancePrefs>) => {
+  const [prefs, setPrefs] = React.useState<AppearancePrefs>(() => {
+    if (typeof window === "undefined") return defaults;
     const stored = loadStored();
-    const merged = { ...defaults, ...stored, ...incoming };
-    saveStored(merged);
-    applyTheme(merged.theme);
-    applyDensity(merged.density);
-  }, []);
+    return { ...defaults, ...stored };
+  });
+
+  const normalizePrefs = useCallback(
+    (
+      raw: Partial<AppearancePrefs | { privacyMode: boolean | string }>,
+    ): Partial<AppearancePrefs> => {
+      const result: Partial<AppearancePrefs> = { ...(raw as Partial<AppearancePrefs>) };
+      if ("privacyMode" in raw) {
+        if (raw.privacyMode === "Yes" || raw.privacyMode === true) {
+          result.privacyMode = true;
+        } else if (raw.privacyMode === "No" || raw.privacyMode === false) {
+          result.privacyMode = false;
+        }
+      }
+      return result;
+    },
+    [],
+  );
+
+  const apply = useCallback(
+    (incoming: Partial<AppearancePrefs | { privacyMode: boolean | string }>) => {
+      const normalized = normalizePrefs(incoming);
+      const stored = loadStored();
+      const merged: AppearancePrefs = { ...defaults, ...stored, ...normalized };
+      saveStored(merged);
+      setPrefs(merged);
+      applyTheme(merged.theme);
+      applyDensity(merged.density);
+    },
+    [normalizePrefs],
+  );
+
+  const togglePrivacyMode = useCallback(() => {
+    apply({ privacyMode: !prefs.privacyMode });
+  }, [apply, prefs.privacyMode]);
 
   useEffect(() => {
-    const stored = loadStored();
-    applyTheme(stored.theme ?? defaults.theme);
-    applyDensity(stored.density ?? defaults.density);
+    applyTheme(prefs.theme);
+    applyDensity(prefs.density);
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = () => {
@@ -65,9 +98,22 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
-  }, []);
+  }, [prefs.theme, prefs.density]);
 
-  return <AppearanceContext.Provider value={{ apply }}>{children}</AppearanceContext.Provider>;
+  const isPrivacyMode = Boolean(prefs.privacyMode);
+
+  return (
+    <AppearanceContext.Provider
+      value={{
+        prefs,
+        isPrivacyMode,
+        apply,
+        togglePrivacyMode,
+      }}
+    >
+      {children}
+    </AppearanceContext.Provider>
+  );
 }
 
 export {

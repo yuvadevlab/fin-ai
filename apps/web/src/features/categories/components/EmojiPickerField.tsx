@@ -5,7 +5,7 @@ import EmojiPicker, { Theme } from "emoji-picker-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@finai/ui";
 import { Button } from "@finai/ui";
 import { Smile } from "lucide-react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 interface EmojiPickerFieldProps {
   value: string;

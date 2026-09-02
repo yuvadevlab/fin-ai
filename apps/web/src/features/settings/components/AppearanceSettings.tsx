@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FormDialogField, toast } from "@finai/ui";
-import { useAppearance } from "@/hooks/useAppearance";
+import { useAppearance } from "@/hooks";
 import type { AppearancePrefs } from "@/providers/appearance/AppearanceProvider";
 import { useProfile, useUpdateProfile } from "../api";
 
@@ -17,24 +17,31 @@ const appearanceOptions: { key: keyof AppearancePrefs; label: string; options: s
     label: "Density",
     options: ["Comfortable", "Compact"],
   },
+  {
+    key: "privacyMode",
+    label: "Privacy Mode",
+    options: ["Yes", "No"],
+  },
 ];
 
 export function AppearanceSettings() {
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
-  const { apply } = useAppearance();
+  const { prefs, apply } = useAppearance();
 
   const appearance = profile?.preferences?.appearance || {};
 
   const handleChange = async (key: keyof AppearancePrefs, value: string) => {
-    // Apply immediately to DOM
-    apply({ [key]: value } as Partial<AppearancePrefs>);
+    const parsedValue = key === "privacyMode" ? value === "Yes" : value;
+
+    // Apply immediately to local state & DOM
+    apply({ [key]: parsedValue } as Partial<AppearancePrefs>);
 
     const updatedPrefs = {
       ...profile?.preferences,
       appearance: {
         ...appearance,
-        [key]: value,
+        [key]: parsedValue,
       },
     };
 
@@ -56,7 +63,14 @@ export function AppearanceSettings() {
     <div className="space-y-6">
       <div className="space-y-4">
         {appearanceOptions.map((item) => {
-          const value = appearance[item.key] || item.options[0];
+          let value: string;
+          if (item.key === "privacyMode") {
+            value = prefs.privacyMode ? "Yes" : "No";
+          } else {
+            value =
+              (prefs[item.key] as string) || (appearance[item.key] as string) || item.options[0];
+          }
+
           return (
             <FormDialogField
               key={item.key}

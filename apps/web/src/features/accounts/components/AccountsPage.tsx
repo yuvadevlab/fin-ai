@@ -2,15 +2,18 @@
 
 import React, { useState, useMemo } from "react";
 import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
-import { PageContainer, PageHeader, MoneyDisplay, Button, ConfirmDialog } from "@finai/ui";
+import { PageContainer, PageHeader, Button, ConfirmDialog } from "@finai/ui";
 import { cn } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { useIsClient } from "@/hooks";
+import { usePrivacyMode } from "@/hooks";
+import { PrivacyMoney } from "@/components";
 import { AccountDialog } from "./AccountDialog";
 import { Account, useAccounts, useDeleteAccount } from "../api";
 
 export function AccountsPage() {
   const isClient = useIsClient();
+  const { isPrivacyMode } = usePrivacyMode();
   const { data: rawAccounts, isLoading } = useAccounts();
   const deleteAccount = useDeleteAccount();
 
@@ -73,7 +76,7 @@ export function AccountsPage() {
         title="Accounts"
         description={
           isClient && accounts.length > 0
-            ? `Consolidated net position across ${accounts.length} accounts: ${formatINR(total)}.`
+            ? `Consolidated net position across ${accounts.length} accounts: ${isPrivacyMode ? "₹ ••••••" : formatINR(total)}.`
             : "Consolidated net position across all your linked bank accounts, cards, and wallets."
         }
         actions={
@@ -142,7 +145,7 @@ export function AccountsPage() {
               {/* Account Balance */}
               <div className="mt-5">
                 <p className="text-2xl font-bold tracking-tight">
-                  <MoneyDisplay
+                  <PrivacyMoney
                     value={a.balance}
                     className={cn(a.balance < 0 && "text-destructive")}
                   />
