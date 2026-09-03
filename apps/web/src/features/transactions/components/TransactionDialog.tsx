@@ -55,12 +55,21 @@ export function TransactionDialog({
     }));
   }, [categoriesData]);
 
+  // Resolve the default account — explicit default or auto-select when only 1 account
+  const defaultAccountId = useMemo(() => {
+    const accounts = accountsData || [];
+    return (
+      accounts.find((a) => a.isDefault)?.id ?? (accounts.length === 1 ? accounts[0].id : undefined)
+    );
+  }, [accountsData]);
+
   const { values, errors, handleChange, handleSubmit, isSaving } = useTransactionDialogForm({
     open,
     setOpen,
     mode,
     transactionId,
     initialValues,
+    defaultAccountId,
   });
 
   const {
@@ -99,20 +108,21 @@ export function TransactionDialog({
         description={description}
         submitLabel={submitLabel}
         loading={isSaving}
+        className="sm:max-w-lg"
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}
       >
         {mode === "add" && (
-          <div className="bg-secondary/50 mb-4 flex items-center justify-between rounded-xl p-2.5 text-xs">
-            <span className="text-muted-foreground font-semibold">
-              Have multiple transactions to log or import from Excel?
+          <div className="bg-secondary/50 mb-3 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs sm:mb-4 sm:flex-row sm:items-center sm:justify-between sm:p-3">
+            <span className="text-muted-foreground font-medium">
+              Have multiple transactions or an Excel sheet?
             </span>
             <button
               type="button"
               onClick={handleSwitchToBulk}
-              className="text-primary cursor-pointer font-bold hover:underline"
+              className="text-primary shrink-0 cursor-pointer text-left font-bold hover:underline sm:text-right"
             >
-              Switch to Bulk Import & Upload Mode →
+              Switch to Bulk Mode →
             </button>
           </div>
         )}

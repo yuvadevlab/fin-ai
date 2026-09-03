@@ -15,7 +15,7 @@ import {
   Button,
 } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+
 import { useInvestments, Investment } from "../api";
 import { InvestmentDialog } from "./InvestmentDialog";
 
@@ -130,10 +130,6 @@ export function InvestmentsPage() {
           />
         }
       />
-
-      <div className="mb-6">
-        <LiveAIInsightCard page="investments" cta="Evaluate portfolio" />
-      </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard

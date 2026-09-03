@@ -155,7 +155,7 @@ export function SearchableSelect({
           disabled={disabled}
           onKeyDown={handleKeyDown}
           className={cn(
-            "bg-background border-input hover:bg-accent/50 h-10 w-full justify-between px-3 text-left font-normal",
+            "bg-background border-input hover:bg-accent/50 h-control-md w-full justify-between px-3 text-left font-normal",
             !selectedOption && "text-muted-foreground",
             className,
           )}
@@ -166,7 +166,7 @@ export function SearchableSelect({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="border-border bg-popover w-[var(--radix-popover-trigger-width)] min-w-[220px] border p-0 shadow-lg"
+        className="border-border bg-popover w-(--radix-popover-trigger-width) min-w-[220px] border p-0 shadow-lg"
         onKeyDown={handleKeyDown}
       >
         <div className="border-border flex items-center gap-2 border-b p-2">

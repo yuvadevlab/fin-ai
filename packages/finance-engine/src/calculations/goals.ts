@@ -40,3 +40,21 @@ export function estimateGoalCompletion(
   date.setMonth(date.getMonth() + months);
   return date.toISOString().split("T")[0];
 }
+
+export interface AggregateGoalsSummary {
+  totalTarget: number;
+  totalCurrent: number;
+  progressPercentage: number;
+}
+
+/**
+ * Aggregate an array of goals into total target, current accumulated, and progress %.
+ */
+export function calculateAggregateGoals(
+  goals: { targetAmount?: number; currentAmount?: number }[],
+): AggregateGoalsSummary {
+  const totalTarget = goals.reduce((sum, g) => sum + (g.targetAmount || 0), 0);
+  const totalCurrent = goals.reduce((sum, g) => sum + (g.currentAmount || 0), 0);
+  const progressPercentage = calculateGoalProgress(totalCurrent, totalTarget);
+  return { totalTarget, totalCurrent, progressPercentage };
+}

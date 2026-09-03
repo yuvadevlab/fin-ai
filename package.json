@@ -14,6 +14,8 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "test:unit": "turbo test",
+    "test:e2e": "pnpm --filter @finai/web test:e2e",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

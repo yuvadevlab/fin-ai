@@ -7,8 +7,8 @@ import { AccountsService } from "@/modules/accounts/accounts.service";
 import {
   createAccountSchema,
   updateAccountSchema,
-  CreateAccountInput,
-  UpdateAccountInput,
+  type CreateAccountInput,
+  type UpdateAccountInput,
 } from "@finai/validation";
 
 @ApiTags("Accounts")
@@ -47,6 +47,12 @@ export class AccountsController {
     @Body(new ZodValidationPipe(updateAccountSchema)) body: UpdateAccountInput,
   ) {
     return this.accountsService.update(id, userId, body);
+  }
+
+  @Patch(":id/default")
+  @ApiOperation({ summary: "Set an account as the default account" })
+  setDefault(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.accountsService.setDefault(id, userId);
   }
 
   @Delete(":id")

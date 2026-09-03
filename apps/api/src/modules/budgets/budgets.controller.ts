@@ -7,8 +7,8 @@ import { BudgetsService } from "@/modules/budgets/budgets.service";
 import {
   createBudgetSchema,
   updateBudgetSchema,
-  CreateBudgetInput,
-  UpdateBudgetInput,
+  type CreateBudgetInput,
+  type UpdateBudgetInput,
 } from "@finai/validation";
 
 @ApiTags("Budgets")

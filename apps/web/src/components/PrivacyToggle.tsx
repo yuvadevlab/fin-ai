@@ -3,7 +3,7 @@
 import React from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@finai/ui";
-import { usePrivacyMode } from "@/hooks";
+import { usePrivacyMode, useIsClient } from "@/hooks";
 
 interface PrivacyToggleProps {
   className?: string;
@@ -12,7 +12,9 @@ interface PrivacyToggleProps {
 }
 
 export function PrivacyToggle({ className, variant = "ghost", size = "icon" }: PrivacyToggleProps) {
+  const isClient = useIsClient();
   const { isPrivacyMode, togglePrivacyMode } = usePrivacyMode();
+  const activePrivacy = isClient && isPrivacyMode;
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -23,9 +25,9 @@ export function PrivacyToggle({ className, variant = "ghost", size = "icon" }: P
             size={size}
             onClick={togglePrivacyMode}
             className={className}
-            aria-label={isPrivacyMode ? "Disable Privacy Mode" : "Enable Privacy Mode"}
+            aria-label={activePrivacy ? "Disable Privacy Mode" : "Enable Privacy Mode"}
           >
-            {isPrivacyMode ? (
+            {activePrivacy ? (
               <EyeOff className="text-primary size-4" />
             ) : (
               <Eye className="text-muted-foreground hover:text-foreground size-4" />
@@ -34,7 +36,7 @@ export function PrivacyToggle({ className, variant = "ghost", size = "icon" }: P
         </TooltipTrigger>
         <TooltipContent side="bottom">
           <p className="text-xs">
-            {isPrivacyMode ? "Disable Privacy Mode" : "Enable Privacy Mode"}
+            {activePrivacy ? "Disable Privacy Mode" : "Enable Privacy Mode"}
           </p>
         </TooltipContent>
       </Tooltip>

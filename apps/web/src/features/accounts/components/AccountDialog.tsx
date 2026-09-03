@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createAccountSchema, updateAccountSchema } from "@finai/validation";
-import { useCreateAccount, useUpdateAccount, Account } from "../api";
+import { useCreateAccount, useUpdateAccount, useAccounts, Account } from "../api";
 import { AccountForm } from "./AccountForm";
 
 export interface AccountDialogProps {
@@ -22,6 +22,7 @@ const defaultValues = (account?: Account, initialName = ""): Record<string, stri
   type: account?.type ?? "BANK",
   balance: account !== undefined ? String(account.balance) : "0",
   currency: account?.currency ?? "INR",
+  isDefault: account?.isDefault ? "true" : "false",
 });
 
 export function AccountDialog({
@@ -40,6 +41,8 @@ export function AccountDialog({
 
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
+  const { data: allAccounts } = useAccounts();
+  const hasOtherAccounts = (allAccounts?.length ?? 0) > (isEditMode ? 1 : 0);
 
   const [values, setValues] = useState<Record<string, string>>(defaultValues(account, initialName));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -69,9 +72,10 @@ export function AccountDialog({
     event.preventDefault();
 
     if (isEditMode) {
-      // Edit mode — partial update, name only (balance is read-only once created)
+      // Edit mode — partial update, name + isDefault only
       const parseResult = updateAccountSchema.safeParse({
         name: values.name,
+        isDefault: values.isDefault === "true",
       });
 
       if (!parseResult.success) {
@@ -103,6 +107,7 @@ export function AccountDialog({
       type: values.type,
       balance: Number(values.balance || 0),
       currency: values.currency,
+      isDefault: values.isDefault === "true",
     });
 
     if (!parseResult.success) {
@@ -153,8 +158,8 @@ export function AccountDialog({
           values={values}
           errors={errors}
           onChange={handleChange}
-          /* In edit mode only name is editable — type/balance/currency are fixed */
           editMode={isEditMode}
+          hasOtherAccounts={hasOtherAccounts}
         />
       </div>
     </FormDialog>

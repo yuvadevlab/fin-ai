@@ -45,6 +45,20 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ── FinAI Design Token → Tailwind utility mappings ─────────────────────── */
+  /* Control heights: use as h-control-xs, h-control-sm, h-control-md etc. */
+  --height-control-xs: var(--control-height-xs);
+  --height-control-sm: var(--control-height-sm);
+  --height-control-md: var(--control-height-md);
+  --height-control-lg: var(--control-height-lg);
+  --height-control-xl: var(--control-height-xl);
+  /* Icon sizes: use as size-icon-xs, size-icon-sm etc. */
+  --size-icon-xs: var(--icon-xs);
+  --size-icon-sm: var(--icon-sm);
+  --size-icon-md: var(--icon-md);
+  --size-icon-lg: var(--icon-lg);
+  --size-icon-xl: var(--icon-xl);
 }
 
 :root {
@@ -123,6 +137,13 @@
     border-color: var(--color-border);
   }
 
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -150,12 +171,19 @@
   --sidebar-width: 16rem; /* 256px ← Sidebar expanded w-64        */
   --sidebar-rail-width: 4.5rem; /* 72px  ← Sidebar collapsed rail w-18  */
 
-  --page-padding-x: 1.5rem; /* 24px horizontal page padding         */
-  --page-padding-y: 1.5rem; /* 24px vertical page padding           */
+  --page-padding-x: 1rem; /* 16px horizontal page padding on mobile   */
+  --page-padding-y: 1.25rem; /* 20px vertical page padding on mobile     */
   --page-max-width: 96rem; /* 1536px max content width             */
 
   /* Derived — reference these in components instead of duplicating maths */
   --content-height: calc(100dvh - var(--header-height));
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-padding-x: 1.5rem; /* 24px horizontal page padding         */
+    --page-padding-y: 1.5rem; /* 24px vertical page padding           */
+  }
 }
 
 /* ── Large monitor overrides (≥ 1536px / 2xl) ───────────────────────────── */

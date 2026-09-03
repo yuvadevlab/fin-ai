@@ -46,6 +46,6 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.1"
+    "vitest": "^4.1.11"
   }
 }

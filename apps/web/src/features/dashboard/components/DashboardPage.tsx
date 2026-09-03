@@ -1,46 +1,25 @@
 "use client";
 
 import React, { useMemo } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
-  DashboardTabs,
   ChartCard,
   Button,
   CashFlowChart,
   ExpenseBarChart,
   TrendLine,
 } from "@finai/ui";
+import { calculateNetCashFlow } from "@finai/finance-engine";
 import { TransactionDialog } from "@/features/transactions/components";
 import { useCategoryBreakdown, useDashboardStats, useMonthlyAnalytics } from "../api";
-import { FEATURE_FLAGS } from "@/lib/app-constants";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
 import { DashboardKpiCards } from "./DashboardKpiCards";
 import { DashboardCategoryCard } from "./DashboardCategoryCard";
+import { DashboardHealthCard } from "./DashboardHealthCard";
 import { DashboardSummaryStats } from "./DashboardSummaryStats";
 
-function CustomLinkComponent({
-  href,
-  children,
-  className,
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
 export function DashboardPage() {
-  const pathname = usePathname();
-
   const { data: stats } = useDashboardStats();
   const { data: rawMonthlyCashFlow } = useMonthlyAnalytics();
   const { data: rawCategoryBreakdown } = useCategoryBreakdown();
@@ -63,9 +42,9 @@ export function DashboardPage() {
 
   const savingsTrend = useMemo(
     () =>
-      monthlyCashFlow.map((m) => ({
+      calculateNetCashFlow(monthlyCashFlow).map((m) => ({
         month: m.month,
-        value: Math.max(0, m.income - m.expense),
+        value: Math.max(0, m.net),
       })),
     [monthlyCashFlow],
   );
@@ -86,43 +65,48 @@ export function DashboardPage() {
         }
       />
 
-      <div className="border-border/80 flex flex-wrap items-center justify-between gap-4 border-b pb-1">
-        <DashboardTabs
-          pathname={pathname}
-          LinkComponent={CustomLinkComponent}
-          className="border-b-0"
-        />
-      </div>
-
       {/* KPI Cards: Net Worth, Income, Expenses, Savings Rate */}
       <DashboardKpiCards stats={stats} />
 
-      {/* Main Charts & Analytics Grid */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-        {/* Left Column: Cash Flow & Trends (2 Cols) */}
-        <div className="space-y-6 lg:col-span-2">
-          <ChartCard title="Monthly Cash Flow" hint="Last 6 months">
+      {/* Row 1: Primary Overview — Cash Flow Chart (2 cols) + Financial Health (1 col) */}
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
+          <ChartCard
+            title="Monthly Cash Flow"
+            hint="Last 6 months"
+            className="flex h-full flex-col justify-between"
+          >
             <CashFlowChart data={monthlyCashFlow} />
           </ChartCard>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <ChartCard title="Expense Trend" hint="Monthly total">
-              <ExpenseBarChart data={expenseData} />
-            </ChartCard>
-            <ChartCard title="Savings Trend" hint="Amount saved / month">
-              <TrendLine data={savingsTrend} />
-            </ChartCard>
-          </div>
         </div>
 
-        {/* Right Column: AI Insight & Category Allocation (1 Col) */}
-        <div className="space-y-6">
-          {FEATURE_FLAGS.AI_INSIGHT && <LiveAIInsightCard page="dashboard" cta="Review details" />}
-          <DashboardCategoryCard categoryBreakdown={categoryBreakdown} />
+        <div className="min-w-0 lg:col-span-1">
+          <DashboardHealthCard />
         </div>
       </div>
 
-      {/* Bottom Summary Stats */}
+      {/* Row 2: Deep Dive — Expense Trend, Savings Trend & Category Allocation (3 equal columns) */}
+      <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-3">
+        <ChartCard
+          title="Expense Trend"
+          hint="Monthly total"
+          className="flex h-full flex-col justify-between"
+        >
+          <ExpenseBarChart data={expenseData} />
+        </ChartCard>
+
+        <ChartCard
+          title="Savings Trend"
+          hint="Amount saved / month"
+          className="flex h-full flex-col justify-between"
+        >
+          <TrendLine data={savingsTrend} />
+        </ChartCard>
+
+        <DashboardCategoryCard categoryBreakdown={categoryBreakdown} />
+      </div>
+
+      {/* Row 3: Bottom Summary Highlights */}
       <DashboardSummaryStats stats={stats} />
     </PageContainer>
   );

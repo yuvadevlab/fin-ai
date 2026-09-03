@@ -8,6 +8,7 @@ export interface Account {
   type: "BANK" | "CREDIT_CARD" | "WALLET" | "CASH";
   balance: number;
   currency: string;
+  isDefault?: boolean;
 }
 
 export const accountsQueryKey = () => ["accounts"] as const;
