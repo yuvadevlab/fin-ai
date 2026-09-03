@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { useCategories } from "@/features/categories/api";
 import { useAccounts } from "@/features/accounts/api";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+
 import { useTransactions, useDeleteTransaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
 import { getTransactionColumns } from "./TransactionColumns";
@@ -109,11 +109,9 @@ export function TransactionsPage() {
             }
           />
 
-          <LiveAIInsightCard page="transactions" cta="Analyze spending" />
-
           {/* Filter toolbar */}
-          <div className="bg-card ring-border/50 flex flex-wrap items-center gap-3 rounded-2xl p-4 shadow-sm ring-1">
-            <div className="relative min-w-64 flex-1">
+          <div className="bg-card ring-border/50 flex flex-col gap-2.5 rounded-2xl p-3 shadow-sm ring-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:p-4">
+            <div className="relative w-full sm:w-auto sm:min-w-64 sm:flex-1">
               <SearchBar
                 placeholder="Search notes, categories, accounts…"
                 value={search}
@@ -132,39 +130,43 @@ export function TransactionsPage() {
               ) : null}
             </div>
 
-            <DateRangeFilter
-              onRangeChange={(range) => {
-                setDateRange(range);
-                setPage(1);
-              }}
-            />
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start sm:gap-3">
+              <DateRangeFilter
+                onRangeChange={(range) => {
+                  setDateRange(range);
+                  setPage(1);
+                }}
+              />
 
-            <TransactionFiltersPopover
-              categories={categories}
-              accounts={accounts}
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
-              accountId={accountId}
-              setAccountId={setAccountId}
-              minAmount={minAmount}
-              setMinAmount={setMinAmount}
-              maxAmount={maxAmount}
-              setMaxAmount={setMaxAmount}
-              activeFilterCount={activeFilterCount}
-              clearFilters={clearFilters}
-            />
+              <TransactionFiltersPopover
+                categories={categories}
+                accounts={accounts}
+                categoryId={categoryId}
+                setCategoryId={setCategoryId}
+                accountId={accountId}
+                setAccountId={setAccountId}
+                minAmount={minAmount}
+                setMinAmount={setMinAmount}
+                maxAmount={maxAmount}
+                setMaxAmount={setMaxAmount}
+                activeFilterCount={activeFilterCount}
+                clearFilters={clearFilters}
+              />
+            </div>
 
-            <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
+            <div className="w-full overflow-x-auto py-0.5 sm:w-auto">
+              <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
+            </div>
           </div>
         </>
       }
     >
       {isLoading ? (
-        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+        <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
           <p className="text-muted-foreground text-sm">Loading transactions…</p>
         </div>
       ) : transactionsList.length === 0 ? (
-        <div className="bg-card ring-border/50 flex h-full items-center justify-center rounded-2xl shadow-sm ring-1">
+        <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
           <p className="text-muted-foreground text-sm">No transactions match your filters.</p>
         </div>
       ) : (

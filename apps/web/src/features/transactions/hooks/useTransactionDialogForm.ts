@@ -25,6 +25,8 @@ export interface UseTransactionDialogFormOptions {
   mode?: "add" | "edit";
   transactionId?: string;
   initialValues?: TransactionInitialValues;
+  /** Pre-selects this account when creating new transactions (default account or single account). */
+  defaultAccountId?: string;
 }
 
 export function useTransactionDialogForm({
@@ -33,11 +35,20 @@ export function useTransactionDialogForm({
   mode = "add",
   transactionId,
   initialValues,
+  defaultAccountId,
 }: UseTransactionDialogFormOptions) {
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
 
   const getFormInitialValues = () => {
+    const resolvedAccount =
+      (initialValues?.account && typeof initialValues.account === "object"
+        ? initialValues.account.id
+        : (initialValues?.account as string | undefined)) ??
+      initialValues?.accountId ??
+      // Pre-select default account only in create mode
+      (mode === "add" ? (defaultAccountId ?? "") : "");
+
     return {
       amount: initialValues?.amount !== undefined ? String(initialValues.amount) : "",
       kind:
@@ -48,12 +59,7 @@ export function useTransactionDialogForm({
           : (initialValues?.category as string | undefined)) ??
         initialValues?.categoryId ??
         "",
-      account:
-        (initialValues?.account && typeof initialValues.account === "object"
-          ? initialValues.account.id
-          : (initialValues?.account as string | undefined)) ??
-        initialValues?.accountId ??
-        "",
+      account: resolvedAccount,
       toAccount:
         (initialValues?.toAccount && typeof initialValues.toAccount === "object"
           ? initialValues.toAccount.id

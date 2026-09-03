@@ -21,85 +21,92 @@ export function TransactionForm({
   onAddCategory,
   onAddAccount,
 }: TransactionFormProps) {
-  const fields: FormField[] = [
-    {
-      type: "number",
-      name: "amount",
-      label: "Amount",
-      placeholder: "0.00",
-      autoComplete: "off",
-    },
-    {
-      type: "select",
-      name: "kind",
-      label: "Type",
-      options: [
-        { label: "Expense", value: "expense" },
-        { label: "Income", value: "income" },
-        { label: "Transfer", value: "transfer" },
-      ],
-    },
-    {
-      type: "select",
-      name: "category",
-      label: "Category",
-      options: categories,
-      searchable: true,
-      searchPlaceholder: "Search category...",
-      onAddNew: onAddCategory,
-      addNewLabel: "+ Add Category",
-    },
-    {
-      type: "select",
-      name: "account",
-      label: "Account",
-      options: accounts,
-      searchable: true,
-      searchPlaceholder: "Search account...",
-      onAddNew: onAddAccount,
-      addNewLabel: "+ Link Account",
-    },
-    // Dynamically show "To Account" if kind is transfer
-    ...(values.kind === "transfer"
-      ? [
-          {
-            type: "select" as const,
-            name: "toAccount",
-            label: "To Account",
-            options: accounts,
-            searchable: true,
-            searchPlaceholder: "Search destination account...",
-            onAddNew: onAddAccount,
-            addNewLabel: "+ Link Account",
-          },
-        ]
-      : []),
-    {
-      type: "date",
-      name: "date",
-      label: "Date",
-    },
-    {
-      type: "textarea",
-      name: "notes",
-      label: "Notes",
-      placeholder: "Optional notes...",
-      autoComplete: "off",
-      rows: 2,
-    },
-  ];
+  const amountField: FormField = {
+    type: "number",
+    name: "amount",
+    label: "Amount",
+    placeholder: "0.00",
+    autoComplete: "off",
+  };
+
+  const kindField: FormField = {
+    type: "select",
+    name: "kind",
+    label: "Type",
+    options: [
+      { label: "Expense", value: "expense" },
+      { label: "Income", value: "income" },
+      { label: "Transfer", value: "transfer" },
+    ],
+  };
+
+  const categoryField: FormField = {
+    type: "select",
+    name: "category",
+    label: "Category",
+    options: categories,
+    searchable: true,
+    searchPlaceholder: "Search category...",
+    onAddNew: onAddCategory,
+    addNewLabel: "+ Add Category",
+  };
+
+  const accountField: FormField = {
+    type: "select",
+    name: "account",
+    label: values.kind === "transfer" ? "From Account" : "Account",
+    options: accounts,
+    searchable: true,
+    searchPlaceholder: "Search account...",
+    onAddNew: onAddAccount,
+    addNewLabel: "+ Link Account",
+  };
+
+  const toAccountField: FormField = {
+    type: "select",
+    name: "toAccount",
+    label: "To Account",
+    options: accounts,
+    searchable: true,
+    searchPlaceholder: "Search destination account...",
+    onAddNew: onAddAccount,
+    addNewLabel: "+ Link Account",
+  };
+
+  const dateField: FormField = {
+    type: "date",
+    name: "date",
+    label: "Date",
+  };
+
+  const notesField: FormField = {
+    type: "textarea",
+    name: "notes",
+    label: "Notes",
+    placeholder: "Optional notes...",
+    autoComplete: "off",
+    rows: 2,
+  };
+
+  const renderField = (field: FormField) => (
+    <FormDialogField
+      key={field.name}
+      field={field}
+      value={values[field.name] || ""}
+      error={errors[field.name]}
+      onChange={onChange}
+    />
+  );
 
   return (
-    <>
-      {fields.map((field) => (
-        <FormDialogField
-          key={field.name}
-          field={field}
-          value={values[field.name] || ""}
-          error={errors[field.name]}
-          onChange={onChange}
-        />
-      ))}
-    </>
+    <div className="space-y-4">
+      {renderField(amountField)}
+      {renderField(kindField)}
+      {renderField(categoryField)}
+      {renderField(accountField)}
+      {values.kind === "transfer" && renderField(toAccountField)}
+      {renderField(dateField)}
+      {renderField(notesField)}
+    </div>
   );
 }

@@ -12,6 +12,7 @@ import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
 import { PrivacyToggle } from "@/components/PrivacyToggle";
 import { useSidebarState } from "@/hooks";
+import { AIInsightFloatingWidget } from "@/features/ai-advisor/components";
 
 function CustomLinkComponent({
   href,
@@ -105,6 +106,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {children}
       </AppShell>
       <TransactionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <AIInsightFloatingWidget />
     </>
   );
 }

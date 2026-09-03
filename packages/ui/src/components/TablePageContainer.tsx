@@ -35,19 +35,25 @@ interface TablePageContainerProps {
 export function TablePageContainer({ header, children, className }: TablePageContainerProps) {
   return (
     <div
-      className={cn("animate-in fade-in flex h-full min-h-0 flex-col duration-300", className)}
+      className={cn(
+        "animate-in fade-in flex min-h-full flex-col duration-300 md:h-full md:min-h-0",
+        className,
+      )}
       style={{
         paddingInline: "var(--page-padding-x)",
       }}
     >
-      {/* Pinned header section — never scrolls */}
-      <div className="shrink-0 space-y-4" style={{ paddingTop: "var(--page-padding-y)" }}>
+      {/* Header section — pinned on desktop, natural scroll on mobile */}
+      <div
+        className="shrink-0 space-y-3 sm:space-y-4"
+        style={{ paddingTop: "var(--page-padding-y)" }}
+      >
         {header}
       </div>
 
-      {/* Flex-fill area — fills remaining height, table scrolls inside */}
+      {/* Table container — fills remaining height on desktop, natural height on mobile */}
       <div
-        className="min-h-0 flex-1"
+        className="flex flex-1 flex-col md:min-h-0"
         style={{ paddingBottom: "var(--page-padding-y)", paddingTop: "1rem" }}
       >
         {children}

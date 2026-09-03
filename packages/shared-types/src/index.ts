@@ -64,6 +64,7 @@ export interface UserPreferences {
   notifications?: Record<string, boolean>;
   appearance?: Record<string, string | boolean>;
   security?: Record<string, boolean>;
+  defaultAccountId?: string;
 }
 
 export interface User {
@@ -84,6 +85,7 @@ export interface Account {
   balance: number;
   currency: string;
   isActive: boolean;
+  isDefault?: boolean;
   lastActivity?: string;
   createdAt: string;
   updatedAt: string;

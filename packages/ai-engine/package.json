@@ -17,10 +17,13 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "build": "tsup",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "tsup": "^8.5.1",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.11"
   }
 }

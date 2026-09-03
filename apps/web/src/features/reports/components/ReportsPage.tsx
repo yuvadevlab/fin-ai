@@ -16,11 +16,10 @@ import {
   CHART_COLORS,
 } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
 import { useCategoryBreakdown } from "@/features/dashboard/api/getCategoryBreakdown";
-import { FEATURE_FLAGS } from "@/lib/app-constants";
 
 export function ReportsPage() {
   const { data: stats } = useDashboardStats();
@@ -128,10 +127,6 @@ export function ReportsPage() {
           <SectionHeader title="Cash Flow" />
           <CashFlowChart data={monthlyCashFlow} />
         </ContentCard>
-
-        {FEATURE_FLAGS.AI_INSIGHT && (
-          <LiveAIInsightCard page="reports" cta="Draft next month's plan" />
-        )}
       </section>
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">

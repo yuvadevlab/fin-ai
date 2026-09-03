@@ -9,7 +9,7 @@ interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export function SearchBar({ className, containerClassName, ...props }: SearchBarProps) {
   return (
-    <div className={cn("relative min-w-64 flex-1", containerClassName)}>
+    <div className={cn("relative w-full", containerClassName)}>
       <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         type="search"

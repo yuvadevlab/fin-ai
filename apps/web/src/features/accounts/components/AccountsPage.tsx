@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Star } from "lucide-react";
 import { PageContainer, PageHeader, Button, ConfirmDialog } from "@finai/ui";
 import { cn } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
@@ -9,13 +9,14 @@ import { useIsClient } from "@/hooks";
 import { usePrivacyMode } from "@/hooks";
 import { PrivacyMoney } from "@/components";
 import { AccountDialog } from "./AccountDialog";
-import { Account, useAccounts, useDeleteAccount } from "../api";
+import { Account, useAccounts, useDeleteAccount, useSetDefaultAccount } from "../api";
 
 export function AccountsPage() {
   const isClient = useIsClient();
   const { isPrivacyMode } = usePrivacyMode();
   const { data: rawAccounts, isLoading } = useAccounts();
   const deleteAccount = useDeleteAccount();
+  const setDefaultAccount = useSetDefaultAccount();
 
   // Guard against non-array during hydration
   const accounts = useMemo(() => (Array.isArray(rawAccounts) ? rawAccounts : []), [rawAccounts]);
@@ -70,6 +71,14 @@ export function AccountsPage() {
     }
   };
 
+  const handleSetDefault = async (id: string) => {
+    try {
+      await setDefaultAccount.mutateAsync(id);
+    } catch {
+      // Error handled by mutation
+    }
+  };
+
   return (
     <PageContainer>
       <PageHeader
@@ -105,7 +114,12 @@ export function AccountsPage() {
           {accounts.map((a) => (
             <div
               key={a.id}
-              className="bg-card border-border hover:border-primary/20 flex flex-col justify-between rounded-2xl border p-5 shadow-sm transition-all"
+              className={cn(
+                "bg-card border-border flex flex-col justify-between rounded-2xl border p-5 shadow-sm transition-all",
+                a.isDefault
+                  ? "border-primary/30 ring-primary/20 ring-1"
+                  : "hover:border-primary/20",
+              )}
             >
               {/* Header: Name, Type, and visible Edit/Delete actions */}
               <div className="flex items-start justify-between">
@@ -114,13 +128,33 @@ export function AccountsPage() {
                     {a.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-foreground text-sm font-semibold">{a.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-foreground text-sm font-semibold">{a.name}</p>
+                      {a.isDefault && (
+                        <span className="bg-primary/10 text-primary flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold">
+                          <Star className="size-2.5 fill-current" />
+                          Default
+                        </span>
+                      )}
+                    </div>
                     <p className="text-muted-foreground text-xs">{getAccountTypeLabel(a.type)}</p>
                   </div>
                 </div>
 
-                {/* Edit & Delete Action Buttons — always visible matching Categories design */}
+                {/* Edit & Delete Action Buttons — always visible */}
                 <div className="flex items-center gap-1">
+                  {!a.isDefault && accounts.length > 1 && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-muted-foreground hover:text-primary size-8 cursor-pointer"
+                      onClick={() => handleSetDefault(a.id)}
+                      aria-label={`Set ${a.name} as default`}
+                      title="Set as default account"
+                    >
+                      <Star className="size-3.5" />
+                    </Button>
+                  )}
                   <Button
                     size="icon"
                     variant="ghost"

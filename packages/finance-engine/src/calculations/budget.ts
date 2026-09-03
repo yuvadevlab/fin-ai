@@ -30,3 +30,25 @@ export function calculateBudgetStatus(spent: number, limit: number): BudgetStatu
 export function calculateBudgetRemaining(spent: number, limit: number): number {
   return limit - spent;
 }
+
+export interface AggregateBudgetSummary {
+  totalLimit: number;
+  totalSpent: number;
+  usagePercentage: number;
+  status: BudgetStatus;
+  remaining: number;
+}
+
+/**
+ * Aggregate an array of budgets into total limit, spent, usage %, and overall status.
+ */
+export function calculateAggregateBudget(
+  budgets: { limit?: number; spent?: number }[],
+): AggregateBudgetSummary {
+  const totalLimit = budgets.reduce((sum, b) => sum + (b.limit || 0), 0);
+  const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
+  const usagePercentage = calculateBudgetUsage(totalSpent, totalLimit);
+  const status = calculateBudgetStatus(totalSpent, totalLimit);
+  const remaining = calculateBudgetRemaining(totalSpent, totalLimit);
+  return { totalLimit, totalSpent, usagePercentage, status, remaining };
+}

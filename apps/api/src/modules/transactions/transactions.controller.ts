@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
-import { Response } from "express";
+import { type Response } from "express";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransactionsService } from "./transactions.service";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
@@ -21,10 +21,10 @@ import {
   updateTransactionSchema,
   transactionFilterSchema,
   createBulkTransactionsSchema,
-  CreateTransactionInput,
-  UpdateTransactionInput,
-  TransactionFilterInput,
-  CreateBulkTransactionsInput,
+  type CreateTransactionInput,
+  type UpdateTransactionInput,
+  type TransactionFilterInput,
+  type CreateBulkTransactionsInput,
 } from "@finai/validation";
 
 @ApiTags("Transactions")

@@ -2,7 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/lib/api-client";
 
 export type InsightPage =
-  "dashboard" | "transactions" | "budgets" | "investments" | "goals" | "reports";
+  | "dashboard"
+  | "transactions"
+  | "budgets"
+  | "investments"
+  | "goals"
+  | "reports"
+  | "health"
+  | "accounts";
 
 interface UseAiInsightOptions {
   page: InsightPage;

@@ -333,3 +333,11 @@ Before declaring a task resolved, every AI agent MUST verify:
 2. **Never auto-seed** during `db:migrate`, `db:push`, or any other automated step.
 3. **Never delete or truncate** existing records. The seed script uses `upsert` exclusively.
 4. If a new seed entry is needed, add it to `packages/database/prisma/seed.ts` using `upsert`, then instruct the user to run the seed manually.
+
+---
+
+## 10. Testing Standards & Conventions
+
+All features MUST be verified using the monorepo testing foundation. Detailed guidelines for Unit, Integration, and E2E testing are defined in [**`TESTING_STANDARDS.md`**](./TESTING_STANDARDS.md).
+
+Refer to that document for package-specific tooling (Vitest, RTL, Playwright) and mocking strategies.

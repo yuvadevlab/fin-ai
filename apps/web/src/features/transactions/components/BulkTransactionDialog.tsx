@@ -108,10 +108,6 @@ export function BulkTransactionDialog({
     if (errors.root) setErrors({});
   };
 
-  const handleFillTodayDate = () => {
-    setRows((prev) => prev.map((r) => ({ ...r, date: todayStr })));
-  };
-
   const handleDownloadTemplate = async () => {
     try {
       await downloadExcelTemplateFromApi();
@@ -190,14 +186,13 @@ export function BulkTransactionDialog({
         loading={createBulk.isPending}
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}
-        className="w-full max-w-5xl"
+        className="w-full max-w-2xl"
       >
         <BulkTransactionForm
           rows={rows}
           onChangeRow={handleChangeRow}
           onAddRow={handleAddRow}
           onRemoveRow={handleRemoveRow}
-          onFillTodayDate={handleFillTodayDate}
           onDownloadTemplate={handleDownloadTemplate}
           onUploadExcel={handleUploadExcel}
           onAddCategory={openAddCategory}

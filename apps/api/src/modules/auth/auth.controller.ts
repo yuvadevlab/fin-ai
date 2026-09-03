@@ -7,10 +7,10 @@ import {
   registerSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  LoginInput,
-  RegisterInput,
-  ForgotPasswordInput,
-  ResetPasswordInput,
+  type LoginInput,
+  type RegisterInput,
+  type ForgotPasswordInput,
+  type ResetPasswordInput,
 } from "@finai/validation";
 
 @ApiTags("Auth")

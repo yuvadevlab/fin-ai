@@ -9,12 +9,16 @@ export {
   calculateBudgetUsage,
   calculateBudgetStatus,
   calculateBudgetRemaining,
+  calculateAggregateBudget,
+  type AggregateBudgetSummary,
 } from "./calculations/budget";
 
 export {
   calculateGoalProgress,
   calculateGoalProjection,
   estimateGoalCompletion,
+  calculateAggregateGoals,
+  type AggregateGoalsSummary,
 } from "./calculations/goals";
 
 export {
