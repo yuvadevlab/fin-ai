@@ -46,7 +46,7 @@ export function DatePicker({
           type="button"
           disabled={disabled}
           className={cn(
-            "border-border/80 bg-secondary/40 hover:bg-secondary/60 hover:text-foreground w-full justify-start text-left font-normal",
+            "border-border/80 bg-secondary/40 hover:bg-secondary/60 hover:text-foreground h-control-md w-full justify-start text-left font-normal",
             !value && "text-muted-foreground",
             className,
           )}

@@ -1,17 +1,7 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  PageContainer,
-  PageHeader,
-  DashboardTabs,
-  ContentCard,
-  Progress,
-  ScoreGauge,
-  cn,
-} from "@finai/ui";
+import React, { useMemo } from "react";
+import { PageContainer, PageHeader, ContentCard, Progress, ScoreGauge, cn } from "@finai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
 
 function scoreColor(v: number) {
@@ -28,7 +18,6 @@ const RATING_LABEL: Record<string, string> = {
 };
 
 export function HealthPage() {
-  const pathname = usePathname();
   const { data: healthData } = useHealthScore();
 
   const score = healthData?.score ?? 0;
@@ -37,31 +26,12 @@ export function HealthPage() {
     [healthData],
   );
 
-  const customLink = useCallback(
-    ({
-      href,
-      children,
-      className,
-    }: {
-      href: string;
-      children: React.ReactNode;
-      className?: string;
-    }) => (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    ),
-    [],
-  );
-
   return (
     <PageContainer>
       <PageHeader
         title="Financial Health"
         description="A composite score of your spending, savings, investment, and safety-net habits."
       />
-
-      <DashboardTabs pathname={pathname} LinkComponent={customLink} />
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ContentCard className="flex flex-col items-center justify-center p-8 text-center">

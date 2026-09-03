@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Plus, Calendar, Sparkles, Upload, Download } from "lucide-react";
+import { Plus, Sparkles, Upload, Download } from "lucide-react";
 import { formatINR } from "@finai/finance-engine";
-import { Button, Table, TableHeader, TableBody, TableHead, TableRow } from "@finai/ui";
+import { Button } from "@finai/ui";
 import { BulkTransactionRow } from "./BulkTransactionRow";
 
 export interface BulkRow {
@@ -22,7 +22,6 @@ export interface BulkTransactionFormProps {
   onChangeRow: (id: string, field: keyof BulkRow, value: string) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
-  onFillTodayDate: () => void;
   onUploadExcel?: (file: File) => void;
   onDownloadTemplate?: () => void;
   onAddCategory?: (initialName?: string, rowId?: string) => void;
@@ -37,7 +36,6 @@ export function BulkTransactionForm({
   onChangeRow,
   onAddRow,
   onRemoveRow,
-  onFillTodayDate,
   onUploadExcel,
   onDownloadTemplate,
   onAddCategory,
@@ -68,7 +66,7 @@ export function BulkTransactionForm({
       />
 
       {/* Top summary & toolbar bar */}
-      <div className="bg-secondary/40 border-border/80 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3.5 shadow-xs">
+      <div className="bg-secondary/40 border-border/80 flex flex-col gap-3 rounded-2xl border p-3.5 shadow-xs">
         <div className="flex items-center gap-2.5">
           <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
             <Sparkles className="size-4 shrink-0" />
@@ -83,8 +81,8 @@ export function BulkTransactionForm({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="mr-2 text-right">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
+          <div className="ml-2 flex items-center gap-3 text-right">
             <span className="text-muted-foreground block text-[10px] font-semibold tracking-wider uppercase">
               Batch Total
             </span>
@@ -93,37 +91,29 @@ export function BulkTransactionForm({
             </span>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onDownloadTemplate}
-            className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs font-medium"
-            title="Download formatted Excel sheet template pre-filled with your accounts & categories"
-          >
-            <Download className="text-primary size-3.5" /> Template (.xlsx)
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onDownloadTemplate}
+              className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs font-medium"
+              title="Download formatted Excel sheet template pre-filled with your accounts & categories"
+            >
+              <Download className="text-primary size-3.5" /> Template (.xlsx)
+            </Button>
 
-          <Button
-            type="button"
-            variant="default"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="h-8 cursor-pointer gap-1.5 text-xs font-semibold"
-            title="Upload Excel spreadsheet (.xlsx, .csv)"
-          >
-            <Upload className="size-3.5" /> Upload Excel
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onFillTodayDate}
-            className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs"
-          >
-            <Calendar className="size-3.5" /> Set All Today
-          </Button>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-8 cursor-pointer gap-1.5 text-xs font-semibold"
+              title="Upload Excel spreadsheet (.xlsx, .csv)"
+            >
+              <Upload className="size-3.5" /> Upload Excel
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -133,40 +123,23 @@ export function BulkTransactionForm({
         </div>
       )}
 
-      {/* Reusable UI Table Primitive Container */}
-      <div className="border-border/80 bg-card/60 max-h-[55vh] overflow-x-auto overflow-y-auto rounded-2xl border shadow-xs">
-        <Table className="min-w-[1100px]">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12 text-center">#</TableHead>
-              <TableHead className="w-56">Amount (₹)*</TableHead>
-              <TableHead className="w-36">Type*</TableHead>
-              <TableHead className="w-52">Category*</TableHead>
-              <TableHead className="w-52">Account*</TableHead>
-              <TableHead className="w-44">Date*</TableHead>
-              <TableHead className="min-w-[220px]">Notes / Description</TableHead>
-              <TableHead className="w-12 text-center">Del</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {rows.map((row, idx) => (
-              <BulkTransactionRow
-                key={row.id}
-                row={row}
-                idx={idx}
-                onChangeRow={onChangeRow}
-                onRemoveRow={onRemoveRow}
-                onAddCategory={onAddCategory}
-                onAddAccount={onAddAccount}
-                accounts={accounts}
-                categories={categories}
-                errors={errors}
-                canDelete={rows.length > 1}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      {/* Responsive card stack — one card per transaction entry */}
+      <div className="border-border/80 bg-secondary/20 max-h-[50vh] space-y-3 overflow-y-auto rounded-2xl border p-3 shadow-xs">
+        {rows.map((row, idx) => (
+          <BulkTransactionRow
+            key={row.id}
+            row={row}
+            idx={idx}
+            onChangeRow={onChangeRow}
+            onRemoveRow={onRemoveRow}
+            onAddCategory={onAddCategory}
+            onAddAccount={onAddAccount}
+            accounts={accounts}
+            categories={categories}
+            errors={errors}
+            canDelete={rows.length > 1}
+          />
+        ))}
       </div>
 
       {/* Add Row Button */}
@@ -176,7 +149,7 @@ export function BulkTransactionForm({
         onClick={onAddRow}
         className="border-border/80 hover:border-primary hover:bg-secondary/50 h-10 w-full cursor-pointer gap-2 rounded-xl border-dashed text-xs font-semibold"
       >
-        <Plus className="size-4" /> Add Another Row
+        <Plus className="size-4" /> Add Another Entry
       </Button>
     </div>
   );

@@ -5,6 +5,7 @@ export const createAccountSchema = z.object({
   type: z.enum(["BANK", "CREDIT_CARD", "WALLET", "CASH"]),
   balance: z.number().default(0),
   currency: z.string().length(3, "Currency must be a 3-letter code").default("INR"),
+  isDefault: z.boolean().optional(),
 });
 
 export type CreateAccountInput = z.infer<typeof createAccountSchema>;

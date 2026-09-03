@@ -25,7 +25,7 @@ export function InvestmentDialog({
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
-    assetClass: "STOCK",
+    assetClass: "MUTUAL_FUND",
     investedAmount: "",
     currentValue: "",
   });

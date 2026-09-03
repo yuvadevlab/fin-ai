@@ -5,7 +5,7 @@ import { Plus, Target, Landmark } from "lucide-react";
 import { PageContainer, PageHeader, ProgressCard, Button } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
-import { LiveAIInsightCard } from "@/features/ai-advisor/components";
+
 import { useGoals } from "../api";
 import { GoalDialog } from "./GoalDialog";
 import { ContributeDialog } from "./ContributeDialog";
@@ -31,10 +31,6 @@ export function GoalsPage() {
           />
         }
       />
-
-      <div className="mb-6">
-        <LiveAIInsightCard page="goals" cta="Analyze goal timeline" />
-      </div>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {goals.map((g) => {

@@ -19,7 +19,7 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
       .sort((a, b) => b.total - a.total);
     const total = sorted.reduce((sum, c) => sum + c.total, 0);
 
-    if (sorted.length <= 5) {
+    if (sorted.length <= 4) {
       const items = sorted.map((c) => ({
         ...c,
         percentage: total > 0 ? Math.round((c.total / total) * 100) : 0,
@@ -31,16 +31,16 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
       };
     }
 
-    const top4 = sorted.slice(0, 4);
-    const otherTotal = sorted.slice(4).reduce((sum, c) => sum + c.total, 0);
+    const top3 = sorted.slice(0, 3);
+    const otherTotal = sorted.slice(3).reduce((sum, c) => sum + c.total, 0);
     const combined = [
-      ...top4.map((c) => ({
+      ...top3.map((c) => ({
         ...c,
         percentage: total > 0 ? Math.round((c.total / total) * 100) : 0,
       })),
       {
         categoryId: "other-categories",
-        name: `Other (${sorted.length - 4} more)`,
+        name: `Other (${sorted.length - 3} more)`,
         total: otherTotal,
         percentage: total > 0 ? Math.round((otherTotal / total) * 100) : 0,
       },
@@ -56,6 +56,7 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
   return (
     <ChartCard
       title="Category Allocation"
+      className="flex h-full flex-col justify-between"
       hint={
         <Link
           href="/categories"
@@ -70,7 +71,7 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
           <CategoryPie data={pieData} />
 
           {/* Compact, fixed-height scrollable category breakdown */}
-          <div className="border-border/60 max-h-43.75 space-y-2.5 overflow-y-auto border-t pt-3 pr-1">
+          <div className="border-border/60 max-h-28 space-y-2 overflow-y-auto border-t pt-2.5 pr-1">
             {displayCategories.map((c, i) => (
               <div
                 key={c.categoryId ?? c.name}

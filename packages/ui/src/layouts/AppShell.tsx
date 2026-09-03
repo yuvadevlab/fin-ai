@@ -20,7 +20,7 @@ export function AppShell({ sidebar, topbar, children, className, ...props }: App
         <main
           id="main-content"
           aria-label="Main content"
-          className="min-h-0 flex-1 overflow-y-auto scroll-smooth"
+          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain scroll-smooth"
           tabIndex={-1}
         >
           {children}

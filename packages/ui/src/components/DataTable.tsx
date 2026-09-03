@@ -45,7 +45,11 @@ export function DataTable<T>({
       >
         <tr>
           {columns.map((col, index) => (
-            <th key={index} scope="col" className={cn("px-6 py-3", col.className)}>
+            <th
+              key={index}
+              scope="col"
+              className={cn("px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3", col.className)}
+            >
               {col.header}
             </th>
           ))}
@@ -85,7 +89,13 @@ export function DataTable<T>({
               )}
             >
               {columns.map((col, colIndex) => (
-                <td key={colIndex} className={cn("px-6 py-4 font-medium", col.className)}>
+                <td
+                  key={colIndex}
+                  className={cn(
+                    "px-3 py-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
+                    col.className,
+                  )}
+                >
                   {col.accessor(item)}
                 </td>
               ))}
@@ -100,13 +110,15 @@ export function DataTable<T>({
     return (
       <div
         className={cn(
-          "bg-card ring-border/50 flex h-full min-h-0 flex-col overflow-hidden rounded-2xl shadow-sm ring-1",
+          "bg-card ring-border/50 flex flex-col overflow-hidden rounded-2xl shadow-sm ring-1 md:h-full md:min-h-0",
           className,
         )}
         {...props}
       >
-        {/* Scrollable table body — thead is sticky inside this scroller */}
-        <div className="min-h-0 flex-1 overflow-auto">{tableContent}</div>
+        {/* Scrollable table body — natural height on mobile, sticky scrollable on desktop */}
+        <div className="overflow-x-auto md:min-h-0 md:flex-1 md:overflow-y-auto">
+          {tableContent}
+        </div>
 
         {/* Docked pagination footer */}
         {pagination && (
@@ -131,7 +143,10 @@ export function DataTable<T>({
           <thead className="bg-secondary/60 text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
             <tr>
               {columns.map((col, index) => (
-                <th key={index} className={cn("px-6 py-3", col.className)}>
+                <th
+                  key={index}
+                  className={cn("px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3", col.className)}
+                >
                   {col.header}
                 </th>
               ))}
@@ -155,7 +170,13 @@ export function DataTable<T>({
                   className={cn("hover:bg-secondary/40 transition", onRowClick && "cursor-pointer")}
                 >
                   {columns.map((col, colIndex) => (
-                    <td key={colIndex} className={cn("px-6 py-4 font-medium", col.className)}>
+                    <td
+                      key={colIndex}
+                      className={cn(
+                        "px-3 py-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
+                        col.className,
+                      )}
+                    >
                       {col.accessor(item)}
                     </td>
                   ))}

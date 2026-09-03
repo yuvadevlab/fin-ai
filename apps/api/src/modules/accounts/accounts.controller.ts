@@ -49,6 +49,12 @@ export class AccountsController {
     return this.accountsService.update(id, userId, body);
   }
 
+  @Patch(":id/default")
+  @ApiOperation({ summary: "Set an account as the default account" })
+  setDefault(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    return this.accountsService.setDefault(id, userId);
+  }
+
   @Delete(":id")
   @ApiOperation({ summary: "Soft-delete an account" })
   remove(@CurrentUser("id") userId: string, @Param("id") id: string) {

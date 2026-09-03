@@ -57,21 +57,21 @@ export function FormDialog({
 
       <DialogContent
         className={cn(
-          "flex max-h-[90vh] flex-col overflow-hidden p-0",
+          "flex max-h-[90dvh] flex-col overflow-hidden rounded-2xl p-0",
           className?.includes("max-w-") ? "" : "sm:max-w-md",
           className,
         )}
       >
-        <form onSubmit={onSubmit} className="flex max-h-[90vh] flex-col overflow-hidden">
-          <DialogHeader className="p-6 pb-2">
+        <form onSubmit={onSubmit} className="flex max-h-[90dvh] flex-col overflow-hidden">
+          <DialogHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
             <DialogTitle>{title}</DialogTitle>
 
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-6 py-2">{children}</div>
+          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-2 sm:px-6">{children}</div>
 
-          <DialogFooter className="p-6 pt-2">
+          <DialogFooter className="flex-col-reverse gap-2 p-4 pt-2 sm:flex-row sm:gap-2 sm:p-6 sm:pt-2">
             <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
               {cancelLabel}
             </Button>
