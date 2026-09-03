@@ -29,3 +29,7 @@ npm-debug.log*
 
 # Test
 coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.local-playback/
