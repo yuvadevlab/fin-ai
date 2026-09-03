@@ -7,8 +7,8 @@ import { GoalsService } from "@/modules/goals/goals.service";
 import {
   createGoalSchema,
   updateGoalSchema,
-  CreateGoalInput,
-  UpdateGoalInput,
+  type CreateGoalInput,
+  type UpdateGoalInput,
 } from "@finai/validation";
 
 @ApiTags("Goals")

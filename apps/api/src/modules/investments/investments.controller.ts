@@ -4,7 +4,7 @@ import { InvestmentsService } from "./investments.service";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
-import { createInvestmentSchema, CreateInvestmentInput } from "@finai/validation";
+import { createInvestmentSchema, type CreateInvestmentInput } from "@finai/validation";
 
 @ApiTags("Investments")
 @ApiBearerAuth()

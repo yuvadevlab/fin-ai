@@ -19,8 +19,8 @@ import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import {
   createCategorySchema,
   updateCategorySchema,
-  CreateCategoryInput,
-  UpdateCategoryInput,
+  type CreateCategoryInput,
+  type UpdateCategoryInput,
 } from "@finai/validation";
 import { DEFAULT_CATEGORIES } from "./default-categories";
 

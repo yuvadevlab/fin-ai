@@ -7,8 +7,8 @@ import { AccountsService } from "@/modules/accounts/accounts.service";
 import {
   createAccountSchema,
   updateAccountSchema,
-  CreateAccountInput,
-  UpdateAccountInput,
+  type CreateAccountInput,
+  type UpdateAccountInput,
 } from "@finai/validation";
 
 @ApiTags("Accounts")
