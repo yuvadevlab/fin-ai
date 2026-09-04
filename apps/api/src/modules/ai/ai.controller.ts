@@ -6,14 +6,6 @@ import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { OllamaService } from "@/modules/ai/ollama.service";
 import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
-import { TransactionAssistantService } from "@/modules/ai/transaction-assistant.service";
-import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
-import {
-  transactionAssistantDraftSchema,
-  transactionAssistantRequestSchema,
-  type TransactionAssistantDraft,
-  type TransactionAssistantRequest,
-} from "@finai/validation";
 import {
   buildAdvisorSystemPrompt,
   buildInsightSystemPrompt,
@@ -31,32 +23,12 @@ export class AiController {
     private readonly ollamaService: OllamaService,
     private readonly contextBuilder: ContextBuilderService,
     private readonly conversationService: ConversationService,
-    private readonly transactionAssistant: TransactionAssistantService,
   ) {}
 
   @Get("conversations")
   @ApiOperation({ summary: "List all AI conversations for the current user" })
   getConversations(@CurrentUser("id") userId: string): Promise<Record<string, unknown>[]> {
     return this.conversationService.getConversations(userId);
-  }
-
-  @Post("transaction-draft")
-  @ApiOperation({ summary: "Parse a natural-language message into a transaction draft" })
-  createTransactionDraft(
-    @CurrentUser("id") userId: string,
-    @Body(new ZodValidationPipe(transactionAssistantRequestSchema))
-    body: TransactionAssistantRequest,
-  ) {
-    return this.transactionAssistant.createDraft(userId, body);
-  }
-
-  @Post("transaction-draft/confirm")
-  @ApiOperation({ summary: "Confirm a transaction draft parsed from chat" })
-  confirmTransactionDraft(
-    @CurrentUser("id") userId: string,
-    @Body(new ZodValidationPipe(transactionAssistantDraftSchema)) body: TransactionAssistantDraft,
-  ) {
-    return this.transactionAssistant.confirm(userId, body);
   }
 
   @Get("suggest-emoji")

@@ -5,20 +5,14 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@finai/ui";
 import { extractFollowUpQuestions } from "@finai/ai-engine";
 import { MarkdownMessage } from "./MarkdownMessage";
-import { TransactionDraftCard } from "./TransactionDraftCard";
-import type { ChatMessage, TransactionDraft } from "../api";
+import type { ChatMessage } from "../api";
 
 interface ChatMessagesProps {
   messages: ChatMessage[];
   onSelectFollowUp?: (question: string) => void;
-  onConfirmTransaction?: (draft: TransactionDraft) => Promise<void>;
 }
 
-export function ChatMessages({
-  messages,
-  onSelectFollowUp,
-  onConfirmTransaction,
-}: ChatMessagesProps) {
+export function ChatMessages({ messages, onSelectFollowUp }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,12 +94,6 @@ export function ChatMessages({
                 )}
               </div>
             </div>
-
-            {m.transactionDraft && (
-              <div className="ml-11">
-                <TransactionDraftCard draft={m.transactionDraft} onConfirm={onConfirmTransaction} />
-              </div>
-            )}
 
             {isLastAssistantMessage && followUps.length > 0 && onSelectFollowUp && (
               <div className="ml-11 flex flex-col gap-2">
