@@ -1,6 +1,7 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
+import type { GoalType } from "@finai/shared-types";
 
 export interface Goal {
   id: string;
@@ -9,7 +10,7 @@ export interface Goal {
   targetAmount: number;
   currentAmount: number;
   deadline?: string | null;
-  type?: "PERSONAL";
+  type?: GoalType;
   createdAt: string;
   updatedAt: string;
 }

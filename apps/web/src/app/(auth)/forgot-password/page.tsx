@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowLeft, Mail } from "lucide-react";
-import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
+import { ArrowLeft, Mail } from "lucide-react";
+import { Button, Input, Label, ContentCard, FinAILogo, toast } from "@finai/ui";
 import { apiClient } from "@/lib/api-client";
 
 export default function ForgotPasswordPage() {
@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
   const [resetToken, setResetToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -40,9 +40,7 @@ export default function ForgotPasswordPage() {
     <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="bg-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl shadow-lg ring-4">
-            <Sparkles className="text-primary-foreground size-5 animate-pulse" />
-          </div>
+          <FinAILogo showName={false} />
           <h2 className="text-2xl font-bold tracking-tight">Forgot your password?</h2>
           <p className="text-muted-foreground text-sm">
             Enter your email and we'll send you a reset link.

@@ -25,6 +25,7 @@ export function GoalDialog({
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
+    type: "PERSONAL",
     targetAmount: "",
     currentAmount: "0",
     deadline: new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate())
@@ -52,6 +53,7 @@ export function GoalDialog({
 
     const parseResult = createGoalSchema.safeParse({
       name: values.name,
+      type: values.type || "PERSONAL",
       targetAmount: Number(values.targetAmount || 0),
       currentAmount: Number(values.currentAmount || 0),
       deadline: values.deadline || null,
@@ -73,6 +75,7 @@ export function GoalDialog({
       // Reset form
       setValues({
         name: "",
+        type: "PERSONAL",
         targetAmount: "",
         currentAmount: "0",
         deadline: new Date(

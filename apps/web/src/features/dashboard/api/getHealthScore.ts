@@ -1,18 +1,9 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import type { HealthScore } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
-export interface HealthMetric {
-  label: string;
-  score: number;
-  note: string;
-}
-
-export interface HealthScoreData {
-  score: number;
-  metrics: HealthMetric[];
-  rating: string;
-}
+export type HealthScoreData = HealthScore;
 
 export const healthScoreQueryKey = () => ["analytics", "health"] as const;
 

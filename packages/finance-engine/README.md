@@ -27,35 +27,36 @@ This section details how every financial metric in FinAI is calculated.
 
 ### 1. Financial Health Score (0–100)
 
-**Function**: `calculateFinancialHealthScore(input: HealthInput)`  
+**Function**: `calculateFinancialHealthScore(input: HealthInput)`
 **File**: [`src/calculations/health.ts`](src/calculations/health.ts)
 
-The Overall Financial Health Score evaluates 5 core financial pillars. Each pillar is assigned a component score from `0` to `100`. The final Health Score is the arithmetic mean of all 5 component scores:
+The financial health result is an explainable summary of six practical foundations. Each metric returns its score, current value, target, status, explanation, and next action. Missing optional data is excluded from the weighted score instead of being treated as failure.
 
-$$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Scores}}{5} \right)$$
+The weighted foundations are monthly free cash (20%), savings rate (20%), emergency runway (25%), debt pressure (20%), budget control (10%), and goal progress (5%). Less than one month of emergency runway or more than 50% debt pressure caps the score at `59`; negative monthly free cash caps it at `49`.
 
 #### Component Score Rules
 
-| Pillar Component      | Score Logic & Thresholds                                                                                                                             | Note Generated                                                  |
-| :-------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------- |
-| **Spending Control**  | `Adherence < 0` $\rightarrow$ `0`<br>`Adherence > 0.9` $\rightarrow$ `90`<br>`Adherence > 0.75` $\rightarrow$ `75`<br>Otherwise $\rightarrow$ `55`   | "No budgets" / "Below cap" / "Above target" / "Needs attention" |
-| **Savings Rate**      | $\text{Clamp}(0, 100, \text{Round}(\text{Savings Rate} \times 2))$                                                                                   | `X% of income saved`                                            |
-| **Investments**       | $\text{Clamp}(0, 100, \text{Diversification Score})$                                                                                                 | "Diversified across assets" or "No investments"                 |
-| **Emergency Fund**    | `Months <= 0` $\rightarrow$ `0`<br>`Months >= 6` $\rightarrow$ `85`<br>`Months >= 3` $\rightarrow$ `65`<br>Otherwise $\rightarrow$ `35`              | "No emergency savings" or `X months covered`                    |
-| **Budget Discipline** | `Adherence < 0` $\rightarrow$ `0`<br>`Adherence >= 1.0` $\rightarrow$ `90`<br>`Adherence >= 0.85` $\rightarrow$ `75`<br>Otherwise $\rightarrow$ `60` | "All within limit" or "Some over budget"                        |
+| Metric                | Target           | User-facing meaning                   |
+| :-------------------- | :--------------- | :------------------------------------ |
+| **Monthly free cash** | 20% of income    | Money left after expenses             |
+| **Savings rate**      | 20% of income    | Income being retained                 |
+| **Emergency runway**  | 6 months         | Protection against unexpected costs   |
+| **Debt pressure**     | 30% of income    | Whether debt is manageable            |
+| **Budget control**    | 90% within limit | Whether spending follows the plan     |
+| **Goal progress**     | 70% funded       | Whether planned goals are progressing |
 
 #### Health Rating Classification
 
-- **`80 – 100`**: Excellent
-- **`60 – 79`**: Good
-- **`40 – 59`**: Fair
-- **`0 – 39`**: Needs Attention
+- **`80 – 100`**: Strong foundation
+- **`60 – 79`**: Building stability
+- **`40 – 59`**: Needs a plan
+- **`0 – 39`**: Needs attention
 
 ---
 
 ### 2. Net Worth & Trend Analysis
 
-**Functions**: `calculateNetWorth`, `calculateNetWorthChange`  
+**Functions**: `calculateNetWorth`, `calculateNetWorthChange`
 **File**: [`src/calculations/net-worth.ts`](src/calculations/net-worth.ts)
 
 - **Total Net Worth**:
@@ -69,7 +70,7 @@ $$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Score
 
 ### 3. Monthly Cash Flow & Net Income
 
-**Functions**: `calculateCashFlow`, `calculateNetCashFlow`  
+**Functions**: `calculateCashFlow`, `calculateNetCashFlow`
 **File**: [`src/calculations/cash-flow.ts`](src/calculations/cash-flow.ts)
 
 - **Income for Month $m$**:
@@ -83,7 +84,7 @@ $$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Score
 
 ### 4. Savings Rate & Savings Velocity
 
-**Functions**: `calculateSavingsRate`, `calculateMonthlySavings`  
+**Functions**: `calculateSavingsRate`, `calculateMonthlySavings`
 **File**: [`src/calculations/savings.ts`](src/calculations/savings.ts)
 
 - **Savings Rate Percentage**:
@@ -95,7 +96,7 @@ $$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Score
 
 ### 5. Budget Tracking & Adherence Status
 
-**Functions**: `calculateBudgetUsage`, `calculateBudgetStatus`, `calculateBudgetRemaining`  
+**Functions**: `calculateBudgetUsage`, `calculateBudgetStatus`, `calculateBudgetRemaining`
 **File**: [`src/calculations/budget.ts`](src/calculations/budget.ts)
 
 - **Budget Usage Percentage**:
@@ -111,7 +112,7 @@ $$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Score
 
 ### 6. Investment Portfolio & Asset Allocation
 
-**Functions**: `calculatePortfolioValue`, `calculateAssetAllocation`, `calculateUnrealisedPL`  
+**Functions**: `calculatePortfolioValue`, `calculateAssetAllocation`, `calculateUnrealisedPL`
 **File**: [`src/calculations/investments.ts`](src/calculations/investments.ts)
 
 - **Total Portfolio Value**:
@@ -126,7 +127,7 @@ $$\text{Health Score} = \text{Math.round}\left( \frac{\sum \text{Component Score
 
 ### 7. Goal Progress & Timeline Projection
 
-**Functions**: `calculateGoalProgress`, `calculateGoalProjection`, `estimateGoalCompletion`  
+**Functions**: `calculateGoalProgress`, `calculateGoalProjection`, `estimateGoalCompletion`
 **File**: [`src/calculations/goals.ts`](src/calculations/goals.ts)
 
 - **Goal Progress %**:

@@ -1,6 +1,3 @@
-◇ injected env (1) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
-Loaded Prisma config from prisma.config.ts.
-
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 

@@ -3,7 +3,7 @@ import {
   INSIGHT_SYSTEM_PROMPT_TEMPLATE,
   PAGE_INSIGHT_PROMPTS,
   InsightPage,
-} from "./prompts.config";
+} from "@finai/ai-engine";
 
 /** Builds the system prompt for the interactive AI Advisor chat */
 export function buildAdvisorSystemPrompt(context: string): string {

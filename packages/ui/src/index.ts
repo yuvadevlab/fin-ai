@@ -21,7 +21,9 @@ export { ProgressCard, type ProgressCardProps } from "./components/ProgressCard"
 export { MoneyDisplay, type MoneyDisplayProps } from "./components/MoneyDisplay";
 export { MaskedValue, type MaskedValueProps } from "./components/MaskedValue";
 export { ScoreGauge, type ScoreGaugeProps } from "./components/ScoreGauge";
+export { FinAILogo, type FinAILogoProps } from "./components/FinAILogo";
 export { StatusBadge } from "./components/StatusBadge";
+export { TransactionTypeBadge, type TransactionType } from "./components/TransactionTypeBadge";
 export { ConfirmDialog } from "./components/ConfirmDialog";
 export { cn } from "./lib/utils";
 export { ChartCard } from "./components/ChartCard";
