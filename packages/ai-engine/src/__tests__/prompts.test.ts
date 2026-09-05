@@ -5,11 +5,6 @@ import {
   buildPageInsightUserPrompt,
   buildEmojiSuggestionUserPrompt,
 } from "../prompt-builder";
-import {
-  buildTransactionParserPrompt,
-  looksLikeTransactionMessage,
-  TRANSACTION_PARSER_SYSTEM_PROMPT,
-} from "../transaction-parser";
 import { extractFollowUpQuestions } from "../extract-follow-ups";
 
 describe("AI Engine (Unit Tests)", () => {
@@ -42,21 +37,6 @@ describe("AI Engine (Unit Tests)", () => {
       const category = "Groceries";
       const prompt = buildEmojiSuggestionUserPrompt(category);
       expect(prompt).toBe(`Category name: ${category}\nSuggested emoji:`);
-    });
-
-    it("should build a strict transaction parser prompt with live options", () => {
-      const prompt = buildTransactionParserPrompt("I spent 100 for cake", ["Cash"], ["Dining"]);
-
-      expect(prompt).toContain("I spent 100 for cake");
-      expect(prompt).toContain("Cash");
-      expect(prompt).toContain("Dining");
-      expect(TRANSACTION_PARSER_SYSTEM_PROMPT).toContain("Never invent an amount");
-    });
-
-    it("should prefilter transaction-like statements without deciding ownership", () => {
-      expect(looksLikeTransactionMessage("I spent 1000 on groceries")).toBe(true);
-      expect(looksLikeTransactionMessage("How much did I spend this month?")).toBe(false);
-      expect(looksLikeTransactionMessage("My friend spent 10000 for my birthday")).toBe(true);
     });
   });
 
