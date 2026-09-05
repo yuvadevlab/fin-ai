@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@finai/ui";
-import { MarkdownMessage } from "./MarkdownMessage";
 import { extractFollowUpQuestions } from "@finai/ai-engine";
+import { MarkdownMessage } from "./MarkdownMessage";
 import type { ChatMessage } from "../api";
 
 interface ChatMessagesProps {
@@ -81,7 +81,9 @@ export function ChatMessages({ messages, onSelectFollowUp }: ChatMessagesProps) 
                     {m.text ? (
                       <MarkdownMessage content={m.text} />
                     ) : (
-                      <span className="text-muted-foreground animate-pulse text-xs">Thinking…</span>
+                      <span className="text-muted-foreground animate-pulse text-xs">
+                        Thinking...
+                      </span>
                     )}
                     {m.streaming && m.text && (
                       <span className="text-primary ml-0.5 animate-pulse font-bold">▍</span>
@@ -93,7 +95,6 @@ export function ChatMessages({ messages, onSelectFollowUp }: ChatMessagesProps) 
               </div>
             </div>
 
-            {/* Render 1-click Follow-up Suggestions if available */}
             {isLastAssistantMessage && followUps.length > 0 && onSelectFollowUp && (
               <div className="ml-11 flex flex-col gap-2">
                 <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">

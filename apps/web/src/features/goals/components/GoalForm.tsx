@@ -18,6 +18,18 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
       autoComplete: "off",
     },
     {
+      type: "select",
+      name: "type",
+      label: "Goal Type",
+      placeholder: "Select a goal type",
+      options: [
+        { label: "Emergency Fund", value: "EMERGENCY_FUND" },
+        { label: "Obligation", value: "OBLIGATION" },
+        { label: "Lifestyle", value: "LIFESTYLE" },
+        { label: "Personal", value: "PERSONAL" },
+      ],
+    },
+    {
       type: "number",
       name: "targetAmount",
       label: "Target Amount (₹)",

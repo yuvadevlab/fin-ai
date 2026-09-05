@@ -32,7 +32,7 @@ export function ChatInput({ value, onChange, onSubmit, isStreaming, onStop }: Ch
             type="button"
             size="icon"
             variant="destructive"
-            className="shrink-0 rounded-lg"
+            className="size-10 shrink-0 rounded-lg"
             onClick={onStop}
             title="Stop generating"
           >
@@ -42,7 +42,7 @@ export function ChatInput({ value, onChange, onSubmit, isStreaming, onStop }: Ch
           <Button
             type="submit"
             size="icon"
-            className="shrink-0 rounded-lg"
+            className="size-10 shrink-0 rounded-lg"
             disabled={!value.trim()}
           >
             <Send className="size-4" />

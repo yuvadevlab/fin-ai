@@ -1,20 +1,15 @@
-◇ injected env (1) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
-Loaded Prisma config from prisma.config.ts.
-
+◇ injected env (1) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
-CREATE TYPE "GoalType" AS ENUM ('PERSONAL');
+CREATE TYPE "GoalType" AS ENUM ('EMERGENCY_FUND', 'OBLIGATION', 'LIFESTYLE', 'PERSONAL');
 
 -- CreateEnum
 CREATE TYPE "AccountType" AS ENUM ('BANK', 'CREDIT_CARD', 'WALLET', 'CASH');
 
 -- CreateEnum
 CREATE TYPE "TransactionType" AS ENUM ('INCOME', 'EXPENSE', 'TRANSFER', 'INVESTMENT');
-
--- CreateEnum
-CREATE TYPE "BudgetPeriod" AS ENUM ('WEEKLY', 'MONTHLY', 'YEARLY');
 
 -- CreateEnum
 CREATE TYPE "AssetClass" AS ENUM ('MUTUAL_FUND', 'STOCK', 'FIXED_DEPOSIT', 'GOLD', 'EPF', 'PPF', 'REAL_ESTATE', 'CRYPTO', 'OTHER');
@@ -101,7 +96,6 @@ CREATE TABLE "budgets" (
     "user_id" TEXT NOT NULL,
     "category_id" TEXT NOT NULL,
     "limit" DOUBLE PRECISION NOT NULL,
-    "period" "BudgetPeriod" NOT NULL DEFAULT 'MONTHLY',
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "budgets_pkey" PRIMARY KEY ("id")

@@ -41,6 +41,16 @@ finai/
 - **`@finai/ui`**: Shared React components built with Radix UI, TailwindCSS, `<FormDialog>`, `<FormDialogField>`, `<PageHeader>`, and `<ConfirmDialog>`.
 - **`@finai/validation`**: Centralized Zod validation schemas for forms and API DTOs.
 
+### Strict Type-Safe Feature Rules
+
+- **Prompt ownership**: All system prompts, user prompt templates, parser instructions, prompt builders, and AI response contracts MUST live in `@finai/ai-engine`. API services may provide runtime context and call the model, but MUST NOT define inline prompts.
+- **Shared contracts**: Types, enums, keys, statuses, weights, and constants shared by `apps/api`, `apps/web`, or packages MUST live in `@finai/shared-types`. Do not redeclare string unions or response interfaces in an app when the contract crosses a package boundary.
+- **Constants**: Move domain values, fallback labels, keyword maps, regex patterns, thresholds, and user-facing default messages into dedicated `*.constants.ts` files. Avoid magic strings and numbers inside controllers, React components, and orchestration services.
+- **Pure calculations and resolution**: Matching, normalization, scoring, categorization, parsing, and other deterministic transformations MUST be implemented as pure functions in a dedicated `*.utils.ts` or the owning engine package. These functions MUST have no database, HTTP, model, filesystem, or framework side effects.
+- **Orchestration boundaries**: Controllers handle transport and validation; services coordinate database/model calls; pure utility modules calculate and resolve values. Do not mix Prisma queries, prompt construction, and domain calculations in one method.
+- **AI-to-action safety**: AI output MUST be parsed through a typed runtime guard before use. Financial actions require explicit intent, clear ownership, valid amount/type, and user confirmation. Ambiguous or third-party events MUST return clarification and MUST NOT create records.
+- **Reusable UI**: If a presentation primitive can be reused across features, move it to `@finai/ui` and export it from `packages/ui/src/index.ts`. Keep feature-specific data fetching, mutations, and domain decisions in the feature package.
+
 ---
 
 ## 2. Standard 2-File Feature Modal Pattern
@@ -303,6 +313,11 @@ export function AccountDialog({
 Before declaring a task resolved, every AI agent MUST verify:
 
 - [ ] Shared types & constants reside in `@finai/shared-types` (no duplicate definitions).
+- [ ] System prompts, parser prompts, and AI output contracts reside in `@finai/ai-engine`.
+- [ ] Domain constants live in dedicated constant files; no magic thresholds, fallback labels, keyword maps, or regex rules remain in orchestrators.
+- [ ] Deterministic calculations and resolution logic are pure and placed in the owning engine or utility module.
+- [ ] AI-derived financial actions pass typed runtime validation and explicit ownership/intent checks before confirmation.
+- [ ] Reusable UI primitives are exported from `@finai/ui` instead of being duplicated in feature components.
 - [ ] Financial formulas & math reside in `@finai/finance-engine` (zero side-effects and zero I/O).
 - [ ] No inline Zod schemas created (all reside in `@finai/validation`).
 - [ ] Modals adhere to the 2-file feature pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`).
