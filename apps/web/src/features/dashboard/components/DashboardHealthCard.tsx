@@ -13,10 +13,10 @@ function scoreColor(v: number) {
 }
 
 const RATING_LABEL: Record<string, string> = {
-  Excellent: "Excellent standing",
-  Good: "Good standing",
-  Fair: "Fair standing",
-  "Needs Attention": "Needs attention",
+  "Strong foundation": "Strong foundation",
+  "Building stability": "Building stability",
+  "Needs a plan": "Needs a plan",
+  "Needs attention": "Needs attention",
 };
 
 export function DashboardHealthCard() {
@@ -57,7 +57,7 @@ export function DashboardHealthCard() {
               showRating
             />
             <p className="text-muted-foreground mt-1 text-[11px]">
-              Live score based on your spending, savings & debt
+              Based on your cash flow, safety net, debt & goals
             </p>
           </div>
 

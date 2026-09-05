@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
-import { Button, Input, Label, ContentCard, toast } from "@finai/ui";
+import { Button, Input, Label, ContentCard, FinAILogo, toast } from "@finai/ui";
 import { apiClient } from "@/lib/api-client";
 
 export default function RegisterPage() {
@@ -51,9 +50,7 @@ export default function RegisterPage() {
     <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="bg-primary ring-primary/20 flex size-10 items-center justify-center rounded-xl shadow-lg ring-4">
-            <Sparkles className="text-primary-foreground size-5 animate-pulse" />
-          </div>
+          <FinAILogo showName={false} />
           <h2 className="text-2xl font-bold tracking-tight">Create your account</h2>
           <p className="text-muted-foreground text-sm">
             Get started with AI-powered personal wealth management

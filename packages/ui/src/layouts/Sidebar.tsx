@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, PanelLeftClose, PanelLeft } from "lucide-react";
+import { PanelLeftClose, PanelLeft } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../primitives/tooltip";
 import { Button } from "../primitives/button";
 import { Separator } from "../primitives/separator";
@@ -7,6 +7,7 @@ import { cn } from "../lib/utils";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarAiCard } from "./SidebarAiCard";
 import { IconMap, primaryNav, advancedNav, type DbMenuItem } from "./sidebarNavItems";
+import { FinAILogo } from "../components/FinAILogo";
 
 export { type DbMenuItem };
 
@@ -103,17 +104,12 @@ export function Sidebar({
       >
         {/* Header / Brand */}
         <div className={cn("p-4", isRail ? "flex justify-center p-3" : "p-6")}>
-          <div className={cn("flex items-center gap-2", isRail ? "justify-center px-0" : "px-2")}>
-            <div
-              className="bg-primary flex size-8 items-center justify-center rounded-lg shadow-sm"
-              aria-hidden="true"
-            >
-              <Sparkles className="size-4 text-white" />
-            </div>
-            {!isRail && (
-              <span className="text-foreground text-base font-bold tracking-tight">FinAI</span>
-            )}
-          </div>
+          <FinAILogo
+            compact
+            showName={!isRail}
+            className={cn(!isRail && "px-2")}
+            markClassName="size-8"
+          />
         </div>
 
         {/* Navigation Links */}

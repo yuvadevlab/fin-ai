@@ -36,7 +36,7 @@ export class GoalsService {
         targetAmount: input.targetAmount,
         currentAmount: input.currentAmount ?? 0,
         deadline: input.deadline ? new Date(input.deadline) : null,
-        type: GoalType.PERSONAL,
+        type: input.type ?? GoalType.PERSONAL,
       },
     });
   }
@@ -56,6 +56,7 @@ export class GoalsService {
         ...(input.deadline !== undefined && {
           deadline: input.deadline ? new Date(input.deadline) : null,
         }),
+        ...(input.type !== undefined && { type: input.type }),
       },
     });
   }

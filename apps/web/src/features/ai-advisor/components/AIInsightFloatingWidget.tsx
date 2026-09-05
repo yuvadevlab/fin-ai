@@ -99,7 +99,7 @@ export function AIInsightFloatingWidget() {
         {/* Panel header */}
         <div className="from-primary/90 to-primary flex items-center justify-between bg-linear-to-r px-4 py-3 text-white">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-4" />
+            <Sparkles className="size-4 animate-pulse" />
             <div>
               <span className="text-sm font-semibold">{pageTitle}</span>
               <p className="mt-0.5 text-[10px] leading-none font-medium text-white/80">
@@ -160,7 +160,7 @@ export function AIInsightFloatingWidget() {
                 onClick={handleGenerate}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all active:scale-95"
               >
-                <Sparkles className="size-3.5" />
+                <Sparkles className="size-3.5 animate-pulse" />
                 Generate Insight
               </button>
             </div>

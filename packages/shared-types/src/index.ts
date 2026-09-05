@@ -24,6 +24,9 @@ export const BudgetStatus = {
 export type BudgetStatus = (typeof BudgetStatus)[keyof typeof BudgetStatus];
 
 export const GoalType = {
+  EMERGENCY_FUND: "EMERGENCY_FUND",
+  OBLIGATION: "OBLIGATION",
+  LIFESTYLE: "LIFESTYLE",
   PERSONAL: "PERSONAL",
 } as const;
 export type GoalType = (typeof GoalType)[keyof typeof GoalType];
@@ -156,18 +159,21 @@ export interface Investment {
   lastUpdated: string;
 }
 
-export interface HealthMetric {
-  label: string;
-  score: number;
-  note: string;
-}
-
-export interface HealthScore {
-  overall: number;
-  metrics: HealthMetric[];
-  rating: string;
-  percentile: number;
-}
+export { HEALTH_DATA_QUALITY, HEALTH_METRIC_KEYS, HEALTH_METRIC_STATUSES } from "./health.types";
+export type {
+  HealthDataQuality,
+  HealthMetric,
+  HealthMetricKey,
+  HealthMetricStatus,
+  HealthMetricUnit,
+  HealthScore,
+} from "./health.types";
+export {
+  HEALTH_METRIC_LABELS,
+  HEALTH_METRIC_WEIGHTS,
+  HEALTH_RATINGS,
+  HEALTH_TARGETS,
+} from "./health.constants";
 
 export interface Conversation {
   id: string;

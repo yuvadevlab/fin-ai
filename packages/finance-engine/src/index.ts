@@ -27,7 +27,12 @@ export {
   calculateUnrealisedPL,
 } from "./calculations/investments";
 
-export { calculateFinancialHealthScore, calculateComponentScores } from "./calculations/health";
+export {
+  calculateFinancialHealthScore,
+  calculateComponentScores,
+  type ComponentScore,
+  type HealthInput,
+} from "./calculations/health";
 
 // ─── Formatters ──────────────────────────────────────────────────────────────
 export { formatINR, formatCurrencyShort, parseCurrencyValue } from "./formatters/currency";

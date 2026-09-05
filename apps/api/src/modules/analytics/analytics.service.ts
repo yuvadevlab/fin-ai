@@ -6,7 +6,7 @@ import {
   calculateSavingsRate,
   calculateFinancialHealthScore,
 } from "@finai/finance-engine";
-import { TransactionType } from "@finai/database";
+import { TransactionType, GoalType } from "@finai/database";
 
 @Injectable()
 export class AnalyticsService {
@@ -128,7 +128,7 @@ export class AnalyticsService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [accounts, investments, budgets, txns, emergencyGoal] = await Promise.all([
+    const [accounts, investments, budgets, txns, goals] = await Promise.all([
       this.prisma.client.account.findMany({
         where: { userId, isActive: true },
         select: { balance: true },
@@ -147,10 +147,9 @@ export class AnalyticsService {
         where: { userId, date: { gte: startOfMonth } },
         select: { amount: true, date: true, type: true },
       }),
-      // Look for an emergency fund goal
-      this.prisma.client.goal.findFirst({
-        where: { userId, name: { contains: "Emergency", mode: "insensitive" } },
-        select: { currentAmount: true, targetAmount: true },
+      this.prisma.client.goal.findMany({
+        where: { userId },
+        select: { currentAmount: true, targetAmount: true, type: true },
       }),
     ]);
 
@@ -189,11 +188,24 @@ export class AnalyticsService {
 
     // Emergency fund: how many months of expenses the goal covers
     let emergencyFundMonths = 0;
+    const emergencyGoal = goals.find((goal) => goal.type === GoalType.EMERGENCY_FUND);
     if (emergencyGoal && expense > 0) {
       emergencyFundMonths = emergencyGoal.currentAmount / expense;
     } else if (emergencyGoal) {
       emergencyFundMonths = emergencyGoal.currentAmount > 0 ? 3 : 0;
     }
+
+    const trackedGoals = goals.filter((goal) => goal.type !== GoalType.EMERGENCY_FUND);
+    const goalProgress =
+      trackedGoals.length === 0
+        ? -1
+        : (trackedGoals.reduce(
+            (sum, goal) =>
+              sum + (goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0),
+            0,
+          ) /
+            trackedGoals.length) *
+          100;
 
     // Investment diversification: distinct asset classes (scaled 0-100)
     const distinctAssetClasses = new Set(investments.map((i) => i.assetClass)).size;
@@ -204,11 +216,14 @@ export class AnalyticsService {
     const debtToIncomeRatio = income > 0 ? totalDebt / income : 0;
 
     const result = calculateFinancialHealthScore({
+      monthlyIncome: income,
+      monthlyExpenses: expense,
       savingsRate,
       budgetAdherence,
       emergencyFundMonths: Math.max(0, emergencyFundMonths),
       investmentDiversification,
       debtToIncomeRatio,
+      goalProgress: Math.min(100, Math.max(-1, goalProgress)),
     });
 
     return result;

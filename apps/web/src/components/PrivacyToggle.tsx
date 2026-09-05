@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@finai/ui";
+import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@finai/ui";
 import { usePrivacyMode, useIsClient } from "@/hooks";
 
 interface PrivacyToggleProps {
@@ -24,7 +24,7 @@ export function PrivacyToggle({ className, variant = "ghost", size = "icon" }: P
             variant={variant}
             size={size}
             onClick={togglePrivacyMode}
-            className={className}
+            className={cn("size-10", className)}
             aria-label={activePrivacy ? "Disable Privacy Mode" : "Enable Privacy Mode"}
           >
             {activePrivacy ? (

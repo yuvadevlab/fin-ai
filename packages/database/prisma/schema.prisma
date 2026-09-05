@@ -7,6 +7,9 @@ generator client {
 }
 
 enum GoalType {
+  EMERGENCY_FUND
+  OBLIGATION
+  LIFESTYLE
   PERSONAL
 }
 
@@ -146,13 +149,13 @@ model Category {
 }
 
 model Budget {
-  id         String       @id @default(uuid())
-  userId     String       @map("user_id")
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categoryId String       @map("category_id")
-  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   limit      Float
-  startDate  DateTime     @default(now()) @map("start_date")
+  startDate  DateTime @default(now()) @map("start_date")
 
   @@unique([userId, categoryId])
   @@index([userId])

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { HEALTH_METRIC_KEYS } from "@finai/shared-types";
 import {
   calculateSavingsRate,
   calculateMonthlySavings,
@@ -129,16 +130,23 @@ describe("Finance Engine Calculations (Unit Tests)", () => {
   describe("Financial Health Score", () => {
     it("should compute a health score clamped between 0 and 100", () => {
       const result = calculateFinancialHealthScore({
-        budgetAdherence: 50,
-        debtToIncomeRatio: 20,
+        monthlyIncome: 100000,
+        monthlyExpenses: 50000,
+        budgetAdherence: 0.8,
+        debtToIncomeRatio: 0.2,
         emergencyFundMonths: 2,
         savingsRate: 60,
-        investmentDiversification: 0.8,
+        investmentDiversification: 80,
+        goalProgress: 50,
       });
 
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(100);
       expect(result.rating).toBeDefined();
+      expect(
+        result.metrics.some((metric) => metric.key === HEALTH_METRIC_KEYS.EMERGENCY_RUNWAY),
+      ).toBe(true);
+      expect(result.nextBestAction).toBeDefined();
     });
   });
 
