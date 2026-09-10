@@ -3,7 +3,10 @@
  */
 
 /**
- * Calculate goal progress as percentage.
+ * One goal's funding progress as a percentage.
+ * A non-positive target yields 0 (avoids division by zero; a goal with no
+ * target can't have meaningful progress), and the result is capped at 100
+ * so overfunded goals don't skew portfolio-level averages.
  */
 export function calculateGoalProgress(currentAmount: number, targetAmount: number): number {
   if (targetAmount <= 0) return 0;
@@ -11,7 +14,13 @@ export function calculateGoalProgress(currentAmount: number, targetAmount: numbe
 }
 
 /**
- * Project when a goal will be completed based on monthly contribution.
+ * Months remaining to fully fund a goal at a fixed monthly contribution.
+ *
+ * Returns null when no contribution is being made (infinite projection is
+ * meaningless), and 0 when the goal is already funded. `Math.ceil` rounds
+ * UP to whole months — "2.3 months" would overstate readiness; the user
+ * reaches the goal at the END of the third month, not mid-month.
+ *
  * @returns Estimated months to completion, or null if no progress being made.
  */
 export function calculateGoalProjection(
@@ -42,13 +51,18 @@ export function estimateGoalCompletion(
 }
 
 export interface AggregateGoalsSummary {
+  /** Sum of all goal targets (missing targets count as 0). */
   totalTarget: number;
+  /** Sum of all current amounts (missing values count as 0). */
   totalCurrent: number;
+  /** Overall funding percentage across all goals, 0–100 (capped). */
   progressPercentage: number;
 }
 
 /**
- * Aggregate an array of goals into total target, current accumulated, and progress %.
+ * Aggregate many goals into one portfolio-level summary (used for the
+ * dashboard/goals KPI cards). Per-goal fields are optional and treated as 0
+ * so partially-hydrated goal lists don't crash aggregation.
  */
 export function calculateAggregateGoals(
   goals: { targetAmount?: number; currentAmount?: number }[],

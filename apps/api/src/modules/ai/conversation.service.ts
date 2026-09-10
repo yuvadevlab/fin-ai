@@ -2,6 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { MessageRole, Conversation, Message } from "@finai/database";
 
+/**
+ * Manages AI conversation persistence: creating conversations, adding
+ * messages (user/assistant), and fetching recent history for context.
+ *
+ * Messages are stored via Prisma `MessageRole` enum (USER/ASSISTANT).
+ * The `addMessage` call also bumps the conversation's `updatedAt` timestamp
+ * so conversations sort by recency correctly in the sidebar.
+ */
 @Injectable()
 export class ConversationService {
   constructor(private prisma: PrismaService) {}

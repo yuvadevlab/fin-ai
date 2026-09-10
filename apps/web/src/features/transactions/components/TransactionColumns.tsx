@@ -42,19 +42,27 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
           <span className="text-muted-foreground block max-w-32.5 truncate text-[11px] font-normal sm:hidden">
             {t.type === "TRANSFER" && t.toAccount
               ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-              : t.account?.name || t.notes || ""}
+              : t.type === "INVESTMENT" && t.investment
+                ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
+                : t.type === "GOAL" && t.goal
+                  ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
+                  : t.account?.name || t.notes || ""}
           </span>
         </div>
       ),
       className: "min-w-[110px]",
     },
     {
-      header: "Account",
+      header: "Account / Destination",
       accessor: (t: Transaction) => (
         <span className="text-muted-foreground text-xs font-normal sm:text-sm">
           {t.type === "TRANSFER" && t.toAccount
             ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-            : t.account?.name || "Unknown"}
+            : t.type === "INVESTMENT" && t.investment
+              ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
+              : t.type === "GOAL" && t.goal
+                ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
+                : t.account?.name || "Unknown"}
         </span>
       ),
       className: "hidden sm:table-cell",
@@ -71,7 +79,8 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Amount",
       accessor: (t: Transaction) => {
-        const displayAmount = t.type === "EXPENSE" ? -t.amount : t.amount;
+        const isOutflow = t.type === "EXPENSE" || t.type === "INVESTMENT" || t.type === "GOAL";
+        const displayAmount = isOutflow ? -t.amount : t.amount;
         return (
           <PrivacyMoney
             value={displayAmount}

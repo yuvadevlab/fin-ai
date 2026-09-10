@@ -4,10 +4,22 @@ import { CreateGoalInput, UpdateGoalInput } from "@finai/validation";
 import { calculateGoalProgress } from "@finai/finance-engine";
 import { GoalType } from "@finai/database";
 
+/**
+ * Savings goals service.
+ *
+ * Goals represent a user's savings targets (emergency fund, vacation, etc.).
+ * Each goal tracks a current amount and a target amount. The progress
+ * percentage is computed by the pure `calculateGoalProgress` helper.
+ */
 @Injectable()
 export class GoalsService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Lists all goals for a user with their progress percentage computed.
+   * Progress is always between 0 and 100 (capped — exceeding the target
+   * doesn't report >100%).
+   */
   async findAll(userId: string) {
     const goals = await this.prisma.client.goal.findMany({
       where: { userId },
@@ -20,6 +32,7 @@ export class GoalsService {
     }));
   }
 
+  /** Finds a single goal by ID, scoped to the user. Throws if not found. */
   async findOne(id: string, userId: string) {
     const goal = await this.prisma.client.goal.findFirst({
       where: { id, userId },
@@ -28,6 +41,7 @@ export class GoalsService {
     return goal;
   }
 
+  /** Creates a new savings goal. currentAmount defaults to 0 if omitted. */
   async create(userId: string, input: CreateGoalInput) {
     return this.prisma.client.goal.create({
       data: {
@@ -41,6 +55,7 @@ export class GoalsService {
     });
   }
 
+  /** Updates one or more mutable fields of a goal. Only provided fields are changed. */
   async update(id: string, userId: string, input: UpdateGoalInput) {
     await this.findOne(id, userId);
     return this.prisma.client.goal.update({
@@ -61,6 +76,11 @@ export class GoalsService {
     });
   }
 
+  /**
+   * Adds a contribution to a goal. The contribution is capped at the target —
+   * you can't over-contribute and end up with a currentAmount > targetAmount.
+   * This keeps the progress calculation clean (always ≤ 100%).
+   */
   async contribute(id: string, userId: string, amount: number) {
     const goal = await this.findOne(id, userId);
     const newAmount = Math.min(goal.currentAmount + amount, goal.targetAmount);
@@ -70,6 +90,7 @@ export class GoalsService {
     });
   }
 
+  /** Deletes a goal. The goal must belong to the user (enforced by findOne). */
   async remove(id: string, userId: string) {
     await this.findOne(id, userId);
     await this.prisma.client.goal.delete({ where: { id } });

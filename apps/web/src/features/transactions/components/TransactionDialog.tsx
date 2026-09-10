@@ -4,6 +4,8 @@ import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
 import { useAccounts } from "@/features/accounts/api";
 import { useCategories } from "@/features/categories/api";
+import { useInvestments } from "@/features/investments/api";
+import { useGoals } from "@/features/goals/api";
 import {
   useInlineEntityCreation,
   useTransactionDialogForm,
@@ -40,6 +42,8 @@ export function TransactionDialog({
   // Queries for select dropdown options
   const { data: accountsData } = useAccounts();
   const { data: categoriesData } = useCategories();
+  const { data: rawInvestments } = useInvestments();
+  const { data: rawGoals } = useGoals();
 
   const accountsOptions = useMemo(() => {
     return (accountsData || []).map((acc) => ({
@@ -54,6 +58,22 @@ export function TransactionDialog({
       value: cat.id,
     }));
   }, [categoriesData]);
+
+  const investmentsOptions = useMemo(() => {
+    const list =
+      rawInvestments && Array.isArray(rawInvestments.investments) ? rawInvestments.investments : [];
+    return list.map((inv) => ({
+      label: `${inv.name} (Invested: ₹${(inv.investedAmount ?? 0).toLocaleString("en-IN")})`,
+      value: inv.id,
+    }));
+  }, [rawInvestments]);
+
+  const goalsOptions = useMemo(() => {
+    return (rawGoals || []).map((g) => ({
+      label: `${g.name} (Target: ₹${(g.targetAmount ?? 0).toLocaleString("en-IN")})`,
+      value: g.id,
+    }));
+  }, [rawGoals]);
 
   // Resolve the default account — explicit default or auto-select when only 1 account
   const defaultAccountId = useMemo(() => {
@@ -83,9 +103,21 @@ export function TransactionDialog({
     addAccountInitialName,
     openAddAccount,
     handleAccountCreated,
+    isAddInvestmentOpen,
+    setIsAddInvestmentOpen,
+    addInvestmentInitialName,
+    openAddInvestment,
+    handleInvestmentCreated,
+    isAddGoalOpen,
+    setIsAddGoalOpen,
+    addGoalInitialName,
+    openAddGoal,
+    handleGoalCreated,
   } = useInlineEntityCreation({
     onCategoryCreated: (createdCategory) => handleChange("category", createdCategory.id),
     onAccountCreated: (createdAccount) => handleChange("account", createdAccount.id),
+    onInvestmentCreated: (created) => handleChange("investmentId", created.id),
+    onGoalCreated: (created) => handleChange("goalId", created.id),
   });
 
   const handleSwitchToBulk = () => {
@@ -95,7 +127,9 @@ export function TransactionDialog({
 
   const title = mode === "add" ? "Add Transaction" : "Edit Transaction";
   const description =
-    mode === "add" ? "Log a new expense, income or transfer." : "Update transaction details.";
+    mode === "add"
+      ? "Log an expense, income, transfer, investment, or goal."
+      : "Update transaction details.";
   const submitLabel = mode === "add" ? "Save Transaction" : "Update Transaction";
 
   return (
@@ -137,8 +171,12 @@ export function TransactionDialog({
           onChange={handleChange}
           accounts={accountsOptions}
           categories={categoriesOptions}
+          investments={investmentsOptions}
+          goals={goalsOptions}
           onAddCategory={openAddCategory}
           onAddAccount={openAddAccount}
+          onAddInvestment={openAddInvestment}
+          onAddGoal={openAddGoal}
         />
       </FormDialog>
 
@@ -158,6 +196,14 @@ export function TransactionDialog({
         onAccountOpenChange={setIsAddAccountOpen}
         addAccountInitialName={addAccountInitialName}
         onAccountCreated={handleAccountCreated}
+        isAddInvestmentOpen={isAddInvestmentOpen}
+        onInvestmentOpenChange={setIsAddInvestmentOpen}
+        addInvestmentInitialName={addInvestmentInitialName}
+        onInvestmentCreated={handleInvestmentCreated}
+        isAddGoalOpen={isAddGoalOpen}
+        onGoalOpenChange={setIsAddGoalOpen}
+        addGoalInitialName={addGoalInitialName}
+        onGoalCreated={handleGoalCreated}
       />
     </>
   );

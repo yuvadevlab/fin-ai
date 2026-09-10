@@ -1,3 +1,12 @@
+/**
+ * Default category set seeded for every new user during registration.
+ *
+ * Categories are grouped by spending type: Income, Fixed Expenses,
+ * Variable Expenses, Discretionary, Debt & Repayment, and Savings & Investments.
+ * The `icon` field is an emoji used in the UI category picker.
+ *
+ * @see DEFAULT_CATEGORIES — used by `AuthService.register` via `category.createMany`.
+ */
 export interface DefaultCategory {
   name: string;
   group: string;

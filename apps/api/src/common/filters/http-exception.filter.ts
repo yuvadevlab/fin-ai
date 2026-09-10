@@ -8,6 +8,15 @@ import {
 } from "@nestjs/common";
 import { Request, Response } from "express";
 
+/**
+ * Global exception filter that standardises all error responses into the
+ * `{ success: false, statusCode, timestamp, path, error }` envelope.
+ *
+ * Catches both NestJS `HttpException` (e.g. `NotFoundException`,
+ * `BadRequestException`) and raw `Error` instances (e.g. unhandled Prisma
+ * rejections), mapping both to a consistent JSON shape. 500-level errors
+ * are logged with their stack trace for debugging.
+ */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);

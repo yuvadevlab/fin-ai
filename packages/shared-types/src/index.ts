@@ -1,5 +1,30 @@
-// ─── Enums ───────────────────────────────────────────────────────────────────
+/**
+ * @module shared-types
+ *
+ * **Purpose:** Single source of truth for all shared TypeScript types,
+ * enums, and DTOs across the FinAI monorepo.
+ *
+ * Both `apps/web` and `apps/api` import from this package. Per AGENTS.md,
+ * never duplicate a type here into an app or another package.
+ *
+ * Key sections below:
+ * - Enums (AccountType, TransactionType, etc.)
+ * - Domain models (User, Account, Transaction, Category, etc.)
+ * - API types (ApiResponse, PaginationParams, etc.)
+ * - Analytics types (DashboardSummary, etc.)
+ * - AI types (ChatRequest, ChatStreamEvent)
+ */
 
+// ─── Enums ─────────────────────────────────────────────────────────────────
+
+/**
+ * Types of financial accounts a user can link.
+ *
+ * BANK: traditional savings/current account
+ * CREDIT_CARD: credit card (tracked as a liability)
+ * WALLET: digital wallets (Paytm, PhonePe, GPay, etc.)
+ * CASH: physical cash on hand
+ */
 export const AccountType = {
   BANK: "BANK",
   CREDIT_CARD: "CREDIT_CARD",
@@ -8,14 +33,25 @@ export const AccountType = {
 } as const;
 export type AccountType = (typeof AccountType)[keyof typeof AccountType];
 
+/**
+ * Types of financial transactions.
+ *
+ * INCOME: money in (salary, refunds, etc.)
+ * EXPENSE: money out (purchases, bills, etc.)
+ * TRANSFER: movement between the user's own accounts (no net worth change)
+ * INVESTMENT: money moved into an investment vehicle
+ * GOAL: money contributed towards a savings goal
+ */
 export const TransactionType = {
   INCOME: "INCOME",
   EXPENSE: "EXPENSE",
   TRANSFER: "TRANSFER",
   INVESTMENT: "INVESTMENT",
+  GOAL: "GOAL",
 } as const;
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
+/** Budget health status — computed by comparing spending against the limit. */
 export const BudgetStatus = {
   ON_TRACK: "ON_TRACK",
   NEAR_LIMIT: "NEAR_LIMIT",
@@ -98,13 +134,19 @@ export interface Transaction {
   id: string;
   userId: string;
   accountId: string;
+  toAccountId?: string | null;
   categoryId: string;
+  investmentId?: string | null;
+  goalId?: string | null;
   amount: number;
   date: string;
   notes?: string;
   type: TransactionType;
   account?: Account;
+  toAccount?: Account | null;
   category?: Category;
+  investment?: Investment | null;
+  goal?: Goal | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -145,6 +187,7 @@ export interface Goal {
   type?: GoalType;
   createdAt: string;
   updatedAt: string;
+  transactions?: Transaction[];
 }
 
 export interface Investment {
@@ -154,9 +197,12 @@ export interface Investment {
   assetClass: AssetClass;
   currentValue: number;
   investedAmount: number;
-  allocation: number;
-  change: number;
-  lastUpdated: string;
+  allocation?: number;
+  change?: number;
+  lastUpdated?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  transactions?: Transaction[];
 }
 
 export { HEALTH_DATA_QUALITY, HEALTH_METRIC_KEYS, HEALTH_METRIC_STATUSES } from "./health.types";
@@ -250,6 +296,25 @@ export interface ErrorResponse {
   statusCode: number;
   message: string;
   error?: string;
+}
+
+// ─── Reference Options ────────────────────────────────────────────────────────
+
+export const ReferenceOptionCategory = {
+  TRANSACTION_TYPE: "TRANSACTION_TYPE",
+  ASSET_CLASS: "ASSET_CLASS",
+  GOAL_TYPE: "GOAL_TYPE",
+} as const;
+export type ReferenceOptionCategory =
+  (typeof ReferenceOptionCategory)[keyof typeof ReferenceOptionCategory];
+
+export interface ReferenceOption {
+  id: string;
+  category: string;
+  label: string;
+  value: string;
+  order: number;
+  isActive: boolean;
 }
 
 // ─── Dashboard / Analytics Types ─────────────────────────────────────────────

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -18,6 +18,7 @@ import { PrivacyMoney } from "@/components";
 
 import { useInvestments, Investment } from "../api";
 import { InvestmentDialog } from "./InvestmentDialog";
+import { UpdateInvestmentValueDialog } from "./UpdateInvestmentValueDialog";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
   MUTUAL_FUND: "Mutual Fund",
@@ -110,6 +111,27 @@ export function InvestmentsPage() {
           );
         },
         className: "text-right",
+      },
+      {
+        header: "Actions",
+        accessor: (a: Investment) => (
+          <div className="flex justify-end">
+            <UpdateInvestmentValueDialog
+              investment={a}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground h-8 cursor-pointer gap-1.5 px-2 text-xs"
+                  title="Update Market Value"
+                >
+                  <Pencil className="size-3.5" />
+                </Button>
+              }
+            />
+          </div>
+        ),
+        className: "text-right whitespace-nowrap",
       },
     ],
     [],

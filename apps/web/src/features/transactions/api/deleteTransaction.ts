@@ -12,6 +12,8 @@ export function useDeleteTransaction() {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["investments"] });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       toast.success("Transaction deleted successfully");
     },
     onError: (error) => {

@@ -25,6 +25,13 @@ export { FinAILogo, type FinAILogoProps } from "./components/FinAILogo";
 export { StatusBadge } from "./components/StatusBadge";
 export { TransactionTypeBadge, type TransactionType } from "./components/TransactionTypeBadge";
 export { ConfirmDialog } from "./components/ConfirmDialog";
+export { ActivityStep, type ActivityStepData, type StepStatus } from "./components/ActivityStep";
+export {
+  ConfirmationCard,
+  type ConfirmationCardData,
+  type ConfirmationStatus,
+} from "./components/ConfirmationCard";
+export { MarkdownContent, type MarkdownContentProps } from "./components/MarkdownContent";
 export { cn } from "./lib/utils";
 export { ChartCard } from "./components/ChartCard";
 export { FormDialog } from "./components/FormDialog";

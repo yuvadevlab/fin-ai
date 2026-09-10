@@ -4,7 +4,15 @@
  */
 
 /**
- * Calculate savings rate as percentage of income.
+ * Savings rate = (income − expenses) / income, as a percentage of income.
+ *
+ * Guard rules:
+ * - income ≤ 0 → 0: a rate is meaningless without income (avoids division
+ *   by zero and misleading negative percentages).
+ * - Result clamped at 0: overspending produces a negative raw rate, but the
+ *   product contract reports "no savings" as 0 rather than e.g. -25%.
+ * Rounded to 0.1% for display stability.
+ *
  * @returns Value between 0 and 100
  */
 export function calculateSavingsRate(income: number, expenses: number): number {
@@ -14,7 +22,9 @@ export function calculateSavingsRate(income: number, expenses: number): number {
 }
 
 /**
- * Calculate monthly savings (income minus expenses).
+ * Absolute money left over after expenses. Clamped at 0 so overspending
+ * reports 0 savings instead of a negative figure — downstream UI (progress
+ * rings, KPI cards) assumes non-negative savings amounts.
  */
 export function calculateMonthlySavings(income: number, expenses: number): number {
   return Math.max(0, income - expenses);

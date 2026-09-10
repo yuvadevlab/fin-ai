@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { clientTransactionSchema } from "@finai/validation";
+import { TransactionType } from "@finai/shared-types";
 import { useCreateTransaction, useUpdateTransaction } from "../api";
 
 export interface TransactionInitialValues {
@@ -15,6 +16,10 @@ export interface TransactionInitialValues {
   account?: string | { id: string; name: string; type: string };
   toAccountId?: string | null;
   toAccount?: string | { id: string; name: string; type: string } | null;
+  investmentId?: string | null;
+  investment?: string | { id: string; name: string } | null;
+  goalId?: string | null;
+  goal?: string | { id: string; name: string } | null;
   date?: string;
   notes?: string | null;
 }
@@ -49,6 +54,20 @@ export function useTransactionDialogForm({
       // Pre-select default account only in create mode
       (mode === "add" ? (defaultAccountId ?? "") : "");
 
+    const resolvedInvestment =
+      (initialValues?.investment && typeof initialValues.investment === "object"
+        ? initialValues.investment.id
+        : (initialValues?.investment as string | undefined)) ??
+      initialValues?.investmentId ??
+      "";
+
+    const resolvedGoal =
+      (initialValues?.goal && typeof initialValues.goal === "object"
+        ? initialValues.goal.id
+        : (initialValues?.goal as string | undefined)) ??
+      initialValues?.goalId ??
+      "";
+
     return {
       amount: initialValues?.amount !== undefined ? String(initialValues.amount) : "",
       kind:
@@ -66,6 +85,8 @@ export function useTransactionDialogForm({
           : (initialValues?.toAccount as string | undefined)) ??
         initialValues?.toAccountId ??
         "",
+      investmentId: resolvedInvestment,
+      goalId: resolvedGoal,
       date: initialValues?.date
         ? new Date(initialValues.date).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
@@ -122,10 +143,12 @@ export function useTransactionDialogForm({
 
     const payload = {
       amount: Number(result.data.amount),
-      type: result.data.kind.toUpperCase() as "INCOME" | "EXPENSE" | "TRANSFER",
+      type: result.data.kind.toUpperCase() as TransactionType,
       categoryId: result.data.category,
       accountId: result.data.account,
       toAccountId: result.data.kind === "transfer" ? result.data.toAccount || null : null,
+      investmentId: result.data.kind === "investment" ? result.data.investmentId || null : null,
+      goalId: result.data.kind === "goal" ? result.data.goalId || null : null,
       date: result.data.date,
       notes: result.data.notes || "",
     };

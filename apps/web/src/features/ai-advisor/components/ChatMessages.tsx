@@ -1,111 +1,85 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { cn } from "@finai/ui";
+import { ArrowRight, User } from "lucide-react";
 import { extractFollowUpQuestions } from "@finai/ai-engine";
-import { MarkdownMessage } from "./MarkdownMessage";
-import type { ChatMessage } from "../api";
+import { AgentRun } from "./AgentRun";
+import type { AgentChatMessage } from "../api";
 
 interface ChatMessagesProps {
-  messages: ChatMessage[];
+  messages: AgentChatMessage[];
   onSelectFollowUp?: (question: string) => void;
+  onConfirmAction?: (actionId: string, tool: string) => void;
+  onRejectAction?: (actionId: string) => void;
+  executingActionId?: string | null;
 }
 
-export function ChatMessages({ messages, onSelectFollowUp }: ChatMessagesProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages]);
-
-  if (messages.length === 0) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-        <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
-          <Sparkles className="text-primary size-8" />
-        </div>
-        <div>
-          <p className="text-foreground font-semibold">Ask FinAI anything</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Your financial context is loaded. Try a suggested prompt from the sidebar.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
+/**
+ * Renders the full conversation thread for the AI Advisor.
+ *
+ * Each user message is a simple bubble. Each assistant message is an
+ * `AgentRun` — a composed block showing the agent's activity, any structured
+ * financial insight, the prose response, and confirmation cards.
+ *
+ * Follow-up suggestions are extracted from the last assistant message and
+ * rendered as clickable chips below it.
+ *
+ * NOTE: this component deliberately owns NO scroll logic. Scrolling is a
+ * policy of the scroll container (see `hooks/useChatAutoScroll.ts`) — the
+ * previous per-token `scrollIntoView` here caused the streaming scroll jerk.
+ */
+export function ChatMessages({
+  messages,
+  onSelectFollowUp,
+  onConfirmAction,
+  onRejectAction,
+  executingActionId,
+}: ChatMessagesProps) {
   return (
-    <div className="space-y-6">
-      {messages.map((m, i) => {
-        const followUps =
-          m.role === "assistant" && !m.streaming && m.text ? extractFollowUpQuestions(m.text) : [];
+    <div className="space-y-5">
+      {messages.map((message, idx) => {
+        const isAssistant = message.role === "assistant";
+        const isLastMessage = idx === messages.length - 1;
 
-        const isLastAssistantMessage = m.role === "assistant" && i === messages.length - 1;
+        // Follow-up suggestions only on the final non-streaming assistant turn.
+        const followUps =
+          isAssistant && !message.streaming && message.text && isLastMessage
+            ? extractFollowUpQuestions(message.text)
+            : [];
 
         return (
-          <div key={i} className="space-y-3">
-            <div
-              className={cn(
-                "animate-in slide-in-from-bottom-2 flex gap-3 duration-200",
-                m.role === "user" && "flex-row-reverse",
-              )}
-            >
-              {/* Avatar */}
-              <div
-                className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm",
-                  m.role === "assistant"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-foreground",
-                )}
-              >
-                {m.role === "assistant" ? (
-                  <Sparkles className={cn("size-4", m.streaming && "animate-pulse")} />
-                ) : (
-                  "ME"
-                )}
+          <div key={idx} className="space-y-3">
+            {isAssistant ? (
+              /* Assistant turn — composed AgentRun */
+              <AgentRun
+                message={message}
+                onConfirmAction={onConfirmAction ?? (() => {})}
+                onRejectAction={onRejectAction ?? (() => {})}
+                executingActionId={executingActionId}
+              />
+            ) : (
+              /* User message — right-aligned bubble */
+              <div className="flex flex-row-reverse gap-3">
+                <div className="bg-secondary text-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm">
+                  <User className="size-4" aria-hidden="true" />
+                </div>
+                <div className="bg-primary text-primary-foreground max-w-2xl rounded-2xl px-4 py-3 text-sm shadow-sm">
+                  <p className="leading-relaxed">{message.text}</p>
+                </div>
               </div>
+            )}
 
-              {/* Bubble */}
-              <div
-                className={cn(
-                  "max-w-2xl space-y-3 rounded-2xl px-4 py-3 text-sm shadow-sm",
-                  m.role === "assistant"
-                    ? "bg-secondary text-foreground border-border/50 border"
-                    : "bg-primary text-primary-foreground",
-                )}
-              >
-                {m.role === "assistant" ? (
-                  <div className="text-sm leading-relaxed">
-                    {m.text ? (
-                      <MarkdownMessage content={m.text} />
-                    ) : (
-                      <span className="text-muted-foreground animate-pulse text-xs">
-                        Thinking...
-                      </span>
-                    )}
-                    {m.streaming && m.text && (
-                      <span className="text-primary ml-0.5 animate-pulse font-bold">▍</span>
-                    )}
-                  </div>
-                ) : (
-                  <p className="leading-relaxed">{m.text}</p>
-                )}
-              </div>
-            </div>
-
-            {isLastAssistantMessage && followUps.length > 0 && onSelectFollowUp && (
-              <div className="ml-11 flex flex-col gap-2">
+            {/* Follow-up suggestions below the last assistant turn */}
+            {followUps.length > 0 && onSelectFollowUp && (
+              <div className="flex flex-col gap-2">
                 <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  Suggested Next Steps
+                  Suggested follow-ups
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {followUps.map((question, qIdx) => (
                     <button
                       key={qIdx}
                       onClick={() => onSelectFollowUp(question)}
-                      className="bg-card hover:bg-accent hover:text-accent-foreground border-border/80 text-foreground group flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition active:scale-95"
+                      className="bg-card hover:bg-accent hover:text-accent-foreground border-border/80 text-foreground group flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95"
                     >
                       <span>{question}</span>
                       <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
@@ -117,7 +91,6 @@ export function ChatMessages({ messages, onSelectFollowUp }: ChatMessagesProps) 
           </div>
         );
       })}
-      <div ref={bottomRef} aria-hidden="true" />
     </div>
   );
 }

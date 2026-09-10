@@ -6,6 +6,8 @@ import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { OllamaService } from "@/modules/ai/ollama.service";
 import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
+import { agentChatSchema, type AgentChatInput } from "@finai/validation";
 import {
   buildAdvisorSystemPrompt,
   buildInsightSystemPrompt,
@@ -14,6 +16,20 @@ import {
   EMOJI_SUGGESTION_SYSTEM_PROMPT,
 } from "@finai/ai-engine";
 
+/**
+ * Legacy AI Advisor controller (read-only, chat + page insights).
+ *
+ * Handles:
+ * - Conversation CRUD (`GET /conversations`, `GET /conversations/:id`, `DELETE ...`)
+ * - SSE chat streaming (`POST /ai/chat`) — uses the legacy `OllamaService` +
+ *   `ContextBuilderService.buildFinanceContext` with the advisor system prompt
+ * - Page-level micro-insights (`GET /ai/insight?page=…`)
+ * - Emoji suggestions (`GET /ai/suggest-emoji?category=…`)
+ *
+ * NOTE: This is the legacy advisor. The agentic mode lives in
+ * `AgentController` (`POST /agent/chat`). Both share the same
+ * `ContextBuilderService` and `ConversationService`.
+ */
 @ApiTags("AI")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -69,16 +85,14 @@ export class AiController {
   @Post("chat")
   @ApiOperation({ summary: "Stream an AI response via SSE" })
   async chat(
-    @Body()
-    body: { question: string; conversationId?: string },
+    @Body(new ZodValidationPipe(agentChatSchema)) body: AgentChatInput,
     @CurrentUser("id") userId: string,
     @Res() res: Response,
   ) {
-    // Set SSE headers
+    // Set SSE headers (CORS is handled globally via WEB_URL config in main.ts)
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    res.setHeader("Access-Control-Allow-Origin", "*");
     res.flushHeaders();
 
     // Build financial context from DB for user
@@ -147,7 +161,6 @@ export class AiController {
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    res.setHeader("Access-Control-Allow-Origin", "*");
     res.flushHeaders();
 
     const context = await this.contextBuilder.buildFinanceContext(userId);
