@@ -25,6 +25,7 @@ export default defineConfig({
     dts({
       tsconfigPath: "./tsconfig.json",
       insertTypesEntry: true,
+      exclude: ["**/*.stories.*", "**/__tests__/**", "**/*.test.*", "**/*.mdx"],
     }),
   ],
   build: {

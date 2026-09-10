@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="FinAI UI / Introduction" />
+
+# FinAI Design System
+
+`@finai/ui` is the shared component library powering the FinAI personal finance platform.
+It wraps **Radix UI** primitives with FinAI's design tokens, Tailwind utilities, and full
+accessibility compliance built-in.
+
+---
+
+## Design Tokens
+
+All colours, spacing, radius and typography values are defined as CSS custom properties
+in `src/styles.css` and mapped into Tailwind via `@theme inline {}`.
+
+| Token           | Light                                 | Dark                                 |
+| --------------- | ------------------------------------- | ------------------------------------ |
+| `--background`  | `oklch(0.985 0.001 247)` — near-white | `oklch(0.16 0.015 260)` — deep slate |
+| `--primary`     | `oklch(0.63 0.14 156)` — Emerald 600  | `oklch(0.7 0.15 156)` — Emerald 500  |
+| `--destructive` | `oklch(0.6 0.22 25)` — Coral red      | `oklch(0.65 0.2 25)`                 |
+| `--card`        | `oklch(1 0 0)` — white                | `oklch(0.2 0.015 260)`               |
+| `--border`      | `oklch(0.92 0.005 260)`               | `oklch(1 0 0 / 8%)`                  |
+
+## Component Layers
+
+| Layer                              | Purpose                                                    |
+| ---------------------------------- | ---------------------------------------------------------- |
+| **Primitives** (`src/primitives/`) | Radix UI wrappers: Button, Input, Badge, Select, Dialog…   |
+| **Components** (`src/components/`) | Composed FinAI-specific display and interaction components |
+| **Charts** (`src/charts/`)         | Recharts-based chart components using `CHART_COLORS`       |
+| **Layouts** (`src/layouts/`)       | App shell, sidebar, topbar, dashboard tabs                 |
+
+## Accessibility
+
+Every component in this library targets **WCAG 2.1 AA** compliance:
+
+- Interactive elements have keyboard focus management
+- ARIA roles, labels, and live regions are applied consistently
+- Privacy-sensitive values use `sr-only` screen-reader alternatives when masked
+- A11y tests run automatically via `vitest-axe` in the test suite
+
+## 250-Line Rule
+
+Per the FinAI monorepo invariants, **no file may exceed 250 lines**. Story files
+follow the same constraint and are split where needed.
