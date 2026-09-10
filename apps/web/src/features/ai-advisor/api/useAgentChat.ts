@@ -17,9 +17,11 @@ export function useAgentChat() {
   const queryClient = useQueryClient();
   const [isStreaming, setIsStreaming] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [executingActionId, setExecutingActionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const {
     messages,
+    appendLog,
     appendText,
     replaceText,
     appendActivity,
@@ -69,6 +71,7 @@ export function useAgentChat() {
       // by `handleAgentStreamEvent` (centralized in agentEventHandlers.ts):
       // lifecycle phases, tool activity, approval steps, cards, failures.
       const port: AgentEventPort = {
+        appendLog,
         appendText,
         replaceText,
         appendActivity,
@@ -143,17 +146,18 @@ export function useAgentChat() {
       isStreaming,
       pushUserTurn,
       pushAssistantTurn,
-      conversationId,
+      appendLog,
       appendText,
       replaceText,
       appendActivity,
       updateActivity,
       resolveApprovalActivity,
       appendConfirmation,
-      updateConfirmationCard,
       updateConfirmationStatus,
+      updateConfirmationCard,
       failStream,
       endStream,
+      conversationId,
       queryClient,
     ],
   );
@@ -187,6 +191,8 @@ export function useAgentChat() {
 
   const confirmAction = useCallback(
     async (actionId: string, tool: string) => {
+      if (executingActionId) return;
+      setExecutingActionId(actionId);
       try {
         await confirmAgentAction(actionId);
         updateConfirmationStatus(actionId, "executed");
@@ -199,13 +205,17 @@ export function useAgentChat() {
       } catch {
         updateConfirmationStatus(actionId, "failed");
         resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+      } finally {
+        setExecutingActionId(null);
       }
     },
-    [queryClient, updateConfirmationStatus, resolveApprovalActivity],
+    [executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
   );
 
   const rejectAction = useCallback(
     async (actionId: string) => {
+      if (executingActionId) return;
+      setExecutingActionId(actionId);
       try {
         await rejectAgentAction(actionId);
         updateConfirmationStatus(actionId, "rejected");
@@ -214,15 +224,18 @@ export function useAgentChat() {
       } catch {
         updateConfirmationStatus(actionId, "failed");
         resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+      } finally {
+        setExecutingActionId(null);
       }
     },
-    [updateConfirmationStatus, resolveApprovalActivity],
+    [executingActionId, updateConfirmationStatus, resolveApprovalActivity],
   );
 
   return {
     messages,
     isStreaming,
     conversationId,
+    executingActionId,
     sendMessage,
     loadConversation,
     startNewChat,

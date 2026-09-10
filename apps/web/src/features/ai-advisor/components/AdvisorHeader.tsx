@@ -1,7 +1,7 @@
 "use client";
 
 import { History, MessageSquarePlus, PanelRight, Sparkles } from "lucide-react";
-import { Button, cn } from "@finai/ui";
+import { Button } from "@finai/ui";
 
 interface AdvisorHeaderProps {
   onOpenHistory: () => void;
@@ -44,10 +44,7 @@ export function AdvisorHeader({
           variant="ghost"
           size="sm"
           onClick={onOpenContext}
-          className={cn(
-            "cursor-pointer gap-1.5 text-xs lg:hidden",
-            hasMessages ? "" : "hidden sm:inline-flex",
-          )}
+          className="cursor-pointer gap-1.5 text-xs lg:hidden"
         >
           <PanelRight className="size-3.5" />
           Context

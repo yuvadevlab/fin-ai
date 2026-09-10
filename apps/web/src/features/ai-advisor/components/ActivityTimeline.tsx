@@ -1,61 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Check, ChevronDown, ChevronUp, Loader2, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ListTree,
+  Loader2,
+  Sparkles,
+  Terminal,
+} from "lucide-react";
 import { cn } from "@finai/ui";
-import type { AgentActivity } from "../api/agentTypes";
+import type { AgentActivity, AgentRunLogEntry } from "../api/agentTypes";
 import { deriveRunState, formatDuration, standbyLabel } from "../utils/deriveRunState";
 import { ActivityStepRow } from "./ActivityStepRow";
+import { LiveRunConsole } from "./LiveRunConsole";
 
-/** Recent rows shown in the collapsed view (running step + completed tail). */
 const COLLAPSED_ROWS = 3;
 
 interface ActivityTimelineProps {
-  /** Every activity of this run, in true execution order (append-only). */
   activities: AgentActivity[];
-  /** True while the run's SSE stream is still open. */
+  logs?: AgentRunLogEntry[];
   isStreaming: boolean;
-  /** True once the final answer has started streaming (drives the standby row label). */
   hasText?: boolean;
 }
 
-/**
- * The live activity stream of one agent run — a first-class part of the run,
- * not a loading placeholder. Two representations:
- *
- * - Collapsed: overall status, the current operation, a few recent completed
- *   steps, and a "Show details" toggle. After completion it reduces to
- *   "✓ Analyzed your finances · N steps · X.Xs".
- * - Expanded: the complete user-safe execution history — every real step with
- *   its summary and duration, in arrival order.
- *
- * Every row originates from a real SSE event (tool, lifecycle phase, or
- * approval gate); nothing is timer-fabricated and events are never reordered.
- */
 export function ActivityTimeline({
   activities,
+  logs = [],
   isStreaming,
   hasText = false,
 }: ActivityTimelineProps) {
-  // Collapsed by default; the user can expand at any time (during or after the
-  // run) and their choice is respected — no forced re-collapse.
   const [expanded, setExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<"steps" | "logs">("steps");
   const state = deriveRunState(activities, isStreaming);
 
   const hasError = state.hasError;
   const hasRunningRow = activities.some((a) => a.status === "running");
-  // Standby row: while the stream is open but no real event is currently
-  // running (gap between tool steps, or final-answer tokens streaming), the
-  // collapsed view keeps a truthful "current operation" visible instead of a
-  // stale all-✓ checklist. Tied to the open stream only — never a timer.
+  const latestLog = logs[logs.length - 1];
+
   const standby: AgentActivity | null =
     isStreaming && !expanded && !hasRunningRow && activities.length > 0
       ? { tool: "phase:standby", kind: "phase", status: "running", label: standbyLabel(hasText) }
       : null;
 
   const showRows = expanded || (isStreaming && activities.length > 0);
-  // Collapsed shows the recent completed tail + the current operation;
-  // expanded shows the complete real history (no standby row).
   const visible = expanded
     ? activities
     : standby
@@ -64,9 +54,11 @@ export function ActivityTimeline({
   const currentKey = state.currentTool;
 
   const headerTitle = expanded
-    ? "FinAI activity"
+    ? "FinAI activity & execution log"
     : isStreaming
-      ? "FinAI is thinking…"
+      ? latestLog
+        ? latestLog.message
+        : "FinAI is thinking…"
       : hasError
         ? "Finished with some issues"
         : "Analyzed your finances";
@@ -84,19 +76,18 @@ export function ActivityTimeline({
       : null;
 
   return (
-    <div className="bg-muted/40 border-border rounded-xl border">
-      {/* Header — aria-live announces only meaningful transitions (thinking →
-          approval → done), never every low-level step. */}
+    <div className="bg-muted/40 border-border overflow-hidden rounded-xl border">
+      {/* Header button */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
-        className="flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-left"
+        className="hover:bg-muted/60 flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-left transition"
       >
         {expanded ? (
           <ChevronUp className="text-muted-foreground size-3.5 shrink-0" aria-hidden="true" />
         ) : isStreaming ? (
-          <Sparkles className="text-primary size-3.5 shrink-0" aria-hidden="true" />
+          <Sparkles className="text-primary size-3.5 shrink-0 animate-pulse" aria-hidden="true" />
         ) : hasError ? (
           <AlertTriangle className="text-destructive size-3.5 shrink-0" aria-hidden="true" />
         ) : (
@@ -105,12 +96,12 @@ export function ActivityTimeline({
         <span className="min-w-0 flex-1" aria-live="polite">
           <span
             className={cn(
-              "block text-[13px] font-medium",
+              "block truncate text-[13px] font-medium",
               isStreaming ? "text-foreground" : "text-muted-foreground",
             )}
           >
+            {isStreaming && <span className="text-primary mr-1.5 font-mono text-[11px]">⚡</span>}
             {headerTitle}
-            {isStreaming && !expanded && activities.length === 0 ? "…" : ""}
           </span>
           {summaryMeta && (
             <span className="text-muted-foreground/70 mt-0.5 block text-xs">{summaryMeta}</span>
@@ -131,24 +122,75 @@ export function ActivityTimeline({
         </span>
       </button>
 
-      {/* Steps — full history when expanded; recent tail while running. */}
+      {/* Expanded Mode Tabs (Steps vs Live Terminal) */}
+      {expanded && (
+        <div className="bg-muted/30 border-border/60 flex items-center justify-between border-t px-3.5 py-1.5">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("steps")}
+              className={cn(
+                "flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition",
+                viewMode === "steps"
+                  ? "bg-background text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <ListTree className="size-3" />
+              <span>Steps ({activities.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("logs")}
+              className={cn(
+                "flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-xs font-medium transition",
+                viewMode === "logs"
+                  ? "bg-background text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Terminal className="size-3" />
+              <span>Live Console</span>
+              {logs.length > 0 && <span className="text-[10px] opacity-75">({logs.length})</span>}
+              {isStreaming && (
+                <span className="size-1.5 animate-ping rounded-full bg-emerald-500" />
+              )}
+            </button>
+          </div>
+          <span className="text-muted-foreground text-[11px]">
+            {isStreaming ? "Live stream active" : "Execution complete"}
+          </span>
+        </div>
+      )}
+
+      {/* Steps or Live Terminal body */}
       {showRows && (
-        <ul id="agent-activity-steps" className="border-border/60 border-t px-3.5 py-1.5">
-          {visible.map((activity, index) => (
-            <ActivityStepRow
-              // Append-only list, so `tool + index` is stable across renders
-              // even when the same tool runs twice in one conversation turn.
-              key={`${activity.tool}-${index}`}
-              activity={activity}
-              expanded={expanded}
-              isCurrent={
-                !expanded &&
-                activity.status === "running" &&
-                (activity.tool === currentKey || activity.tool === "phase:standby")
-              }
-            />
-          ))}
-        </ul>
+        <>
+          {expanded && viewMode === "logs" ? (
+            <div className="border-border/40 border-t bg-zinc-950/50 p-2">
+              <LiveRunConsole logs={logs} isStreaming={isStreaming} />
+            </div>
+          ) : (
+            <ul
+              id="agent-activity-steps"
+              aria-label="Agent execution steps"
+              className="border-border/60 border-t px-3.5 py-1.5"
+            >
+              {visible.map((activity, index) => (
+                <ActivityStepRow
+                  key={`${activity.tool}-${index}`}
+                  activity={activity}
+                  expanded={expanded}
+                  isCurrent={
+                    !expanded &&
+                    activity.status === "running" &&
+                    (activity.tool === currentKey || activity.tool === "phase:standby")
+                  }
+                />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

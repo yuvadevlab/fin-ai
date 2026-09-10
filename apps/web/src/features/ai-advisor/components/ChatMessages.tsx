@@ -10,6 +10,7 @@ interface ChatMessagesProps {
   onSelectFollowUp?: (question: string) => void;
   onConfirmAction?: (actionId: string, tool: string) => void;
   onRejectAction?: (actionId: string) => void;
+  executingActionId?: string | null;
 }
 
 /**
@@ -31,6 +32,7 @@ export function ChatMessages({
   onSelectFollowUp,
   onConfirmAction,
   onRejectAction,
+  executingActionId,
 }: ChatMessagesProps) {
   return (
     <div className="space-y-5">
@@ -52,6 +54,7 @@ export function ChatMessages({
                 message={message}
                 onConfirmAction={onConfirmAction ?? (() => {})}
                 onRejectAction={onRejectAction ?? (() => {})}
+                executingActionId={executingActionId}
               />
             ) : (
               /* User message — right-aligned bubble */

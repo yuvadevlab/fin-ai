@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { PageContainer, Sheet, SheetContent, SheetTitle } from "@finai/ui";
+import {
+  PageContainer,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@finai/ui";
 import { ArrowDown } from "lucide-react";
 import { useConversations, useDeleteConversation, useAgentChat } from "../api";
 import { useChatAutoScroll } from "../hooks/useChatAutoScroll";
@@ -13,26 +20,6 @@ import { EmptyState } from "./EmptyState";
 import { HistoryDrawer } from "./HistoryDrawer";
 import { deriveRunState } from "../utils/deriveRunState";
 
-/**
- * AI Advisor — FinAI's agentic workspace.
- *
- * Information architecture:
- * - Compact header: identity + History / New chat / Context (mobile).
- * - Conversation (primary, ~70–75% on desktop): user messages, Agent Runs
- *   (live activity → result → confirmation cards), streaming response.
- * - Context panel (~25–30% on desktop): adaptive financial context + quick
- *   actions. On tablet/mobile it becomes a bottom sheet.
- * - History is a right slide-over drawer, never competing with Context.
- *
- * Scrolling: the conversation panel is the single scroll container and owns
- * the auto-scroll policy (`useChatAutoScroll`) — follow the bottom while the
- * user is there, preserve their viewport the moment they scroll away, resume
- * when they return, with an unobtrusive "Jump to latest" chip mid-stream.
- *
- * The agent is powered by `/agent/chat` (SSE) — write actions require
- * explicit user confirmation; the pending action is the source of truth and
- * editable conversationally (never executed by edits).
- */
 export function AiAdvisorPage() {
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -44,6 +31,7 @@ export function AiAdvisorPage() {
     messages,
     isStreaming,
     conversationId,
+    executingActionId,
     sendMessage,
     startNewChat,
     loadConversation,
@@ -72,8 +60,6 @@ export function AiAdvisorPage() {
     if (!q || isStreaming) return;
     setInput("");
     setContextOpen(false);
-    // Sending is the user's own action: re-enable auto-follow and land on the
-    // new turn (the ResizeObserver keeps pinning while the answer streams).
     scrollToBottom();
     await sendMessage(q);
   };
@@ -81,7 +67,6 @@ export function AiAdvisorPage() {
   const handleQuickAction = async (message: string) => {
     if (isStreaming) return;
     setContextOpen(false);
-    // User-initiated action: re-enable auto-follow (requirement §15).
     scrollToBottom();
     await sendMessage(message);
   };
@@ -124,22 +109,25 @@ export function AiAdvisorPage() {
                   onSelectFollowUp={handleQuickAction}
                   onConfirmAction={(actionId, tool) => confirmAction(actionId, tool)}
                   onRejectAction={(actionId) => rejectAction(actionId)}
+                  executingActionId={executingActionId}
                 />
               )}
             </div>
           </div>
 
-          {/* "Jump to latest" — appears only while streaming & the user has scrolled away.
-              Clicking re-enables auto-follow. Never shown when already at bottom. */}
-          {isStreaming && !isAtBottom && (
+          {/* Floating jump to latest message */}
+          {!isAtBottom && hasMessages && (
             <button
               type="button"
               onClick={scrollToBottom}
               aria-label="Jump to latest message"
-              className="border-border/50 bg-card hover:bg-accent hover:text-accent-foreground absolute bottom-20 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-md transition"
+              className="border-border/60 bg-card/95 hover:bg-accent hover:text-accent-foreground absolute bottom-20 left-1/2 z-10 flex -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur-xs transition"
             >
-              <ArrowDown className="size-3.5 shrink-0" aria-hidden="true" />
-              <span>New content</span>
+              <ArrowDown
+                className={`size-3.5 shrink-0 ${isStreaming ? "text-primary animate-bounce" : ""}`}
+                aria-hidden="true"
+              />
+              <span>{isStreaming ? "New content" : "Jump to latest"}</span>
             </button>
           )}
 
@@ -169,12 +157,13 @@ export function AiAdvisorPage() {
         </aside>
       </div>
 
-      {/* Context bottom sheet — tablet & mobile */}
+      {/* Context slide-over drawer — tablet & mobile */}
       <Sheet open={contextOpen} onOpenChange={setContextOpen}>
-        <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
-          <SheetTitle className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-            Context
-          </SheetTitle>
+        <SheetContent side="right" className="w-85 overflow-y-auto sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Financial Context</SheetTitle>
+            <SheetDescription>Live workspace snapshot and quick actions.</SheetDescription>
+          </SheetHeader>
           <div className="mt-4">
             <ContextPanel
               onQuickAction={handleQuickAction}

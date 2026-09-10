@@ -3,7 +3,7 @@ import { defineTool } from "../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
-import type { TransactionFilterInput, UpdateTransactionInput } from "@finai/validation";
+import type { UpdateTransactionInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 import { agentUpdateTransactionSchema } from "../transactions.agent-schemas";
 import {
@@ -14,72 +14,11 @@ import {
   type TransactionRefInput,
 } from "../entity-reference";
 import { resolveAgentTransactionDate } from "../date-expression";
-
-const recategorizeSchema = z
-  .object({
-    filter: z.object({
-      category: z.string().optional(),
-      account: z.string().optional(),
-      type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
-      dateFrom: z.string().datetime().optional(),
-      dateTo: z.string().datetime().optional(),
-      search: z.string().max(200).optional(),
-    }),
-    targetCategoryId: z.string().uuid("Invalid target category ID").optional(),
-    targetCategory: z.string().min(1).max(100).optional(),
-  })
-  .refine((v) => v.targetCategoryId !== undefined || v.targetCategory !== undefined, {
-    message: "Provide targetCategory (name) or targetCategoryId",
-    path: ["targetCategory"],
-  });
-
-type RecategorizeFilter = z.infer<typeof recategorizeSchema>["filter"];
-type RecategorizeInput = z.infer<typeof recategorizeSchema>;
+import { createTransactionsRecategorizeTools } from "./transactions.recategorize.tools";
 
 /**
- * Map the agent-facing filter to the service-layer filter. Pagination is
- * pinned to a single 100-item page because recategorization operates on the
- * whole matching set in the service — the filter is passed through, not the
- * page of rows.
- */
-function toServiceFilter(filter: RecategorizeFilter): TransactionFilterInput {
-  return {
-    ...(filter.category && { category: filter.category }),
-    ...(filter.account && { account: filter.account }),
-    ...(filter.type && { type: filter.type }),
-    ...(filter.search && { search: filter.search }),
-    ...(filter.dateFrom && { dateFrom: filter.dateFrom }),
-    ...(filter.dateTo && { dateTo: filter.dateTo }),
-    page: 1,
-    pageSize: 100,
-    sortOrder: "desc",
-  };
-}
-
-/** Resolve the target category for a re-categorization by name or ID. */
-async function resolveTargetCategory(
-  categoriesService: CategoriesService,
-  userId: string,
-  input: RecategorizeInput,
-) {
-  return resolveCategoryRef(
-    categoriesService,
-    userId,
-    splitRef(input.targetCategory) ?? { id: input.targetCategoryId ?? "" },
-    { autoCreate: true },
-  );
-}
-
-/**
- * Write tools over the existing TransactionsService (plus the read-only
- * recategorize dry-run preview pairing with the confirmation-gated apply).
- * Account/category references may be names or IDs; they are resolved
- * server-side against the user's real data at execute time.
- *
- * The recategorize pair intentionally shares one schema: the read tool runs
- * with `dryRun: true` (counts only), the write tool with `dryRun: false`
- * (applies). The model is prompted to call the dry-run first so the user
- * sees the blast radius ("24 transactions") on the confirm card.
+ * Write tools over the existing TransactionsService:
+ * update, delete, and the recategorize preview/apply pair.
  */
 export function createTransactionsWriteTools(
   transactionsService: TransactionsService,
@@ -87,62 +26,7 @@ export function createTransactionsWriteTools(
   categoriesService: CategoriesService,
 ) {
   return [
-    defineTool({
-      // Deliberately a READ tool even though its apply-counterpart is a
-      // write: the dry-run lets the model report an exact count in chat
-      // before asking the user to confirm the bulk mutation.
-      name: "transactions.recategorize",
-      description:
-        "DRY-RUN ONLY: count the user's transactions matching a filter that would be re-categorized to a target category. Nothing is changed. Run this first, report the matched count to the user, then propose transactions.recategorizeApply for confirmation. targetCategory accepts a category name or ID.",
-      access: "read",
-      confirmation: "none",
-      schema: recategorizeSchema,
-      execute: async (input, ctx) => {
-        const target = await resolveTargetCategory(categoriesService, ctx.userId, input);
-        return transactionsService.recategorize(
-          ctx.userId,
-          toServiceFilter(input.filter),
-          target.id,
-          true,
-        );
-      },
-      summarize: (output) => {
-        const result = output as { matched: number };
-        return `Would re-categorize ${result.matched} transaction(s) (dry-run)`;
-      },
-    }),
-    defineTool({
-      name: "transactions.recategorizeApply",
-      description:
-        "Apply a re-categorization: move ALL transactions matching a filter to a target category, as counted by the transactions.recategorize dry-run. Requires confirmation. Only the category changes — account balances are never touched. targetCategory accepts a category name or ID.",
-      access: "write",
-      confirmation: "required",
-      schema: recategorizeSchema,
-      execute: async (input, ctx) => {
-        const target = await resolveTargetCategory(categoriesService, ctx.userId, input);
-        return transactionsService.recategorize(
-          ctx.userId,
-          toServiceFilter(input.filter),
-          target.id,
-          false,
-        );
-      },
-      describe: (input) => {
-        const rows: [string, string][] = [
-          ["Target category", input.targetCategory ?? input.targetCategoryId ?? "Unresolved"],
-        ];
-        if (input.filter.category) rows.push(["Current category ID", input.filter.category]);
-        if (input.filter.type) rows.push(["Type", input.filter.type]);
-        if (input.filter.search) rows.push(["Notes contain", input.filter.search]);
-        if (input.filter.dateFrom) rows.push(["From", input.filter.dateFrom]);
-        if (input.filter.dateTo) rows.push(["To", input.filter.dateTo]);
-        return { type: "confirmation" as const, title: "Re-categorize transactions", rows };
-      },
-      summarize: (output) => {
-        const result = output as { updated: number };
-        return `Re-categorized ${result.updated} transaction(s)`;
-      },
-    }),
+    ...createTransactionsRecategorizeTools(transactionsService, categoriesService),
     defineTool({
       name: "transactions.update",
       description:
@@ -150,8 +34,6 @@ export function createTransactionsWriteTools(
       access: "write",
       confirmation: "required",
       schema: agentUpdateTransactionSchema,
-      // Propose-time soft validation: surface "no such category/account"
-      // warnings on the confirm card instead of failing after confirm.
       validate: async (input, ctx) => {
         const refInput: TransactionRefInput = {
           account: input.account,
@@ -170,9 +52,6 @@ export function createTransactionsWriteTools(
         return check.warnings.map((w) => ({ field: w.field, message: w.message }));
       },
       execute: async (input, ctx) => {
-        // Destructure reference fields out — they must be resolved to real
-        // ownership-checked IDs before the service call; the remaining
-        // scalar fields pass straight through as changes.
         const {
           transactionId,
           account,
@@ -188,15 +67,9 @@ export function createTransactionsWriteTools(
           type,
         } = input;
         const changes: UpdateTransactionInput = {};
-        // Only include fields the model actually supplied — absent keys mean
-        // "leave unchanged" to the update service, so spreading everything
-        // would accidentally wipe optional fields like notes.
         if (amount !== undefined) changes.amount = amount;
         if (type !== undefined) changes.type = type;
         if (notes !== undefined) changes.notes = notes;
-        // Date resolution follows the same precedence as create: the user's
-        // verbatim expression wins over an explicit date; omitting both
-        // leaves the existing date untouched (no default to today).
         if (date !== undefined || dateExpression !== undefined) {
           changes.date = resolveAgentTransactionDate({ date, dateExpression });
         }
@@ -219,8 +92,6 @@ export function createTransactionsWriteTools(
         }
         if (toAccount !== undefined || toAccountId !== undefined) {
           if (toAccountId === null) {
-            // Explicit null means "clear the transfer destination"; only an
-            // absent field means "don't touch it". Strings still resolve.
             changes.toAccountId = null;
           } else {
             const ref = await resolveAccountRef(

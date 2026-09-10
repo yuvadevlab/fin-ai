@@ -11,108 +11,23 @@ import type { CategoriesService } from "@/modules/categories/categories.service"
  * never reach the database as an FK violation.
  */
 
-export interface EntityRef {
-  id?: string | null;
-  name?: string | null;
-}
-
-export interface NamedEntity {
-  id: string;
-  name: string;
-}
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/** Classify a raw string as an entity ID (UUID) or a display/search name. */
-export function splitRef(value?: string | null): EntityRef | undefined {
-  if (!value || value.trim().length === 0) return undefined;
-  const trimmed = value.trim();
-  return UUID_RE.test(trimmed) ? { id: trimmed } : { name: trimmed };
-}
-
-// ─── Pure fuzzy name matching (zero side effects) ───────────────────────────
-
-const SEPARATOR_RE = /[&,._/+()[\]{}#-]+/g;
-
-/**
- * Canonicalize a name for comparison: lowercase, separators (& , . _ / +
- * brackets # -) become spaces, whitespace collapsed. Lets "Groceries &
- * Supermarket" match a query of "groceries supermarket".
- */
-export function normalizeEntityName(value: string): string {
-  return value.toLowerCase().replace(SEPARATOR_RE, " ").replace(/\s+/g, " ").trim();
-}
-
-/**
- * Rank how well a candidate name matches a user-supplied query.
- *
- * Scoring tiers (higher = better match):
- *   100 — exact match after normalization
- *    80 — candidate starts with the query ("hdfc salary" → "HDFC Salary Account")
- *    70+ — every whitespace token of the query appears in the candidate
- *          (bonus grows with token count so multi-token hits beat single-token luck)
- *    60 — candidate merely contains the query as a substring
- *    10×n — only some query tokens matched (weak, may still win if nothing better)
- *   -1 — no match at all
- *
- * Returns a positive score when matched, -1 when not a match.
- */
-export function scoreEntityMatch(name: string, query: string): number {
-  const n = normalizeEntityName(name);
-  const q = normalizeEntityName(query);
-  if (!q || !n) return -1;
-  if (n === q) return 100;
-  if (n.startsWith(q)) return 80;
-  if (n.includes(q)) return 60;
-
-  // Multi-token queries ("food dining") rarely substring-match, so score by
-  // token coverage instead: all tokens present beats partial coverage.
-  const qTokens = q.split(" ").filter(Boolean);
-  if (qTokens.length > 1) {
-    const matched = qTokens.filter((t) => n.includes(t)).length;
-    if (matched === qTokens.length) return 70 + Math.min(qTokens.length, 5);
-    return matched > 0 ? matched * 10 : -1;
-  }
-  return -1;
-}
-
-/**
- * Pick ALL candidates tied at the highest score for a fuzzy name query.
- *
- * Unlike {@link bestEntityMatch}, this never breaks ties silently — when the
- * user says "use SBI" and owns "SBI Savings" AND "SBI Salary", both tie at
- * the same tier, and the caller must ask for clarification instead of
- * guessing. Empty array when nothing matches.
- */
-export function bestEntityMatches<T extends NamedEntity>(candidates: T[], query: string): T[] {
-  let bestScore = 0;
-  let best: T[] = [];
-  for (const candidate of candidates) {
-    const score = scoreEntityMatch(candidate.name, query);
-    if (score <= 0) continue;
-    if (score > bestScore) {
-      bestScore = score;
-      best = [candidate];
-    } else if (score === bestScore) {
-      best.push(candidate);
-    }
-  }
-  return best;
-}
-
-/**
- * Pick the highest-scoring candidate for a fuzzy name query.
- * Ties and non-matches resolve to undefined — callers decide whether to
- * throw, ask the model, or auto-create. For accounts, prefer
- * {@link bestEntityMatches} so ties can be surfaced as ambiguous instead of
- * silently resolved to the first candidate.
- */
-export function bestEntityMatch<T extends NamedEntity>(
-  candidates: T[],
-  query: string,
-): T | undefined {
-  return bestEntityMatches(candidates, query)[0];
-}
+export {
+  type EntityRef,
+  type NamedEntity,
+  splitRef,
+  normalizeEntityName,
+  scoreEntityMatch,
+  bestEntityMatches,
+  bestEntityMatch,
+} from "./utils/entity-match.utils";
+import {
+  splitRef,
+  scoreEntityMatch,
+  bestEntityMatches,
+  bestEntityMatch,
+  type EntityRef,
+  type NamedEntity,
+} from "./utils/entity-match.utils";
 
 // ─── Ownership-checked resolvers (I/O-bound, used at execute time) ──────────
 
@@ -218,14 +133,13 @@ export async function resolveAccountRef(
 
 // ─── Transaction-specific combined resolution ────────────────────────────────
 
-export interface TransactionRefInput {
-  account?: string;
-  accountId?: string;
-  category?: string;
-  categoryId?: string;
-  toAccount?: string;
-  toAccountId?: string | null;
-}
+export {
+  type RefCheckWarning,
+  type TransactionRefCheckResult,
+  type TransactionRefInput,
+  checkTransactionRefs,
+} from "./transaction-ref-checker";
+import type { TransactionRefInput } from "./transaction-ref-checker";
 
 /**
  * Resolve the account/category/optional to-account references of a
@@ -275,106 +189,4 @@ export async function resolveTransactionRefs(
   }
 
   return { accountId, categoryId: category.id, toAccountId };
-}
-
-// ─── Soft reference check (for propose-time validation) ──────────────────────
-
-export interface RefCheckWarning {
-  field: string;
-  message: string;
-}
-
-export interface TransactionRefCheckResult {
-  ok: boolean;
-  warnings: RefCheckWarning[];
-  /** Filled with similar existing names for unresolved category references. */
-  categorySuggestions: Record<string, string[]>;
-}
-
-/**
- * Non-throwing variant of {@link resolveTransactionRefs}. Used by the
- * propose-time `validate` hook to flag references that won't resolve (e.g. a
- * category name that doesn't exist yet) so the user sees a warning on the
- * confirm card instead of a hard failure after confirm.
- */
-export async function checkTransactionRefs(
-  accountsService: AccountsService,
-  categoriesService: CategoriesService,
-  userId: string,
-  input: TransactionRefInput,
-): Promise<TransactionRefCheckResult> {
-  const warnings: RefCheckWarning[] = [];
-  const categorySuggestions: Record<string, string[]> = {};
-  const categories = await categoriesService.getCategories(userId);
-  const accounts = await accountsService.findAll(userId);
-
-  // Account
-  const accountRef = splitRef(input.account) ?? { id: input.accountId ?? "" };
-  if (accountRef.name) {
-    const matches = bestEntityMatches(accounts, accountRef.name);
-    if (matches.length > 1) {
-      warnings.push({
-        field: "Account",
-        message: `Multiple accounts match "${accountRef.name}" (${matches
-          .map((a) => a.name)
-          .join(", ")}). Specify which account to use.`,
-      });
-    } else if (matches.length === 0) {
-      warnings.push({
-        field: "Account",
-        message: `No account matches "${accountRef.name}".`,
-      });
-    }
-  } else if (accountRef.id) {
-    if (!accounts.find((a) => a.id === accountRef.id)) {
-      warnings.push({ field: "Account", message: `Account ID ${accountRef.id} not found.` });
-    }
-  }
-
-  // Category
-  const categoryRef = splitRef(input.category) ?? { id: input.categoryId ?? "" };
-  if (categoryRef.name) {
-    const match = bestEntityMatch(categories, categoryRef.name);
-    if (!match) {
-      const similar = categories
-        .map((c) => ({ name: c.name, score: scoreEntityMatch(c.name, categoryRef.name!) }))
-        .filter((m) => m.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3)
-        .map((m) => m.name);
-      categorySuggestions[categoryRef.name] = similar;
-      const suggestion = similar.length > 0 ? ` Similar: ${similar.join(", ")}.` : "";
-      warnings.push({
-        field: "Category",
-        message: `No category matches "${categoryRef.name}".${suggestion} Confirming will create a new category.`,
-      });
-    }
-  } else if (categoryRef.id) {
-    if (!categories.find((c) => c.id === categoryRef.id)) {
-      warnings.push({ field: "Category", message: `Category ID ${categoryRef.id} not found.` });
-    }
-  }
-
-  // To-account (optional)
-  if (input.toAccount !== undefined && input.toAccount !== null) {
-    const toRef = splitRef(input.toAccount);
-    if (toRef?.name) {
-      const toMatches = bestEntityMatches(accounts, toRef.name);
-      if (toMatches.length > 1) {
-        warnings.push({
-          field: "To account",
-          message: `Multiple accounts match "${toRef.name}" (${toMatches
-            .map((a) => a.name)
-            .join(", ")}). Specify which account to use.`,
-        });
-      } else if (toMatches.length === 0) {
-        warnings.push({
-          field: "To account",
-          message: `No account matches "${toRef.name}".`,
-        });
-      }
-    }
-  }
-
-  return { ok: warnings.length === 0, warnings, categorySuggestions };
 }

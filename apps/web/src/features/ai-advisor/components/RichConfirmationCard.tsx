@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ShieldAlert, X } from "lucide-react";
+import { Check, Loader2, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@finai/ui";
 import type { AgentConfirmation } from "../api/agentTypes";
 
@@ -15,6 +15,8 @@ interface RichConfirmationCardProps {
    * that references a category the agent is also proposing to create).
    */
   disabled?: boolean;
+  /** True while the action is currently executing over the network. */
+  isExecuting?: boolean;
 }
 
 const STATUS_META: Record<AgentConfirmation["status"], { label: string; className: string }> = {
@@ -52,10 +54,13 @@ export function RichConfirmationCard({
   onConfirm,
   onReject,
   disabled = false,
+  isExecuting = false,
 }: RichConfirmationCardProps) {
   const { card, status } = confirmation;
   const pending = status === "pending";
-  const meta = STATUS_META[status];
+  const meta = isExecuting
+    ? { label: "Executing…", className: "text-amber-500 bg-amber-500/10 border-amber-500/20" }
+    : STATUS_META[status];
 
   // Detect before/effect pairs in the rows.
   const { effectRows, detailRows } = partitionRows(card.rows ?? []);
@@ -69,9 +74,11 @@ export function RichConfirmationCard({
         <span
           className={cn("rounded-full border px-2 py-0.5 text-[11px] font-medium", meta.className)}
         >
-          {pending && (
+          {isExecuting ? (
+            <Loader2 className="mr-1 inline-block size-3 animate-spin text-current" />
+          ) : pending ? (
             <span className="mr-1 inline-block size-1.5 animate-pulse rounded-full bg-current" />
-          )}
+          ) : null}
           {meta.label}
         </span>
       </div>
@@ -132,16 +139,26 @@ export function RichConfirmationCard({
             <Button
               size="sm"
               className="cursor-pointer gap-1.5"
-              disabled={disabled}
+              disabled={disabled || isExecuting}
               onClick={() => onConfirm(confirmation.actionId, confirmation.tool)}
             >
-              <Check className="size-3.5" />
-              Confirm
+              {isExecuting ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  Confirming…
+                </>
+              ) : (
+                <>
+                  <Check className="size-3.5" />
+                  Confirm
+                </>
+              )}
             </Button>
             <Button
               size="sm"
               variant="outline"
               className="cursor-pointer gap-1.5"
+              disabled={disabled || isExecuting}
               onClick={() => onReject(confirmation.actionId)}
             >
               <X className="size-3.5" />

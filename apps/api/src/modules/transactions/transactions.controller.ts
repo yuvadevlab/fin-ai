@@ -12,7 +12,7 @@ import {
 } from "@nestjs/common";
 import { type Response } from "express";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
-import { TransactionsService } from "./transactions.service";
+import { TransactionsService } from "./services";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";

@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { AgentActionStatus, Prisma } from "@finai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
-import { enrichCardWithEntityNames } from "./card-enricher";
+import { buildConfirmationCard as generateConfirmationCard } from "./dispatchers/agent-proposal-builder";
 import { AuditService } from "./audit.service";
 import type { AgentContext } from "./agent.types";
 import type { AgentCard } from "@finai/ai-engine";
@@ -217,8 +217,6 @@ export class AgentActionService {
 
   /**
    * Human-readable confirmation card for the SSE stream (IDs resolved to names).
-   * Warnings should be pre-computed by the caller (agent service) so they can
-   * also be included in the tool result message that the LLM sees.
    */
   async buildConfirmationCard(
     tool: string,
@@ -226,26 +224,6 @@ export class AgentActionService {
     userId: string,
     warnings: { field: string; message: string }[] = [],
   ): Promise<AgentCard> {
-    const registered = this.registry.get(tool);
-    let card: AgentCard;
-    if (registered?.describe) {
-      card = registered.describe(input);
-    } else {
-      card = {
-        type: "confirmation",
-        title: `Confirm: ${tool}`,
-        rows: Object.entries((input ?? {}) as Record<string, unknown>).map(([key, value]) => [
-          key,
-          typeof value === "object" ? JSON.stringify(value) : String(value),
-        ]),
-      };
-    }
-
-    if (warnings.length > 0) {
-      const warningRows: [string, string][] = warnings.map((w) => [`⚠️  ${w.field}`, w.message]);
-      card = { ...card, rows: [...warningRows, ...card.rows] };
-    }
-
-    return enrichCardWithEntityNames(this.prisma, card, userId);
+    return generateConfirmationCard(this.registry, this.prisma, tool, input, userId, warnings);
   }
 }

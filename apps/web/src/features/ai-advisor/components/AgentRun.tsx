@@ -1,61 +1,70 @@
 "use client";
 
+import { useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
 import { RichConfirmationCard } from "./RichConfirmationCard";
 import type { AgentChatMessage } from "../api/agentTypes";
+import { extractFinancialInsight } from "../utils/financialInsight";
 
 interface AgentRunProps {
   message: AgentChatMessage;
   onConfirmAction: (actionId: string, tool: string) => void;
   onRejectAction: (actionId: string) => void;
+  executingActionId?: string | null;
 }
 
-/**
- * A single assistant turn, composed of:
- * 1. Run progress (grouped tool activity) — full step list for the current
- *    turn (including the phase before any tool call arrives), compact status
- *    chip for older turns so activity history stays visible.
- * 2. Optional financial insight card — when the response opens with a clear
- *    structured figure.
- * 3. The prose response (markdown).
- * 4. Confirmation cards for any proposed write actions.
- * 5. Error/recovery block when the run failed.
- *
- * This replaces the scattered "chips below a bubble" pattern with a coherent
- * run that tells the user what the agent did and what it concluded.
- */
-export function AgentRun({ message, onConfirmAction, onRejectAction }: AgentRunProps) {
-  const { text = "", activities = [], confirmations = [], streaming = false, error } = message;
+export function AgentRun({
+  message,
+  onConfirmAction,
+  onRejectAction,
+  executingActionId,
+}: AgentRunProps) {
+  const {
+    text = "",
+    activities = [],
+    confirmations = [],
+    logs = [],
+    streaming = false,
+    error,
+  } = message;
   const hasActivities = activities.length > 0;
   const hasConfirmations = !!confirmations && confirmations.length > 0;
 
+  // Deduplicate: if a prominent financial figure is extracted into the card,
+  // render only the remaining text in MarkdownMessage so the heading and amount
+  // are never shown twice.
+  const insight = useMemo(
+    () => (!streaming && !error && text ? extractFinancialInsight(text) : null),
+    [streaming, error, text],
+  );
+  const proseContent = insight?.remainingText ? insight.remainingText : text;
+
   return (
     <div className="space-y-3">
-      {/* 1. Live activity stream — collapsed summary while running and after
-          completion (status · step count · elapsed time), fully expandable at
-          any time. Every row originates from a real SSE event. */}
-      {(hasActivities || streaming) && (
+      {/* 1. Live activity stream with real-time logs & speed ticker */}
+      {(hasActivities || streaming || logs.length > 0) && (
         <ActivityTimeline
           activities={activities}
+          logs={logs}
           isStreaming={streaming}
           hasText={text.length > 0}
         />
       )}
 
-      {/* 2. Financial insight (structured leading figure) */}
-      {!streaming && !error && text && <FinancialInsight text={text} />}
+      {/* 2. Financial insight card */}
+      {insight && <FinancialInsight text={text} />}
 
-      {/* 3. Prose response */}
-      {text && (
+      {/* 3. Prose response (deduplicated) */}
+      {proseContent && (
         <div className="text-sm leading-relaxed">
-          <MarkdownMessage content={text} />
+          <MarkdownMessage content={proseContent} />
         </div>
       )}
 
-      {/* 4. Error / recovery block */}
+      {/* 4. Error block */}
       {error && (
         <div className="border-destructive/30 bg-destructive/10 rounded-xl border p-3.5">
           <div className="flex items-start gap-2.5">
@@ -72,9 +81,7 @@ export function AgentRun({ message, onConfirmAction, onRejectAction }: AgentRunP
         </div>
       )}
 
-      {/* 5. Confirmation cards — sequential: only the first pending card is
-          enabled so the user confirms interdependent actions in order
-          (e.g. create the category before the transaction that uses it). */}
+      {/* 5. Confirmation cards */}
       {hasConfirmations &&
         (() => {
           let firstPendingSeen = false;
@@ -82,13 +89,15 @@ export function AgentRun({ message, onConfirmAction, onRejectAction }: AgentRunP
             const isPending = confirmation.status === "pending";
             const disabled = isPending && firstPendingSeen;
             if (isPending) firstPendingSeen = true;
+            const isExecuting = executingActionId === confirmation.actionId;
             return (
               <RichConfirmationCard
                 key={confirmation.actionId}
                 confirmation={confirmation}
                 onConfirm={onConfirmAction}
                 onReject={onRejectAction}
-                disabled={disabled}
+                disabled={disabled || executingActionId !== null}
+                isExecuting={isExecuting}
               />
             );
           });

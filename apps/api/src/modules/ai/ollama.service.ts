@@ -126,9 +126,4 @@ export class OllamaService {
       throw new Error("AI service unavailable");
     }
   }
-
-  /** @deprecated Use streamChatWithCallback instead */
-  async streamChat(options: OllamaStreamOptions, res: Response): Promise<void> {
-    return this.streamChatWithCallback(options, res);
-  }
 }

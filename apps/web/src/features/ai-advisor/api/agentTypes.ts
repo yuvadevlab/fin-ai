@@ -51,12 +51,21 @@ export interface AgentConfirmation {
   status: AgentConfirmationStatus;
 }
 
+export interface AgentRunLogEntry {
+  id: string;
+  timestamp: number;
+  elapsedMs: number;
+  level: "SYS" | "CTX" | "LLM" | "TOOL" | "STREAM" | "ACTION" | "DONE" | "ERR";
+  message: string;
+  detail?: string;
+}
+
 /**
  * A single message in the agent chat. User messages carry only `role` and
  * `text`. Assistant messages may carry a `streaming` flag (true while the
  * server is still sending tokens), accumulated `activities` (tool call
- * steps), `confirmations` (write-action cards), and an `error` message when
- * the run failed (network, stream, or tool failure).
+ * steps), `confirmations` (write-action cards), `logs` (real-time high-speed
+ * processing logs), and an `error` message when the run failed.
  */
 export interface AgentChatMessage {
   role: "user" | "assistant";
@@ -64,5 +73,6 @@ export interface AgentChatMessage {
   streaming?: boolean;
   activities?: AgentActivity[];
   confirmations?: AgentConfirmation[];
+  logs?: AgentRunLogEntry[];
   error?: string;
 }
