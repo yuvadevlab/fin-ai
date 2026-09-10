@@ -3,7 +3,13 @@
  */
 
 /**
- * Format a number as INR with the ₹ symbol and Indian grouping.
+ * Format a number as INR with the ₹ symbol and Indian digit grouping
+ * (en-IN locale: 12,34,567 — lakh/crore grouping, not western thousands).
+ *
+ * Decimals are shown only when the amount actually has a fractional part,
+ * so "₹250" stays compact while "₹250.50" keeps paise precision. The
+ * `Number(abs.toFixed(2)) % 1` dance (instead of `abs % 1`) avoids float
+ * artifacts like 0.30000000000000004 being treated as a fraction.
  * Matches the reference UI's `inr()` function.
  */
 export function formatINR(value: number): string {
@@ -21,7 +27,10 @@ export function formatINR(value: number): string {
 }
 
 /**
- * Format a number as a short currency string.
+ * Compact money for KPI tiles and chart labels using the Indian short scale
+ * (k = thousand, L = lakh = 100k, Cr = crore = 10M). Thousands round to a
+ * whole k (an extra decimal buys nothing at that scale) while lakhs/crores
+ * keep one decimal because precision matters more as magnitudes grow.
  * e.g., 125000 → ₹1.3L, 48200 → ₹48k
  */
 export function formatCurrencyShort(value: number): string {
@@ -35,7 +44,9 @@ export function formatCurrencyShort(value: number): string {
 }
 
 /**
- * Parse a formatted currency string back to a number.
+ * Inverse of formatINR: strip ₹/commas/whitespace and parse. Unparseable
+ * input returns 0 (not NaN) so arithmetic callers never poison a total
+ * with NaN. Cannot reverse formatCurrencyShort's "L"/"Cr" suffixes.
  */
 export function parseCurrencyValue(formatted: string): number {
   const cleaned = formatted.replace(/[₹,\s]/g, "");

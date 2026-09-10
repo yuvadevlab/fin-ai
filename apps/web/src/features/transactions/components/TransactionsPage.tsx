@@ -21,7 +21,7 @@ import { TransactionDialog } from "./TransactionDialog";
 import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
 
-const chips = ["All", "Income", "Expenses", "Transfer"];
+const chips = ["All", "Income", "Expenses", "Transfer", "Investments", "Goals"];
 
 export function TransactionsPage() {
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -47,6 +47,8 @@ export function TransactionsPage() {
     if (selectedFilter === "Income") filter.type = "INCOME";
     if (selectedFilter === "Expenses") filter.type = "EXPENSE";
     if (selectedFilter === "Transfer") filter.type = "TRANSFER";
+    if (selectedFilter === "Investments") filter.type = "INVESTMENT";
+    if (selectedFilter === "Goals") filter.type = "GOAL";
     if (categoryId !== "all") filter.category = categoryId;
     if (accountId !== "all") filter.account = accountId;
     if (dateRange.startDate) filter.dateFrom = format(dateRange.startDate, "yyyy-MM-dd");

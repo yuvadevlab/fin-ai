@@ -2,10 +2,38 @@ import { Injectable } from "@nestjs/common";
 import { formatINR } from "@finai/finance-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
+/**
+ * Builds a comprehensive text snapshot of the user's financial life for the
+ * LLM's system prompt.
+ *
+ * This is the "financial context" the agent sees — it answers the question
+ * "what does the AI know about the user's money?" without needing to call
+ * tools for basic facts.
+ *
+ * The snapshot intentionally uses the server-local calendar date (not UTC)
+ * so that "today" in the LLM's mind matches the user's local date.
+ *
+ * Structure of the returned text:
+ * 1. Today's date (YYYY-MM-DD, server-local)
+ * 2. Net worth, monthly income/expenses, savings rate, investment P&L
+ * 3. Linked accounts with balances
+ * 4. Top expense categories this month
+ * 5. Budget adherence (limit vs spent vs status)
+ * 6. Savings goals with progress percentages
+ * 7. Investment portfolio with returns
+ * 8. Recent transactions (up to 30)
+ */
 @Injectable()
 export class ContextBuilderService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Assembles the full financial snapshot for a user.
+   *
+   * Fetches all data in parallel (single round-trip to the DB) for
+   * performance. The returned string is injected into the agent's system
+   * prompt so the LLM has grounding before any tool calls.
+   */
   async buildFinanceContext(userId: string): Promise<string> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -65,8 +93,15 @@ export class ContextBuilderService {
 
     const monthName = now.toLocaleString("en-IN", { month: "long", year: "numeric" });
 
+    // Server-local calendar date (YYYY-MM-DD) — the LLM anchors "today" on this.
+    const localToday = (() => {
+      const offsetMs = now.getTimezoneOffset() * 60_000;
+      return new Date(now.getTime() - offsetMs).toISOString().slice(0, 10);
+    })();
+
     const lines = [
       `## User Financial Summary (${monthName})`,
+      `- Today: ${localToday}`,
       `- Net Worth: ${formatINR(netWorth)} (Liquid Cash: ${formatINR(totalBankBalance)} | Portfolio: ${formatINR(totalInvestments)})`,
       `- Month Income: ${formatINR(monthIncome)}`,
       `- Month Expenses: ${formatINR(monthExpenses)}`,

@@ -1,14 +1,17 @@
 import { formatINR } from "../formatters/currency";
 
 export interface Recommendation {
+  /** Stable display id ("rec-1", "rec-2", …), assigned in generation order. */
   id: string;
   category: "budget" | "savings" | "investment" | "goal" | "general";
   priority: "high" | "medium" | "low";
   title: string;
   description: string;
+  /** Estimated money the user could recover, when quantifiable. */
   potentialSavings?: number;
 }
 
+/** Describes the user's financial state used to generate recommendations. */
 interface RecommendationInput {
   savingsRate: number;
   budgetCategories: {
@@ -22,7 +25,18 @@ interface RecommendationInput {
 }
 
 /**
- * Generate prioritised recommendations from financial data.
+ * Rule-based "smart tips" generator: converts the user's financial snapshot
+ * into prioritised, human-readable nudges. This is deterministic template
+ * logic — NOT the LLM advisor — so it works offline and costs nothing; the
+ * rules encode common personal-finance heuristics:
+ *   - over-spent budget  → high priority, with the overage as potential savings
+ *   - >85% of a budget used → medium early warning (mirrors BudgetStatus thresholds)
+ *   - savings rate < 20%  → high nudge; > 50% → praise + invest suggestion
+ *   - emergency fund < 3 months → high nudge; ≥ 6 months → invest surplus
+ *   - goal deadline < 6 months away → monthly amount needed to hit it
+ *
+ * @returns Recommendations sorted high → medium → low (stable within a
+ *   priority, preserving generation order). Empty when everything is healthy.
  */
 export function generateRecommendations(input: RecommendationInput): Recommendation[] {
   const recommendations: Recommendation[] = [];
@@ -93,6 +107,9 @@ export function generateRecommendations(input: RecommendationInput): Recommendat
   for (const goal of input.goals) {
     const remaining = goal.target - goal.current;
     const deadlineDate = new Date(goal.deadline);
+    // Months left, floored at 1 so an already-passed deadline produces a
+    // large (urgently actionable) required-monthly figure instead of a
+    // division by ~0 or a negative. 30-day months are fine at this precision.
     const monthsLeft = Math.max(
       1,
       (deadlineDate.getTime() - Date.now()) / (30 * 24 * 60 * 60 * 1000),

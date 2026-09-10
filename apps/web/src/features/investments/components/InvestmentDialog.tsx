@@ -3,19 +3,23 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createInvestmentSchema } from "@finai/validation";
-import { useCreateInvestment } from "../api";
+import { useCreateInvestment, type Investment } from "../api";
 import { InvestmentForm } from "./InvestmentForm";
 
 export interface InvestmentDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  initialName?: string;
+  onSuccess?: (created: Investment) => void;
 }
 
 export function InvestmentDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  initialName = "",
+  onSuccess,
 }: InvestmentDialogProps) {
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
@@ -23,13 +27,25 @@ export function InvestmentDialog({
 
   const createInvestment = useCreateInvestment();
 
-  const [values, setValues] = useState<Record<string, string>>({
-    name: "",
+  const getInitialValues = () => ({
+    name: initialName,
     assetClass: "MUTUAL_FUND",
     investedAmount: "",
     currentValue: "",
   });
+
+  const [values, setValues] = useState<Record<string, string>>(getInitialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Sync initialName when dialog opens
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setValues(getInitialValues());
+      setErrors({});
+    }
+  }
 
   const handleChange = (name: string, value: string) => {
     setValues((prev) => ({
@@ -66,15 +82,11 @@ export function InvestmentDialog({
     }
 
     try {
-      await createInvestment.mutateAsync(parseResult.data);
+      const created = await createInvestment.mutateAsync(parseResult.data);
+      onSuccess?.(created);
       setOpen?.(false);
       // Reset form
-      setValues({
-        name: "",
-        assetClass: "STOCK",
-        investedAmount: "",
-        currentValue: "",
-      });
+      setValues({ name: "", assetClass: "MUTUAL_FUND", investedAmount: "", currentValue: "" });
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({

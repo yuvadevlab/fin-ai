@@ -164,6 +164,16 @@
   animation: none !important;
 }
 
+/* ── Speed runner shimmer for agent progress bar ─────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* ── Layout Design Tokens ─────────────────────────────────────────────────── */
 /* All layout dimensions as CSS variables so calc() works throughout the shell */
 :root {

@@ -14,6 +14,8 @@ export function useUpdateTransaction() {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["investments"] });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       toast.success("Transaction updated successfully");
     },
     onError: (error) => {

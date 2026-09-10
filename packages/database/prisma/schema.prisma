@@ -1,16 +1,303 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String         @id @default(uuid())
+  email                String         @unique
+  name                 String
+  passwordHash         String         @map("password_hash")
+  avatarUrl            String?        @map("avatar_url")
+  preferences          Json           @default("{}")
+  resetPasswordToken   String?        @map("reset_password_token")
+  resetPasswordExpires DateTime?      @map("reset_password_expires")
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+  accounts             Account[]
+  budgets              Budget[]
+  categories           Category[]
+  conversations        Conversation[]
+  goals                Goal[]
+  investments          Investment[]
+  notifications        Notification[]
+  sessions             Session[]
+  transactions         Transaction[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String        @id @default(uuid())
+  userId            String        @map("user_id")
+  name              String
+  type              AccountType
+  balance           Float         @default(0.0)
+  currency          String        @default("INR")
+  isActive          Boolean       @default(true) @map("is_active")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions      Transaction[] @relation("SourceAccount")
+  transfersReceived Transaction[] @relation("DestinationAccount")
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Transaction {
+  id           String          @id @default(uuid())
+  userId       String          @map("user_id")
+  accountId    String          @map("account_id")
+  toAccountId  String?         @map("to_account_id")
+  categoryId   String          @map("category_id")
+  investmentId String?         @map("investment_id")
+  goalId       String?         @map("goal_id")
+  amount       Float
+  date         DateTime
+  notes        String?
+  type         TransactionType
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  account      Account         @relation("SourceAccount", fields: [accountId], references: [id], onDelete: Cascade)
+  category     Category        @relation(fields: [categoryId], references: [id])
+  toAccount    Account?        @relation("DestinationAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
+  investment   Investment?     @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+  goal         Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([toAccountId])
+  @@index([categoryId])
+  @@index([investmentId])
+  @@index([goalId])
+  @@index([date])
+  @@map("transactions")
+}
+
+model CategoryGroup {
+  id         String     @id @default(uuid())
+  name       String     @unique
+  order      Int        @default(0)
+  categories Category[]
+
+  @@map("category_groups")
+}
+
+model Category {
+  id            String         @id @default(uuid())
+  userId        String         @map("user_id")
+  name          String
+  group         String         @default("Variable Expenses")
+  groupId       String?        @map("group_id")
+  icon          String?
+  isDefault     Boolean        @default(false) @map("is_default")
+  budgets       Budget[]
+  categoryGroup CategoryGroup? @relation(fields: [groupId], references: [id])
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("categories")
+}
+
+model Budget {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  categoryId String   @map("category_id")
+  limit      Float
+  startDate  DateTime @default(now()) @map("start_date")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId])
+  @@index([userId])
+  @@map("budgets")
+}
+
+model Goal {
+  id            String        @id @default(uuid())
+  userId        String        @map("user_id")
+  name          String
+  targetAmount  Float         @map("target_amount")
+  currentAmount Float         @default(0.0) @map("current_amount")
+  deadline      DateTime?
+  type          GoalType      @default(PERSONAL)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  transactions  Transaction[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model Investment {
+  id             String        @id @default(uuid())
+  userId         String        @map("user_id")
+  name           String
+  assetClass     AssetClass    @map("asset_class")
+  currentValue   Float         @map("current_value")
+  investedAmount Float         @map("invested_amount")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  transactions   Transaction[]
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("investments")
+}
+
+model Conversation {
+  id            String        @id @default(uuid())
+  userId        String        @map("user_id")
+  title         String?
+  summary       String?
+  lastEntityRef Json?         @map("last_entity_ref")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      Message[]
+  actions       AgentAction[]
+
+  @@index([userId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  role           MessageRole
+  content        String
+  metadata       Json?
+  createdAt      DateTime     @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  body      String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model MenuItem {
+  id        String   @id @default(uuid())
+  label     String
+  href      String   @unique
+  icon      String
+  group     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("menu_items")
+}
+
+model ReferenceOption {
+  id        String   @id @default(uuid())
+  category  String
+  label     String
+  value     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([category, value])
+  @@index([category])
+  @@map("reference_options")
+}
+
+// ─── Agent runtime ───────────────────────────────────────────────────────────
+
+enum AgentActionStatus {
+  PROPOSED
+  EXECUTED
+  REJECTED
+  EXPIRED
+  FAILED
+}
+
+/// Proposed agent tool execution awaiting user confirmation (write tools).
+/// `clientActionId` is the idempotency key: re-confirming returns the original result.
+model AgentAction {
+  id             String            @id @default(uuid())
+  clientActionId String            @unique @map("client_action_id")
+  conversationId String            @map("conversation_id")
+  conversation   Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String            @map("user_id")
+  tool           String
+  input          Json
+  preview        Json?
+  status         AgentActionStatus @default(PROPOSED)
+  result         Json?
+  error          String?
+  expiresAt      DateTime          @map("expires_at")
+  executedAt     DateTime?         @map("executed_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  @@index([userId, status])
+  @@index([conversationId])
+  @@map("agent_actions")
+}
+
+/// Audit trail for agent (and future administrative) actions.
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  runId      String?  @map("run_id")
+  action     String
+  tool       String?
+  entityType String?  @map("entity_type")
+  entityId   String?  @map("entity_id")
+  before     Json?
+  after      Json?
+  status     String
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@index([tool, createdAt])
+  @@map("audit_logs")
+}
+
 enum GoalType {
+  PERSONAL
   EMERGENCY_FUND
   OBLIGATION
   LIFESTYLE
-  PERSONAL
 }
 
 enum AccountType {
@@ -25,6 +312,7 @@ enum TransactionType {
   EXPENSE
   TRANSFER
   INVESTMENT
+  GOAL
 }
 
 enum AssetClass {
@@ -52,211 +340,4 @@ enum NotificationType {
   GOAL_MILESTONE
   AI_INSIGHT
   SYSTEM
-}
-
-model User {
-  id                   String         @id @default(uuid())
-  email                String         @unique
-  name                 String
-  passwordHash         String         @map("password_hash")
-  avatarUrl            String?        @map("avatar_url")
-  preferences          Json           @default("{}")
-  resetPasswordToken   String?        @map("reset_password_token")
-  resetPasswordExpires DateTime?      @map("reset_password_expires")
-  createdAt            DateTime       @default(now()) @map("created_at")
-  updatedAt            DateTime       @updatedAt @map("updated_at")
-  accounts             Account[]
-  transactions         Transaction[]
-  categories           Category[]
-  budgets              Budget[]
-  goals                Goal[]
-  investments          Investment[]
-  conversations        Conversation[]
-  notifications        Notification[]
-  sessions             Session[]
-
-  @@map("users")
-}
-
-model Account {
-  id                String        @id @default(uuid())
-  userId            String        @map("user_id")
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name              String
-  type              AccountType
-  balance           Float         @default(0.0)
-  currency          String        @default("INR")
-  isActive          Boolean       @default(true) @map("is_active")
-  createdAt         DateTime      @default(now()) @map("created_at")
-  updatedAt         DateTime      @updatedAt @map("updated_at")
-  transactions      Transaction[] @relation("SourceAccount")
-  transfersReceived Transaction[] @relation("DestinationAccount")
-
-  @@index([userId])
-  @@map("accounts")
-}
-
-model Transaction {
-  id          String          @id @default(uuid())
-  userId      String          @map("user_id")
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId   String          @map("account_id")
-  account     Account         @relation("SourceAccount", fields: [accountId], references: [id], onDelete: Cascade)
-  toAccountId String?         @map("to_account_id")
-  toAccount   Account?        @relation("DestinationAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
-  categoryId  String          @map("category_id")
-  category    Category        @relation(fields: [categoryId], references: [id])
-  amount      Float
-  date        DateTime
-  notes       String?
-  type        TransactionType
-  createdAt   DateTime        @default(now()) @map("created_at")
-  updatedAt   DateTime        @updatedAt @map("updated_at")
-
-  @@index([userId])
-  @@index([accountId])
-  @@index([toAccountId])
-  @@index([categoryId])
-  @@index([date])
-  @@map("transactions")
-}
-
-model CategoryGroup {
-  id         String     @id @default(uuid())
-  name       String     @unique
-  order      Int        @default(0)
-  categories Category[]
-
-  @@map("category_groups")
-}
-
-model Category {
-  id            String         @id @default(uuid())
-  userId        String         @map("user_id")
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name          String
-  group         String         @default("Variable Expenses")
-  groupId       String?        @map("group_id")
-  categoryGroup CategoryGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  icon          String?
-  isDefault     Boolean        @default(false) @map("is_default")
-  transactions  Transaction[]
-  budgets       Budget[]
-
-  @@unique([userId, name])
-  @@index([userId])
-  @@map("categories")
-}
-
-model Budget {
-  id         String   @id @default(uuid())
-  userId     String   @map("user_id")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categoryId String   @map("category_id")
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  limit      Float
-  startDate  DateTime @default(now()) @map("start_date")
-
-  @@unique([userId, categoryId])
-  @@index([userId])
-  @@map("budgets")
-}
-
-model Goal {
-  id            String    @id @default(uuid())
-  userId        String    @map("user_id")
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name          String
-  targetAmount  Float     @map("target_amount")
-  currentAmount Float     @default(0.0) @map("current_amount")
-  deadline      DateTime?
-  type          GoalType  @default(PERSONAL)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  @@index([userId])
-  @@map("goals")
-}
-
-model Investment {
-  id             String     @id @default(uuid())
-  userId         String     @map("user_id")
-  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name           String
-  assetClass     AssetClass @map("asset_class")
-  currentValue   Float      @map("current_value")
-  investedAmount Float      @map("invested_amount")
-  createdAt      DateTime   @default(now()) @map("created_at")
-  updatedAt      DateTime   @updatedAt @map("updated_at")
-
-  @@index([userId])
-  @@map("investments")
-}
-
-model Conversation {
-  id        String    @id @default(uuid())
-  userId    String    @map("user_id")
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  messages  Message[]
-
-  @@index([userId])
-  @@map("conversations")
-}
-
-model Message {
-  id             String       @id @default(uuid())
-  conversationId String       @map("conversation_id")
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  role           MessageRole
-  content        String
-  metadata       Json?
-  createdAt      DateTime     @default(now()) @map("created_at")
-
-  @@index([conversationId])
-  @@map("messages")
-}
-
-model Notification {
-  id        String           @id @default(uuid())
-  userId    String           @map("user_id")
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      NotificationType
-  title     String
-  body      String
-  read      Boolean          @default(false)
-  createdAt DateTime         @default(now()) @map("created_at")
-
-  @@index([userId, read])
-  @@map("notifications")
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  userAgent String?  @map("user_agent")
-  ipAddress String?  @map("ip_address")
-  expiresAt DateTime @map("expires_at")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([userId])
-  @@map("sessions")
-}
-
-model MenuItem {
-  id        String   @id @default(uuid())
-  label     String
-  href      String   @unique
-  icon      String
-  group     String
-  order     Int      @default(0)
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("menu_items")
 }

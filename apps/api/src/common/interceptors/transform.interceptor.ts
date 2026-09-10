@@ -1,7 +1,14 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common";
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
+/**
+ * Standard API response envelope: `{ success, data, timestamp }`.
+ *
+ * Every REST endpoint's return value is wrapped in this shape by the
+ * `TransformInterceptor`, giving the frontend a consistent contract.
+ * SSE streams (e.g. `/agent/chat`) bypass this interceptor.
+ */
 export interface ApiResponse<T> {
   success: boolean;
   data: T;

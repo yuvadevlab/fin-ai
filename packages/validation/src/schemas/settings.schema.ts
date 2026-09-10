@@ -1,9 +1,23 @@
 import { z } from "zod";
 
+/** Shape of the persisted `User.preferences` Json column (see @finai/shared-types UserPreferences). */
+export const userPreferencesSchema = z.object({
+  notifications: z.record(z.boolean()).optional(),
+  appearance: z.record(z.union([z.string(), z.boolean()])).optional(),
+  security: z.record(z.boolean()).optional(),
+  defaultAccountId: z.string().uuid("Invalid default account ID").optional(),
+});
+
+export type UserPreferencesInput = z.infer<typeof userPreferencesSchema>;
+
 export const updateProfileSchema = z.object({
-  name: z.string().min(2).max(100).optional(),
-  email: z.string().email().optional(),
-  avatarUrl: z.string().url().optional(),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name cannot exceed 100 characters")
+    .optional(),
+  email: z.string().email("Please provide a valid email address").optional(),
+  preferences: userPreferencesSchema.optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

@@ -1,6 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
+/**
+ * Flattened search results across all user-facing entities.
+ *
+ * Used by the legacy `/search` endpoint and the agent's `search.everything`
+ * tool. The agent uses these results to resolve vague references ("that
+ * swiggy transaction", "my HDFC account") into exact IDs.
+ */
 export interface SearchResults {
   transactions: {
     id: string;

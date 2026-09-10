@@ -8,8 +8,12 @@ export interface TransactionFormProps {
   onChange: (name: string, value: string) => void;
   accounts: { label: string; value: string }[];
   categories: { label: string; value: string }[];
+  investments?: { label: string; value: string }[];
+  goals?: { label: string; value: string }[];
   onAddCategory?: (initialName?: string) => void;
   onAddAccount?: (initialName?: string) => void;
+  onAddInvestment?: (initialName?: string) => void;
+  onAddGoal?: (initialName?: string) => void;
 }
 
 export function TransactionForm({
@@ -18,8 +22,12 @@ export function TransactionForm({
   onChange,
   accounts,
   categories,
+  investments = [],
+  goals = [],
   onAddCategory,
   onAddAccount,
+  onAddInvestment,
+  onAddGoal,
 }: TransactionFormProps) {
   const amountField: FormField = {
     type: "number",
@@ -37,7 +45,31 @@ export function TransactionForm({
       { label: "Expense", value: "expense" },
       { label: "Income", value: "income" },
       { label: "Transfer", value: "transfer" },
+      { label: "Investment", value: "investment" },
+      { label: "Goal", value: "goal" },
     ],
+  };
+
+  const investmentField: FormField = {
+    type: "select",
+    name: "investmentId",
+    label: "Investment",
+    options: investments,
+    searchable: true,
+    searchPlaceholder: "Search investment...",
+    onAddNew: onAddInvestment,
+    addNewLabel: "+ Add Investment",
+  };
+
+  const goalField: FormField = {
+    type: "select",
+    name: "goalId",
+    label: "Savings Goal",
+    options: goals,
+    searchable: true,
+    searchPlaceholder: "Search savings goal...",
+    onAddNew: onAddGoal,
+    addNewLabel: "+ Add Goal",
   };
 
   const categoryField: FormField = {
@@ -54,7 +86,12 @@ export function TransactionForm({
   const accountField: FormField = {
     type: "select",
     name: "account",
-    label: values.kind === "transfer" ? "From Account" : "Account",
+    label:
+      values.kind === "transfer"
+        ? "From Account"
+        : values.kind === "investment" || values.kind === "goal"
+          ? "Pay From Account"
+          : "Account",
     options: accounts,
     searchable: true,
     searchPlaceholder: "Search account...",
@@ -102,6 +139,8 @@ export function TransactionForm({
     <div className="space-y-4">
       {renderField(amountField)}
       {renderField(kindField)}
+      {values.kind === "investment" && renderField(investmentField)}
+      {values.kind === "goal" && renderField(goalField)}
       {renderField(categoryField)}
       {renderField(accountField)}
       {values.kind === "transfer" && renderField(toAccountField)}

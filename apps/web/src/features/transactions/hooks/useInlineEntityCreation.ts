@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import type { Investment } from "@/features/investments/api";
+import type { Goal } from "@/features/goals/api";
 
 export interface InlineEntityCreationOptions {
   onCategoryCreated?: (category: { id: string; name: string }, targetRowId?: string | null) => void;
   onAccountCreated?: (account: { id: string; name: string }, targetRowId?: string | null) => void;
+  onInvestmentCreated?: (investment: Investment) => void;
+  onGoalCreated?: (goal: Goal) => void;
 }
 
 export function useInlineEntityCreation(options?: InlineEntityCreationOptions) {
@@ -15,6 +19,12 @@ export function useInlineEntityCreation(options?: InlineEntityCreationOptions) {
   const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
   const [addAccountInitialName, setAddAccountInitialName] = useState("");
   const [targetAccountRowId, setTargetAccountRowId] = useState<string | null>(null);
+
+  const [isAddInvestmentOpen, setIsAddInvestmentOpen] = useState(false);
+  const [addInvestmentInitialName, setAddInvestmentInitialName] = useState("");
+
+  const [isAddGoalOpen, setIsAddGoalOpen] = useState(false);
+  const [addGoalInitialName, setAddGoalInitialName] = useState("");
 
   const openAddCategory = (initialName?: string, rowId?: string) => {
     setAddCategoryInitialName(initialName || "");
@@ -38,6 +48,26 @@ export function useInlineEntityCreation(options?: InlineEntityCreationOptions) {
     setIsAddAccountOpen(false);
   };
 
+  const openAddInvestment = (initialName?: string) => {
+    setAddInvestmentInitialName(initialName || "");
+    setIsAddInvestmentOpen(true);
+  };
+
+  const handleInvestmentCreated = (created: Investment) => {
+    options?.onInvestmentCreated?.(created);
+    setIsAddInvestmentOpen(false);
+  };
+
+  const openAddGoal = (initialName?: string) => {
+    setAddGoalInitialName(initialName || "");
+    setIsAddGoalOpen(true);
+  };
+
+  const handleGoalCreated = (created: Goal) => {
+    options?.onGoalCreated?.(created);
+    setIsAddGoalOpen(false);
+  };
+
   return {
     // Category state & handlers
     isAddCategoryOpen,
@@ -52,5 +82,19 @@ export function useInlineEntityCreation(options?: InlineEntityCreationOptions) {
     addAccountInitialName,
     openAddAccount,
     handleAccountCreated,
+
+    // Investment state & handlers
+    isAddInvestmentOpen,
+    setIsAddInvestmentOpen,
+    addInvestmentInitialName,
+    openAddInvestment,
+    handleInvestmentCreated,
+
+    // Goal state & handlers
+    isAddGoalOpen,
+    setIsAddGoalOpen,
+    addGoalInitialName,
+    openAddGoal,
+    handleGoalCreated,
   };
 }
