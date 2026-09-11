@@ -1,0 +1,54 @@
+name: 🔄 Reverse Sync (main ➔ dev)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-main-to-dev:
+    name: Create Sync PR to dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.AUTO_PR_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: 🔍 Check if dev is behind main
+        id: check_diff
+        run: |
+          git fetch origin dev
+          BEHIND_COUNT=$(git rev-list --count origin/dev..origin/main)
+          echo "Commits in main not in dev: $BEHIND_COUNT"
+          if [ "$BEHIND_COUNT" -eq 0 ]; then
+            echo "has_diff=false" >> $GITHUB_OUTPUT
+            echo "✅ dev is already up to date with main. No PR needed."
+          else
+            echo "has_diff=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔀 Create or Update Pull Request
+        if: steps.check_diff.outputs.has_diff == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.AUTO_PR_PAT || secrets.GITHUB_TOKEN }}
+          branch: sync/main-to-dev
+          base: dev
+          title: "chore(sync): reverse merge main into dev"
+          body: |
+            Automated PR to sync commits from `main` back into `dev`.
+
+            - **Source:** `main`
+            - **Target:** `dev`
+            - **Triggered by:** Commit `${{ github.sha }}`
+          commit-message: "chore(sync): merge main into dev"
+          labels: |
+            sync
+            automated-pr

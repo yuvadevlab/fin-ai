@@ -21,6 +21,8 @@
     "format:check": "prettier --check .",
     "db:generate": "pnpm --filter @finai/database db:generate",
     "db:migrate": "pnpm --filter @finai/database db:migrate",
+    "db:migrate:deploy": "pnpm --filter @finai/database db:migrate:deploy",
+    "db:migrate:status": "pnpm --filter @finai/database db:migrate:status",
     "db:studio": "pnpm --filter @finai/database db:studio",
     "prepare": "husky"
   },
