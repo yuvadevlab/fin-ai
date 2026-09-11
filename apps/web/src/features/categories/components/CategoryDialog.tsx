@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createCategorySchema } from "@finai/validation";
-import { useCreateCategory, useUpdateCategory, Category } from "../api";
+import { useCreateCategory, useUpdateCategory, Category, useCategoryGroups } from "../api";
 import { CategoryForm } from "./CategoryForm";
 
 export interface CategoryDialogProps {
@@ -31,6 +31,12 @@ export function CategoryDialog({
 
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
+  const { data: categoryGroupsData } = useCategoryGroups();
+
+  const groupOptions = (categoryGroupsData || []).map((g) => ({
+    label: g.name,
+    value: g.name,
+  }));
 
   const getFormInitialValues = () => {
     return {
@@ -70,7 +76,7 @@ export function CategoryDialog({
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const result = createCategorySchema.safeParse(values);
@@ -136,7 +142,12 @@ export function CategoryDialog({
         </div>
       )}
       <div className="space-y-4">
-        <CategoryForm values={values} errors={errors} onChange={handleChange} />
+        <CategoryForm
+          values={values}
+          errors={errors}
+          onChange={handleChange}
+          groupOptions={groupOptions}
+        />
       </div>
     </FormDialog>
   );

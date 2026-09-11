@@ -7,8 +7,10 @@ import { GoalsService } from "@/modules/goals/goals.service";
 import {
   createGoalSchema,
   updateGoalSchema,
+  contributeAmountSchema,
   type CreateGoalInput,
   type UpdateGoalInput,
+  type ContributeAmountInput,
 } from "@finai/validation";
 
 @ApiTags("Goals")
@@ -54,9 +56,9 @@ export class GoalsController {
   contribute(
     @CurrentUser("id") userId: string,
     @Param("id") id: string,
-    @Body("amount") amount: number,
+    @Body(new ZodValidationPipe(contributeAmountSchema)) body: ContributeAmountInput,
   ) {
-    return this.goalsService.contribute(id, userId, amount);
+    return this.goalsService.contribute(id, userId, body.amount);
   }
 
   @Delete(":id")

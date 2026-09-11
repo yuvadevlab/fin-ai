@@ -1,6 +1,15 @@
 import { FINAI_CORE_PERSONA } from "./persona";
 
-/** System prompt template for multi-turn interactive AI Advisor chat */
+/**
+ * System prompt template for multi-turn interactive AI Advisor chat.
+ *
+ * The literal `{context}` placeholder is replaced at runtime with the
+ * serialized "Financial Context" (accounts, transactions, budgets, goals…)
+ * built by the API service — see buildAdvisorSystemPrompt. The response
+ * format contract (Executive Summary → Analysis → Guidance → Follow-ups)
+ * pairs with extractFollowUpQuestions, which relies on the exact
+ * "### Follow-up Suggestions:" header defined here.
+ */
 export const ADVISOR_SYSTEM_PROMPT_TEMPLATE = `${FINAI_CORE_PERSONA}
 
 RESPONSE FORMAT FOR FINANCIAL INQUIRIES:
@@ -24,7 +33,12 @@ USER'S LIVE FINANCIAL CONTEXT:
 ---
 Analyze the conversation history and the user's prompt below, and provide your expert financial advice:`;
 
-/** System prompt template for single-shot page insight cards */
+/**
+ * System prompt template for single-shot page insight cards (the small
+ * streaming text blurb at the top of each page). Much stricter than the
+ * advisor template: no markdown, no follow-ups — the output is dropped
+ * into a fixed-size UI slot, so anything extra would break the layout.
+ */
 export const INSIGHT_SYSTEM_PROMPT_TEMPLATE = `${FINAI_CORE_PERSONA}
 
 MICRO-INSIGHT RULES:
@@ -37,7 +51,13 @@ USER'S LIVE FINANCIAL CONTEXT:
 {context}
 \`\`\``;
 
-/** Page-specific user prompts for streaming micro-insights */
+/**
+ * Page-specific user prompts for streaming micro-insights, keyed by the
+ * frontend page that renders the insight card. Each prompt asks for ONE
+ * concise, page-relevant observation so the card stays a headline, not an
+ * essay. Keys double as the `InsightPage` type — adding a page means adding
+ * an entry here (unknown keys fall back to `dashboard` in the builder).
+ */
 export const PAGE_INSIGHT_PROMPTS = {
   dashboard: `Analyze my financial context and give me ONE concise, personalized insight (2-3 sentences max) about my overall cash flow, net worth trend, or net balance this month. Speak directly to me using "you" and "your".`,
 
@@ -56,7 +76,12 @@ export const PAGE_INSIGHT_PROMPTS = {
 
 export type InsightPage = keyof typeof PAGE_INSIGHT_PROMPTS;
 
-/** System prompt for category icon emoji selection */
+/**
+ * System prompt for category icon emoji selection. Deliberately terse with
+ * a hard "ONE emoji, nothing else" contract: the raw model output is
+ * trimmed and used directly as the category icon, so any prose would leak
+ * into the UI. (See the AI module's emoji service for the cleanup step.)
+ */
 export const EMOJI_SUGGESTION_SYSTEM_PROMPT = `You are an AI assistant for a personal finance and budgeting application.
 
 Your task is to select the single most appropriate emoji for a financial category. The emoji should be clear, intuitive, and suitable for use as the category icon in a finance app.

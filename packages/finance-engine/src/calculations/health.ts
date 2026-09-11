@@ -13,19 +13,46 @@ import {
 
 /**
  * Financial health score calculations — pure functions.
+ *
+ * The health score is a weighted average of component scores (0–100), each
+ * comparing a real user figure against a fixed target from
+ * `HEALTH_TARGETS`. Metrics whose underlying data is missing are excluded
+ * and the remaining weights are renormalized, so a new user isn't punished
+ * for data they haven't entered yet — but a hard "risk cap" (see
+ * {@link calculateFinancialHealthScore}) still prevents a dangerous profile
+ * from scoring well on averages alone.
  */
 
 export interface HealthInput {
+  /** Total income recorded for the current month (₹). */
   monthlyIncome: number;
+  /** Total expenses recorded for the current month (₹). */
   monthlyExpenses: number;
+  /** Percentage of income retained as savings (0–100). */
   savingsRate: number;
+  /** Fraction of active budgets currently within their limit (0–1; negative = none configured). */
   budgetAdherence: number;
+  /** Months of essential expenses covered by emergency savings. */
   emergencyFundMonths: number;
+  /** Portfolio diversification score (0–100). */
   investmentDiversification: number;
+  /** Monthly debt payments as a fraction of monthly income (0.2 = 20%). */
   debtToIncomeRatio: number;
+  /** Average funding percentage across active goals (negative = none configured). */
   goalProgress: number;
 }
 
+/**
+ * Score every health component from raw inputs.
+ *
+ * Each metric reports a 0–100 score (ratio to target, clamped), a human
+ * note, and whether the data backing it actually exists. Income-derived
+ * metrics (free cash, savings rate, debt) are marked UNAVAILABLE when
+ * monthlyIncome is 0 — scoring them would divide by zero and would imply
+ * the user has terrible finances when they simply haven't recorded income.
+ * Budget/goal metrics use a negative sentinel in the input to mean "none
+ * configured" and are likewise marked unavailable.
+ */
 export function calculateComponentScores(input: HealthInput): ComponentScore[] {
   return [
     metric(
@@ -112,6 +139,23 @@ export function calculateComponentScores(input: HealthInput): ComponentScore[] {
   ];
 }
 
+/**
+ * Compute the overall financial health score (0–100) plus per-metric
+ * breakdown, rating, and narrative summary.
+ *
+ * Pipeline:
+ *   1. Score each component ({@link calculateComponentScores}).
+ *   2. Weighted average over AVAILABLE components only — the weight total
+ *      is recomputed from the available set so missing data neither drags
+ *      the score down nor counts as a zero.
+ *   3. Apply the risk cap: even a high weighted average is clamped down if
+ *      a dangerous condition exists (no emergency buffer, heavy debt, or
+ *      negative free cash). Averages hide single-point failures; the cap
+ *      makes sure e.g. "great saver with 3 months runway but 60% of income
+ *      goes to debt" cannot present as fully healthy.
+ *   4. Map the final score to a rating band and derive the narrative
+ *      strengths/risks from the best/worst available components.
+ */
 export function calculateFinancialHealthScore(input: HealthInput): {
   score: number;
   metrics: ComponentScore[];
@@ -122,11 +166,16 @@ export function calculateFinancialHealthScore(input: HealthInput): {
   nextBestAction: string;
 } {
   const components = calculateComponentScores(input);
+  // Only components backed by real data participate in the average —
+  // unavailable ones (e.g. income not tracked) would otherwise read as
+  // failures and unfairly depress a new user's score.
   const available = components.filter((component) => component.dataQuality === "complete");
   const weightTotal = available.reduce(
     (sum, component) => sum + HEALTH_METRIC_WEIGHTS[component.key],
     0,
   );
+  // Renormalize: dividing by the AVAILABLE weight total keeps the score on
+  // the same 0–100 scale no matter how many metrics the user has data for.
   const weightedScore =
     weightTotal === 0
       ? 0
@@ -139,6 +188,11 @@ export function calculateFinancialHealthScore(input: HealthInput): {
   );
   const debt = components.find((component) => component.key === HEALTH_METRIC_KEYS.DEBT_PRESSURE);
   const freeCash = components.find((component) => component.key === HEALTH_METRIC_KEYS.FREE_CASH);
+  // Hard risk caps (lower = more urgent danger). These override the average:
+  //   < 1 month emergency runway or > 50% debt-to-income → at most 59
+  //     ("Building Stability" unreachable) — the user cannot absorb a shock;
+  //   negative free cash flow → at most 49 ("Needs a Plan") — they are
+  //     literally spending more than they earn this month.
   const riskCap =
     (emergency?.current ?? 0) < 1
       ? 59

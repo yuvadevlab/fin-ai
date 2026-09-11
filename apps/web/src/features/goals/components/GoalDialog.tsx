@@ -3,19 +3,28 @@
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
 import { createGoalSchema } from "@finai/validation";
-import { useCreateGoal } from "../api";
+import { useCreateGoal, type Goal } from "../api";
 import { GoalForm } from "./GoalForm";
 
 export interface GoalDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  initialName?: string;
+  onSuccess?: (created: Goal) => void;
 }
+
+const getDefaultDeadline = () =>
+  new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate())
+    .toISOString()
+    .split("T")[0];
 
 export function GoalDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  initialName = "",
+  onSuccess,
 }: GoalDialogProps) {
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
@@ -23,16 +32,26 @@ export function GoalDialog({
 
   const createGoal = useCreateGoal();
 
-  const [values, setValues] = useState<Record<string, string>>({
-    name: "",
+  const getInitialValues = () => ({
+    name: initialName,
     type: "PERSONAL",
     targetAmount: "",
     currentAmount: "0",
-    deadline: new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate())
-      .toISOString()
-      .split("T")[0],
+    deadline: getDefaultDeadline(),
   });
+
+  const [values, setValues] = useState<Record<string, string>>(getInitialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Sync initialName when dialog opens
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setValues(getInitialValues());
+      setErrors({});
+    }
+  }
 
   const handleChange = (name: string, value: string) => {
     setValues((prev) => ({
@@ -70,7 +89,8 @@ export function GoalDialog({
     }
 
     try {
-      await createGoal.mutateAsync(parseResult.data);
+      const created = await createGoal.mutateAsync(parseResult.data);
+      onSuccess?.(created);
       setOpen?.(false);
       // Reset form
       setValues({
@@ -78,13 +98,7 @@ export function GoalDialog({
         type: "PERSONAL",
         targetAmount: "",
         currentAmount: "0",
-        deadline: new Date(
-          new Date().getFullYear() + 1,
-          new Date().getMonth(),
-          new Date().getDate(),
-        )
-          .toISOString()
-          .split("T")[0],
+        deadline: getDefaultDeadline(),
       });
     } catch (err) {
       const apiErr = err as { message?: string };

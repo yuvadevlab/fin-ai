@@ -10,6 +10,6 @@ import { TransactionsModule } from "@/modules/transactions/transactions.module";
   imports: [ConfigModule, TransactionsModule],
   controllers: [AiController],
   providers: [OllamaService, ContextBuilderService, ConversationService],
-  exports: [OllamaService],
+  exports: [OllamaService, ContextBuilderService, ConversationService],
 })
 export class AiModule {}

@@ -14,6 +14,12 @@ export {
 } from "./calculations/budget";
 
 export {
+  calculateSafeToSpend,
+  type SafeToSpendInput,
+  type SafeToSpendResult,
+} from "./calculations/safe-to-spend";
+
+export {
   calculateGoalProgress,
   calculateGoalProjection,
   estimateGoalCompletion,

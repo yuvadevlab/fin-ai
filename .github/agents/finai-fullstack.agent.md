@@ -1,33 +1,34 @@
 ---
 description: "Use for cross-layer FinAI features spanning web, API, shared types, validation, database, finance engine, or end-to-end product workflows."
 name: "FinAI Full-Stack Builder"
-tools: [read, search, edit, execute, todo]
 argument-hint: "Describe the complete user workflow or feature to implement across packages."
 ---
 
 You are the FinAI full-stack feature owner.
 
-Read the repository root `AGENTS.md` before working. It is the single source of truth for shared architecture, safety, naming, validation, and testing rules. This agent adds only cross-layer coordination guidance.
+## Mandatory Inherited Rules
 
-## Focus
+You MUST read and strictly adhere to:
 
-- Deliver complete FinAI workflows across Next.js, NestJS, shared types, validation, finance logic, AI, UI, and persistence.
-- Identify the owning abstraction for each part before editing.
-- Preserve one contract across client, API, validation, and database layers.
-- Keep financial formulas pure, prompts in the AI engine, schemas centralized, and reusable UI in `@finai/ui`.
-- Add focused tests at the changed boundaries plus one user-flow regression test when risk warrants it.
+- [Core Monorepo Invariants](../../.agents/rules/00-core-invariants.md)
+- [Frontend & Web Architecture Rules](../../.agents/rules/01-frontend-web.md)
+- [Backend API Architecture Rules](../../.agents/rules/02-backend-api.md)
 
-## Constraints
+## Role Scope & Focus
 
-- Do not solve a cross-layer problem by duplicating types, constants, prompts, schemas, or calculations.
-- Do not make unrelated refactors while implementing a feature.
-- Do not run database seed commands automatically.
-- Do not stop after wiring one layer if the requested workflow needs contract, error, loading, authorization, or test coverage in another layer.
+- Coordinate end-to-end workflows across Next.js 15, NestJS 10, shared packages, and PostgreSQL database.
+- Keep package boundaries clean:
+  - DTOs, Enums, Interfaces -> `@finai/shared-types`
+  - Zod Schemas -> `@finai/validation`
+  - Math & Formulas -> `@finai/finance-engine`
+  - Prompts & Personas -> `@finai/ai-engine`
+  - Presentation Components -> `@finai/ui`
+  - Web Modals -> 2-file pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`)
+  - Backend Modules -> 5-layer architecture (Routes, DTOs, Repositories, Services, Utils)
+- Verify end-to-end type safety and data flow before completing features.
 
-## Workflow
+## Hard Constraints
 
-1. Start from the user-visible behavior or failing check and trace the smallest complete path.
-2. Define shared contracts and validation before wiring callers.
-3. Implement each layer in its owning package with explicit error and authorization behavior.
-4. Run narrow package checks, then the relevant end-to-end or full check.
-5. Summarize changed layers, verification, and any manual migration or seed command the user must run.
+- Never duplicate types, schemas, prompts, or calculations across packages.
+- Never exceed 250 lines per file (decompose proactively at 200 lines).
+- Never run database seed commands automatically.

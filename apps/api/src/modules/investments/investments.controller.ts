@@ -4,7 +4,12 @@ import { InvestmentsService } from "./investments.service";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
-import { createInvestmentSchema, type CreateInvestmentInput } from "@finai/validation";
+import {
+  createInvestmentSchema,
+  updateInvestmentValueSchema,
+  type CreateInvestmentInput,
+  type UpdateInvestmentValueInput,
+} from "@finai/validation";
 
 @ApiTags("Investments")
 @ApiBearerAuth()
@@ -42,9 +47,9 @@ export class InvestmentsController {
   updateValue(
     @CurrentUser("id") userId: string,
     @Param("id") id: string,
-    @Body("currentValue") currentValue: number,
+    @Body(new ZodValidationPipe(updateInvestmentValueSchema)) body: UpdateInvestmentValueInput,
   ) {
-    return this.investmentsService.updateValue(id, userId, currentValue);
+    return this.investmentsService.updateValue(id, userId, body.currentValue);
   }
 
   @Delete(":id")

@@ -46,15 +46,19 @@ export {
 export {
   createInvestmentSchema,
   updateInvestmentSchema,
+  updateInvestmentValueSchema,
   type CreateInvestmentInput,
   type UpdateInvestmentInput,
+  type UpdateInvestmentValueInput,
 } from "./schemas/investment.schema";
 
 export {
   updateProfileSchema,
   updatePreferencesSchema,
+  userPreferencesSchema,
   type UpdateProfileInput,
   type UpdatePreferencesInput,
+  type UserPreferencesInput,
 } from "./schemas/settings.schema";
 
 export {
@@ -64,4 +68,11 @@ export {
   type UpdateCategoryInput,
 } from "./schemas/category.schema";
 
-export { contributeSchema, type ContributeFormValues } from "./schemas/contribute.schema";
+export {
+  contributeSchema,
+  contributeAmountSchema,
+  type ContributeFormValues,
+  type ContributeAmountInput,
+} from "./schemas/contribute.schema";
+
+export { agentChatSchema, type AgentChatInput } from "./schemas/agent.schema";

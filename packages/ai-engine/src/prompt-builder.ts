@@ -15,7 +15,12 @@ export function buildInsightSystemPrompt(context: string): string {
   return INSIGHT_SYSTEM_PROMPT_TEMPLATE.replace("{context}", context);
 }
 
-/** Resolves the user prompt for a specific page insight */
+/**
+ * Resolves the user prompt for a specific page insight.
+ * Unknown page keys fall back to the generic dashboard prompt instead of
+ * crashing — a new page shipping before its prompt entry lands still gets a
+ * sensible insight rather than an error.
+ */
 export function buildPageInsightUserPrompt(page: string): string {
   const validKey = (page in PAGE_INSIGHT_PROMPTS ? page : "dashboard") as InsightPage;
   return PAGE_INSIGHT_PROMPTS[validKey];

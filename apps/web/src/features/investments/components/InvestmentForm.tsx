@@ -1,6 +1,7 @@
 "use client";
 
 import { FormDialogField, FormField } from "@finai/ui";
+import { useReferenceOptions } from "@/hooks/useReferenceOptions";
 
 export interface InvestmentFormProps {
   values: Record<string, string>;
@@ -8,7 +9,27 @@ export interface InvestmentFormProps {
   onChange: (name: string, value: string) => void;
 }
 
+/** Fallback asset class options shown while DB options are loading. */
+const FALLBACK_ASSET_CLASS_OPTIONS = [
+  { label: "Mutual Fund", value: "MUTUAL_FUND" },
+  { label: "Stock Equities", value: "STOCK" },
+  { label: "Fixed Deposit", value: "FIXED_DEPOSIT" },
+  { label: "Gold", value: "GOLD" },
+  { label: "EPF Retirement Fund", value: "EPF" },
+  { label: "PPF Savings Fund", value: "PPF" },
+  { label: "Real Estate", value: "REAL_ESTATE" },
+  { label: "Crypto Currency", value: "CRYPTO" },
+  { label: "Other Asset", value: "OTHER" },
+];
+
 export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps) {
+  const { data: assetClassOptions } = useReferenceOptions("ASSET_CLASS");
+
+  const assetOptions = (assetClassOptions ?? FALLBACK_ASSET_CLASS_OPTIONS).map((opt) => ({
+    label: opt.label,
+    value: opt.value,
+  }));
+
   const fields: FormField[] = [
     {
       type: "text",
@@ -21,17 +42,7 @@ export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps
       type: "select",
       name: "assetClass",
       label: "Asset Class",
-      options: [
-        { label: "Mutual Fund", value: "MUTUAL_FUND" },
-        { label: "Stock Equities", value: "STOCK" },
-        { label: "Fixed Deposit", value: "FIXED_DEPOSIT" },
-        { label: "Gold", value: "GOLD" },
-        { label: "EPF Retirement Fund", value: "EPF" },
-        { label: "PPF Savings Fund", value: "PPF" },
-        { label: "Real Estate", value: "REAL_ESTATE" },
-        { label: "Crypto Currency", value: "CRYPTO" },
-        { label: "Other Asset", value: "OTHER" },
-      ],
+      options: assetOptions,
     },
     {
       type: "number",

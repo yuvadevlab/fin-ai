@@ -3,12 +3,14 @@ import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 import { TransactionFilterInput } from "@finai/validation";
 
+import { TransactionType } from "@finai/shared-types";
+
 export interface Transaction {
   id: string;
   amount: number;
   date: string;
   notes: string | null;
-  type: "INCOME" | "EXPENSE" | "TRANSFER" | "INVESTMENT";
+  type: TransactionType;
   categoryId: string;
   category: {
     id: string;
@@ -26,6 +28,18 @@ export interface Transaction {
     id: string;
     name: string;
     type: string;
+  } | null;
+  investmentId?: string | null;
+  investment?: {
+    id: string;
+    name: string;
+    assetClass?: string;
+  } | null;
+  goalId?: string | null;
+  goal?: {
+    id: string;
+    name: string;
+    targetAmount?: number;
   } | null;
 }
 

@@ -14,6 +14,8 @@ export function useCreateBulkTransactions() {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["investments"] });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       toast.success(`Successfully uploaded ${data.length} transactions!`);
     },
     onError: (error) => {

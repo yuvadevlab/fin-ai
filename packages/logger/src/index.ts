@@ -1,5 +1,13 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Lightweight logger utility for the FinAI monorepo.
+ *
+ * Provides a `Logger` class with coloured, timestamped console output and
+ * a `requestLogger` Express middleware that logs each HTTP request's
+ * method, URL, status code, and duration — with error-level logging for 5xx
+ * responses. Used by both `apps/api/main.ts` (HTTP) and services (application).
+ */
 export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export class Logger {
@@ -61,6 +69,13 @@ export class Logger {
   }
 }
 
+/**
+ * Express middleware that logs incoming HTTP requests.
+ *
+ * Logs after the response finishes (via `res.on("finish")`) so the status
+ * code is available. 5xx responses are logged at error level; 4xx at warn;
+ * everything else at info. Returns the final duration in milliseconds.
+ */
 export function requestLogger(loggerInstance: Logger = new Logger("HTTP")) {
   return (req: any, res: any, next: () => void) => {
     const start = Date.now();
