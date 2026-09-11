@@ -47,7 +47,7 @@ Click any link below to navigate to the standalone documentation for that applic
 
 ### Packages (`packages/`)
 
-- 🤖 **`packages/ai-engine`**: **Shared LLM Engine & Prompt Engineering** — System personas, prompt builder factories, follow-up parsers, and domain safety guardrails.
+- 🤖 **[`packages/ai-engine`](packages/ai-engine/README.md)**: **Shared LLM Engine & Prompt Engineering** — System personas, prompt builder factories, follow-up parsers, Ollama streaming client, and ReAct agent tool planning.
 - 🧮 **[`packages/finance-engine`](packages/finance-engine/README.md)**: **Core Financial Mathematics & Metrics Engine** — Detailed mathematical formulas for Health Score (0-100), Net Worth, Savings Rate, Cash Flow, Budget Variance, Asset Allocation, and Goal Projections.
 - 🗄️ **[`packages/database`](packages/database/README.md)**: PostgreSQL database schema, Prisma Client engine, migration scripts, and seed data.
 - 🎨 **[`packages/ui`](packages/ui/README.md)**: Shared React component library built with TailwindCSS, Radix UI primitives, `<FormDialog>`, and `<FormDialogField>`.
@@ -65,6 +65,7 @@ fin-ai/
 │   └── web/                   # Next.js 15 Standalone Frontend
 │
 ├── packages/
+│   ├── ai-engine/             # LLM Client, Prompt Templates & Agent Planning
 │   ├── database/              # Prisma Database Engine & Schema
 │   ├── finance-engine/        # Financial Metric Calculations & Algorithms
 │   ├── shared-types/          # TypeScript Types & Interfaces
