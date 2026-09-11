@@ -16,23 +16,15 @@ Before writing or modifying code in FinAI, review the official [**`FinAI Coding 
 
 ---
 
-## System Architecture & Product Specifications (`docs/`)
+## Modular Architecture & Rulebooks (`.agents/rules/`)
 
-Explore the comprehensive technical & product specifications for every module, page, formula, API route, and component in the application:
+This monorepo follows a strict modular architecture governed by topic-specific rulebooks:
 
-- 🗺️ **[`Master Architecture & Index`](docs/00_INDEX_AND_ARCHITECTURE_MAP.md)**: Overall system map, data flow diagram, and developer quickstart.
-- 📦 **[`Monorepo & Packages`](docs/01_MONOREPO_AND_PACKAGES.md)**: Package boundaries, `@finai/finance-engine` formulas, UI primitives, and Prisma DB schema.
-- 🎨 **[`Layout Shell & Header`](docs/02_LAYOUT_SHELL_AND_HEADER.md)**: `DashboardShell`, `TopBar`, `ProfileMenu` profile sync, `WorkspaceMenu`, and `AppearanceProvider`.
-- 📊 **[`Dashboard Module`](docs/03_DASHBOARD_MODULE.md)**: Financial Health Score formula, KPI stats grid, and live AI insights.
-- 💳 **[`Transactions Ledger`](docs/04_TRANSACTIONS_MODULE.md)**: Server-side pagination, `DataTable`, custom `Pagination` component, and `TransactionDialog`.
-- 🎯 **[`Budgets & Expenses`](docs/05_BUDGETS_AND_EXPENSES_MODULE.md)**: Category spending caps, budget risk color status badges, and remaining balance math.
-- 📈 **[`Investments Portfolio`](docs/06_INVESTMENTS_PORTFOLIO_MODULE.md)**: 9 asset classes, asset distribution pie, and unrealized P&L math.
-- 🏆 **[`Savings Goals`](docs/07_GOALS_SAVINGS_MODULE.md)**: Personal vs family goals (`GoalType`), target deadline completion projections, and contribution dialog.
-- 📉 **[`Financial Reports`](docs/08_REPORTS_AND_ANALYTICS_MODULE.md)**: Income vs expense comparison, category pie breakdown, and monthly variance analysis.
-- 👨‍👩‍👧‍👦 **[`Family Workspace`](docs/09_FAMILY_WORKSPACE_MODULE.md)**: Household shared budgets, member access roles (`OWNER`, `ADMIN`, `MEMBER`), and invitation workflows.
-- 🤖 **[`AI Advisor & LLM Engine`](docs/10_AI_ADVISOR_AND_LLM_ENGINE.md)**: NestJS SSE streaming, Ollama LLM, PostgreSQL chat history, GFM markdown tables with `remark-gfm`, 1-click follow-up buttons, relative timestamps, and AI scope guardrails.
-- ⚙️ **[`Settings & Preferences`](docs/11_SETTINGS_AND_PREFERENCES.md)**: Feature flag filtering (`SETTING_FLAGS`), section deep-linking (`/settings?section=*`), 2-file feature pattern, and theme/density DOM switcher.
-- 🚀 **[`Architecture Audit & Roadmap`](docs/12_SYSTEM_ARCHITECTURE_IMPROVEMENTS_ROADMAP.md)**: Potential bottlenecks ("path holes"), microservices splitting strategy, database scaling, performance optimizations, and feature roadmap.
+- 🏛️ **[`00-core-invariants.md`](.agents/rules/00-core-invariants.md)**: Monorepo package boundaries, hard 250-line rule, and database seed safeguards.
+- 💻 **[`01-frontend-web.md`](.agents/rules/01-frontend-web.md)**: 2-file modal pattern, React Query caching, Tailwind semantic tokens, and `@finai/ui`.
+- ⚙️ **[`02-backend-api.md`](.agents/rules/02-backend-api.md)**: 5-layer NestJS architecture, controller/service contracts, and repository patterns.
+- 🤖 **[`03-ai-advisor.md`](.agents/rules/03-ai-advisor.md)**: ReAct agent loop, tool manifests, financial personas, and 2-phase write confirmations.
+- 🧪 **[`04-testing-standards.md`](.agents/rules/04-testing-standards.md)**: Vitest unit testing, Playwright E2E, mock contracts, and zero test side-effects.
 
 ---
 
@@ -47,7 +39,7 @@ Click any link below to navigate to the standalone documentation for that applic
 
 ### Packages (`packages/`)
 
-- 🤖 **`packages/ai-engine`**: **Shared LLM Engine & Prompt Engineering** — System personas, prompt builder factories, follow-up parsers, and domain safety guardrails.
+- 🤖 **[`packages/ai-engine`](packages/ai-engine/README.md)**: **Shared LLM Engine & Prompt Engineering** — System personas, prompt builder factories, follow-up parsers, Ollama streaming client, and ReAct agent tool planning.
 - 🧮 **[`packages/finance-engine`](packages/finance-engine/README.md)**: **Core Financial Mathematics & Metrics Engine** — Detailed mathematical formulas for Health Score (0-100), Net Worth, Savings Rate, Cash Flow, Budget Variance, Asset Allocation, and Goal Projections.
 - 🗄️ **[`packages/database`](packages/database/README.md)**: PostgreSQL database schema, Prisma Client engine, migration scripts, and seed data.
 - 🎨 **[`packages/ui`](packages/ui/README.md)**: Shared React component library built with TailwindCSS, Radix UI primitives, `<FormDialog>`, and `<FormDialogField>`.
@@ -65,6 +57,7 @@ fin-ai/
 │   └── web/                   # Next.js 15 Standalone Frontend
 │
 ├── packages/
+│   ├── ai-engine/             # LLM Client, Prompt Templates & Agent Planning
 │   ├── database/              # Prisma Database Engine & Schema
 │   ├── finance-engine/        # Financial Metric Calculations & Algorithms
 │   ├── shared-types/          # TypeScript Types & Interfaces
@@ -73,8 +66,6 @@ fin-ai/
 │
 ├── .agents/
 │   └── AGENTS.md              # Workspace Coding Standards & Agent Guidelines
-│
-├── docs/                      # Technical & Product Architecture Specifications
 │
 ├── docker/
 │   ├── api/Dockerfile         # Multi-stage NestJS Dockerfile

@@ -8,8 +8,28 @@
  *   pnpm --filter @finai/database db:seed
  */
 
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { Logger } from "@finai/logger";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const candidatePaths = [
+  path.resolve(__dirname, "../../../apps/api/.env"),
+  path.resolve(__dirname, "../../../.env"),
+  path.resolve(__dirname, "../.env"),
+];
+
+for (const envPath of candidatePaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: false });
+    break;
+  }
+}
 
 const prisma = new PrismaClient();
 const logger = new Logger("DatabaseSeed");
