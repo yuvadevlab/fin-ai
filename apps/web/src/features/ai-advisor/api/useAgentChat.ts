@@ -39,7 +39,16 @@ export function useAgentChat() {
 
   // Confirm/reject action lifecycle (button path) — separate hook for the
   // 250-line cap; it mutates the same message state via the reducers above.
-  const { executingActionId, confirmAction, rejectAction } = useAgentActionRunner({
+  const {
+    executingActionId,
+    executingItemIndex,
+    isExecutingAll,
+    confirmedItems,
+    confirmAction,
+    confirmItem,
+    confirmAll,
+    rejectAction,
+  } = useAgentActionRunner({
     updateConfirmationStatus,
     resolveApprovalActivity,
   });
@@ -208,11 +217,16 @@ export function useAgentChat() {
     isStreaming,
     conversationId,
     executingActionId,
+    executingItemIndex,
+    isExecutingAll,
+    confirmedItems,
     sendMessage,
     loadConversation,
     startNewChat,
     stopStreaming,
     confirmAction,
+    confirmItem,
+    confirmAll,
     rejectAction,
   };
 }

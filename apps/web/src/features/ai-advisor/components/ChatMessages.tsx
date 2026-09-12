@@ -9,8 +9,14 @@ interface ChatMessagesProps {
   messages: AgentChatMessage[];
   onSelectFollowUp?: (question: string) => void;
   onConfirmAction?: (actionId: string, tool: string) => void;
+  onConfirmItem?: (actionId: string, tool: string, index: number) => void;
+  onConfirmAll?: (actions: Array<{ actionId: string; tool: string }>) => void;
   onRejectAction?: (actionId: string) => void;
   executingActionId?: string | null;
+  executingItemIndex?: number | null;
+  isExecutingAll?: boolean;
+  /** actionId → indexes whose individual Confirm already succeeded. */
+  confirmedItems?: Record<string, number[]>;
 }
 
 /**
@@ -31,8 +37,13 @@ export function ChatMessages({
   messages,
   onSelectFollowUp,
   onConfirmAction,
+  onConfirmItem,
+  onConfirmAll,
   onRejectAction,
   executingActionId,
+  executingItemIndex,
+  isExecutingAll,
+  confirmedItems,
 }: ChatMessagesProps) {
   return (
     <div className="space-y-5">
@@ -53,8 +64,13 @@ export function ChatMessages({
               <AgentRun
                 message={message}
                 onConfirmAction={onConfirmAction ?? (() => {})}
+                onConfirmItem={onConfirmItem ?? (() => {})}
+                onConfirmAll={onConfirmAll ?? (() => {})}
                 onRejectAction={onRejectAction ?? (() => {})}
                 executingActionId={executingActionId}
+                executingItemIndex={executingItemIndex}
+                isExecutingAll={isExecutingAll}
+                confirmedItems={confirmedItems}
               />
             ) : (
               /* User message — right-aligned bubble */

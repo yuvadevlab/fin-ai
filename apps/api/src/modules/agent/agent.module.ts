@@ -12,6 +12,7 @@ import { AuthModule } from "@/modules/auth/auth.module";
 import { AgentController } from "./agent.controller";
 import { AgentService } from "./agent.service";
 import { AgentActionService } from "./action.service";
+import { AgentActionConfirmService } from "./agent-action-confirm.service";
 import { ActionManager } from "./action-manager";
 import { AuditService } from "./audit.service";
 import { ToolRegistry } from "./tool-registry";
@@ -44,6 +45,7 @@ import { AgentToolDispatcher } from "./dispatchers";
   providers: [
     AgentService,
     AgentActionService,
+    AgentActionConfirmService,
     ActionManager,
     AuditService,
     ToolRegistry,

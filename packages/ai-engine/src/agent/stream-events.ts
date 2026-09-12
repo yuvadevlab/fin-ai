@@ -14,6 +14,18 @@ export interface AgentCard {
   title: string;
   /** Key–value rows for table/insight cards. */
   rows?: [string, string][];
+  /** Structured per-transaction data for bulk confirmations. When present, the frontend renders a table with all fields instead of parsing flat rows. */
+  _transactions?: BulkTransactionItem[];
+}
+
+/** One transaction entry in a bulk confirmation card. All fields are optional because the agent may not always provide every detail. */
+export interface BulkTransactionItem {
+  amount: string;
+  type: string;
+  account?: string;
+  category?: string;
+  date?: string;
+  notes?: string;
 }
 
 /**

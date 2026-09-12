@@ -1,27 +1,53 @@
 "use client";
 
 import { useMemo } from "react";
-import { AlertTriangle, MessagesSquare, Zap } from "lucide-react";
-import { cn } from "@finai/ui";
+import { Check, AlertTriangle, MessagesSquare, Zap } from "lucide-react";
+import { Button, cn } from "@finai/ui";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
 import { RichConfirmationCard } from "./RichConfirmationCard";
+import { BulkConfirmationCard } from "./BulkConfirmationCard";
+import { ConfirmationTable } from "./ConfirmationTable";
 import type { AgentChatMessage } from "../api/agentTypes";
 import { extractFinancialInsight } from "../utils/financialInsight";
+
+const BULK_TOOLS = new Set(["transactions.bulkCreate"]);
+
+function isBulkConfirmation(confirmation: {
+  tool: string;
+  card: { rows?: [string, string][] };
+}): boolean {
+  if (!BULK_TOOLS.has(confirmation.tool)) return false;
+  const rows = confirmation.card.rows ?? [];
+  return rows.some(([key]) => /^#\d+\s+/.test(key));
+}
 
 interface AgentRunProps {
   message: AgentChatMessage;
   onConfirmAction: (actionId: string, tool: string) => void;
+  onConfirmItem: (actionId: string, tool: string, index: number) => void;
+  onConfirmAll: (actions: Array<{ actionId: string; tool: string }>) => void;
   onRejectAction: (actionId: string) => void;
   executingActionId?: string | null;
+  /** Index of the transaction row currently being confirmed within a bulk action. */
+  executingItemIndex?: number | null;
+  /** True when a bulk "Confirm All" action is in progress. */
+  isExecutingAll?: boolean;
+  /** actionId → indexes whose individual Confirm already succeeded. */
+  confirmedItems?: Record<string, number[]>;
 }
 
 export function AgentRun({
   message,
   onConfirmAction,
+  onConfirmItem,
+  onConfirmAll,
   onRejectAction,
   executingActionId,
+  executingItemIndex = null,
+  isExecutingAll = false,
+  confirmedItems = {},
 }: AgentRunProps) {
   const {
     text = "",
@@ -103,27 +129,96 @@ export function AgentRun({
         </div>
       )}
 
-      {/* 5. Confirmation cards */}
+      {/* 5. Confirmation cards — individual cards for ≤3, table for >3 */}
       {hasConfirmations &&
         (() => {
-          let firstPendingSeen = false;
-          return confirmations!.map((confirmation) => {
-            const isPending = confirmation.status === "pending";
-            const disabled = isPending && firstPendingSeen;
-            if (isPending) firstPendingSeen = true;
-            const isExecuting = executingActionId === confirmation.actionId;
+          const pendingConfirmations = confirmations!.filter((c) => c.status === "pending");
+
+          // ─── DENSE TABLE VIEW (4+ pending actions) ──────────────────────
+          if (pendingConfirmations.length > 3) {
             return (
-              <RichConfirmationCard
-                key={confirmation.actionId}
-                confirmation={confirmation}
-                onConfirm={onConfirmAction}
-                onReject={onRejectAction}
-                disabled={disabled || executingActionId !== null}
-                isExecuting={isExecuting}
+              <ConfirmationTable
+                confirmations={confirmations!}
+                onConfirmAll={() => {
+                  onConfirmAll(
+                    pendingConfirmations.map((c) => ({ actionId: c.actionId, tool: c.tool })),
+                  );
+                }}
+                onConfirmOne={onConfirmAction}
+                onRejectOne={onRejectAction}
+                executingActionId={executingActionId}
               />
             );
-          });
+          }
+
+          // ─── INDIVIDUAL CARDS (≤3 pending actions) ─────────────────────
+          let firstPendingSeen = false;
+          return (
+            <div className="space-y-3">
+              {confirmations!.map((confirmation) => {
+                const isPending = confirmation.status === "pending";
+                const disabled = isPending && firstPendingSeen;
+                if (isPending) firstPendingSeen = true;
+                const isExecuting = executingActionId === confirmation.actionId;
+
+                // Use BulkConfirmationCard for bulk transaction tools
+                if (isBulkConfirmation(confirmation)) {
+                  return (
+                    <BulkConfirmationCard
+                      key={confirmation.actionId}
+                      confirmation={confirmation}
+                      onConfirm={onConfirmAction}
+                      onConfirmItem={onConfirmItem}
+                      onReject={onRejectAction}
+                      executingItemIndex={executingItemIndex}
+                      isExecutingAll={isExecutingAll && executingActionId === confirmation.actionId}
+                      confirmedItems={confirmedItems}
+                    />
+                  );
+                }
+
+                return (
+                  <RichConfirmationCard
+                    key={confirmation.actionId}
+                    confirmation={confirmation}
+                    onConfirm={onConfirmAction}
+                    onReject={onRejectAction}
+                    disabled={disabled || executingActionId !== null}
+                    isExecuting={isExecuting}
+                  />
+                );
+              })}
+
+              {/* Confirm All button — only when 2+ pending and none executing */}
+              {pendingConfirmations.length >= 2 && !executingActionId && (
+                <div className="flex justify-end pt-1">
+                  <ConfirmAllButton
+                    count={pendingConfirmations.length}
+                    onConfirmAll={() => {
+                      onConfirmAll(
+                        pendingConfirmations.map((c) => ({ actionId: c.actionId, tool: c.tool })),
+                      );
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          );
         })()}
     </div>
+  );
+}
+
+/**
+ * "Confirm All" button rendered below individual cards when the user has
+ * 2–3 pending actions. Stands alone so it's easy to spot without
+ * interfering with per-card confirm buttons.
+ */
+function ConfirmAllButton({ count, onConfirmAll }: { count: number; onConfirmAll: () => void }) {
+  return (
+    <Button variant="outline" size="sm" className="cursor-pointer gap-1.5" onClick={onConfirmAll}>
+      <Check className="size-3.5" />
+      Confirm All {count} Actions
+    </Button>
   );
 }

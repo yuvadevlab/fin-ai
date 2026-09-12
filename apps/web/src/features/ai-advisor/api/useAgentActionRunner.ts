@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { confirmAgentAction, rejectAgentAction } from "./agentActions";
+import { confirmAgentAction, confirmAgentActionItem, rejectAgentAction } from "./agentActions";
 import { invalidateForAgentTool } from "./agentInvalidationMap";
 import type { AgentActivity, AgentConfirmationStatus } from "./agentTypes";
 
@@ -22,6 +22,10 @@ export function useAgentActionRunner({
 }: ActionRunnerDeps) {
   const queryClient = useQueryClient();
   const [executingActionId, setExecutingActionId] = useState<string | null>(null);
+  const [executingItemIndex, setExecutingItemIndex] = useState<number | null>(null);
+  const [isExecutingAll, setIsExecutingAll] = useState(false);
+  /** actionId → indexes whose individual Confirm has succeeded. */
+  const [confirmedItems, setConfirmedItems] = useState<Record<string, number[]>>({});
 
   const confirmAction = useCallback(
     async (actionId: string, tool: string) => {
@@ -30,11 +34,8 @@ export function useAgentActionRunner({
       try {
         await confirmAgentAction(actionId);
         updateConfirmationStatus(actionId, "executed");
-        // The button path bypasses the SSE stream, so close the "Waiting for
-        // your approval" activity step locally.
         resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
         queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
-        // Refresh every domain cache the executed tool may have changed.
         invalidateForAgentTool(queryClient, tool);
       } catch {
         updateConfirmationStatus(actionId, "failed");
@@ -42,6 +43,83 @@ export function useAgentActionRunner({
       } finally {
         setExecutingActionId(null);
       }
+    },
+    [executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
+  );
+
+  /**
+   * Confirm a single transaction within a bulk action by its index.
+   * Executes just that one transaction via the transactions.create tool.
+   * On success the item's Confirm button disappears; when the LAST item is
+   * confirmed the whole card flips to "executed".
+   */
+  const confirmItem = useCallback(
+    async (actionId: string, tool: string, index: number) => {
+      if (executingActionId || executingItemIndex !== null || isExecutingAll) return;
+      setExecutingActionId(actionId);
+      setExecutingItemIndex(index);
+      try {
+        const res = await confirmAgentActionItem(actionId, index);
+        if (!res.alreadyConfirmed) {
+          setConfirmedItems((prev) => {
+            const list = prev[actionId] ?? [];
+            if (list.includes(index)) return prev;
+            return { ...prev, [actionId]: [...list, index].sort((a, b) => a - b) };
+          });
+        }
+        resolveApprovalActivity(actionId, {
+          status: "success",
+          summary: `Transaction #${index + 1} recorded`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
+        invalidateForAgentTool(queryClient, tool);
+        if (res.done) updateConfirmationStatus(actionId, "executed");
+      } catch {
+        resolveApprovalActivity(actionId, {
+          status: "error",
+          summary: `Transaction #${index + 1} failed`,
+        });
+      } finally {
+        setExecutingActionId(null);
+        setExecutingItemIndex(null);
+      }
+    },
+    [
+      executingActionId,
+      executingItemIndex,
+      isExecutingAll,
+      queryClient,
+      resolveApprovalActivity,
+      updateConfirmationStatus,
+    ],
+  );
+
+  /**
+   * Sequentially confirms a list of actions, one at a time.
+   * Each action waits for the previous to finish before starting,
+   * respecting the single-execution guard.
+   */
+  const confirmAll = useCallback(
+    async (actions: Array<{ actionId: string; tool: string }>) => {
+      setIsExecutingAll(true);
+      for (const { actionId, tool } of actions) {
+        // Skip already-executed or in-flight actions
+        if (executingActionId) continue;
+        setExecutingActionId(actionId);
+        try {
+          await confirmAgentAction(actionId);
+          updateConfirmationStatus(actionId, "executed");
+          resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
+          queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
+          invalidateForAgentTool(queryClient, tool);
+        } catch {
+          updateConfirmationStatus(actionId, "failed");
+          resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+        } finally {
+          setExecutingActionId(null);
+        }
+      }
+      setIsExecutingAll(false);
     },
     [executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
   );
@@ -65,5 +143,14 @@ export function useAgentActionRunner({
     [executingActionId, updateConfirmationStatus, resolveApprovalActivity],
   );
 
-  return { executingActionId, confirmAction, rejectAction };
+  return {
+    executingActionId,
+    executingItemIndex,
+    isExecutingAll,
+    confirmedItems,
+    confirmAction,
+    confirmItem,
+    confirmAll,
+    rejectAction,
+  };
 }

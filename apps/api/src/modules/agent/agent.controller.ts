@@ -6,10 +6,15 @@ import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { agentChatSchema, type AgentChatInput } from "@finai/validation";
+import { z } from "zod";
 import { AgentService } from "./agent.service";
 import { AgentActionService } from "./action.service";
 import { Logger } from "@finai/logger";
 import type { AgentEventEmitter } from "./agent.types";
+
+const confirmItemSchema = z.object({
+  index: z.number().int().min(0),
+});
 
 /**
  * HTTP entry points for the agent experience.
@@ -85,6 +90,21 @@ export class AgentController {
       `[POST /agent/actions/:id/confirm] Confirming action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.actionService.confirm(id, userId);
+  }
+
+  @Post("actions/:id/confirm-item")
+  @ApiOperation({
+    summary: "Confirm and execute a single transaction within a proposed bulk action",
+  })
+  confirmItem(
+    @Param("id") id: string,
+    @Body(new ZodValidationPipe(confirmItemSchema)) body: { index: number },
+    @CurrentUser("id") userId: string,
+  ) {
+    this.logger.info(
+      `[POST /agent/actions/:id/confirm-item] Confirming item ${body.index} of action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
+    return this.actionService.confirmItem(id, userId, body.index);
   }
 
   @Post("actions/:id/reject")

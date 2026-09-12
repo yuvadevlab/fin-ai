@@ -6,7 +6,7 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
 import { buildConfirmationCard as generateConfirmationCard } from "./dispatchers/agent-proposal-builder";
 import { AuditService } from "./audit.service";
-import type { AgentContext } from "./agent.types";
+import { AgentActionConfirmService } from "./agent-action-confirm.service";
 import type { AgentCard } from "@finai/ai-engine";
 
 /**
@@ -44,6 +44,7 @@ export class AgentActionService {
     private prisma: PrismaService,
     private registry: ToolRegistry,
     private auditService: AuditService,
+    private confirmService: AgentActionConfirmService,
   ) {}
 
   /**
@@ -98,102 +99,19 @@ export class AgentActionService {
 
   /**
    * Phase 2 of a write action: user said "yes" — execute the stored tool.
-   *
-   * Safety checks, in order:
-   *   - ownership: the action row is looked up by id AND userId, so one
-   *     user can never confirm another user's proposal;
-   *   - idempotency: re-confirming an already-executed action returns the
-   *     original result instead of executing twice (network retries);
-   *   - state machine: only PROPOSED actions can transition to EXECUTED;
-   *   - expiry: stale proposals are marked EXPIRED and refused.
-   *
-   * The input is re-validated (schema may have changed between propose and
-   * confirm during a deploy) and the tool executes with the confirming
-   * user's identity. Success/failure is persisted on the row and audited
-   * with an after-image; on failure the row becomes FAILED and the error is
-   * rethrown so the controller returns a non-2xx status.
+   * Delegates to AgentActionConfirmService (extracted for the 250-line rule),
+   * which owns the ownership/idempotency/state/expiry checks and auditing.
    */
   async confirm(actionId: string, userId: string) {
-    const action = await this.prisma.client.agentAction.findFirst({
-      where: { id: actionId, userId },
-    });
-    if (!action) {
-      throw new NotFoundException("Agent action not found");
-    }
+    return this.confirmService.confirm(actionId, userId);
+  }
 
-    // Idempotency: re-confirming an executed action returns the original result.
-    if (action.status === AgentActionStatus.EXECUTED) {
-      return { alreadyExecuted: true as const, result: action.result };
-    }
-    if (action.status !== AgentActionStatus.PROPOSED) {
-      throw new BadRequestException(`Action is ${action.status}`);
-    }
-    if (action.expiresAt.getTime() < Date.now()) {
-      await this.prisma.client.agentAction.update({
-        where: { id: action.id },
-        data: { status: AgentActionStatus.EXPIRED },
-      });
-      this.logger.warn(
-        `Action "${action.tool}" (${actionId.slice(0, 8)}) expired at ${action.expiresAt.toISOString()}`,
-      );
-      throw new BadRequestException("Action confirmation expired");
-    }
-
-    const tool = this.registry.get(action.tool);
-    if (!tool) {
-      throw new BadRequestException(`Unknown tool: ${action.tool}`);
-    }
-
-    const parsed = tool.schema.parse(action.input);
-    const ctx: AgentContext = {
-      userId,
-      conversationId: action.conversationId,
-      runId: action.id,
-    };
-
-    try {
-      const output = await tool.execute(parsed, ctx);
-      const updated = await this.prisma.client.agentAction.update({
-        where: { id: action.id },
-        data: {
-          status: AgentActionStatus.EXECUTED,
-          result: output as Prisma.InputJsonValue,
-          executedAt: new Date(),
-        },
-      });
-      await this.auditService.record({
-        userId,
-        runId: action.id,
-        action: "action.confirm",
-        tool: action.tool,
-        status: "success",
-        after: output,
-      });
-      this.logger.log(
-        `Confirmed action "${action.tool}" (actionId: ${action.id.slice(0, 8)}, userId: ${userId.slice(0, 8)}) — executed successfully`,
-      );
-      return { alreadyExecuted: false as const, action: updated, result: output };
-    } catch (error) {
-      await this.prisma.client.agentAction.update({
-        where: { id: action.id },
-        data: {
-          status: AgentActionStatus.FAILED,
-          error: (error as Error).message,
-        },
-      });
-      await this.auditService.record({
-        userId,
-        runId: action.id,
-        action: "action.confirm",
-        tool: action.tool,
-        status: "error",
-        metadata: { error: (error as Error).message },
-      });
-      this.logger.error(
-        `Failed to execute confirmed action "${action.tool}" (actionId: ${action.id.slice(0, 8)}, userId: ${userId.slice(0, 8)}): ${(error as Error).message}`,
-      );
-      throw error;
-    }
+  /**
+   * Confirm a single transaction of a bulk action by index. Only that item
+   * executes; the action stays PROPOSED until every item is confirmed.
+   */
+  async confirmItem(actionId: string, userId: string, index: number) {
+    return this.confirmService.confirmItem(actionId, userId, index);
   }
 
   /**

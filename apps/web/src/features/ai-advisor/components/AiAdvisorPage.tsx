@@ -32,11 +32,16 @@ export function AiAdvisorPage() {
     isStreaming,
     conversationId,
     executingActionId,
+    executingItemIndex,
+    isExecutingAll,
+    confirmedItems,
     sendMessage,
     startNewChat,
     loadConversation,
     stopStreaming,
     confirmAction,
+    confirmItem,
+    confirmAll,
     rejectAction,
   } = useAgentChat();
 
@@ -108,8 +113,13 @@ export function AiAdvisorPage() {
                   messages={messages}
                   onSelectFollowUp={handleQuickAction}
                   onConfirmAction={(actionId, tool) => confirmAction(actionId, tool)}
+                  onConfirmItem={(actionId, tool, index) => confirmItem(actionId, tool, index)}
+                  onConfirmAll={(actions) => confirmAll(actions)}
                   onRejectAction={(actionId) => rejectAction(actionId)}
                   executingActionId={executingActionId}
+                  executingItemIndex={executingItemIndex}
+                  isExecutingAll={isExecutingAll}
+                  confirmedItems={confirmedItems}
                 />
               )}
             </div>

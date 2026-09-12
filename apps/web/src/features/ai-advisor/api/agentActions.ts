@@ -19,6 +19,23 @@ export function confirmAgentAction(actionId: string): Promise<AgentActionRespons
   return apiClient.post<AgentActionResponse>(`agent/actions/${actionId}/confirm`);
 }
 
+/** Confirm a single transaction within a proposed bulk action. */
+export function confirmAgentActionItem(
+  actionId: string,
+  index: number,
+): Promise<AgentActionItemResponse> {
+  return apiClient.post<AgentActionItemResponse>(`agent/actions/${actionId}/confirm-item`, {
+    index,
+  });
+}
+
+/** Response for a single-item bulk confirm. `done` = every item confirmed. */
+export interface AgentActionItemResponse {
+  alreadyConfirmed?: boolean;
+  done?: boolean;
+  result?: unknown;
+}
+
 /** Reject a proposed agent action. */
 export function rejectAgentAction(actionId: string): Promise<{ rejected?: boolean }> {
   return apiClient.post<{ rejected?: boolean }>(`agent/actions/${actionId}/reject`);

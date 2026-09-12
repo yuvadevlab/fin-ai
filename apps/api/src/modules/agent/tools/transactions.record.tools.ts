@@ -156,6 +156,24 @@ export function createTransactionRecordTools(
         }
         return allWarnings;
       },
+      resolveInput: async (input, ctx) => {
+        // For each transaction without an explicitly named account, resolve
+        // the user's default account so it is visible on the confirmation card
+        // (matching the single-create tool behavior).
+        const accounts = await accountsService.findAll(ctx.userId);
+        const defaultAccount = accounts.find((a) => a.isDefault);
+        if (!defaultAccount) return input;
+
+        return {
+          ...input,
+          transactions: input.transactions.map((tx) => {
+            if (!tx.account && !tx.accountId) {
+              return { ...tx, account: defaultAccount.name };
+            }
+            return tx;
+          }),
+        };
+      },
       execute: async (input, ctx) => {
         // Sequential, not Promise.all: each item may auto-create a category,
         // and parallel runs could create duplicate categories for the same
@@ -188,17 +206,37 @@ export function createTransactionRecordTools(
         const created = output as { id: string }[];
         return { count: created.length, ids: created.map((t) => t.id) };
       },
-      describe: (input) => ({
-        type: "confirmation" as const,
-        title: "Record multiple transactions",
-        rows: [
+      describe: (input) => {
+        const rows: [string, string][] = [
           ["Count", String(input.transactions.length)],
           [
             "Total (absolute)",
             formatINR(input.transactions.reduce((sum, tx) => sum + Math.abs(tx.amount), 0)),
           ],
-        ],
-      }),
+        ];
+        // Emit every per-transaction field so the confirmation card/table
+        // shows ALL details (amount, type, account, category, date, notes)
+        // instead of just the summary.
+        input.transactions.forEach((tx, idx) => {
+          const n = `#${idx + 1}`;
+          rows.push([`${n} Amount`, formatINR(tx.amount)]);
+          rows.push([`${n} Type`, tx.type]);
+          // Show account name when available (agent typically passes a name,
+          // not a raw UUID ID, for bulk creates from natural-language input).
+          rows.push([`${n} Account`, tx.account ?? tx.accountId ?? "—"]);
+          // Show category name when available — the validation step resolves
+          // this to the real stored category, but the card should show the
+          // agent's intended category name (e.g. "Fuel", "Internet/WiFi").
+          rows.push([`${n} Category`, tx.category ?? tx.categoryId ?? "—"]);
+          try {
+            rows.push([`${n} Date`, dateLabel(tx)]);
+          } catch {
+            rows.push([`${n} Date`, tx.date ?? tx.dateExpression ?? ""]);
+          }
+          if (tx.notes) rows.push([`${n} Notes`, tx.notes]);
+        });
+        return { type: "confirmation" as const, title: "Record multiple transactions", rows };
+      },
       summarize: (output) => {
         const created = output as unknown[];
         return `Recorded ${created.length} transaction(s)`;
