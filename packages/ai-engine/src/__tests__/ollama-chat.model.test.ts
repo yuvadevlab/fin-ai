@@ -42,7 +42,11 @@ async function collect(events: AsyncIterable<LlmStreamEvent>): Promise<LlmStream
 const deltaText = (event: LlmStreamEvent) => (event.type === "text-delta" ? event.text : null);
 
 describe("OllamaChatModel.stream", () => {
-  const model = new OllamaChatModel({ baseUrl: "http://localhost:11434", model: "qwen3:8b" });
+  const model = new OllamaChatModel({
+    baseUrl: "http://localhost:11434",
+    apiPath: "/api/chat",
+    model: "qwen3:8b",
+  });
 
   afterEach(() => {
     vi.unstubAllGlobals();

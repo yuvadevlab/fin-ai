@@ -95,7 +95,7 @@ export class OllamaChatModel implements ChatModel {
   }
 
   private endpoint(): string {
-    return `${this.config.baseUrl.replace(/\/+$/, "")}/api/chat`;
+    return `${this.config.baseUrl.replace(/\/+$/, "")}${this.config.apiPath}`;
   }
 
   private async openStream(request: LlmChatRequest): Promise<Response> {

@@ -3,6 +3,7 @@ import type {
   AgentActivity,
   AgentConfirmation,
   AgentConfirmationStatus,
+  AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
 
@@ -45,6 +46,8 @@ export interface AgentEventPort {
   failStream(error: string): void;
   endStream(): void;
   onConversation(conversationId: string): void;
+  /** Set once per run after routing resolves — which runtime answered. */
+  onMode?(mode: AgentResolvedMode): void;
 }
 
 export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEventPort): boolean {
@@ -57,6 +60,18 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       runStartTime = Date.now();
       port.appendLog?.(makeLog("SYS", `Agent run initialized: ${event.runId.slice(0, 8)}`));
       port.appendActivity({ tool: "phase:agent_started", kind: "phase", status: "running" });
+      return false;
+
+    case "mode":
+      port.appendLog?.(
+        makeLog(
+          "SYS",
+          event.mode === "agent"
+            ? "Agent mode — tools & actions enabled"
+            : "Advisor mode — conversational fast reply",
+        ),
+      );
+      port.onMode?.(event.mode);
       return false;
 
     case "token":

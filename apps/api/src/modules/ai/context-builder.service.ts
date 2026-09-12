@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { formatINR } from "@finai/finance-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
@@ -25,6 +26,8 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
  */
 @Injectable()
 export class ContextBuilderService {
+  private readonly logger = new Logger(ContextBuilderService.name);
+
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -173,6 +176,10 @@ export class ContextBuilderService {
             .join("\n"),
     ];
 
-    return lines.join("\n");
+    const snapshot = lines.join("\n");
+    this.logger.debug(
+      `Built finance context for user ${userId.slice(0, 8)}: ${accounts.length} accounts, ${monthTxns.length} monthly txns, ${budgets.length} budgets, ${goals.length} goals, ${investments.length} investments — ${snapshot.length} chars`,
+    );
+    return snapshot;
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { TransactionType } from "@finai/database";
 import type { CreateTransactionInput, UpdateTransactionInput } from "@finai/validation";
@@ -11,12 +12,17 @@ import { TransactionsRepository } from "../repositories";
  */
 @Injectable()
 export class TransactionsMutationService {
+  private readonly logger = new Logger(TransactionsMutationService.name);
+
   constructor(
     private prisma: PrismaService,
     private repo: TransactionsRepository,
   ) {}
 
   async create(userId: string, input: CreateTransactionInput) {
+    this.logger.info(
+      `[create] Creating ${input.type} transaction amount: ${input.amount} (user: ${userId.slice(0, 8)})`,
+    );
     await this.repo.assertOwnedRefs(userId, {
       accountId: input.accountId,
       toAccountId: input.toAccountId,
@@ -59,11 +65,17 @@ export class TransactionsMutationService {
         1,
       );
 
+      this.logger.log(
+        `Created transaction [${transaction.type}] ${transaction.amount} for user ${userId.slice(0, 8)} (id: ${transaction.id.slice(0, 8)})`,
+      );
       return transaction;
     });
   }
 
   async createBulk(userId: string, inputs: CreateTransactionInput[]) {
+    this.logger.info(
+      `[createBulk] Bulk importing ${inputs.length} transaction(s) for user ${userId.slice(0, 8)}`,
+    );
     for (const input of inputs) {
       await this.repo.assertOwnedRefs(userId, {
         accountId: input.accountId,
@@ -110,6 +122,7 @@ export class TransactionsMutationService {
         );
         created.push(transaction);
       }
+      this.logger.log(`Bulk created ${created.length} transactions for user ${userId.slice(0, 8)}`);
       return created;
     });
   }
@@ -191,6 +204,9 @@ export class TransactionsMutationService {
         1,
       );
 
+      this.logger.log(
+        `Updated transaction ${id.slice(0, 8)} [${updatedTx.type}] ${updatedTx.amount} for user ${userId.slice(0, 8)}`,
+      );
       return updatedTx;
     });
   }
@@ -213,6 +229,9 @@ export class TransactionsMutationService {
       );
 
       await tx.transaction.delete({ where: { id } });
+      this.logger.log(
+        `Deleted transaction ${id.slice(0, 8)} [${oldTx.type}] ${oldTx.amount} for user ${userId.slice(0, 8)}`,
+      );
       return { deleted: true };
     });
   }

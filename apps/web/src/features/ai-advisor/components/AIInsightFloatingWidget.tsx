@@ -136,7 +136,7 @@ export function AIInsightFloatingWidget() {
         <div className="max-h-72 overflow-y-auto px-4 py-3 text-sm">
           {isError ? (
             <p className="text-destructive text-xs">
-              Could not load insight. Make sure Ollama or AI engine is running.
+              Could not load insight. Make sure AI service is running...
             </p>
           ) : isStreaming && !text ? (
             <div className="text-muted-foreground flex items-center gap-2 py-4 text-xs">

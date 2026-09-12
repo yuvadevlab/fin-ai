@@ -3,6 +3,7 @@ import type {
   AgentChatMessage,
   AgentConfirmation,
   AgentConfirmationStatus,
+  AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
 
@@ -188,5 +189,18 @@ export function endStreamReducer(prev: AgentChatMessage[]): AgentChatMessage[] {
   const last = copy[copy.length - 1];
   if (!last || last.role !== "assistant" || !last.streaming) return prev;
   copy[copy.length - 1] = { ...last, streaming: false };
+  return copy;
+}
+
+/** Records which runtime answered the current assistant turn (SSE `mode` event). */
+export function setModeReducer(
+  prev: AgentChatMessage[],
+  mode: AgentResolvedMode,
+): AgentChatMessage[] {
+  if (prev.length === 0) return prev;
+  const copy = [...prev];
+  const last = copy[copy.length - 1];
+  if (!last || last.role !== "assistant") return prev;
+  copy[copy.length - 1] = { ...last, mode };
   return copy;
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, MessagesSquare, Zap } from "lucide-react";
+import { cn } from "@finai/ui";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
@@ -44,6 +45,27 @@ export function AgentRun({
 
   return (
     <div className="space-y-3">
+      {/* 0. Runtime badge — tells the user which mode produced this reply */}
+      {message.mode && (
+        <div className="flex justify-end">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
+              message.mode === "agent"
+                ? "text-primary border-primary/20 bg-primary/5"
+                : "text-muted-foreground border-border/70 bg-muted/40",
+            )}
+          >
+            {message.mode === "agent" ? (
+              <Zap className="size-3" aria-hidden="true" />
+            ) : (
+              <MessagesSquare className="size-3" aria-hidden="true" />
+            )}
+            {message.mode === "agent" ? "Agent mode" : "Advisor mode"}
+          </span>
+        </div>
+      )}
+
       {/* 1. Live activity stream with real-time logs & speed ticker */}
       {(hasActivities || streaming || logs.length > 0) && (
         <ActivityTimeline

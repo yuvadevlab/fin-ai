@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { Prisma } from "@finai/database";
-import { parseToolPlan, type LlmChatRequest } from "@finai/ai-engine";
+import { parseToolPlan, type LlmChatRequest, type AiProviderRole } from "@finai/ai-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { AgentModelFactory } from "./agent-model.factory";
@@ -18,6 +19,7 @@ export interface AgentRunParams {
   request: LlmChatRequest;
   hasPendingAction: boolean;
   emit: AgentEventEmitter;
+  role?: AiProviderRole;
 }
 
 /**
@@ -26,6 +28,8 @@ export interface AgentRunParams {
  */
 @Injectable()
 export class AgentOrchestratorService {
+  private readonly logger = new Logger(AgentOrchestratorService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly conversationService: ConversationService,
@@ -44,13 +48,20 @@ export class AgentOrchestratorService {
     request,
     hasPendingAction,
     emit,
+    role,
   }: AgentRunParams): Promise<void> {
-    const model = this.modelFactory.create();
+    const model = this.modelFactory.create(role ?? "agent");
+    this.logger.log(
+      `[Run ${runId.slice(0, 8)}] Started (role: ${role ?? "agent"}, provider: ${model.provider}, model: ${model.model})`,
+    );
     let tokensIn = 0;
     let tokensOut = 0;
     let runVisibleContent = "";
 
     for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
+      this.logger.log(
+        `[Run ${runId.slice(0, 8)}] Turn ${iteration}/${MAX_ITERATIONS} evaluating...`,
+      );
       const turn = await this.turnRunner.run(model, request, emit, iteration, hasPendingAction);
       tokensIn += turn.tokensIn;
       tokensOut += turn.tokensOut;
@@ -58,6 +69,10 @@ export class AgentOrchestratorService {
 
       const toolCalls =
         turn.toolCalls.length > 0 ? turn.toolCalls : (parseToolPlan(turn.rawContent) ?? []);
+
+      this.logger.log(
+        `[Run ${runId.slice(0, 8)}] Turn ${iteration} completed (${toolCalls.length} tool calls, tokens: +${turn.tokensIn} in / +${turn.tokensOut} out)`,
+      );
 
       emit({
         type: "phase",
@@ -86,10 +101,16 @@ export class AgentOrchestratorService {
       let hasConfirmation = false;
 
       for (const call of toolCalls) {
+        this.logger.log(
+          `[Run ${runId.slice(0, 8)}] Dispatching tool "${call.name}" args: ${call.arguments.slice(0, 80)}`,
+        );
         const result = await this.toolDispatcher.dispatch(
           call,
           { userId, conversationId, runId },
           emit,
+        );
+        this.logger.log(
+          `[Run ${runId.slice(0, 8)}] Tool "${call.name}" status: ${(result as { status?: string }).status ?? "ok"}`,
         );
 
         request.messages.push({
@@ -140,6 +161,9 @@ export class AgentOrchestratorService {
     tokensOut: number,
     emit: AgentEventEmitter,
   ): Promise<void> {
+    this.logger.log(
+      `[Run ${runId.slice(0, 8)}] Complete (${iterations} turn(s), model: ${modelName}, tokens: ${tokensIn} in / ${tokensOut} out)`,
+    );
     const message = await this.conversationService.addMessage(
       conversationId,
       "assistant",

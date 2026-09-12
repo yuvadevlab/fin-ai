@@ -8,16 +8,43 @@
  * method, URL, status code, and duration — with error-level logging for 5xx
  * responses. Used by both `apps/api/main.ts` (HTTP) and services (application).
  */
+
 export type LogLevel = "debug" | "info" | "warn" | "error";
 
+export type LoggerConfig = {
+  level?: LogLevel;
+  enabled?: boolean;
+  file?: string;
+};
+
+/** Convert env string to a LogLevel, lowercased and validated. */
+function parseLogLevel(raw?: string): LogLevel {
+  if (!raw) return "info";
+  const v = raw.toLowerCase().trim();
+  return ["debug", "info", "warn", "error"].includes(v) ? (v as LogLevel) : "info";
+}
+
+/** Minimal file transport — appends UTF-8 lines to the given path. */
+import fs from "fs";
+
+function createFileTransport(path: string): NodeJS.WritableStream {
+  const dir = path.split("/").slice(0, -1).join("/") || ".";
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    // directory exists or is not writable — best-effort
+  }
+  return fs.createWriteStream(path, { flags: "a", encoding: "utf8" });
+}
+
 export class Logger {
-  private context?: string;
+  context?: string;
 
   constructor(context?: string) {
     this.context = context;
   }
 
-  private formatMessage(level: LogLevel, message: any, ...optionalParams: any[]): string {
+  formatMessage(level: LogLevel, message: any, ...optionalParams: any[]): string {
     const timestamp = new Date().toISOString();
     const ctx = this.context ? ` [${this.context}]` : "";
     const colorReset = "\x1b[0m";
@@ -67,6 +94,104 @@ export class Logger {
       console.debug(this.formatMessage("debug", message, ...optionalParams));
     }
   }
+}
+
+/**
+ * Build a Logger configured from env + explicit options.
+ *
+ * - `LOG_ENABLED` → enabled (default true)
+ * - `LOG_LEVEL`   → minimum level (default "info")
+ * - `LOG_PERSIST` → when "true", also write logs to disk
+ * - `LOG_FILE`    → target log file path (unspecified → persistence is a no-op)
+ */
+export function createLogger(config?: LoggerConfig): Logger {
+  const enabled =
+    config?.enabled ?? (process.env.LOG_ENABLED ? process.env.LOG_ENABLED !== "false" : true);
+  const level = config?.level ?? parseLogLevel(process.env.LOG_LEVEL);
+  const file = config?.file ?? process.env.LOG_FILE;
+  const fileStream = file && process.env.LOG_PERSIST === "true" ? createFileTransport(file) : null;
+
+  // Rank so we can compare the active minimum against the message level.
+  const levelRank: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 };
+  const base = new Logger(undefined as any);
+
+  const out = (msgLevel: LogLevel, message: string, ...rest: unknown[]) => {
+    if (!enabled) return;
+    if (levelRank[msgLevel] < levelRank[level]) return;
+    const formatted = base.formatMessage(msgLevel, message, ...rest);
+    if (msgLevel === "debug" && process.env.NODE_ENV === "production") return;
+    (console as any)[
+      {
+        debug: "debug",
+        info: "log",
+        warn: "warn",
+        error: "error",
+      }[msgLevel] || "log"
+    ](formatted);
+    if (fileStream) {
+      (fileStream as any).write(formatted + "\n");
+    }
+  };
+
+  return {
+    get context() {
+      return (base as any).context;
+    },
+    set context(v) {
+      (base as any).context = v;
+    },
+    log(message: any, ...rest: unknown[]) {
+      out("info", message as string, ...rest);
+    },
+    info(message: any, ...rest: unknown[]) {
+      out("info", message as string, ...rest);
+    },
+    warn(message: any, ...rest: unknown[]) {
+      out("warn", message as string, ...rest);
+    },
+    error(message: any, ...rest: unknown[]) {
+      out("error", message as string, ...rest);
+    },
+    debug(message: any, ...rest: unknown[]) {
+      out("debug", message as string, ...rest);
+    },
+  } as unknown as Logger;
+}
+
+/**
+ * Wrap a naive `Logger` instance so its output honors `LoggerConfig` +
+ * env (LOG_ENABLED / LOG_LEVEL / LOG_PERSIST / LOG_FILE).
+ *
+ * Used in `apps/api/main.ts` so the Nest app logger and the HTTP request
+ * logger can both carry a context string (via `new Logger("NAME")`) while
+ * env controls magnitude, persistence, and per-request gating.
+ */
+export function loggerWithConfig(base: Logger, config?: LoggerConfig): Logger {
+  const envLogger = createLogger(config);
+  const proxy: any = {
+    get context() {
+      return base.context;
+    },
+    set context(v) {
+      base.context = v;
+    },
+    log(...args: unknown[]) {
+      envLogger.log(args[0] as string, ...(args.slice(1) as unknown[]));
+    },
+    info(...args: unknown[]) {
+      envLogger.info(args[0] as string, ...(args.slice(1) as unknown[]));
+    },
+    warn(...args: unknown[]) {
+      envLogger.warn(args[0] as string, ...(args.slice(1) as unknown[]));
+    },
+    error(...args: unknown[]) {
+      envLogger.error(args[0] as string, ...(args.slice(1) as unknown[]));
+    },
+    debug(...args: unknown[]) {
+      envLogger.debug(args[0] as string, ...(args.slice(1) as unknown[]));
+    },
+  };
+  return proxy as unknown as Logger;
 }
 
 /**

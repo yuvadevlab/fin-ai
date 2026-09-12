@@ -37,19 +37,25 @@ export class AuthService {
    * Uses bcrypt for constant-time password comparison against the stored hash.
    */
   async login(input: LoginInput) {
+    this.logger.debug(`[login] Attempting login for email: ${input.email}`);
     const user = await this.prisma.client.user.findUnique({
       where: { email: input.email },
     });
 
     if (!user) {
+      this.logger.warn(`[login] Login failed — no user found for email: ${input.email}`);
       throw new UnauthorizedException("Invalid credentials");
     }
 
     const passwordValid = await bcrypt.compare(input.password, user.passwordHash);
     if (!passwordValid) {
+      this.logger.warn(`[login] Login failed — invalid password for email: ${input.email}`);
       throw new UnauthorizedException("Invalid credentials");
     }
 
+    this.logger.info(
+      `[login] User logged in successfully: ${input.email} (userId: ${user.id.slice(0, 8)})`,
+    );
     const payload = { sub: user.id, email: user.email };
     return {
       accessToken: this.jwtService.sign(payload),
@@ -68,15 +74,18 @@ export class AuthService {
    * immediately without manually configuring categories first.
    */
   async register(input: RegisterInput) {
+    this.logger.info(`[register] Registering new user: ${input.email}`);
     const existingUser = await this.prisma.client.user.findUnique({
       where: { email: input.email },
     });
 
     if (existingUser) {
+      this.logger.warn(`[register] Registration failed — email already exists: ${input.email}`);
       throw new ConflictException("User with this email already exists");
     }
 
     const passwordHash = await bcrypt.hash(input.password, 10);
+    this.logger.debug(`[register] Password hashed for user: ${input.email}`);
 
     const user = await this.prisma.client.user.create({
       data: {
@@ -85,6 +94,7 @@ export class AuthService {
         passwordHash,
       },
     });
+    this.logger.info(`[register] User created: ${input.email} (userId: ${user.id.slice(0, 8)})`);
 
     // Seed default categories for the new user
     await this.prisma.client.category.createMany({
@@ -96,6 +106,9 @@ export class AuthService {
         isDefault: true,
       })),
     });
+    this.logger.info(
+      `[register] Seeded ${DEFAULT_CATEGORIES.length} default categories for user ${user.id.slice(0, 8)}`,
+    );
 
     const payload = { sub: user.id, email: user.email };
     return {
@@ -115,10 +128,12 @@ export class AuthService {
    * for development convenience (no email provider configured).
    */
   async forgotPassword(email: string) {
+    this.logger.info(`[forgotPassword] Reset requested for email: ${email}`);
     const user = await this.prisma.client.user.findUnique({ where: { email } });
 
     // Always return success to prevent email enumeration attacks
     if (!user) {
+      this.logger.debug(`[forgotPassword] No user found for email: ${email} (silently ignored)`);
       return { message: "If an account exists with that email, a reset link has been sent." };
     }
 
@@ -137,7 +152,10 @@ export class AuthService {
     // so the dev/demo flow works without an email provider.
     const resetUrl = `${process.env.FRONTEND_URL ?? "http://localhost:3000"}/reset-password?token=${token}`;
 
-    this.logger.info(`Password reset link for ${email}: ${resetUrl}`);
+    this.logger.info(
+      `[forgotPassword] Reset token generated for user ${user.id.slice(0, 8)}: ${resetUrl}`,
+    );
+    this.logger.debug(`[forgotPassword] Token expires at: ${expires.toISOString()}`);
 
     return {
       message: "If an account exists with that email, a reset link has been sent.",
@@ -151,6 +169,7 @@ export class AuthService {
    * Clears the token and expiry so it cannot be reused.
    */
   async resetPassword(token: string, newPassword: string) {
+    this.logger.info(`[resetPassword] Reset attempted with token: ${token.slice(0, 8)}...`);
     const user = await this.prisma.client.user.findFirst({
       where: {
         resetPasswordToken: token,
@@ -159,9 +178,11 @@ export class AuthService {
     });
 
     if (!user) {
+      this.logger.warn(`[resetPassword] Invalid or expired token: ${token.slice(0, 8)}...`);
       throw new BadRequestException("Invalid or expired reset token. Please request a new one.");
     }
 
+    this.logger.info(`[resetPassword] Resetting password for user ${user.id.slice(0, 8)}`);
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
     await this.prisma.client.user.update({
@@ -173,6 +194,7 @@ export class AuthService {
       },
     });
 
+    this.logger.info(`[resetPassword] Password reset successfully for user ${user.id.slice(0, 8)}`);
     return { message: "Password has been reset successfully. You can now log in." };
   }
 
@@ -182,8 +204,10 @@ export class AuthService {
    * (e.g. deleted account).
    */
   async validateUserById(userId: string) {
+    this.logger.debug(`[validateUserById] Validating user ${userId.slice(0, 8)} from JWT`);
     const user = await this.prisma.client.user.findUnique({ where: { id: userId } });
     if (!user) {
+      this.logger.warn(`[validateUserById] User not found for JWT subject: ${userId.slice(0, 8)}`);
       throw new NotFoundException("User not found");
     }
     return user;

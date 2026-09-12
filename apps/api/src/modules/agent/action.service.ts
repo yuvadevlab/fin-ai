@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { randomUUID } from "crypto";
 import { AgentActionStatus, Prisma } from "@finai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
@@ -37,6 +38,8 @@ export interface ProposeActionInput {
  */
 @Injectable()
 export class AgentActionService {
+  private readonly logger = new Logger(AgentActionService.name);
+
   constructor(
     private prisma: PrismaService,
     private registry: ToolRegistry,
@@ -54,27 +57,43 @@ export class AgentActionService {
    * proposals self-retire.
    */
   async propose(input: ProposeActionInput) {
+    this.logger.debug(
+      `[propose] Proposing action "${input.tool}" for user ${input.userId.slice(0, 8)} (run: ${(input.runId ?? "").slice(0, 8) || "n/a"})`,
+    );
     const tool = this.registry.get(input.tool);
     if (!tool) {
+      this.logger.warn(
+        `[propose] Unknown tool requested: "${input.tool}" (user: ${input.userId.slice(0, 8)})`,
+      );
       throw new BadRequestException(`Unknown tool: ${input.tool}`);
     }
     if (tool.confirmation !== "required") {
+      this.logger.warn(
+        `[propose] Tool "${input.tool}" does not require confirmation — rejecting proposal`,
+      );
       throw new BadRequestException(`Tool ${input.tool} does not require confirmation`);
     }
 
     // Validate now so a confirmed action can never carry invalid input.
     const validated = tool.schema.parse(input.input);
 
-    return this.prisma.client.agentAction.create({
-      data: {
-        clientActionId: randomUUID(),
-        conversationId: input.conversationId,
-        userId: input.userId,
-        tool: input.tool,
-        input: validated as Prisma.InputJsonValue,
-        expiresAt: new Date(Date.now() + ACTION_TTL_MINUTES * 60 * 1000),
-      },
-    });
+    return this.prisma.client.agentAction
+      .create({
+        data: {
+          clientActionId: randomUUID(),
+          conversationId: input.conversationId,
+          userId: input.userId,
+          tool: input.tool,
+          input: validated as Prisma.InputJsonValue,
+          expiresAt: new Date(Date.now() + ACTION_TTL_MINUTES * 60 * 1000),
+        },
+      })
+      .then((action) => {
+        this.logger.log(
+          `Proposed action "${input.tool}" (actionId: ${action.id}, userId: ${input.userId.slice(0, 8)}, runId: ${(input.runId ?? "").slice(0, 8)})`,
+        );
+        return action;
+      });
   }
 
   /**
@@ -114,6 +133,9 @@ export class AgentActionService {
         where: { id: action.id },
         data: { status: AgentActionStatus.EXPIRED },
       });
+      this.logger.warn(
+        `Action "${action.tool}" (${actionId.slice(0, 8)}) expired at ${action.expiresAt.toISOString()}`,
+      );
       throw new BadRequestException("Action confirmation expired");
     }
 
@@ -147,6 +169,9 @@ export class AgentActionService {
         status: "success",
         after: output,
       });
+      this.logger.log(
+        `Confirmed action "${action.tool}" (actionId: ${action.id.slice(0, 8)}, userId: ${userId.slice(0, 8)}) — executed successfully`,
+      );
       return { alreadyExecuted: false as const, action: updated, result: output };
     } catch (error) {
       await this.prisma.client.agentAction.update({
@@ -164,6 +189,9 @@ export class AgentActionService {
         status: "error",
         metadata: { error: (error as Error).message },
       });
+      this.logger.error(
+        `Failed to execute confirmed action "${action.tool}" (actionId: ${action.id.slice(0, 8)}, userId: ${userId.slice(0, 8)}): ${(error as Error).message}`,
+      );
       throw error;
     }
   }
@@ -174,13 +202,22 @@ export class AgentActionService {
    * EXPIRED) are immutable so history cannot be rewritten.
    */
   async reject(actionId: string, userId: string) {
+    this.logger.info(
+      `[reject] Rejecting action ${actionId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     const action = await this.prisma.client.agentAction.findFirst({
       where: { id: actionId, userId },
     });
     if (!action) {
+      this.logger.warn(
+        `[reject] Action ${actionId.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
+      );
       throw new NotFoundException("Agent action not found");
     }
     if (action.status !== AgentActionStatus.PROPOSED) {
+      this.logger.warn(
+        `[reject] Action ${actionId.slice(0, 8)} is ${action.status} — cannot reject`,
+      );
       throw new BadRequestException(`Action is ${action.status}`);
     }
 
@@ -195,6 +232,9 @@ export class AgentActionService {
       tool: action.tool,
       status: "rejected",
     });
+    this.logger.log(
+      `Rejected action "${action.tool}" (actionId: ${actionId.slice(0, 8)}, userId: ${userId.slice(0, 8)})`,
+    );
     return { rejected: true as const, action: updated };
   }
 
@@ -204,6 +244,9 @@ export class AgentActionService {
    * a refresh would strand a proposed action with no way to confirm it.
    */
   async listProposed(userId: string, conversationId?: string) {
+    this.logger.debug(
+      `[listProposed] Listing pending actions for user ${userId.slice(0, 8)}${conversationId ? ` (convo: ${conversationId.slice(0, 8)})` : ""}`,
+    );
     return this.prisma.client.agentAction.findMany({
       where: {
         userId,

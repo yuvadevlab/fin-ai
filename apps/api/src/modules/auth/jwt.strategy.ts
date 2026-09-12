@@ -1,4 +1,5 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
@@ -25,6 +26,7 @@ export interface JwtPayload {
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
   constructor(
     configService: ConfigService,
     private prisma: PrismaService,
@@ -37,10 +39,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
+    this.logger.debug(
+      `[validate] Validating JWT for sub=${payload.sub.slice(0, 8)} email=${payload.email}`,
+    );
     const user = await this.prisma.client.user.findUnique({
       where: { id: payload.sub },
       select: { id: true, email: true, name: true, avatarUrl: true },
     });
+    if (!user) {
+      this.logger.warn(
+        `[validate] Rejected token — no user for sub=${payload.sub.slice(0, 8)} email=${payload.email}`,
+      );
+      // Thrown as 401 by the guard — the account was deleted or the sub is forged.
+      throw new UnauthorizedException("User for this token no longer exists");
+    }
+    this.logger.debug(`[validate] Authenticated user ${user.id.slice(0, 8)} (${user.email})`);
     return user;
   }
 }

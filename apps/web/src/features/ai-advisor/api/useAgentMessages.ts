@@ -4,6 +4,7 @@ import type {
   AgentChatMessage,
   AgentActivity,
   AgentConfirmationStatus,
+  AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
 import {
@@ -15,6 +16,7 @@ import {
   failStreamReducer,
   replaceTextReducer,
   resolveApprovalActivityReducer,
+  setModeReducer,
   updateActivityReducer,
   updateConfirmationCardReducer,
   updateConfirmationStatusReducer,
@@ -77,6 +79,10 @@ export function useAgentMessages() {
     setMessages((prev) => endStreamReducer(prev));
   }, []);
 
+  const setMode = useCallback((mode: AgentResolvedMode) => {
+    setMessages((prev) => setModeReducer(prev, mode));
+  }, []);
+
   const pushUserTurn = useCallback((question: string) => {
     setMessages((prev) => [...prev, { role: "user", text: question }]);
   }, []);
@@ -109,6 +115,7 @@ export function useAgentMessages() {
     updateConfirmationCard,
     failStream,
     endStream,
+    setMode,
     pushUserTurn,
     pushAssistantTurn,
     replaceMessages,

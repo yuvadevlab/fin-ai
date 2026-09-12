@@ -1,4 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { LlmToolDefinition } from "@finai/ai-engine";
 import type { AgentTool } from "./agent.types";
@@ -20,6 +21,7 @@ export class ToolRegistry {
    */
   register(tool: AgentTool): void {
     if (this.tools.has(tool.name)) {
+      this.logger.error(`Duplicate agent tool registration attempted: ${tool.name}`);
       throw new Error(`Agent tool already registered: ${tool.name}`);
     }
     this.tools.set(tool.name, tool);

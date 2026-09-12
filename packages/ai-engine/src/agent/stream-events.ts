@@ -27,6 +27,12 @@ export type AgentStreamEvent =
   /** Unique id for this agent run — correlates usage/audit across events. */
   | { type: "run"; runId: string }
   /**
+   * Emitted once per run, right after routing resolves, so the UI can show
+   * which runtime answered: "agent" (tool-enabled loop — can propose actions)
+   * or "chat" (tool-free advisor fast-path — conversational only).
+   */
+  | { type: "mode"; mode: "agent" | "chat" }
+  /**
    * One streamed chunk (DELTA) of the assistant's visible answer text.
    * Clients must APPEND this to the current assistant message:
    *   message.text += content
