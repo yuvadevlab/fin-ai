@@ -18,16 +18,24 @@ export default function ForgotPasswordPage() {
     setError(null);
     setLoading(true);
     try {
-      const response = await apiClient.post<{ message: string; resetToken?: string }>(
-        "auth/forgot-password",
-        { email },
-      );
+      const response = await toast
+        .promise(
+          apiClient.post<{ message: string; resetToken?: string }>("auth/forgot-password", {
+            email,
+          }),
+          {
+            loading: "Generating reset link...",
+            success: "Password reset link ready!",
+            error: (error: { message?: string }) =>
+              error?.message || "Something went wrong. Please try again.",
+          },
+        )
+        .unwrap();
       setSent(true);
       // Dev/demo: backend returns the token so you can test without email
       if (response.resetToken) {
         setResetToken(response.resetToken);
       }
-      toast.success("Reset instructions sent!");
     } catch (err) {
       const apiErr = err as { message?: string };
       setError(apiErr?.message || "Something went wrong. Please try again.");
@@ -43,7 +51,7 @@ export default function ForgotPasswordPage() {
           <FinAILogo showName={false} />
           <h2 className="text-2xl font-bold tracking-tight">Forgot your password?</h2>
           <p className="text-muted-foreground text-sm">
-            Enter your email and we'll send you a reset link.
+            Enter your email and we&apos;ll get you a password reset link.
           </p>
         </div>
 
@@ -54,7 +62,7 @@ export default function ForgotPasswordPage() {
                 <Mail className="text-primary size-7" />
               </div>
               <div>
-                <p className="font-semibold">Check your inbox</p>
+                <p className="font-semibold">Password reset link ready</p>
                 <p className="text-muted-foreground mt-1 text-sm">
                   We&apos;ve sent reset instructions to <strong>{email}</strong>.
                 </p>
@@ -104,7 +112,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="mt-2 w-full cursor-pointer font-semibold shadow-sm"
               >
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? "Generating..." : "Get Reset Link"}
               </Button>
             </form>
           )}

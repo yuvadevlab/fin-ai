@@ -8,14 +8,17 @@ export function useCreateBudget() {
   const queryClient = useQueryClient();
 
   return useMutation<Budget, Error, CreateBudgetInput>({
-    mutationFn: (input) => apiClient.post<Budget>("budgets", input),
+    mutationFn: (input) =>
+      toast
+        .promise(apiClient.post<Budget>("budgets", input), {
+          loading: "Creating budget...",
+          success: "Budget created successfully",
+          error: (error: Error) => error.message || "Failed to create budget",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success("Budget created successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create budget");
     },
   });
 }

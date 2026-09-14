@@ -40,9 +40,15 @@ function ResetPasswordForm() {
     setErrors({});
     setLoading(true);
     try {
-      await apiClient.post("auth/reset-password", { token, password, confirmPassword });
+      await toast
+        .promise(apiClient.post("auth/reset-password", { token, password, confirmPassword }), {
+          loading: "Resetting your password...",
+          success: "Password reset! You can now log in.",
+          error: (error: { message?: string }) =>
+            error?.message || "Reset failed. The link may have expired.",
+        })
+        .unwrap();
       setDone(true);
-      toast.success("Password reset! You can now log in.");
       setTimeout(() => router.push("/login"), 2500);
     } catch (err) {
       const apiErr = err as { message?: string };

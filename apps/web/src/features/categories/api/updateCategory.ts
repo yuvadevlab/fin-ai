@@ -13,13 +13,16 @@ export function useUpdateCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<Category, Error, UpdateCategoryParams>({
-    mutationFn: ({ id, input }) => apiClient.patch<Category>(`categories/${id}`, input),
+    mutationFn: ({ id, input }) =>
+      toast
+        .promise(apiClient.patch<Category>(`categories/${id}`, input), {
+          loading: "Updating category...",
+          success: "Category updated successfully",
+          error: (error: Error) => error.message || "Failed to update category",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast.success("Category updated successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update category");
     },
   });
 }

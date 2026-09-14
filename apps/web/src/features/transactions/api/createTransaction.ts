@@ -8,7 +8,14 @@ export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation<Transaction, Error, CreateTransactionInput>({
-    mutationFn: (input) => apiClient.post<Transaction>("transactions", input),
+    mutationFn: (input) =>
+      toast
+        .promise(apiClient.post<Transaction>("transactions", input), {
+          loading: "Creating transaction...",
+          success: "Transaction created successfully",
+          error: (error: Error) => error.message || "Failed to create transaction",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -16,10 +23,6 @@ export function useCreateTransaction() {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["goals"] });
-      toast.success("Transaction created successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create transaction");
     },
   });
 }

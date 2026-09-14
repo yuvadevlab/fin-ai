@@ -1,8 +1,9 @@
 import React from "react";
 import { Badge, Button } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2 } from "lucide-react";
 import { Transaction } from "../api";
+import { DeleteTransactionButton } from "./DeleteTransactionButton";
 import { TransactionDialog } from "./TransactionDialog";
 
 export function getTransactionColumns(onDelete: (id: string) => void) {
@@ -109,18 +110,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
               </Button>
             }
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-destructive h-7 w-7 cursor-pointer sm:h-8 sm:w-8"
-            onClick={() => {
-              if (confirm("Are you sure you want to delete this transaction?")) {
-                onDelete(t.id);
-              }
-            }}
-          >
-            <Trash2 className="size-3 sm:size-3.5" />
-          </Button>
+          <DeleteTransactionButton transactionId={t.id} onDelete={onDelete} />
         </div>
       ),
       className: "text-right whitespace-nowrap",

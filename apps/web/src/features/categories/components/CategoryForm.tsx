@@ -27,33 +27,28 @@ export function CategoryForm({
   ],
 }: CategoryFormProps) {
   const [isSuggesting, setIsSuggesting] = useState(false);
-  const { mutate: suggestEmoji } = useSuggestEmoji();
+  const { mutateAsync: suggestEmojiAsync } = useSuggestEmoji();
 
   const handleAiSuggest = async () => {
-    try {
-      const categoryName = values["name"];
-      if (!categoryName) {
-        toast.error("Please enter a category name first");
-        return;
-      }
+    const categoryName = values["name"];
+    if (!categoryName) {
+      toast.error("Please enter a category name first");
+      return;
+    }
 
-      setIsSuggesting(true);
-      suggestEmoji(categoryName, {
-        onSuccess: (data) => {
-          onChange("icon", data.emoji);
-          setIsSuggesting(false);
-        },
-        onError: (error) => {
-          toast.error(
-            error instanceof Error ? error.message : "Failed to suggest emoji. Please try again.",
-          );
-          setIsSuggesting(false);
-        },
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to suggest emoji. Please try again.",
-      );
+    setIsSuggesting(true);
+    try {
+      const data = await toast
+        .promise(suggestEmojiAsync(categoryName), {
+          loading: "Asking AI for an emoji suggestion...",
+          success: "Emoji suggested!",
+          error: (error: Error) => error.message || "Failed to suggest emoji. Please try again.",
+        })
+        .unwrap();
+      onChange("icon", data.emoji);
+    } catch {
+      // Error toast is shown by toast.promise
+    } finally {
       setIsSuggesting(false);
     }
   };
