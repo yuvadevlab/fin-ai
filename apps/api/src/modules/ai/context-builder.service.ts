@@ -41,30 +41,36 @@ export class ContextBuilderService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [accounts, monthTxns, recentTxns, budgets, goals, investments] = await Promise.all([
-      this.prisma.client.account.findMany({
-        where: { userId, isActive: true },
-        select: { name: true, type: true, balance: true, currency: true },
-      }),
-      // Transactions this calendar month for accurate monthly totals
-      this.prisma.client.transaction.findMany({
-        where: { userId, date: { gte: startOfMonth } },
-        include: { category: { select: { name: true, group: true } } },
-      }),
-      // Last 40 recent transactions for granular context
-      this.prisma.client.transaction.findMany({
-        where: { userId },
-        include: { category: { select: { name: true, group: true } } },
-        orderBy: { date: "desc" },
-        take: 40,
-      }),
-      this.prisma.client.budget.findMany({
-        where: { userId },
-        include: { category: { select: { name: true } } },
-      }),
-      this.prisma.client.goal.findMany({ where: { userId } }),
-      this.prisma.client.investment.findMany({ where: { userId } }),
-    ]);
+    const [accounts, monthTxns, recentTxns, budgets, goals, investments, categories] =
+      await Promise.all([
+        this.prisma.client.account.findMany({
+          where: { userId, isActive: true },
+          select: { name: true, type: true, balance: true, currency: true },
+        }),
+        // Transactions this calendar month for accurate monthly totals
+        this.prisma.client.transaction.findMany({
+          where: { userId, date: { gte: startOfMonth } },
+          include: { category: { select: { name: true, group: true } } },
+        }),
+        // Last 40 recent transactions for granular context
+        this.prisma.client.transaction.findMany({
+          where: { userId },
+          include: { category: { select: { name: true, group: true } } },
+          orderBy: { date: "desc" },
+          take: 40,
+        }),
+        this.prisma.client.budget.findMany({
+          where: { userId },
+          include: { category: { select: { name: true } } },
+        }),
+        this.prisma.client.goal.findMany({ where: { userId } }),
+        this.prisma.client.investment.findMany({ where: { userId } }),
+        this.prisma.client.category.findMany({
+          where: { userId },
+          select: { name: true },
+          orderBy: { name: "asc" },
+        }),
+      ]);
 
     const totalBankBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
     const totalInvestments = investments.reduce((sum, i) => sum + i.currentValue, 0);
@@ -120,6 +126,11 @@ export class ContextBuilderService {
       topCategories.length === 0
         ? `- No expenses recorded this month.`
         : topCategories.map(([cat, amt]) => `- ${cat}: ${formatINR(amt)}`).join("\n"),
+      ``,
+      `### Available Categories (${categories.length})`,
+      categories.length === 0
+        ? `- No categories created.`
+        : `- ${categories.map((c) => c.name).join(", ")}`,
       ``,
       `### Active Budgets & Adherence (${budgets.length})`,
       budgets.length === 0

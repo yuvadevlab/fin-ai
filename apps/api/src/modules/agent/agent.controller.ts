@@ -79,21 +79,31 @@ export class AgentController {
   }
 
   @Post("actions/:id/confirm")
-  @ApiOperation({ summary: "Confirm and execute a proposed agent action" })
-  confirm(@Param("id") id: string, @CurrentUser("id") userId: string) {
+  @ApiOperation({
+    summary: "Confirm and execute a proposed agent action (optionally for a specific item)",
+  })
+  confirm(
+    @Param("id") id: string,
+    @CurrentUser("id") userId: string,
+    @Body() body?: { itemIndex?: number },
+  ) {
     this.logger.info(
-      `[POST /agent/actions/:id/confirm] Confirming action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[POST /agent/actions/:id/confirm] Confirming action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
     );
-    return this.actionService.confirm(id, userId);
+    return this.actionService.confirm(id, userId, body);
   }
 
   @Post("actions/:id/reject")
-  @ApiOperation({ summary: "Reject a proposed agent action" })
-  reject(@Param("id") id: string, @CurrentUser("id") userId: string) {
+  @ApiOperation({ summary: "Reject a proposed agent action (optionally for a specific item)" })
+  reject(
+    @Param("id") id: string,
+    @CurrentUser("id") userId: string,
+    @Body() body?: { itemIndex?: number },
+  ) {
     this.logger.info(
-      `[POST /agent/actions/:id/reject] Rejecting action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[POST /agent/actions/:id/reject] Rejecting action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
     );
-    return this.actionService.reject(id, userId);
+    return this.actionService.reject(id, userId, body);
   }
 
   @Get("actions/proposed")
@@ -106,5 +116,17 @@ export class AgentController {
       `[GET /agent/actions/proposed] Listing pending actions for user ${userId.slice(0, 8)}${conversationId ? ` (convo: ${conversationId.slice(0, 8)})` : ""}`,
     );
     return this.actionService.listProposed(userId, conversationId);
+  }
+
+  @Get("actions/history")
+  @ApiOperation({ summary: "List all agent actions (any status) for a conversation" })
+  listByConversation(
+    @CurrentUser("id") userId: string,
+    @Query("conversationId") conversationId: string,
+  ) {
+    this.logger.debug(
+      `[GET /agent/actions/history] Listing all actions for user ${userId.slice(0, 8)} convo ${(conversationId ?? "").slice(0, 8)}`,
+    );
+    return this.actionService.listByConversation(userId, conversationId);
   }
 }

@@ -3,9 +3,7 @@ import { Logger } from "@finai/logger";
 import { randomUUID } from "crypto";
 import {
   buildAgentSystemPrompt,
-  buildToolFreeAgentPrompt,
   buildToolPlanInstructions,
-  requiresAgentTools,
   LlmConnectionError,
   type LlmChatRequest,
   type LlmMessage,
@@ -82,50 +80,19 @@ export class AgentService {
   private async buildChatRequest(
     userId: string,
     conversationId: string,
-    question: string,
   ): Promise<{
     request: LlmChatRequest;
     pendingAction: Awaited<ReturnType<ActionManager["getPendingAction"]>>;
     needsTools: boolean;
   }> {
     const recent = await this.conversationService.getRecentMessages(conversationId, HISTORY_WINDOW);
-    const hasRecentToolCalls = recent.some(
-      (m) =>
-        m.role === "ASSISTANT" &&
-        (m.content.includes("<tool_plan>") || m.content.includes("awaiting_confirmation")),
-    );
     const pendingAction = await this.actionManager.getPendingAction(conversationId, userId);
-
-    // Routing is fully automatic (fail-open intent router). A pending
-    // confirmation always stays in the agent loop — the model must be able to
-    // continue it. There is no client-side manual mode override.
-    const needsTools = requiresAgentTools({
-      question,
-      hasPendingAction: Boolean(pendingAction),
-      hasRecentToolCalls,
-    });
-    this.logger.log(
-      `[AgentChat] Routing "${question.slice(0, 50)}" -> ${needsTools ? "agent (auto)" : "chat (auto)"}`,
-    );
 
     const history: LlmMessage[] = recent.reverse().map((m) => ({
       role: m.role === "ASSISTANT" ? ("assistant" as const) : ("user" as const),
       content: m.content,
     }));
     const snapshot = await this.contextBuilder.buildFinanceContext(userId);
-
-    if (!needsTools) {
-      const systemPrompt = buildToolFreeAgentPrompt({
-        portfolioSnapshot: snapshot,
-        currentDate: serverTodayISO(),
-      });
-      return {
-        request: { messages: [{ role: "system", content: systemPrompt }, ...history] },
-        pendingAction,
-        needsTools: false,
-      };
-    }
-
     const entityMemoryData = await this.entityMemory.load(conversationId);
     const systemPrompt = buildAgentSystemPrompt({
       portfolioSnapshot: snapshot,
@@ -136,6 +103,7 @@ export class AgentService {
         ? buildPendingActionSection(pendingAction.id, pendingAction.tool, pendingAction.input)
         : "",
     });
+
     return {
       request: {
         messages: [{ role: "system", content: systemPrompt }, ...history],
@@ -177,7 +145,6 @@ export class AgentService {
       const { request, pendingAction, needsTools } = await this.buildChatRequest(
         userId,
         conversationId,
-        input.question,
       );
       emit({ type: "phase", phase: "loading_context", status: "end" });
       // Tell the client which runtime answered so the UI can surface it

@@ -6,6 +6,7 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
 import { buildConfirmationCard as generateConfirmationCard } from "./dispatchers/agent-proposal-builder";
 import { AuditService } from "./audit.service";
+import { executeBulkConfirm, executeBulkReject } from "./bulk-action.helper";
 import type { AgentContext } from "./agent.types";
 import type { AgentCard } from "@finai/ai-engine";
 
@@ -113,7 +114,7 @@ export class AgentActionService {
    * with an after-image; on failure the row becomes FAILED and the error is
    * rethrown so the controller returns a non-2xx status.
    */
-  async confirm(actionId: string, userId: string) {
+  async confirm(actionId: string, userId: string, options?: { itemIndex?: number }) {
     const action = await this.prisma.client.agentAction.findFirst({
       where: { id: actionId, userId },
     });
@@ -137,6 +138,17 @@ export class AgentActionService {
         `Action "${action.tool}" (${actionId.slice(0, 8)}) expired at ${action.expiresAt.toISOString()}`,
       );
       throw new BadRequestException("Action confirmation expired");
+    }
+
+    if (action.tool === "transactions.bulkCreate") {
+      return executeBulkConfirm(
+        this.prisma,
+        this.registry,
+        this.auditService,
+        action,
+        userId,
+        options?.itemIndex,
+      );
     }
 
     const tool = this.registry.get(action.tool);
@@ -201,9 +213,9 @@ export class AgentActionService {
    * Only PROPOSED rows can be rejected; terminal states (EXECUTED/FAILED/
    * EXPIRED) are immutable so history cannot be rewritten.
    */
-  async reject(actionId: string, userId: string) {
+  async reject(actionId: string, userId: string, options?: { itemIndex?: number }) {
     this.logger.info(
-      `[reject] Rejecting action ${actionId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[reject] Rejecting action ${actionId.slice(0, 8)} for user ${userId.slice(0, 8)}${options?.itemIndex !== undefined ? ` (item ${options.itemIndex})` : ""}`,
     );
     const action = await this.prisma.client.agentAction.findFirst({
       where: { id: actionId, userId },
@@ -219,6 +231,10 @@ export class AgentActionService {
         `[reject] Action ${actionId.slice(0, 8)} is ${action.status} — cannot reject`,
       );
       throw new BadRequestException(`Action is ${action.status}`);
+    }
+
+    if (action.tool === "transactions.bulkCreate") {
+      return executeBulkReject(this.prisma, this.auditService, action, userId, options?.itemIndex);
     }
 
     const updated = await this.prisma.client.agentAction.update({
@@ -256,6 +272,29 @@ export class AgentActionService {
       },
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  async listByConversation(userId: string, conversationId: string) {
+    const actions = await this.prisma.client.agentAction.findMany({
+      where: { userId, conversationId },
+      orderBy: { createdAt: "asc" },
+    });
+    const sMap: Record<string, string> = {
+      PROPOSED: "pending",
+      EXECUTED: "executed",
+      REJECTED: "rejected",
+      FAILED: "failed",
+      EXPIRED: "rejected",
+    };
+    return Promise.all(
+      actions.map(async (a) => ({
+        actionId: a.id,
+        tool: a.tool,
+        card: await this.buildConfirmationCard(a.tool, a.input, userId),
+        status: sMap[a.status] ?? "pending",
+        result: a.result,
+      })),
+    );
   }
 
   /**

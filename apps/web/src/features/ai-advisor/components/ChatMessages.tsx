@@ -9,7 +9,7 @@ interface ChatMessagesProps {
   messages: AgentChatMessage[];
   onSelectFollowUp?: (question: string) => void;
   onConfirmAction?: (actionId: string, tool: string) => void;
-  onRejectAction?: (actionId: string) => void;
+  onRejectAction?: (actionId: string, itemIndex?: number) => void;
   executingActionId?: string | null;
 }
 
@@ -53,7 +53,7 @@ export function ChatMessages({
               <AgentRun
                 message={message}
                 onConfirmAction={onConfirmAction ?? (() => {})}
-                onRejectAction={onRejectAction ?? (() => {})}
+                onRejectAction={onRejectAction ?? ((_id, _idx) => {})}
                 executingActionId={executingActionId}
               />
             ) : (

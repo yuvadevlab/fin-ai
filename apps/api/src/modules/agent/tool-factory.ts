@@ -41,6 +41,8 @@ export interface DefineToolInput<T> {
   description: string;
   access: ToolAccess;
   confirmation: ConfirmationPolicy;
+  label?: string;
+  invalidates?: string[];
   schema: import("zod").ZodType<T, import("zod").ZodTypeDef, unknown>;
   execute: (input: T, ctx: AgentContext) => Promise<unknown>;
   validate?: (input: T, ctx: ValidateContext) => Promise<ValidationWarning[]>;
@@ -57,6 +59,8 @@ export function defineTool<T>(def: DefineToolInput<T>): AgentTool {
     description: def.description,
     access: def.access,
     confirmation: def.confirmation,
+    label: def.label,
+    invalidates: def.invalidates,
     schema: def.schema,
     execute: (input: unknown, ctx: AgentContext) => def.execute(input as T, ctx),
     serialize: def.serialize ?? ((output: unknown) => output),

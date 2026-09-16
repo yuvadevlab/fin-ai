@@ -15,6 +15,7 @@ export function createSearchTools(searchService: SearchService) {
         "Search the user's transactions (by notes, category, or account name), accounts, and goals for a text query. Use this to resolve vague references like 'my HDFC account' or 'the electricity bill'.",
       access: "read",
       confirmation: "none",
+      label: "Searching your finances",
       schema: z.object({
         query: z.string().min(2, "Query must be at least 2 characters").max(100),
       }),

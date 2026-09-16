@@ -44,23 +44,23 @@ describe("requiresAgentTools", () => {
     expect(requiresAgentTools({ question: "Did I spend 400 on food yesterday?" })).toBe(true);
   });
 
-  it("keeps amount-bearing advice questions conversational", () => {
-    expect(requiresAgentTools({ question: "Is it okay to spend 500 on a gift?" })).toBe(false);
-    expect(requiresAgentTools({ question: "Can I afford ₹500 for a gift?" })).toBe(false);
+  it("routes advice questions to agent loop so model has tools available", () => {
+    expect(requiresAgentTools({ question: "Is it okay to spend 500 on a gift?" })).toBe(true);
+    expect(requiresAgentTools({ question: "Can I afford ₹500 for a gift?" })).toBe(true);
   });
 
-  it("identifies general financial questions and greetings as tool-free", () => {
-    expect(requiresAgentTools({ question: "Hello!" })).toBe(false);
-    expect(requiresAgentTools({ question: "thanks!" })).toBe(false);
-    expect(requiresAgentTools({ question: "Good morning, who are you?" })).toBe(false);
+  it("routes conversational questions and greetings to agent loop", () => {
+    expect(requiresAgentTools({ question: "Hello!" })).toBe(true);
+    expect(requiresAgentTools({ question: "thanks!" })).toBe(true);
+    expect(requiresAgentTools({ question: "Good morning, who are you?" })).toBe(true);
     expect(
       requiresAgentTools({ question: "What is an emergency fund and why do I need one?" }),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       requiresAgentTools({ question: "Explain the difference between SIP and lump sum investing" }),
-    ).toBe(false);
-    expect(requiresAgentTools({ question: "How does compound interest work?" })).toBe(false);
-    expect(requiresAgentTools({ question: "What is the 50/30/20 budgeting rule?" })).toBe(false);
+    ).toBe(true);
+    expect(requiresAgentTools({ question: "How does compound interest work?" })).toBe(true);
+    expect(requiresAgentTools({ question: "What is the 50/30/20 budgeting rule?" })).toBe(true);
   });
 
   it("fails open to agent mode when intent is unclear or terse", () => {

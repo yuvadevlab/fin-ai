@@ -24,21 +24,25 @@ export function useAgentActionRunner({
   const [executingActionId, setExecutingActionId] = useState<string | null>(null);
 
   const confirmAction = useCallback(
-    async (actionId: string, tool: string) => {
+    async (actionId: string, tool: string, itemIndex?: number) => {
+      const lockKey = itemIndex !== undefined ? `${actionId}:${itemIndex}` : actionId;
       if (executingActionId) return;
-      setExecutingActionId(actionId);
+      setExecutingActionId(lockKey);
       try {
-        await confirmAgentAction(actionId);
-        updateConfirmationStatus(actionId, "executed");
-        // The button path bypasses the SSE stream, so close the "Waiting for
-        // your approval" activity step locally.
-        resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
+        const res = await confirmAgentAction(actionId, itemIndex);
+        if (itemIndex === undefined || res.allCompleted) {
+          updateConfirmationStatus(actionId, "executed");
+          resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
+        }
         queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
-        // Refresh every domain cache the executed tool may have changed.
         invalidateForAgentTool(queryClient, tool);
-      } catch {
-        updateConfirmationStatus(actionId, "failed");
-        resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+        return res;
+      } catch (err) {
+        if (itemIndex === undefined) {
+          updateConfirmationStatus(actionId, "failed");
+          resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+        }
+        throw err;
       } finally {
         setExecutingActionId(null);
       }
@@ -47,17 +51,23 @@ export function useAgentActionRunner({
   );
 
   const rejectAction = useCallback(
-    async (actionId: string) => {
+    async (actionId: string, itemIndex?: number) => {
+      const lockKey = itemIndex !== undefined ? `${actionId}:${itemIndex}` : actionId;
       if (executingActionId) return;
-      setExecutingActionId(actionId);
+      setExecutingActionId(lockKey);
       try {
-        await rejectAgentAction(actionId);
-        updateConfirmationStatus(actionId, "rejected");
-        // Rejection is a deliberate completion, not an error.
-        resolveApprovalActivity(actionId, { status: "success", summary: "Action rejected" });
-      } catch {
-        updateConfirmationStatus(actionId, "failed");
-        resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+        const res = await rejectAgentAction(actionId, itemIndex);
+        if (itemIndex === undefined || res.allCompleted) {
+          updateConfirmationStatus(actionId, "rejected");
+          resolveApprovalActivity(actionId, { status: "success", summary: "Action rejected" });
+        }
+        return res;
+      } catch (err) {
+        if (itemIndex === undefined) {
+          updateConfirmationStatus(actionId, "failed");
+          resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
+        }
+        throw err;
       } finally {
         setExecutingActionId(null);
       }

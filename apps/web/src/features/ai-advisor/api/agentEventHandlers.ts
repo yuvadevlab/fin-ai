@@ -42,7 +42,7 @@ export interface AgentEventPort {
   resolveApprovalActivity(actionId: string, patch: Partial<AgentActivity>): void;
   appendConfirmation(confirmation: AgentConfirmation): void;
   updateConfirmationStatus(actionId: string, status: AgentConfirmationStatus): void;
-  updateConfirmationCard(actionId: string, card: AgentCard): void;
+  updateConfirmationCard(actionId: string, card: AgentCard, tool?: string): void;
   failStream(error: string): void;
   endStream(): void;
   onConversation(conversationId: string): void;
@@ -138,6 +138,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       port.updateActivity(event.tool, {
         status: event.ok ? "success" : "error",
         summary: event.summary,
+        ...(event.label ? { label: event.label } : {}),
       });
       return false;
 
@@ -165,7 +166,17 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
 
     case "action_updated":
       port.appendLog?.(makeLog("ACTION", `Updated action: ${event.card.title}`));
-      port.updateConfirmationCard(event.actionId, event.card);
+      port.resolveApprovalActivity(event.actionId, {
+        status: "success",
+        summary: "Updated in latest message",
+      });
+      port.appendActivity({
+        tool: approvalKey(event.actionId),
+        kind: "approval",
+        status: "running",
+        label: "Waiting for your approval",
+      });
+      port.updateConfirmationCard(event.actionId, event.card, event.tool);
       return false;
 
     case "action_result":

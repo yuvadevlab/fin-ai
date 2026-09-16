@@ -57,8 +57,8 @@ export type AgentStreamEvent =
   | { type: "token_replace"; content: string }
   /** The model started calling a tool (UI shows a progress chip). */
   | { type: "tool_call"; tool: string; runId: string }
-  /** Tool finished; `ok` = success and `summary` is the human-readable line. */
-  | { type: "tool_result"; tool: string; ok: boolean; summary?: string }
+  /** Tool finished; `ok` = success and `summary` is the human-readable line. `label` is server-provided activity label. */
+  | { type: "tool_result"; tool: string; ok: boolean; summary?: string; label?: string }
   /**
    * Real agent lifecycle transition, emitted ONLY when the server actually
    * enters/leaves a phase — never on a timer. Powers the live activity

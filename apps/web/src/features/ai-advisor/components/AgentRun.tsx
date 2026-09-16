@@ -13,7 +13,7 @@ import { extractFinancialInsight } from "../utils/financialInsight";
 interface AgentRunProps {
   message: AgentChatMessage;
   onConfirmAction: (actionId: string, tool: string) => void;
-  onRejectAction: (actionId: string) => void;
+  onRejectAction: (actionId: string, itemIndex?: number) => void;
   executingActionId?: string | null;
 }
 

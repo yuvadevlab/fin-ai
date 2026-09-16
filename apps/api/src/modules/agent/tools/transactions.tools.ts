@@ -18,6 +18,7 @@ export function createTransactionsTools(transactionsService: TransactionsService
         "List the user's transactions with optional filters (date range, category, account, type, search) and pagination. Returns items plus total count.",
       access: "read",
       confirmation: "none",
+      label: "Reviewing transactions",
       schema: z.object({
         dateFrom: z.string().datetime().optional(),
         dateTo: z.string().datetime().optional(),
@@ -79,6 +80,7 @@ export function createTransactionsTools(transactionsService: TransactionsService
         "Aggregate transaction totals over a date range, grouped by category name or transaction type. Useful for spending analysis.",
       access: "read",
       confirmation: "none",
+      label: "Summarizing transactions",
       schema: z.object({
         dateFrom: z.string().datetime(),
         dateTo: z.string().datetime(),

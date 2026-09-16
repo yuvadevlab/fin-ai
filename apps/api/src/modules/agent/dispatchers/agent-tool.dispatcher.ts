@@ -67,6 +67,7 @@ export class AgentToolDispatcher {
         tool: call.name,
         ok: false,
         summary: "The agent supplied invalid arguments for this step",
+        label: tool.label,
       });
       return {
         ok: false,
@@ -177,6 +178,7 @@ export class AgentToolDispatcher {
           tool: call.name,
           ok: false,
           summary: patchOutput.error || "Failed to patch the pending action",
+          label: tool.label,
         });
         return { ok: false, error: patchOutput.error || "Failed to patch" };
       }
@@ -212,7 +214,13 @@ export class AgentToolDispatcher {
       this.logger.log(
         `Tool "${call.name}" executed successfully (runId: ${ctx.runId.slice(0, 8)})`,
       );
-      emit({ type: "tool_result", tool: call.name, ok: true, summary: tool.summarize(output) });
+      emit({
+        type: "tool_result",
+        tool: call.name,
+        ok: true,
+        summary: tool.summarize(output),
+        label: tool.label,
+      });
       await this.auditService.record({
         userId: ctx.userId,
         runId: ctx.runId,
@@ -224,7 +232,13 @@ export class AgentToolDispatcher {
     } catch (error) {
       const message = (error as Error).message || "Tool execution failed";
       this.logger.error(`Tool "${call.name}" failed (runId: ${ctx.runId.slice(0, 8)}): ${message}`);
-      emit({ type: "tool_result", tool: call.name, ok: false, summary: message });
+      emit({
+        type: "tool_result",
+        tool: call.name,
+        ok: false,
+        summary: message,
+        label: tool.label,
+      });
       await this.auditService.record({
         userId: ctx.userId,
         runId: ctx.runId,

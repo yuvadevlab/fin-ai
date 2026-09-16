@@ -18,6 +18,7 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
         "List the user's budgets with their monthly limits and current spending status (ON_TRACK / NEAR_LIMIT / OVER).",
       access: "read",
       confirmation: "none",
+      label: "Reviewing budgets",
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const budgets = await budgetsService.findAll(ctx.userId);
@@ -57,6 +58,8 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
         "Create a spending budget for one of the user's categories. Requires confirmation. Fields: categoryId (resolve with categories.list or categories.resolve), limit (positive number), optional start date (YYYY-MM-DD, defaults to today).",
       access: "write",
       confirmation: "required",
+      label: "Creating budget",
+      invalidates: ["budgets", "analytics"],
       schema: createBudgetSchema,
       execute: async (input, ctx) => budgetsService.create(ctx.userId, input),
       describe: (input) => {
@@ -78,6 +81,8 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
         "Change a budget's limit. Requires confirmation. Only the limit can be updated; resolve the budget ID with budgets.list first.",
       access: "write",
       confirmation: "required",
+      label: "Updating budget limit",
+      invalidates: ["budgets", "analytics"],
       schema: updateBudgetSchema
         .omit({ categoryId: true, startDate: true })
         .extend({ budgetId: z.string().uuid("Invalid budget ID") })
@@ -102,6 +107,8 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
         "Permanently delete one of the user's budgets. Requires confirmation — this is destructive; the category itself is not deleted.",
       access: "write",
       confirmation: "required",
+      label: "Deleting budget",
+      invalidates: ["budgets", "analytics"],
       schema: z.object({
         budgetId: z.string().uuid("Invalid budget ID"),
       }),
@@ -122,6 +129,8 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
         "Composite: move part of one budget's limit to another budget atomically (reduces the source limit, increases the target). Requires confirmation. Resolve both budget IDs with budgets.list first.",
       access: "write",
       confirmation: "required",
+      label: "Transferring budget allocation",
+      invalidates: ["budgets", "analytics"],
       schema: z.object({
         fromBudgetId: z.string().uuid("Invalid source budget ID"),
         toBudgetId: z.string().uuid("Invalid target budget ID"),

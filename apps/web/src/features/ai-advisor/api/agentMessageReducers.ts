@@ -119,12 +119,42 @@ export function updateConfirmationCardReducer(
   prev: AgentChatMessage[],
   actionId: string,
   card: import("@finai/ai-engine").AgentCard,
+  tool?: string,
 ): AgentChatMessage[] {
+  if (prev.length === 0) return prev;
+  const lastIdx = prev.length - 1;
+  const lastMsg = prev[lastIdx];
+
+  let existing: AgentConfirmation | undefined;
+  for (const m of prev) {
+    const found = m.confirmations?.find((c) => c.actionId === actionId);
+    if (found) {
+      existing = found;
+      break;
+    }
+  }
+
+  const updated: AgentConfirmation = {
+    actionId,
+    tool: tool ?? existing?.tool ?? "transaction.create_bulk",
+    card,
+    status: existing?.status ?? "pending",
+  };
+
+  if (lastMsg?.role === "assistant") {
+    return prev.map((m, idx) => {
+      const rest = (m.confirmations ?? []).filter((c) => c.actionId !== actionId);
+      return idx === lastIdx
+        ? { ...m, confirmations: [...rest, updated] }
+        : { ...m, confirmations: rest };
+    });
+  }
+
   return prev.map((m) =>
     m.confirmations?.some((c) => c.actionId === actionId)
       ? {
           ...m,
-          confirmations: m.confirmations.map((c) => (c.actionId === actionId ? { ...c, card } : c)),
+          confirmations: m.confirmations.map((c) => (c.actionId === actionId ? updated : c)),
         }
       : m,
   );

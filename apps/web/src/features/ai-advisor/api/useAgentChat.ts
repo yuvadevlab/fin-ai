@@ -5,7 +5,9 @@ import { API_BASE_URL, apiClient } from "@/lib/api-client";
 import { handleAgentStreamEvent, type AgentEventPort } from "./agentEventHandlers";
 import { useAgentActionRunner } from "./useAgentActionRunner";
 import { useAgentMessages } from "./useAgentMessages";
+import { fetchConversationActions } from "./agentActions";
 import type { AiConversation } from "./useConversations";
+import type { AgentChatMessage, AgentConfirmation } from "./agentTypes";
 
 /**
  * Streaming agent chat hook. Consumes the SSE `AgentStreamEvent` union from
@@ -183,12 +185,36 @@ export function useAgentChat() {
         const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
         if (!convo) return;
         setConversationId(convo.id);
-        replaceMessages(
-          (convo.messages ?? []).map((m) => ({
-            role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
-            text: m.content,
-          })),
-        );
+
+        // Build base messages from stored conversation
+        const baseMessages: AgentChatMessage[] = (convo.messages ?? []).map((m) => ({
+          role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
+          text: m.content,
+        }));
+
+        // Fetch action history and hydrate confirmation cards
+        try {
+          const actions = await fetchConversationActions(convo.id);
+          if (actions.length > 0) {
+            const confirmations: AgentConfirmation[] = actions.map((a) => ({
+              actionId: a.actionId,
+              tool: a.tool,
+              card: { type: a.card.type as "confirmation", title: a.card.title, rows: a.card.rows },
+              status: a.status,
+            }));
+            // Attach to the last assistant message
+            for (let i = baseMessages.length - 1; i >= 0; i--) {
+              if (baseMessages[i].role === "assistant") {
+                baseMessages[i] = { ...baseMessages[i], confirmations };
+                break;
+              }
+            }
+          }
+        } catch {
+          // Action history fetch failed — show messages without cards
+        }
+
+        replaceMessages(baseMessages);
       } catch {
         // failed to load
       }
