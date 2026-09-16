@@ -3,6 +3,7 @@ import type {
   AgentActivity,
   AgentConfirmation,
   AgentConfirmationStatus,
+  AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
 
@@ -41,10 +42,12 @@ export interface AgentEventPort {
   resolveApprovalActivity(actionId: string, patch: Partial<AgentActivity>): void;
   appendConfirmation(confirmation: AgentConfirmation): void;
   updateConfirmationStatus(actionId: string, status: AgentConfirmationStatus): void;
-  updateConfirmationCard(actionId: string, card: AgentCard): void;
+  updateConfirmationCard(actionId: string, card: AgentCard, tool?: string): void;
   failStream(error: string): void;
   endStream(): void;
   onConversation(conversationId: string): void;
+  /** Set once per run after routing resolves — which runtime answered. */
+  onMode?(mode: AgentResolvedMode): void;
 }
 
 export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEventPort): boolean {
@@ -57,6 +60,18 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       runStartTime = Date.now();
       port.appendLog?.(makeLog("SYS", `Agent run initialized: ${event.runId.slice(0, 8)}`));
       port.appendActivity({ tool: "phase:agent_started", kind: "phase", status: "running" });
+      return false;
+
+    case "mode":
+      port.appendLog?.(
+        makeLog(
+          "SYS",
+          event.mode === "agent"
+            ? "Agent mode — tools & actions enabled"
+            : "Advisor mode — conversational fast reply",
+        ),
+      );
+      port.onMode?.(event.mode);
       return false;
 
     case "token":
@@ -123,6 +138,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       port.updateActivity(event.tool, {
         status: event.ok ? "success" : "error",
         summary: event.summary,
+        ...(event.label ? { label: event.label } : {}),
       });
       return false;
 
@@ -150,7 +166,17 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
 
     case "action_updated":
       port.appendLog?.(makeLog("ACTION", `Updated action: ${event.card.title}`));
-      port.updateConfirmationCard(event.actionId, event.card);
+      port.resolveApprovalActivity(event.actionId, {
+        status: "success",
+        summary: "Updated in latest message",
+      });
+      port.appendActivity({
+        tool: approvalKey(event.actionId),
+        kind: "approval",
+        status: "running",
+        label: "Waiting for your approval",
+      });
+      port.updateConfirmationCard(event.actionId, event.card, event.tool);
       return false;
 
     case "action_result":

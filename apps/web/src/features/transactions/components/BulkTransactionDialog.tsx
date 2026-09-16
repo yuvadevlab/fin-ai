@@ -110,22 +110,32 @@ export function BulkTransactionDialog({
 
   const handleDownloadTemplate = async () => {
     try {
-      await downloadExcelTemplateFromApi();
-      toast.success("Excel upload template with in-cell dropdowns downloaded!");
+      await toast
+        .promise(downloadExcelTemplateFromApi(), {
+          loading: "Generating Excel template...",
+          success: "Excel upload template with in-cell dropdowns downloaded!",
+          error: "Failed to generate Excel template.",
+        })
+        .unwrap();
     } catch {
-      toast.error("Failed to generate Excel template.");
+      // Error toast is shown by toast.promise
     }
   };
 
   const handleUploadExcel = async (file: File) => {
     try {
-      const importedRows = await parseExcelOrCsvFile(file, accounts, categories);
+      const importedRows = await toast
+        .promise(parseExcelOrCsvFile(file, accounts, categories), {
+          loading: "Importing transactions from Excel...",
+          success: (data: BulkRow[]) =>
+            `Successfully imported ${data.length} transactions from Excel!`,
+          error: (error: { message?: string }) => error?.message || "Error reading Excel file.",
+        })
+        .unwrap();
       setRows(importedRows);
       setErrors({});
-      toast.success(`Successfully imported ${importedRows.length} transactions from Excel!`);
-    } catch (err: unknown) {
-      const apiErr = err as { message?: string };
-      toast.error(apiErr?.message || "Error reading Excel file.");
+    } catch {
+      // Error toast is shown by toast.promise
     }
   };
 

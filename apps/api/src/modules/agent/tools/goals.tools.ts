@@ -17,6 +17,7 @@ export function createGoalsTools(goalsService: GoalsService) {
       description: "List the user's savings goals with progress percentage and deadlines.",
       access: "read",
       confirmation: "none",
+      label: "Reviewing goals",
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const goals = await goalsService.findAll(ctx.userId);
@@ -58,6 +59,8 @@ export function createGoalsTools(goalsService: GoalsService) {
         "Create a savings goal for the user. Requires confirmation. Fields: name, targetAmount, optional currentAmount already saved (defaults 0), optional deadline (date string), optional type (EMERGENCY_FUND | OBLIGATION | LIFESTYLE | PERSONAL).",
       access: "write",
       confirmation: "required",
+      label: "Creating savings goal",
+      invalidates: ["goals", "accounts", "analytics"],
       schema: createGoalSchema,
       execute: async (input, ctx) => goalsService.create(ctx.userId, input),
       describe: (input) => {
@@ -81,6 +84,8 @@ export function createGoalsTools(goalsService: GoalsService) {
         "Update a goal's name, target amount, saved amount, deadline or type. Requires confirmation. Only pass the fields that should change.",
       access: "write",
       confirmation: "required",
+      label: "Updating savings goal",
+      invalidates: ["goals", "accounts", "analytics"],
       schema: updateGoalSchema.extend({
         goalId: z.string().uuid("Invalid goal ID"),
       }),
@@ -105,6 +110,8 @@ export function createGoalsTools(goalsService: GoalsService) {
         "Add money to a goal's saved amount (capped at the target). Requires confirmation. This is a bookkeeping update on the goal only — it does not move money between accounts.",
       access: "write",
       confirmation: "required",
+      label: "Contributing to goal",
+      invalidates: ["goals", "accounts", "analytics"],
       schema: contributeAmountSchema.extend({
         goalId: z.string().uuid("Invalid goal ID"),
       }),
@@ -129,6 +136,8 @@ export function createGoalsTools(goalsService: GoalsService) {
         "Permanently delete one of the user's savings goals. Requires confirmation — this is destructive and cannot be undone.",
       access: "write",
       confirmation: "required",
+      label: "Deleting savings goal",
+      invalidates: ["goals", "accounts", "analytics"],
       schema: z.object({
         goalId: z.string().uuid("Invalid goal ID"),
       }),

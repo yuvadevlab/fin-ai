@@ -1,6 +1,14 @@
 import type { AgentCard } from "@finai/ai-engine";
 
 /**
+ * Runtime the server selected/forced for a single run, streamed via the SSE
+ * `mode` event: "agent" = tool-enabled loop (can read data & propose actions);
+ * "chat" = tool-free advisor fast-path (conversational only). Surfaced per
+ * turn so the user always knows which mode answered.
+ */
+export type AgentResolvedMode = "agent" | "chat";
+
+/**
  * Snapshot of an agent tool call's execution state, surfaced as an inline
  * chip in the chat. The `summary` is a short human-readable note (e.g.
  * "Retrieved 3 accounts") produced by the server when the tool finishes.
@@ -71,6 +79,8 @@ export interface AgentChatMessage {
   role: "user" | "assistant";
   text: string;
   streaming?: boolean;
+  /** Runtime that answered this turn ("agent" vs "chat") — set from SSE `mode`. */
+  mode?: AgentResolvedMode;
   activities?: AgentActivity[];
   confirmations?: AgentConfirmation[];
   logs?: AgentRunLogEntry[];

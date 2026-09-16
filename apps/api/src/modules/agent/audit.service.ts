@@ -1,4 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { Prisma } from "@finai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 

@@ -1,4 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { randomUUID } from "crypto";
 import {
   buildAgentSystemPrompt,
@@ -7,6 +8,7 @@ import {
   type LlmChatRequest,
   type LlmMessage,
 } from "@finai/ai-engine";
+import type { AgentChatInput } from "@finai/validation";
 import { AccountsService } from "@/modules/accounts/accounts.service";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";
 import { SearchService } from "@/modules/search/search.service";
@@ -30,11 +32,6 @@ import type { AgentEventEmitter } from "./agent.types";
 
 /** How many recent messages to replay as chat history. */
 const HISTORY_WINDOW = 12;
-
-export interface AgentChatInput {
-  question: string;
-  conversationId?: string;
-}
 
 /**
  * Agent orchestrator facade: Owns conversation lifecycle, system prompt assembly,
@@ -63,7 +60,7 @@ export class AgentService {
     investmentsService: InvestmentsService,
     usersService: UsersService,
   ) {
-    for (const tool of buildAgentTools({
+    const tools = buildAgentTools({
       accountsService,
       analyticsService,
       searchService,
@@ -75,27 +72,28 @@ export class AgentService {
       usersService,
       actionManager,
       actionService,
-    })) {
-      this.registry.register(tool);
-    }
+    });
+    for (const tool of tools) this.registry.register(tool);
   }
 
-  /** Assembles the initial LLM request: system prompt + history + tool manifest. */
+  /** Assembles the initial LLM request, dynamically choosing tool-free vs agent prompt. */
   private async buildChatRequest(
     userId: string,
     conversationId: string,
   ): Promise<{
     request: LlmChatRequest;
     pendingAction: Awaited<ReturnType<ActionManager["getPendingAction"]>>;
+    needsTools: boolean;
   }> {
     const recent = await this.conversationService.getRecentMessages(conversationId, HISTORY_WINDOW);
+    const pendingAction = await this.actionManager.getPendingAction(conversationId, userId);
+
     const history: LlmMessage[] = recent.reverse().map((m) => ({
       role: m.role === "ASSISTANT" ? ("assistant" as const) : ("user" as const),
       content: m.content,
     }));
-    const entityMemoryData = await this.entityMemory.load(conversationId);
     const snapshot = await this.contextBuilder.buildFinanceContext(userId);
-    const pendingAction = await this.actionManager.getPendingAction(conversationId, userId);
+    const entityMemoryData = await this.entityMemory.load(conversationId);
     const systemPrompt = buildAgentSystemPrompt({
       portfolioSnapshot: snapshot,
       toolPlanInstructions: buildToolPlanInstructions(this.registry.list().map((t) => t.name)),
@@ -105,12 +103,14 @@ export class AgentService {
         ? buildPendingActionSection(pendingAction.id, pendingAction.tool, pendingAction.input)
         : "",
     });
+
     return {
       request: {
         messages: [{ role: "system", content: systemPrompt }, ...history],
         tools: this.registry.toLlmDefinitions(),
       },
       pendingAction,
+      needsTools: true,
     };
   }
 
@@ -134,13 +134,25 @@ export class AgentService {
       );
       conversationId = convo.id;
     }
+    this.logger.log(
+      `[AgentChat] User ${userId.slice(0, 8)}: "${input.question.slice(0, 60)}" (convo: ${conversationId}, runId: ${runId.slice(0, 8)})`,
+    );
     emit({ type: "conversation", conversationId });
 
     try {
       await this.conversationService.addMessage(conversationId, "user", input.question);
       emit({ type: "phase", phase: "loading_context", status: "start" });
-      const { request, pendingAction } = await this.buildChatRequest(userId, conversationId);
+      const { request, pendingAction, needsTools } = await this.buildChatRequest(
+        userId,
+        conversationId,
+      );
       emit({ type: "phase", phase: "loading_context", status: "end" });
+      // Tell the client which runtime answered so the UI can surface it
+      // (per-reply badge) — "agent" or "chat".
+      emit({ type: "mode", mode: needsTools ? "agent" : "chat" });
+      this.logger.log(
+        `[AgentChat] Routed to role: ${needsTools ? "agent (tools)" : "chat (fast-path)"}`,
+      );
 
       await this.orchestrator.run({
         userId,
@@ -149,6 +161,7 @@ export class AgentService {
         request,
         hasPendingAction: Boolean(pendingAction),
         emit,
+        role: needsTools ? "agent" : "chat",
       });
     } catch (error) {
       this.logger.error(`Agent run ${runId} failed: ${(error as Error).message}`);

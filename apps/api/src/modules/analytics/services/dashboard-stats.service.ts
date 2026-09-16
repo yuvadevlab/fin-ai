@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { calculateCashFlow, calculateNetWorth, calculateSavingsRate } from "@finai/finance-engine";
 import { AnalyticsRepository } from "../repositories";
 
@@ -8,9 +9,11 @@ import { AnalyticsRepository } from "../repositories";
  */
 @Injectable()
 export class DashboardStatsService {
+  private readonly logger = new Logger(DashboardStatsService.name);
   constructor(private repo: AnalyticsRepository) {}
 
   async getDashboard(userId: string) {
+    this.logger.debug(`[getDashboard] Computing dashboard KPIs for user ${userId.slice(0, 8)}`);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -39,6 +42,9 @@ export class DashboardStatsService {
     );
     const savingsRate = calculateSavingsRate(thisMonth.income, thisMonth.expense);
 
+    this.logger.log(
+      `[getDashboard] Dashboard computed for user ${userId.slice(0, 8)}: netWorth=${netWorth}, income=${thisMonth.income}, expenses=${thisMonth.expense}, savingsRate=${savingsRate}`,
+    );
     return {
       netWorth,
       monthlyIncome: thisMonth.income,
@@ -53,6 +59,9 @@ export class DashboardStatsService {
   }
 
   async getMonthlyAnalytics(userId: string, months = 6) {
+    this.logger.debug(
+      `[getMonthlyAnalytics] Computing ${months}-month cash flow for user ${userId.slice(0, 8)}`,
+    );
     const txns = await this.repo.getTransactionsInRange(
       userId,
       new Date(new Date().getFullYear(), new Date().getMonth() - (months - 1), 1),
@@ -66,6 +75,9 @@ export class DashboardStatsService {
   }
 
   async getSavingsTrend(userId: string, months = 6) {
+    this.logger.debug(
+      `[getSavingsTrend] Computing ${months}-month savings trend for user ${userId.slice(0, 8)}`,
+    );
     const cashFlow = await this.getMonthlyAnalytics(userId, months);
     return cashFlow.map((m) => ({ month: m.month, value: Math.max(0, m.income - m.expense) }));
   }

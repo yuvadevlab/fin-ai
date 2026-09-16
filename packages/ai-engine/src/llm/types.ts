@@ -1,9 +1,9 @@
 /**
  * Provider-agnostic LLM chat contracts for the FinAI agent runtime.
  *
- * NOTE: this migration is Ollama-only by explicit product constraint —
- * no other providers are implemented. The abstraction exists so the agent
- * runtime is not coupled to individual tool implementations.
+ * The abstraction exists so the agent runtime is not coupled to individual
+ * provider implementations.  Concrete providers: Ollama, OpenRouter, Groq,
+ * and Google AI Studio.
  */
 
 /** Chat roles understood by the LLM layer. "tool" carries a tool result back to the model. */
@@ -65,13 +65,30 @@ export interface LlmCompleteResult {
 /** Connection parameters for a chat model endpoint. */
 export interface ChatModelConfig {
   baseUrl: string;
+  /** API path appended to the base URL, e.g. "/v1/chat/completions". */
+  apiPath: string;
   model: string;
+  /** API key for cloud providers (OpenRouter, Groq, Google AI Studio). */
+  apiKey?: string;
+}
+
+/**
+ * Wire-format shape of an OpenAI-compatible `tool_calls` entry, shared by the
+ * OpenRouter, Groq, and Google AI Studio (OpenAI-compat) response payloads.
+ */
+export interface OpenAiStyleToolCall {
+  id?: string;
+  function?: {
+    name?: string;
+    arguments?: string | Record<string, unknown>;
+  };
 }
 
 /**
  * Provider-agnostic chat model interface consumed by the agent runtime.
- * Implementations wrap a specific backend (currently Ollama only); the
- * runtime stays identical regardless of the provider behind this interface.
+ * Implementations wrap a specific backend (Ollama, OpenRouter, Groq, or
+ * Google AI Studio); the runtime stays identical regardless of the provider.
+ * Consumer: {@link ChatModelConfig} passed at construction time.
  */
 export interface ChatModel {
   readonly provider: string;

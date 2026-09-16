@@ -1,18 +1,27 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { OllamaChatModel, type ChatModel } from "@finai/ai-engine";
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
+import { createChatModelFromEnv, type ChatModel, type AiProviderRole } from "@finai/ai-engine";
 
-/** Creates a fresh Ollama model client per agent run. */
+/** Creates a {@link ChatModel} client per agent run, selected via env vars. */
 @Injectable()
 export class AgentModelFactory {
   private readonly logger = new Logger(AgentModelFactory.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  create(role: AiProviderRole = "agent"): ChatModel {
+    // All provider wiring (BASE_URL / API_PATH / keys / models) comes from
+    // process.env — ConfigModule loads .env at boot, so new env vars flow
+    // through without editing this file. Tests inject via process.env.
+    const env: Record<string, string | undefined> = { ...process.env };
+    const model = createChatModelFromEnv(env, role);
+    this.logger.log(`AI provider [${role}]: ${model.provider} (${model.model})`);
+    return model;
+  }
 
-  create(): ChatModel {
-    return new OllamaChatModel({
-      baseUrl: this.configService.get<string>("OLLAMA_BASE_URL", "http://localhost:11434"),
-      model: this.configService.get<string>("OLLAMA_MODEL", "gemma4:31b-cloud"),
-    });
+  createFastModel(): ChatModel {
+    return this.create("chat");
+  }
+
+  createAgentModel(): ChatModel {
+    return this.create("agent");
   }
 }

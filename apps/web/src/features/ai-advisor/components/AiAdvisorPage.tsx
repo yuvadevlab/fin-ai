@@ -108,7 +108,7 @@ export function AiAdvisorPage() {
                   messages={messages}
                   onSelectFollowUp={handleQuickAction}
                   onConfirmAction={(actionId, tool) => confirmAction(actionId, tool)}
-                  onRejectAction={(actionId) => rejectAction(actionId)}
+                  onRejectAction={(actionId, itemIndex) => rejectAction(actionId, itemIndex)}
                   executingActionId={executingActionId}
                 />
               )}

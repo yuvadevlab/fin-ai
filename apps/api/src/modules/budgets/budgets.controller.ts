@@ -4,6 +4,7 @@ import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { BudgetsService } from "@/modules/budgets/budgets.service";
+import { Logger } from "@finai/logger";
 import {
   createBudgetSchema,
   updateBudgetSchema,
@@ -16,6 +17,7 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller("budgets")
 export class BudgetsController {
+  private readonly logger = new Logger(BudgetsController.name);
   constructor(private readonly budgetsService: BudgetsService) {}
 
   @Get()
@@ -23,12 +25,16 @@ export class BudgetsController {
     summary: "List all budgets for the current user (with spending data)",
   })
   findAll(@CurrentUser("id") userId: string) {
+    this.logger.debug(`[GET /budgets] Listing budgets for user ${userId.slice(0, 8)}`);
     return this.budgetsService.findAll(userId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single budget" })
   findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    this.logger.debug(
+      `[GET /budgets/:id] Fetching budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     return this.budgetsService.findOne(id, userId);
   }
 
@@ -38,6 +44,9 @@ export class BudgetsController {
     @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(createBudgetSchema)) body: CreateBudgetInput,
   ) {
+    this.logger.info(
+      `[POST /budgets] Creating budget for category ${body.categoryId.slice(0, 8)}, limit: ${body.limit} (user: ${userId.slice(0, 8)})`,
+    );
     return this.budgetsService.create(userId, body);
   }
 
@@ -48,12 +57,18 @@ export class BudgetsController {
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateBudgetSchema)) body: UpdateBudgetInput,
   ) {
+    this.logger.info(
+      `[PATCH /budgets/:id] Updating budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     return this.budgetsService.update(id, userId, body);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a budget" })
   remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+    this.logger.info(
+      `[DELETE /budgets/:id] Deleting budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     return this.budgetsService.remove(id, userId);
   }
 }

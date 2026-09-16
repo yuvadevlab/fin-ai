@@ -17,6 +17,7 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         "Get the user's investment portfolio with total portfolio value and per-asset allocation percentages.",
       access: "read",
       confirmation: "none",
+      label: "Reviewing investments",
       schema: z.object({}),
       execute: async (_input, ctx) => investmentsService.findAll(ctx.userId),
       serialize: (output) => {
@@ -55,6 +56,8 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         "Add an investment holding to the user's portfolio. Requires confirmation. Fields: name, assetClass (MUTUAL_FUND | STOCK | FIXED_DEPOSIT | GOLD | EPF | PPF | REAL_ESTATE | CRYPTO | OTHER), currentValue, investedAmount.",
       access: "write",
       confirmation: "required",
+      label: "Adding investment",
+      invalidates: ["investments", "analytics"],
       schema: createInvestmentSchema,
       execute: async (input, ctx) => investmentsService.create(ctx.userId, input),
       serialize: (output) => {
@@ -92,6 +95,8 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         "Update the current market value of one of the user's investment holdings. Requires confirmation.",
       access: "write",
       confirmation: "required",
+      label: "Updating investment value",
+      invalidates: ["investments", "analytics"],
       schema: updateInvestmentValueSchema.extend({
         investmentId: z.string().uuid("Invalid investment ID"),
       }),
@@ -116,6 +121,8 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         "Permanently remove an investment holding from the user's portfolio. Requires confirmation — this is destructive and cannot be undone.",
       access: "write",
       confirmation: "required",
+      label: "Deleting investment",
+      invalidates: ["investments", "analytics"],
       schema: z.object({
         investmentId: z.string().uuid("Invalid investment ID"),
       }),

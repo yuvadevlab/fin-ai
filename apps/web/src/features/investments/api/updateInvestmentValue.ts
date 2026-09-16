@@ -13,14 +13,16 @@ export function useUpdateInvestmentValue() {
 
   return useMutation<Investment, Error, UpdateInvestmentValuePayload>({
     mutationFn: ({ id, currentValue }) =>
-      apiClient.patch<Investment>(`investments/${id}/value`, { currentValue }),
+      toast
+        .promise(apiClient.patch<Investment>(`investments/${id}/value`, { currentValue }), {
+          loading: "Updating market value...",
+          success: "Investment market value updated",
+          error: (error: Error) => error.message || "Failed to update investment value",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success("Investment market value updated");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update investment value");
     },
   });
 }

@@ -102,7 +102,7 @@ export function activityLabel(activity: AgentActivity): string {
   if (activity.kind === "phase") {
     // phaseKey() appends the turn suffix (":0" when absent), so match by prefix.
     if (activity.tool.startsWith("phase:agent_started")) return "Understanding your question";
-    if (activity.tool.startsWith("phase:loading_context")) return "Loading financial context";
+    if (activity.tool.startsWith("phase:loading_context")) return "Loading your financial context";
     const match = activity.tool.match(/^phase:model_turn:(\d+)/);
     if (match) {
       const isPendingContext = activity.tool.endsWith(":pending");

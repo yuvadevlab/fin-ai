@@ -122,17 +122,15 @@ export function ReportsPage() {
         />
       </KPIGrid>
 
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <ContentCard className="lg:col-span-2">
-          <SectionHeader title="Cash Flow" />
-          <CashFlowChart data={monthlyCashFlow} />
-        </ContentCard>
-      </section>
+      <ContentCard className="w-full">
+        <SectionHeader title="Cash Flow" />
+        <CashFlowChart data={monthlyCashFlow} />
+      </ContentCard>
 
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
         <ContentCard>
           <SectionHeader title="Top Spending Categories" />
-          <ul className="mt-4 space-y-3.5">
+          <ul className="mt-4 max-h-55 space-y-3.5 overflow-y-auto">
             {categoryBreakdown.map((c, i) => (
               <li
                 key={c.categoryId ?? c.name}
@@ -155,9 +153,11 @@ export function ReportsPage() {
 
         <ContentCard>
           <SectionHeader title="Expense Split" />
-          <CategoryPie data={categoryBreakdown.map((c) => ({ name: c.name, value: c.total }))} />
+          <div className="flex h-55 w-full items-center justify-center">
+            <CategoryPie data={categoryBreakdown.map((c) => ({ name: c.name, value: c.total }))} />
+          </div>
         </ContentCard>
-      </section>
+      </div>
     </PageContainer>
   );
 }

@@ -6,7 +6,14 @@ export function useDeleteTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation<{ deleted: boolean }, Error, string>({
-    mutationFn: (id) => apiClient.delete<{ deleted: boolean }>(`transactions/${id}`),
+    mutationFn: (id) =>
+      toast
+        .promise(apiClient.delete<{ deleted: boolean }>(`transactions/${id}`), {
+          loading: "Deleting transaction...",
+          success: "Transaction deleted successfully",
+          error: (error: Error) => error.message || "Failed to delete transaction",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -14,10 +21,6 @@ export function useDeleteTransaction() {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["goals"] });
-      toast.success("Transaction deleted successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete transaction");
     },
   });
 }

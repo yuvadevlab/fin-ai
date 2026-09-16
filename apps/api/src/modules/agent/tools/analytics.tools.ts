@@ -16,6 +16,7 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
         "Get the user's current financial KPIs: net worth, monthly income/expenses, net cash flow, savings rate, and last-month comparison.",
       access: "read",
       confirmation: "none",
+      label: "Analyzing your finances",
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getDashboard(ctx.userId),
       summarize: (output) => {
@@ -29,6 +30,7 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
         "Get the user's financial health score (0-100) with component breakdowns: free cash, savings rate, emergency runway, debt pressure, budget control, and goal progress.",
       access: "read",
       confirmation: "none",
+      label: "Calculating your financial health",
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getHealthScore(ctx.userId),
       summarize: (output) => {
@@ -41,6 +43,7 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       description: "Get monthly income/expense totals over the last N months for trend analysis.",
       access: "read",
       confirmation: "none",
+      label: "Analyzing monthly cash flow",
       schema: z.object({
         months: z.number().int().positive().max(24).default(6),
       }),
@@ -56,6 +59,7 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
         "Get deterministic, prioritized financial recommendations (budget overruns, savings rate, emergency fund, goal deadlines) computed from the user's live data.",
       access: "read",
       confirmation: "none",
+      label: "Generating recommendations",
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getRecommendations(ctx.userId),
       summarize: (output) => {
