@@ -46,10 +46,15 @@ export function AppearanceSettings() {
     };
 
     try {
-      await updateProfile.mutateAsync({ preferences: updatedPrefs });
-      toast.success("Appearance updated!");
-    } catch (err) {
-      toast.error((err as Error).message || "Failed to update appearance");
+      await toast
+        .promise(updateProfile.mutateAsync({ preferences: updatedPrefs }), {
+          loading: "Saving appearance...",
+          success: "Appearance updated!",
+          error: (error: Error) => error.message || "Failed to update appearance",
+        })
+        .unwrap();
+    } catch {
+      // Error toast is shown by toast.promise
     }
   };
 

@@ -2,12 +2,14 @@
 
 import { Check, Loader2, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@finai/ui";
+import { usePrivacyMode } from "@/hooks";
 import type { AgentConfirmation } from "../api/agentTypes";
+import { BulkConfirmationCarousel } from "./BulkConfirmationCarousel";
 
 interface RichConfirmationCardProps {
   confirmation: AgentConfirmation;
   onConfirm: (actionId: string, tool: string) => void;
-  onReject: (actionId: string) => void;
+  onReject: (actionId: string, itemIndex?: number) => void;
   /**
    * When true, the confirm button is disabled and shows a hint explaining
    * that earlier actions must be confirmed first. Used to enforce sequential
@@ -56,6 +58,21 @@ export function RichConfirmationCard({
   disabled = false,
   isExecuting = false,
 }: RichConfirmationCardProps) {
+  // Hooks must be called unconditionally — before any early return.
+  const { isPrivacyMode } = usePrivacyMode();
+
+  if (confirmation.card.rows?.[0]?.[0] === "__bulk_count__") {
+    return (
+      <BulkConfirmationCarousel
+        confirmation={confirmation}
+        onConfirm={onConfirm}
+        onReject={onReject}
+        disabled={disabled}
+        isExecuting={isExecuting}
+      />
+    );
+  }
+
   const { card, status } = confirmation;
   const pending = status === "pending";
   const meta = isExecuting
@@ -64,6 +81,17 @@ export function RichConfirmationCard({
 
   // Detect before/effect pairs in the rows.
   const { effectRows, detailRows } = partitionRows(card.rows ?? []);
+
+  // Privacy masking: mask values that look monetary or match sensitive keys.
+  const SENSITIVE_KEYS =
+    /account|balance|amount|limit|salary|income|net\s*worth|total|value|price/i;
+  const MONEY_PATTERN = /^[\u20b9$\u20ac\u00a3]|\d[,.]\d/;
+  const maskValue = (key: string, value: string): string => {
+    if (!isPrivacyMode) return value;
+    if (SENSITIVE_KEYS.test(key) || MONEY_PATTERN.test(value))
+      return "\u2022\u2022\u2022\u2022\u2022\u2022";
+    return value;
+  };
 
   return (
     <div className="bg-card ring-border/60 animate-in slide-in-from-bottom-2 rounded-xl border shadow-sm">
@@ -92,7 +120,7 @@ export function RichConfirmationCard({
                 <div className="text-center">
                   <p className="text-muted-foreground text-[11px] font-medium uppercase">{key}</p>
                   <p className="text-foreground mt-0.5 text-sm font-semibold tabular-nums">
-                    {value}
+                    {maskValue(key, value)}
                   </p>
                 </div>
                 {idx < effectRows.length - 1 && (
@@ -118,7 +146,9 @@ export function RichConfirmationCard({
               className="bg-foreground/2 flex items-center justify-between gap-3 px-3 py-1.5"
             >
               <span className="text-muted-foreground text-xs">{key}</span>
-              <span className="text-foreground max-w-48 truncate text-xs font-medium">{value}</span>
+              <span className="text-foreground max-w-48 truncate text-xs font-medium">
+                {maskValue(key, value)}
+              </span>
             </div>
           ))}
         </div>

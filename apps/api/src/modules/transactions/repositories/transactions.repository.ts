@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { Prisma, TransactionType } from "@finai/database";
 import type { TransactionFilterInput } from "@finai/validation";
@@ -6,6 +7,7 @@ import { getTransactionImpact } from "../utils";
 
 @Injectable()
 export class TransactionsRepository {
+  private readonly logger = new Logger(TransactionsRepository.name);
   constructor(private prisma: PrismaService) {}
 
   /** Build the shared Prisma `where` clause from filter inputs. */
@@ -26,6 +28,9 @@ export class TransactionsRepository {
 
   /** Returns paginated transactions with full relations. */
   async findAll(userId: string, filter: TransactionFilterInput) {
+    this.logger.debug(
+      `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
+    );
     const where = this.buildWhere(userId, filter);
     const page = filter.page ?? 1;
     const limit = filter.pageSize ?? 50;
@@ -50,11 +55,19 @@ export class TransactionsRepository {
 
   /** Fetches a single transaction by ID scoped to the user. */
   async findOne(id: string, userId: string) {
+    this.logger.debug(
+      `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     const tx = await this.prisma.client.transaction.findFirst({
       where: { id, userId },
       include: { category: true, account: true, toAccount: true, investment: true, goal: true },
     });
-    if (!tx) throw new NotFoundException(`Transaction ${id} not found`);
+    if (!tx) {
+      this.logger.warn(
+        `[findOne] Transaction ${id.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
+      );
+      throw new NotFoundException(`Transaction ${id} not found`);
+    }
     return tx;
   }
 
@@ -139,10 +152,14 @@ export class TransactionsRepository {
       if (!g) missing.push(`goal ${refs.goalId}`);
     }
     if (missing.length > 0) {
+      this.logger.warn(
+        `[assertOwnedRefs] Invalid refs for user ${userId.slice(0, 8)}: ${missing.join(", ")}`,
+      );
       throw new BadRequestException(
         `Cannot record transaction: ${missing.join(", ")} not found for this user`,
       );
     }
+    this.logger.debug(`[assertOwnedRefs] All refs valid for user ${userId.slice(0, 8)}`);
   }
 
   /** Applies balance/investment/goal changes inside an active Prisma transaction. */

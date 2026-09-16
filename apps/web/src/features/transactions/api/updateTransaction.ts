@@ -8,7 +8,14 @@ export function useUpdateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation<Transaction, Error, { id: string; input: UpdateTransactionInput }>({
-    mutationFn: ({ id, input }) => apiClient.patch<Transaction>(`transactions/${id}`, input),
+    mutationFn: ({ id, input }) =>
+      toast
+        .promise(apiClient.patch<Transaction>(`transactions/${id}`, input), {
+          loading: "Updating transaction...",
+          success: "Transaction updated successfully",
+          error: (error: Error) => error.message || "Failed to update transaction",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -16,10 +23,6 @@ export function useUpdateTransaction() {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["goals"] });
-      toast.success("Transaction updated successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update transaction");
     },
   });
 }

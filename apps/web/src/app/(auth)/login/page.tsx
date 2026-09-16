@@ -18,15 +18,24 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const response = await apiClient.post<{ accessToken: string; user: unknown }>("auth/login", {
-        email,
-        password,
-      });
+      const response = await toast
+        .promise(
+          apiClient.post<{ accessToken: string; user: unknown }>("auth/login", {
+            email,
+            password,
+          }),
+          {
+            loading: "Signing you in...",
+            success: "Welcome back! Login successful.",
+            error: (error: { message?: string }) =>
+              error?.message || "Invalid credentials. Please try again.",
+          },
+        )
+        .unwrap();
       localStorage.setItem("finai_token", response.accessToken);
       localStorage.setItem("finai_user", JSON.stringify(response.user));
       document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
 
-      toast.success("Welcome back! Login successful.");
       router.push("/");
     } catch (err) {
       const apiErr = err as { message?: string };

@@ -1,4 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
 
@@ -31,6 +32,9 @@ export class OllamaService {
     onToken?: (token: string) => void,
   ): Promise<void> {
     const { prompt, systemPrompt, historyMessages = [], model = this.model } = options;
+    this.logger.debug(
+      `[streamChatWithCallback] Streaming prompt via Ollama model "${model}" (${historyMessages.length} history msg(s))`,
+    );
 
     const body = JSON.stringify({
       model,
@@ -85,7 +89,7 @@ export class OllamaService {
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     } catch (error) {
-      this.logger.error("Ollama streaming error", error);
+      this.logger.error("Ollama streaming error", (error as Error).message ?? error);
       res.write(
         `data: ${JSON.stringify({ error: "AI service unavailable. Make sure Ollama is running." })}\n\n`,
       );
@@ -98,6 +102,9 @@ export class OllamaService {
    */
   async chat(options: OllamaStreamOptions): Promise<string> {
     const { prompt, systemPrompt, model = this.model } = options;
+    this.logger.debug(
+      `[chat] Ollama completion via model "${model}", prompt: ${prompt.slice(0, 60)}`,
+    );
 
     const body = JSON.stringify({
       model,
@@ -116,13 +123,22 @@ export class OllamaService {
       });
 
       if (!response.ok) {
+        this.logger.warn(
+          `[chat] Ollama rejected request: ${response.status} ${response.statusText}`,
+        );
         throw new Error(`Ollama error: ${response.status} ${response.statusText}`);
       }
 
       const data = (await response.json()) as { message?: { content: string } };
-      return data.message?.content ?? "";
+      const content = data.message?.content ?? "";
+      if (!content) {
+        this.logger.warn("[chat] Ollama returned empty content");
+      } else {
+        this.logger.log(`[chat] Ollama completion received (${content.length} chars)`);
+      }
+      return content;
     } catch (error) {
-      this.logger.error("Ollama chat error", error);
+      this.logger.error("Ollama chat error", (error as Error).message ?? error);
       throw new Error("AI service unavailable");
     }
   }

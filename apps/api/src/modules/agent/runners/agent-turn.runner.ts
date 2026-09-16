@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import {
   ToolPlanStreamFilter,
   type ChatModel,
@@ -28,6 +29,8 @@ export interface ModelTurnResult {
  */
 @Injectable()
 export class AgentTurnRunner {
+  private readonly logger = new Logger(AgentTurnRunner.name);
+
   /**
    * @param model  LLM client to stream from
    * @param request Accumulated message history + tools
@@ -42,6 +45,9 @@ export class AgentTurnRunner {
     turn: number,
     pendingAction: boolean,
   ): Promise<ModelTurnResult> {
+    this.logger.log(
+      `Turn ${turn}: streaming (${request.messages.length} msgs, ${request.tools?.length ?? 0} tools, pendingAction: ${pendingAction})`,
+    );
     emit({ type: "phase", phase: "model_turn", status: "start", turn, pendingAction });
 
     const filter = new ToolPlanStreamFilter();
@@ -81,6 +87,9 @@ export class AgentTurnRunner {
       emit({ type: "token", content: tail });
     }
 
+    this.logger.log(
+      `Turn ${turn}: done — ${visibleContent.length} visible chars, ${toolCalls.length} native tool call(s), tokens: ${tokensIn} in / ${tokensOut} out`,
+    );
     return { rawContent, visibleContent, toolCalls, tokensIn, tokensOut };
   }
 }

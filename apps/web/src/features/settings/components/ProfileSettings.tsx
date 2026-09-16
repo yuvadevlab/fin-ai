@@ -31,10 +31,15 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
     }
 
     try {
-      await updateProfile.mutateAsync({ name, email });
-      toast.success("Profile updated successfully!");
-    } catch (err) {
-      toast.error((err as Error).message || "Failed to update profile");
+      await toast
+        .promise(updateProfile.mutateAsync({ name, email }), {
+          loading: "Saving profile...",
+          success: "Profile updated successfully!",
+          error: (error: Error) => error.message || "Failed to update profile",
+        })
+        .unwrap();
+    } catch {
+      // Error toast is shown by toast.promise
     }
   };
 

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { type Response } from "express";
+import { Logger } from "@finai/logger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
-import { OllamaService } from "@/modules/ai/ollama.service";
+import { AiModelService } from "@/modules/ai/ai-model.service";
 import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
@@ -15,13 +16,12 @@ import {
   buildEmojiSuggestionUserPrompt,
   EMOJI_SUGGESTION_SYSTEM_PROMPT,
 } from "@finai/ai-engine";
-
 /**
  * Legacy AI Advisor controller (read-only, chat + page insights).
  *
  * Handles:
  * - Conversation CRUD (`GET /conversations`, `GET /conversations/:id`, `DELETE ...`)
- * - SSE chat streaming (`POST /ai/chat`) — uses the legacy `OllamaService` +
+ * - SSE chat streaming (`POST /ai/chat`) — uses the {@link AiModelService} +
  *   `ContextBuilderService.buildFinanceContext` with the advisor system prompt
  * - Page-level micro-insights (`GET /ai/insight?page=…`)
  * - Emoji suggestions (`GET /ai/suggest-emoji?category=…`)
@@ -35,8 +35,10 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller("ai")
 export class AiController {
+  private readonly logger = new Logger(AiController.name);
+
   constructor(
-    private readonly ollamaService: OllamaService,
+    private readonly aiModelService: AiModelService,
     private readonly contextBuilder: ContextBuilderService,
     private readonly conversationService: ConversationService,
   ) {}
@@ -53,9 +55,10 @@ export class AiController {
     if (!category) {
       throw new Error("Category name is required");
     }
+    this.logger.log(`[SuggestEmoji] Request for category: "${category}"`);
     const prompt = buildEmojiSuggestionUserPrompt(category);
 
-    const response = await this.ollamaService.chat({
+    const response = await this.aiModelService.chat({
       systemPrompt: EMOJI_SUGGESTION_SYSTEM_PROMPT,
       prompt,
     });
@@ -128,14 +131,17 @@ export class AiController {
     }
 
     await this.conversationService.addMessage(conversationId, "user", body.question);
+    this.logger.log(
+      `[AdvisorChat] Streaming started for user ${userId.slice(0, 8)} (convo: ${conversationId}, prompt: "${body.question.slice(0, 50)}")`,
+    );
 
     // Emit conversationId first so the client can track the session
     res.write(`data: ${JSON.stringify({ conversationId })}\n\n`);
 
-    // Stream from Ollama and accumulate for persistence
+    // Stream via the configured provider and accumulate for persistence
     let fullResponse = "";
 
-    await this.ollamaService.streamChatWithCallback(
+    await this.aiModelService.streamChatWithCallback(
       { prompt: body.question, systemPrompt, historyMessages },
       res,
       (token) => {
@@ -146,6 +152,9 @@ export class AiController {
     // Persist the full assistant response
     if (fullResponse && conversationId) {
       await this.conversationService.addMessage(conversationId, "assistant", fullResponse);
+      this.logger.log(
+        `[AdvisorChat] Stream finished (convo: ${conversationId}, response length: ${fullResponse.length})`,
+      );
     }
   }
 
@@ -158,6 +167,9 @@ export class AiController {
     @Query("page") page: string = "dashboard",
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `[Insight] Generating page insight for "${page}" (user: ${userId.slice(0, 8)})`,
+    );
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
@@ -168,6 +180,7 @@ export class AiController {
     const prompt = buildPageInsightUserPrompt(page);
     const systemPrompt = buildInsightSystemPrompt(context);
 
-    await this.ollamaService.streamChatWithCallback({ prompt, systemPrompt }, res);
+    await this.aiModelService.streamChatWithCallback({ prompt, systemPrompt }, res);
+    this.logger.log(`[Insight] Stream finished for user ${userId.slice(0, 8)} (page: "${page}")`);
   }
 }

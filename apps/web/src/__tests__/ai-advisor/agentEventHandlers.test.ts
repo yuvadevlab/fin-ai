@@ -8,6 +8,7 @@ import {
 
 function createPort(): AgentEventPort {
   return {
+    appendLog: vi.fn(),
     appendText: vi.fn(),
     replaceText: vi.fn(),
     appendActivity: vi.fn(),
@@ -19,10 +20,22 @@ function createPort(): AgentEventPort {
     failStream: vi.fn(),
     endStream: vi.fn(),
     onConversation: vi.fn(),
+    onMode: vi.fn(),
   };
 }
 
 describe("handleAgentStreamEvent", () => {
+  it("surfaces the resolved runtime mode to the UI", () => {
+    const port = createPort();
+    const terminal = handleAgentStreamEvent({ type: "mode", mode: "agent" }, port);
+
+    expect(terminal).toBe(false);
+    expect(port.onMode).toHaveBeenCalledWith("agent");
+    expect(port.appendLog).toHaveBeenCalledWith(
+      expect.objectContaining({ level: "SYS", message: "Agent mode — tools & actions enabled" }),
+    );
+  });
+
   it("maps the run event to the opening 'Understanding your question' step", () => {
     const port = createPort();
     const terminal = handleAgentStreamEvent({ type: "run", runId: "r1" }, port);

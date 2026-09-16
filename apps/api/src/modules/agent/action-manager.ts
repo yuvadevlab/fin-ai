@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { AgentActionStatus, Prisma } from "@finai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
@@ -24,6 +25,8 @@ const ACTION_TTL_MINUTES = 15;
  */
 @Injectable()
 export class ActionManager {
+  private readonly logger = new Logger(ActionManager.name);
+
   constructor(
     private prisma: PrismaService,
     private registry: ToolRegistry,
@@ -38,7 +41,7 @@ export class ActionManager {
    * null when there is no pending action (normal chat flow).
    */
   async getPendingAction(conversationId: string, userId: string) {
-    return this.prisma.client.agentAction.findFirst({
+    const pending = await this.prisma.client.agentAction.findFirst({
       where: {
         conversationId,
         userId,
@@ -47,6 +50,12 @@ export class ActionManager {
       },
       orderBy: { createdAt: "desc" },
     });
+    if (pending) {
+      this.logger.debug(
+        `[getPendingAction] Found pending "${pending.tool}" (${pending.id.slice(0, 8)}) in convo ${conversationId.slice(0, 8)}`,
+      );
+    }
+    return pending;
   }
 
   /**
@@ -71,23 +80,36 @@ export class ActionManager {
     userId: string,
     patch: Record<string, unknown>,
   ): Promise<{ action: { id: string; tool: string; input: unknown }; card: AgentCard }> {
+    this.logger.debug(
+      `[patchAction] Patching action ${actionId.slice(0, 8)} for user ${userId.slice(0, 8)}: [${Object.keys(patch).join(", ")}]`,
+    );
     const action = await this.prisma.client.agentAction.findFirst({
       where: { id: actionId, userId },
     });
     if (!action) {
+      this.logger.warn(
+        `[patchAction] Action ${actionId.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
+      );
       throw new NotFoundException("Agent action not found");
     }
     if (action.status !== AgentActionStatus.PROPOSED) {
+      this.logger.warn(
+        `[patchAction] Action ${actionId.slice(0, 8)} is ${action.status} — only pending actions can be edited`,
+      );
       throw new BadRequestException(
         `Action is ${action.status} — only pending actions can be edited`,
       );
     }
     if (action.expiresAt <= new Date()) {
+      this.logger.warn(`[patchAction] Action ${actionId.slice(0, 8)} expired — rejecting patch`);
       throw new BadRequestException("Action has expired — please start a new request");
     }
 
     const tool = this.registry.get(action.tool);
     if (!tool) {
+      this.logger.warn(
+        `[patchAction] Unknown tool on action ${actionId.slice(0, 8)}: "${action.tool}"`,
+      );
       throw new BadRequestException(`Unknown tool: ${action.tool}`);
     }
 
@@ -125,6 +147,9 @@ export class ActionManager {
       metadata: { patchedFields: Object.keys(patch) },
     });
 
+    this.logger.log(
+      `Patched action "${action.tool}" (actionId: ${actionId.slice(0, 8)}, userId: ${userId.slice(0, 8)}) — fields: [${Object.keys(patch).join(", ")}], warnings: ${warnings.length}`,
+    );
     return { action: { id: updated.id, tool: updated.tool, input: updated.input }, card };
   }
 

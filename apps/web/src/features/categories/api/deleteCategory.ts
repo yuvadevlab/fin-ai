@@ -6,13 +6,16 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation<{ deleted: boolean }, Error, string>({
-    mutationFn: (id) => apiClient.delete<{ deleted: boolean }>(`categories/${id}`),
+    mutationFn: (id) =>
+      toast
+        .promise(apiClient.delete<{ deleted: boolean }>(`categories/${id}`), {
+          loading: "Deleting category...",
+          success: "Category deleted successfully",
+          error: (error: Error) => error.message || "Failed to delete category",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast.success("Category deleted successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete category");
     },
   });
 }

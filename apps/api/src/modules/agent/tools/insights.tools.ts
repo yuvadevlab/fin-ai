@@ -16,6 +16,7 @@ export function createInsightsTools(analyticsService: AnalyticsService) {
         "Estimate how much the user can safely spend for the rest of the current month without jeopardizing budgets or goals. Based on liquid balance + month-to-date net cash flow − remaining budget commitments − goal installments.",
       access: "read",
       confirmation: "none",
+      label: "Calculating safe-to-spend",
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getSafeToSpend(ctx.userId),
       serialize: (output) => {

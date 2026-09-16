@@ -4,6 +4,7 @@ import type {
   AgentChatMessage,
   AgentActivity,
   AgentConfirmationStatus,
+  AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
 import {
@@ -15,6 +16,7 @@ import {
   failStreamReducer,
   replaceTextReducer,
   resolveApprovalActivityReducer,
+  setModeReducer,
   updateActivityReducer,
   updateConfirmationCardReducer,
   updateConfirmationStatusReducer,
@@ -59,8 +61,8 @@ export function useAgentMessages() {
   );
 
   const updateConfirmationCard = useCallback(
-    (actionId: string, card: import("@finai/ai-engine").AgentCard) => {
-      setMessages((prev) => updateConfirmationCardReducer(prev, actionId, card));
+    (actionId: string, card: import("@finai/ai-engine").AgentCard, tool?: string) => {
+      setMessages((prev) => updateConfirmationCardReducer(prev, actionId, card, tool));
     },
     [],
   );
@@ -75,6 +77,10 @@ export function useAgentMessages() {
 
   const endStream = useCallback(() => {
     setMessages((prev) => endStreamReducer(prev));
+  }, []);
+
+  const setMode = useCallback((mode: AgentResolvedMode) => {
+    setMessages((prev) => setModeReducer(prev, mode));
   }, []);
 
   const pushUserTurn = useCallback((question: string) => {
@@ -109,6 +115,7 @@ export function useAgentMessages() {
     updateConfirmationCard,
     failStream,
     endStream,
+    setMode,
     pushUserTurn,
     pushAssistantTurn,
     replaceMessages,

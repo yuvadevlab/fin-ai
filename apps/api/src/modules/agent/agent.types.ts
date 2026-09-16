@@ -35,6 +35,10 @@ export interface AgentTool {
   description: string;
   access: ToolAccess;
   confirmation: ConfirmationPolicy;
+  /** Human-readable activity label (e.g. "Recording transactions") */
+  label?: string;
+  /** React Query cache keys to bust after confirmation */
+  invalidates?: string[];
   /** Zod schema validating the LLM-supplied input. */
   schema: import("zod").ZodTypeAny;
   execute(input: unknown, ctx: AgentContext): Promise<unknown>;

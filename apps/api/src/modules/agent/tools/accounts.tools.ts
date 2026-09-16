@@ -21,6 +21,7 @@ export function createAccountsTools(accountsService: AccountsService) {
         "List the user's active FinAI accounts with balances, types, and the default account flag. Use this to resolve account names (e.g. 'my HDFC account') to IDs.",
       access: "read",
       confirmation: "none",
+      label: "Reviewing your accounts",
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const accounts = await accountsService.findAll(ctx.userId);
@@ -37,6 +38,7 @@ export function createAccountsTools(accountsService: AccountsService) {
         "Get details of a single account by ID. Use this to confirm an account exists and check its current balance before recording a transaction against it.",
       access: "read",
       confirmation: "none",
+      label: "Fetching account details",
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),
@@ -52,6 +54,8 @@ export function createAccountsTools(accountsService: AccountsService) {
         "Create (link) a new FinAI account for the user. Requires confirmation. Fields: name, type (BANK | CREDIT_CARD | WALLET | CASH), optional opening balance (defaults 0), currency (defaults INR), optional isDefault flag.",
       access: "write",
       confirmation: "required",
+      label: "Creating your account",
+      invalidates: ["accounts", "analytics"],
       schema: createAccountSchema,
       execute: async (input, ctx) => accountsService.create(ctx.userId, input),
       serialize: (output) => {
@@ -82,6 +86,8 @@ export function createAccountsTools(accountsService: AccountsService) {
         "Rename one of the user's FinAI accounts. Safe cosmetic change — no confirmation needed. Resolve the account ID with accounts.list first.",
       access: "write",
       confirmation: "none",
+      label: "Renaming account",
+      invalidates: ["accounts"],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
         name: z.string().min(1, "Account name is required").max(100),
@@ -100,6 +106,8 @@ export function createAccountsTools(accountsService: AccountsService) {
         "Update an account's balance or mark it as the user's default account. Requires confirmation. Only name, balance and isDefault are supported; type and currency cannot be changed.",
       access: "write",
       confirmation: "required",
+      label: "Updating account",
+      invalidates: ["accounts", "analytics"],
       schema: updateAccountSchema.extend({
         accountId: z.string().uuid("Invalid account ID"),
       }),
@@ -126,6 +134,8 @@ export function createAccountsTools(accountsService: AccountsService) {
         "Deactivate (soft-delete) one of the user's FinAI accounts. Requires confirmation. The account is hidden from the app but its history is retained; transactions are not deleted.",
       access: "write",
       confirmation: "required",
+      label: "Removing account",
+      invalidates: ["accounts", "analytics"],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),

@@ -46,6 +46,8 @@ export function createTransactionRecordTools(
         "Record a new transaction for the user. Requires confirmation. Fields: amount (positive number), type (INCOME | EXPENSE | TRANSFER | INVESTMENT), account (HDFC account name or accountId), category (e.g. 'groceries' resolving to 'Groceries & Supermarket', or categoryId), optional toAccount (required for TRANSFER), optional notes (max 500 chars). Date: if the user names a date (e.g. 'yesterday', '2 days back', 'aug 15', 'tomorrow', 'last week'), extract that phrase verbatim into dateExpression and also set date to the best-matching YYYY-MM-DD; if the user gives NO date, OMIT date and dateExpression entirely (the server records today). Category and account are resolved to the user's real records server-side — never invent IDs. Account balances update automatically.",
       access: "write",
       confirmation: "required",
+      label: "Recording your transaction",
+      invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: agentCreateTransactionSchema,
       validate: async (input, ctx) => {
         const check = await checkTransactionRefs(
@@ -133,6 +135,8 @@ export function createTransactionRecordTools(
         "Record multiple transactions in one atomic batch (max 25). Requires confirmation. Each item uses the same fields as transactions.create (account/category accept names or IDs; if the user names a date, pass it verbatim in dateExpression; OMIT date/dateExpression when no date is given so the server records today). Use for import-style requests like 'add these three expenses'.",
       access: "write",
       confirmation: "required",
+      label: "Recording multiple transactions",
+      invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: z.object({
         transactions: z
           .array(agentCreateTransactionSchema)
@@ -190,13 +194,23 @@ export function createTransactionRecordTools(
       },
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Record multiple transactions",
+        title: `Record ${input.transactions.length} transactions`,
         rows: [
-          ["Count", String(input.transactions.length)],
+          ["__bulk_count__", String(input.transactions.length)],
           [
-            "Total (absolute)",
+            "__bulk_total__",
             formatINR(input.transactions.reduce((sum, tx) => sum + Math.abs(tx.amount), 0)),
           ],
+          ...input.transactions.flatMap((tx, i): [string, string][] => [
+            [`__item_${i}__`, "start"],
+            ["Type", tx.type],
+            ["Amount", formatINR(tx.amount)],
+            ["Date", dateLabel(tx)],
+            ["Account", tx.account ?? tx.accountId ?? "Default"],
+            ["Category", tx.category ?? tx.categoryId ?? "Unresolved"],
+            ...(tx.toAccount ? [["To account", tx.toAccount] as [string, string]] : []),
+            ...(tx.notes ? [["Notes", tx.notes] as [string, string]] : []),
+          ]),
         ],
       }),
       summarize: (output) => {

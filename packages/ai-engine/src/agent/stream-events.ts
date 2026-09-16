@@ -27,6 +27,12 @@ export type AgentStreamEvent =
   /** Unique id for this agent run — correlates usage/audit across events. */
   | { type: "run"; runId: string }
   /**
+   * Emitted once per run, right after routing resolves, so the UI can show
+   * which runtime answered: "agent" (tool-enabled loop — can propose actions)
+   * or "chat" (tool-free advisor fast-path — conversational only).
+   */
+  | { type: "mode"; mode: "agent" | "chat" }
+  /**
    * One streamed chunk (DELTA) of the assistant's visible answer text.
    * Clients must APPEND this to the current assistant message:
    *   message.text += content
@@ -51,8 +57,8 @@ export type AgentStreamEvent =
   | { type: "token_replace"; content: string }
   /** The model started calling a tool (UI shows a progress chip). */
   | { type: "tool_call"; tool: string; runId: string }
-  /** Tool finished; `ok` = success and `summary` is the human-readable line. */
-  | { type: "tool_result"; tool: string; ok: boolean; summary?: string }
+  /** Tool finished; `ok` = success and `summary` is the human-readable line. `label` is server-provided activity label. */
+  | { type: "tool_result"; tool: string; ok: boolean; summary?: string; label?: string }
   /**
    * Real agent lifecycle transition, emitted ONLY when the server actually
    * enters/leaves a phase — never on a timer. Powers the live activity

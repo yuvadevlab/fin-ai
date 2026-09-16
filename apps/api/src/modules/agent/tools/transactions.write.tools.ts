@@ -33,6 +33,8 @@ export function createTransactionsWriteTools(
         "Update an existing transaction's amount, date, notes, category, accounts or type. Requires confirmation. Balances rebalance automatically. Pass only the fields that should change; account/category accept a name or ID. For dates, follow the same rule as transactions.create: pass the user's wording in dateExpression ('yesterday', 'aug 15'), or set date directly; omit both to leave the date unchanged. Set toAccountId: null to clear a destination account.",
       access: "write",
       confirmation: "required",
+      label: "Updating transaction",
+      invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: agentUpdateTransactionSchema,
       validate: async (input, ctx) => {
         const refInput: TransactionRefInput = {
@@ -141,6 +143,8 @@ export function createTransactionsWriteTools(
         "Permanently delete one of the user's transactions and revert its balance impact. Requires confirmation — this is destructive and cannot be undone.",
       access: "write",
       confirmation: "required",
+      label: "Deleting transaction",
+      invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: z.object({
         transactionId: z.string().uuid("Invalid transaction ID"),
       }),

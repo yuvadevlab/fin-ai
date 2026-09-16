@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { AccountType, Prisma } from "@finai/database";
 import { UserPreferences } from "@finai/shared-types";
 import { type CreateAccountInput, type UpdateAccountInput } from "@finai/validation";
@@ -16,6 +17,8 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
  */
 @Injectable()
 export class AccountsService {
+  private readonly logger = new Logger(AccountsService.name);
+
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -26,12 +29,19 @@ export class AccountsService {
    * Returns `null` when no preference is set or the user has no preferences.
    */
   private async getDefaultAccountId(userId: string): Promise<string | null> {
+    this.logger.debug(
+      `[getDefaultAccountId] Reading default account preference for user ${userId.slice(0, 8)}`,
+    );
     const user = await this.prisma.client.user.findUnique({
       where: { id: userId },
       select: { preferences: true },
     });
     const prefs = (user?.preferences as unknown as UserPreferences) || {};
-    return prefs.defaultAccountId ?? null;
+    const defaultId = prefs.defaultAccountId ?? null;
+    this.logger.debug(
+      `[getDefaultAccountId] User ${userId.slice(0, 8)} default: ${defaultId ? defaultId.slice(0, 8) : "none"}`,
+    );
+    return defaultId;
   }
 
   /**
@@ -44,6 +54,9 @@ export class AccountsService {
    * callers must ensure ownership before calling.
    */
   private async setDefaultAccountId(userId: string, accountId: string | null): Promise<void> {
+    this.logger.debug(
+      `[setDefaultAccountId] Setting default for user ${userId.slice(0, 8)}: ${accountId ? accountId.slice(0, 8) : "clear"}`,
+    );
     const user = await this.prisma.client.user.findUnique({
       where: { id: userId },
       select: { preferences: true },
@@ -51,8 +64,12 @@ export class AccountsService {
     const current = (user?.preferences as unknown as UserPreferences) || {};
     const updated: UserPreferences = { ...current };
     if (accountId === null) {
+      this.logger.debug(`[setDefaultAccountId] Clearing default for user ${userId.slice(0, 8)}`);
       delete updated.defaultAccountId;
     } else {
+      this.logger.debug(
+        `[setDefaultAccountId] Setting default to ${accountId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      );
       updated.defaultAccountId = accountId;
     }
     await this.prisma.client.user.update({
@@ -73,6 +90,7 @@ export class AccountsService {
    * Runs the account fetch and default-preference read in parallel.
    */
   async findAll(userId: string) {
+    this.logger.debug(`[findAll] Listing all accounts for user ${userId.slice(0, 8)}`);
     const [accounts, defaultAccountId] = await Promise.all([
       this.prisma.client.account.findMany({
         where: { userId, isActive: true },
@@ -89,7 +107,11 @@ export class AccountsService {
           ? accounts[0].id
           : null;
 
-    return accounts.map((a) => ({ ...a, isDefault: a.id === resolvedDefaultId }));
+    const enriched = accounts.map((a) => ({ ...a, isDefault: a.id === resolvedDefaultId }));
+    this.logger.info(
+      `Found ${enriched.length} active account(s) for user ${userId.slice(0, 8)}, default: ${resolvedDefaultId ? resolvedDefaultId.slice(0, 8) : "none"}`,
+    );
+    return enriched;
   }
 
   /**
@@ -98,10 +120,18 @@ export class AccountsService {
    * another user.
    */
   async findOne(id: string, userId: string) {
+    this.logger.debug(
+      `[findOne] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     const account = await this.prisma.client.account.findFirst({
       where: { id, userId },
     });
-    if (!account) throw new NotFoundException(`Account ${id} not found`);
+    if (!account) {
+      this.logger.warn(
+        `[findOne] Account ${id.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
+      );
+      throw new NotFoundException(`Account ${id} not found`);
+    }
     return account;
   }
 
@@ -136,6 +166,9 @@ export class AccountsService {
       }
     }
 
+    this.logger.log(
+      `Created account "${account.name}" [${account.type}] for user ${userId.slice(0, 8)}`,
+    );
     return account;
   }
 
@@ -150,13 +183,15 @@ export class AccountsService {
     if (input.isDefault === true) {
       await this.setDefaultAccountId(userId, id);
     }
-    return this.prisma.client.account.update({
+    const updated = await this.prisma.client.account.update({
       where: { id },
       data: {
         ...(input.name !== undefined && { name: input.name }),
         ...(input.balance !== undefined && { balance: input.balance }),
       },
     });
+    this.logger.log(`Updated account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    return updated;
   }
 
   /**
@@ -166,6 +201,7 @@ export class AccountsService {
   async setDefault(id: string, userId: string) {
     await this.findOne(id, userId);
     await this.setDefaultAccountId(userId, id);
+    this.logger.log(`Set default account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { success: true };
   }
 
@@ -187,6 +223,7 @@ export class AccountsService {
       where: { id },
       data: { isActive: false },
     });
+    this.logger.log(`Soft-deleted account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { deleted: true };
   }
 }

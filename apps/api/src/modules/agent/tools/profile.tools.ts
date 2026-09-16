@@ -18,6 +18,7 @@ export function createProfileTools(usersService: UsersService, accountsService: 
         "Get the current user's profile: id, email, name, avatar URL, and preferences (appearance, notifications, security, default account).",
       access: "read",
       confirmation: "none",
+      label: "Loading your profile",
       schema: z.object({}),
       execute: async (_input, ctx) => usersService.getProfile(ctx.userId),
       serialize: (output) => {
@@ -41,6 +42,8 @@ export function createProfileTools(usersService: UsersService, accountsService: 
         "Update the user's own profile: display name, email, or preference sections (appearance, notifications, security). Requires confirmation. Only pass the fields that should change.",
       access: "write",
       confirmation: "required",
+      label: "Updating your profile",
+      invalidates: ["user-profile", "accounts"],
       schema: updateProfileSchema,
       execute: async (input, ctx) => usersService.updateProfile(ctx.userId, input),
       describe: (input) => {
@@ -62,6 +65,8 @@ export function createProfileTools(usersService: UsersService, accountsService: 
         "Set which of the user's FinAI accounts is the default account. Requires confirmation. Resolve the account ID with accounts.list first.",
       access: "write",
       confirmation: "required",
+      label: "Setting default account",
+      invalidates: ["user-profile", "accounts"],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),

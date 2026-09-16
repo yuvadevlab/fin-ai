@@ -8,14 +8,17 @@ export function useCreateGoal() {
   const queryClient = useQueryClient();
 
   return useMutation<Goal, Error, CreateGoalInput>({
-    mutationFn: (input) => apiClient.post<Goal>("goals", input),
+    mutationFn: (input) =>
+      toast
+        .promise(apiClient.post<Goal>("goals", input), {
+          loading: "Creating goal...",
+          success: "Goal created successfully",
+          error: (error: Error) => error.message || "Failed to create goal",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success("Goal created successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create goal");
     },
   });
 }
@@ -29,15 +32,18 @@ export function useContributeGoal() {
   const queryClient = useQueryClient();
 
   return useMutation<Goal, Error, ContributeGoalParams>({
-    mutationFn: ({ id, amount }) => apiClient.post<Goal>(`goals/${id}/contribute`, { amount }),
+    mutationFn: ({ id, amount }) =>
+      toast
+        .promise(apiClient.post<Goal>(`goals/${id}/contribute`, { amount }), {
+          loading: "Recording contribution...",
+          success: "Contribution recorded successfully",
+          error: (error: Error) => error.message || "Failed to record contribution",
+        })
+        .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success("Contribution recorded successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to record contribution");
     },
   });
 }

@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
 /** Baseline options seeded into `reference_options` on first read if empty. */
@@ -38,6 +39,7 @@ const BASELINE_OPTIONS = [
  */
 @Injectable()
 export class OptionsService {
+  private readonly logger = new Logger(OptionsService.name);
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -45,17 +47,25 @@ export class OptionsService {
    * Auto-seeds baseline options if the `reference_options` table is empty.
    */
   async getByCategory(category: string) {
+    this.logger.debug(`[getByCategory] Fetching options for category: ${category}`);
     await this.ensureSeeded();
 
-    return this.prisma.client.referenceOption.findMany({
+    const options = await this.prisma.client.referenceOption.findMany({
       where: { category, isActive: true },
       orderBy: { order: "asc" },
       select: { id: true, category: true, label: true, value: true, order: true, isActive: true },
     });
+    if (options.length === 0) {
+      this.logger.warn(`[getByCategory] No active options found for category: ${category}`);
+    } else {
+      this.logger.log(`[getByCategory] Found ${options.length} option(s) for ${category}`);
+    }
+    return options;
   }
 
   /** Returns all active reference options grouped by category. */
   async getAll() {
+    this.logger.debug("[getAll] Fetching all reference options grouped by category");
     await this.ensureSeeded();
 
     const options = await this.prisma.client.referenceOption.findMany({
@@ -64,6 +74,7 @@ export class OptionsService {
       select: { id: true, category: true, label: true, value: true, order: true, isActive: true },
     });
 
+    this.logger.log(`[getAll] Found ${options.length} active option(s)`);
     // Group by category
     return options.reduce(
       (acc, opt) => {
@@ -81,8 +92,12 @@ export class OptionsService {
    */
   private async ensureSeeded() {
     const count = await this.prisma.client.referenceOption.count();
-    if (count > 0) return;
+    if (count > 0) {
+      this.logger.debug(`[ensureSeeded] Table already seeded (${count} rows) — skipping`);
+      return;
+    }
 
+    this.logger.log(`[ensureSeeded] Seeding ${BASELINE_OPTIONS.length} baseline option(s)...`);
     await Promise.all(
       BASELINE_OPTIONS.map((opt) =>
         this.prisma.client.referenceOption.upsert({

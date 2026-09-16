@@ -2,11 +2,12 @@ import { useCallback, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { AgentStreamEvent } from "@finai/ai-engine";
 import { API_BASE_URL, apiClient } from "@/lib/api-client";
-import { confirmAgentAction, rejectAgentAction } from "./agentActions";
-import { invalidateForAgentTool } from "./agentInvalidationMap";
 import { handleAgentStreamEvent, type AgentEventPort } from "./agentEventHandlers";
+import { useAgentActionRunner } from "./useAgentActionRunner";
 import { useAgentMessages } from "./useAgentMessages";
+import { fetchConversationActions } from "./agentActions";
 import type { AiConversation } from "./useConversations";
+import type { AgentChatMessage, AgentConfirmation } from "./agentTypes";
 
 /**
  * Streaming agent chat hook. Consumes the SSE `AgentStreamEvent` union from
@@ -17,7 +18,6 @@ export function useAgentChat() {
   const queryClient = useQueryClient();
   const [isStreaming, setIsStreaming] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [executingActionId, setExecutingActionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const {
     messages,
@@ -34,9 +34,17 @@ export function useAgentChat() {
     endStream,
     pushUserTurn,
     pushAssistantTurn,
+    setMode,
     replaceMessages,
     clearMessages,
   } = useAgentMessages();
+
+  // Confirm/reject action lifecycle (button path) — separate hook for the
+  // 250-line cap; it mutates the same message state via the reducers above.
+  const { executingActionId, confirmAction, rejectAction } = useAgentActionRunner({
+    updateConfirmationStatus,
+    resolveApprovalActivity,
+  });
 
   /**
    * Aborts any in-flight SSE stream and marks streaming as complete. Called
@@ -56,6 +64,9 @@ export function useAgentChat() {
      * steps, confirmation cards, and action results all map onto message
      * state there. The loop buffers partial SSE frames so a chunk that
      * arrives mid-line is handled on the next read.
+     *
+     * Runtime routing (agent loop vs tool-free chat) is decided by the API;
+     * the frontend never forces a mode.
      */
     async (question: string) => {
       if (isStreaming) return;
@@ -83,6 +94,7 @@ export function useAgentChat() {
         failStream,
         endStream,
         onConversation: (id) => setConversationId((prev) => prev ?? id),
+        onMode: (mode) => setMode(mode),
       };
 
       try {
@@ -92,7 +104,10 @@ export function useAgentChat() {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ question, conversationId: conversationId ?? undefined }),
+          body: JSON.stringify({
+            question,
+            conversationId: conversationId ?? undefined,
+          }),
           signal: abortRef.current.signal,
         });
 
@@ -157,6 +172,7 @@ export function useAgentChat() {
       updateConfirmationCard,
       failStream,
       endStream,
+      setMode,
       conversationId,
       queryClient,
     ],
@@ -169,12 +185,36 @@ export function useAgentChat() {
         const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
         if (!convo) return;
         setConversationId(convo.id);
-        replaceMessages(
-          (convo.messages ?? []).map((m) => ({
-            role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
-            text: m.content,
-          })),
-        );
+
+        // Build base messages from stored conversation
+        const baseMessages: AgentChatMessage[] = (convo.messages ?? []).map((m) => ({
+          role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
+          text: m.content,
+        }));
+
+        // Fetch action history and hydrate confirmation cards
+        try {
+          const actions = await fetchConversationActions(convo.id);
+          if (actions.length > 0) {
+            const confirmations: AgentConfirmation[] = actions.map((a) => ({
+              actionId: a.actionId,
+              tool: a.tool,
+              card: { type: a.card.type as "confirmation", title: a.card.title, rows: a.card.rows },
+              status: a.status,
+            }));
+            // Attach to the last assistant message
+            for (let i = baseMessages.length - 1; i >= 0; i--) {
+              if (baseMessages[i].role === "assistant") {
+                baseMessages[i] = { ...baseMessages[i], confirmations };
+                break;
+              }
+            }
+          }
+        } catch {
+          // Action history fetch failed — show messages without cards
+        }
+
+        replaceMessages(baseMessages);
       } catch {
         // failed to load
       }
@@ -188,48 +228,6 @@ export function useAgentChat() {
     setConversationId(null);
     setIsStreaming(false);
   }, [clearMessages]);
-
-  const confirmAction = useCallback(
-    async (actionId: string, tool: string) => {
-      if (executingActionId) return;
-      setExecutingActionId(actionId);
-      try {
-        await confirmAgentAction(actionId);
-        updateConfirmationStatus(actionId, "executed");
-        // The button path bypasses the SSE stream, so close the "Waiting for
-        // your approval" activity step locally.
-        resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
-        queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
-        // Refresh every domain cache the executed tool may have changed.
-        invalidateForAgentTool(queryClient, tool);
-      } catch {
-        updateConfirmationStatus(actionId, "failed");
-        resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
-      } finally {
-        setExecutingActionId(null);
-      }
-    },
-    [executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
-  );
-
-  const rejectAction = useCallback(
-    async (actionId: string) => {
-      if (executingActionId) return;
-      setExecutingActionId(actionId);
-      try {
-        await rejectAgentAction(actionId);
-        updateConfirmationStatus(actionId, "rejected");
-        // Rejection is a deliberate completion, not an error.
-        resolveApprovalActivity(actionId, { status: "success", summary: "Action rejected" });
-      } catch {
-        updateConfirmationStatus(actionId, "failed");
-        resolveApprovalActivity(actionId, { status: "error", summary: "Action failed" });
-      } finally {
-        setExecutingActionId(null);
-      }
-    },
-    [executingActionId, updateConfirmationStatus, resolveApprovalActivity],
-  );
 
   return {
     messages,

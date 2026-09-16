@@ -1,4 +1,5 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Logger } from "@finai/logger";
 import type { LlmToolCall } from "@finai/ai-engine";
 import { ToolRegistry } from "../tool-registry";
 import { AgentActionService } from "../action.service";
@@ -20,6 +21,8 @@ import type { AgentContext, AgentEventEmitter } from "../agent.types";
  */
 @Injectable()
 export class AgentToolDispatcher {
+  private readonly logger = new Logger(AgentToolDispatcher.name);
+
   constructor(
     private readonly registry: ToolRegistry,
     @Inject(forwardRef(() => AgentActionService))
@@ -37,6 +40,9 @@ export class AgentToolDispatcher {
 
     const tool = this.registry.get(call.name);
     if (!tool) {
+      this.logger.warn(
+        `Unknown tool requested by model: "${call.name}" (runId: ${ctx.runId.slice(0, 8)})`,
+      );
       await this.auditService.record({
         userId: ctx.userId,
         runId: ctx.runId,
@@ -53,11 +59,15 @@ export class AgentToolDispatcher {
     try {
       parsed = tool.schema.parse(JSON.parse(call.arguments || "{}"));
     } catch {
+      this.logger.warn(
+        `Tool "${call.name}" received invalid arguments from model: ${call.arguments?.slice(0, 120)}`,
+      );
       emit({
         type: "tool_result",
         tool: call.name,
         ok: false,
         summary: "The agent supplied invalid arguments for this step",
+        label: tool.label,
       });
       return {
         ok: false,
@@ -88,6 +98,9 @@ export class AgentToolDispatcher {
           runId: ctx.runId,
         });
 
+        this.logger.log(
+          `Tool "${call.name}" proposed (actionId: ${proposal.id}, warnings: ${warnings.length}, runId: ${ctx.runId.slice(0, 8)})`,
+        );
         emit({
           type: "confirmation_required",
           actionId: proposal.id,
@@ -165,6 +178,7 @@ export class AgentToolDispatcher {
           tool: call.name,
           ok: false,
           summary: patchOutput.error || "Failed to patch the pending action",
+          label: tool.label,
         });
         return { ok: false, error: patchOutput.error || "Failed to patch" };
       }
@@ -197,7 +211,16 @@ export class AgentToolDispatcher {
         return { ok: false, error: confirmOutput.error || "Failed to confirm" };
       }
 
-      emit({ type: "tool_result", tool: call.name, ok: true, summary: tool.summarize(output) });
+      this.logger.log(
+        `Tool "${call.name}" executed successfully (runId: ${ctx.runId.slice(0, 8)})`,
+      );
+      emit({
+        type: "tool_result",
+        tool: call.name,
+        ok: true,
+        summary: tool.summarize(output),
+        label: tool.label,
+      });
       await this.auditService.record({
         userId: ctx.userId,
         runId: ctx.runId,
@@ -208,7 +231,14 @@ export class AgentToolDispatcher {
       return { ok: true, data: tool.serialize(output) };
     } catch (error) {
       const message = (error as Error).message || "Tool execution failed";
-      emit({ type: "tool_result", tool: call.name, ok: false, summary: message });
+      this.logger.error(`Tool "${call.name}" failed (runId: ${ctx.runId.slice(0, 8)}): ${message}`);
+      emit({
+        type: "tool_result",
+        tool: call.name,
+        ok: false,
+        summary: message,
+        label: tool.label,
+      });
       await this.auditService.record({
         userId: ctx.userId,
         runId: ctx.runId,

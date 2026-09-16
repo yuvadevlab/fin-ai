@@ -24,19 +24,25 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const response = await apiClient.post<{ accessToken: string; user: unknown }>(
-        "auth/register",
-        {
-          name,
-          email,
-          password,
-        },
-      );
+      const response = await toast
+        .promise(
+          apiClient.post<{ accessToken: string; user: unknown }>("auth/register", {
+            name,
+            email,
+            password,
+          }),
+          {
+            loading: "Creating your account...",
+            success: "Account created successfully!",
+            error: (error: { message?: string }) =>
+              error?.message || "Failed to create account. Please try again.",
+          },
+        )
+        .unwrap();
       localStorage.setItem("finai_token", response.accessToken);
       localStorage.setItem("finai_user", JSON.stringify(response.user));
       document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
 
-      toast.success("Account created successfully!");
       router.push("/");
     } catch (err) {
       const apiErr = err as { message?: string };

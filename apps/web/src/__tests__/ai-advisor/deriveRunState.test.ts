@@ -17,7 +17,7 @@ describe("activityLabel", () => {
       "Understanding your question",
     );
     expect(activityLabel(step({ tool: "phase:loading_context:0", kind: "phase" }))).toBe(
-      "Loading financial context",
+      "Loading your financial context",
     );
     expect(activityLabel(step({ tool: "phase:model_turn:1", kind: "phase" }))).toBe(
       "Understanding your request",

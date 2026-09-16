@@ -20,6 +20,7 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         "List the user's spending/income categories with their group and icon. Auto-seeds default categories for new users. Prefer reusing these categories over creating new ones.",
       access: "read",
       confirmation: "none",
+      label: "Reviewing categories",
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const categories = await categoriesService.getCategories(ctx.userId);
@@ -36,6 +37,7 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         "Resolve a vague category name (e.g. 'food', 'groceries', 'rent') to the user's actual category IDs using fuzzy matching ('groceries' matches 'Groceries & Supermarket'). Use this before creating budgets or re-categorizing transactions when the user refers to a category loosely.",
       access: "read",
       confirmation: "none",
+      label: "Resolving category",
       schema: z.object({
         name: z.string().min(1, "Category name is required").max(100),
       }),
@@ -63,6 +65,8 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         "Create a new custom category for the user. Requires confirmation. Fields: name (max 50 chars), optional group name (defaults 'Variable Expenses'), optional icon name.",
       access: "write",
       confirmation: "required",
+      label: "Creating category",
+      invalidates: ["categories", "transactions", "budgets"],
       schema: createCategorySchema,
       execute: async (input, ctx) => categoriesService.createCategory(ctx.userId, input),
       serialize: (output) => {
@@ -83,6 +87,8 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         "Rename or restyle one of the user's categories. Requires confirmation. Only pass the fields that should change.",
       access: "write",
       confirmation: "required",
+      label: "Updating category",
+      invalidates: ["categories", "transactions", "budgets"],
       schema: updateCategorySchema.extend({
         categoryId: z.string().uuid("Invalid category ID"),
       }),
@@ -105,6 +111,8 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         "Permanently delete one of the user's categories. Requires confirmation. Fails if the category is still used by any transactions or budgets.",
       access: "write",
       confirmation: "required",
+      label: "Deleting category",
+      invalidates: ["categories", "transactions", "budgets"],
       schema: z.object({
         categoryId: z.string().uuid("Invalid category ID"),
       }),
