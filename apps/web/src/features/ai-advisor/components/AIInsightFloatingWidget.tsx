@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, X, RefreshCw, ExternalLink, ChevronDown } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn, MarkdownContent } from "@finai/ui";
 import { useAiInsight, type InsightPage } from "../api";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 
@@ -144,12 +144,11 @@ export function AIInsightFloatingWidget() {
               <span>Analyzing {pageTitle.toLowerCase()} data…</span>
             </div>
           ) : text ? (
-            <p className="text-foreground/90 text-[13px] leading-relaxed">
-              {text}
+            <MarkdownContent content={text} className="text-[13px]">
               {isStreaming && (
                 <span className="text-primary ml-0.5 animate-pulse font-bold">▍</span>
               )}
-            </p>
+            </MarkdownContent>
           ) : (
             <div className="space-y-3 py-2 text-center">
               <p className="text-muted-foreground text-xs leading-relaxed">

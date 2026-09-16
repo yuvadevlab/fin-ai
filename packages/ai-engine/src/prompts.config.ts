@@ -34,17 +34,25 @@ USER'S LIVE FINANCIAL CONTEXT:
 Analyze the conversation history and the user's prompt below, and provide your expert financial advice:`;
 
 /**
- * System prompt template for single-shot page insight cards (the small
- * streaming text blurb at the top of each page). Much stricter than the
- * advisor template: no markdown, no follow-ups — the output is dropped
- * into a fixed-size UI slot, so anything extra would break the layout.
+ * System prompt template for single-shot page insight cards.
+ *
+ * The insight is rendered using MarkdownContent, so Markdown formatting
+ * is allowed while keeping the response compact.
  */
 export const INSIGHT_SYSTEM_PROMPT_TEMPLATE = `${FINAI_CORE_PERSONA}
 
 MICRO-INSIGHT RULES:
-- Respond ONLY with the requested concise financial insight (2-3 sentences max).
-- Do NOT include any greetings, preambles, introductory headers, follow-up suggestions, or markdown formatting — output crisp, plain prose only.
-- Ground all numbers strictly in the context below.
+- Respond with ONE concise, personalized financial insight in 2-4 short sentences.
+- Keep the response compact enough to fit within 5 lines.
+- Markdown formatting is allowed, especially **bold** for important numbers or phrases.
+- Use emojis sparingly and only when they naturally fit the insight.
+- Speak directly to the user using "you" and "your".
+- Keep the tone warm, friendly, encouraging, caring, and non-judgmental.
+- Celebrate positive progress or good financial habits when supported by the data.
+- When discussing overspending or financial pressure, be supportive rather than critical.
+- Give only ONE focused practical action when advice is appropriate.
+- Do NOT include greetings, headings, follow-up questions, or follow-up suggestions.
+- Ground all numbers and financial claims strictly in the context below.
 
 USER'S LIVE FINANCIAL CONTEXT:
 \`\`\`text
@@ -59,19 +67,19 @@ USER'S LIVE FINANCIAL CONTEXT:
  * an entry here (unknown keys fall back to `dashboard` in the builder).
  */
 export const PAGE_INSIGHT_PROMPTS = {
-  dashboard: `Analyze my financial context and give me ONE concise, personalized insight (2-3 sentences max) about my overall cash flow, net worth trend, or net balance this month. Speak directly to me using "you" and "your".`,
+  dashboard: `Give me ONE concise insight about my overall cash flow, savings, net worth, or balance this month. Highlight positive progress when supported by the data and mention one important area to watch. Keep it within 5 lines.`,
 
-  transactions: `Analyze my recent transactions and tell me ONE concise, personalized insight (2-3 sentences max) about my most significant spending pattern or top category this month. Highlight any unexpected or large expense. Speak directly to me using "you" and "your".`,
+  transactions: `Give me ONE concise insight about my recent transactions. Focus on the most significant spending pattern, top category, unusually large expense, or meaningful change. Mention why it matters and one practical action if useful. Keep it within 5 lines.`,
 
-  budgets: `Analyze my budgets and tell me ONE concise, personalized insight (2-3 sentences max) about which of my budget categories is most at risk or already exceeded this month. Tell me exactly what I should do in FinAI to keep it on track. Speak directly to me using "you" and "your".`,
+  budgets: `Give me ONE concise insight about my budgets. Focus on the category most at risk, already exceeded, or showing the biggest change. Explain what matters and give one practical action to keep spending on track. Keep it within 5 lines.`,
 
-  investments: `Analyze my investment portfolio and asset allocation. Give me ONE concise, personalized insight (2-3 sentences max) on how well diversified I am across mutual funds, stocks, gold, or fixed deposits. Suggest a focused improvement. Speak directly to me using "you" and "your".`,
+  investments: `Give me ONE concise insight about my investment portfolio and diversification. Focus on the most important allocation, concentration, gain/loss, or diversification observation supported by the data. Give one focused improvement if appropriate. Keep it within 5 lines.`,
 
-  goals: `Analyze my financial goals and current savings progress. Give me ONE concise, personalized insight (2-3 sentences max) on whether I am on track to meet my upcoming goal deadlines. Speak directly to me using "you" and "your".`,
+  goals: `Give me ONE concise insight about my financial goals and savings progress. Focus on whether my most important upcoming goal is progressing well or needs attention based on the available data. Give one practical and encouraging observation. Keep it within 5 lines.`,
 
-  reports: `Compare my income, expenses, and savings rate this month with my prior financial stats. Give me ONE concise, personalized report insight (2-3 sentences max) highlighting the most significant shift. Speak directly to me using "you" and "your".`,
+  reports: `Give me ONE concise insight from my income, expenses, savings, and savings rate. Focus on the most significant change compared with my prior financial stats and explain what it means for me. Highlight positive progress when supported by the data. Keep it within 5 lines.`,
 
-  health: `Analyze my overall financial health score, net worth, savings rate, and budget adherence. Give me ONE concise, personalized insight (2-3 sentences max) on my biggest strength and one area to improve. Speak directly to me using "you" and "your".`,
+  health: `Give me ONE concise insight about your overall financial health. Focus on your biggest strength and the single most important area to improve based on your health score, savings, net worth, budget adherence, or cash flow. Keep it within 5 lines.`,
 } as const;
 
 export type InsightPage = keyof typeof PAGE_INSIGHT_PROMPTS;
