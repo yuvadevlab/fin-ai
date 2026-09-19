@@ -1,5 +1,5 @@
-import { Button } from "../primitives/button";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../primitives/dialog";
+} from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
 
 export interface FormDialogProps {

@@ -1,7 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../primitives/tooltip";
-import { cn } from "../lib/utils";
+import { cn, Tooltip, TooltipContent, TooltipTrigger } from "@yuva-devlab/ui";
 
 export interface SidebarAiCardProps {
   isRail: boolean;
@@ -34,7 +33,7 @@ export function SidebarAiCard({
               className="bg-secondary/40 hover:bg-secondary/80 border-border/70 mx-auto flex size-10 items-center justify-center rounded-xl border transition-all"
             >
               <span className="relative flex size-2.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
                 <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
               </span>
             </Link>
@@ -58,7 +57,7 @@ export function SidebarAiCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative flex size-2" aria-hidden="true">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
             <span className="text-foreground text-xs font-semibold">AI Advisor</span>

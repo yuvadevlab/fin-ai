@@ -1,6 +1,5 @@
 import { Check, ShieldAlert, X } from "lucide-react";
-import { cn } from "../lib/utils";
-import { Button } from "../primitives/button";
+import { Button, cn } from "@yuva-devlab/ui";
 
 export type ConfirmationStatus = "pending" | "executed" | "rejected" | "failed";
 

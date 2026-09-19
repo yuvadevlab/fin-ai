@@ -1,5 +1,5 @@
 import React from "react";
-import { Progress } from "../primitives/progress";
+import { Progress } from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
 import { ContentCard } from "./ContentCard";
 

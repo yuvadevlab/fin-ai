@@ -10,3 +10,6 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - "@yuva-devlab/ui@1.0.0"
+  - "@yuva-devlab/tokens@1.0.0"

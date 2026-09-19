@@ -104,7 +104,7 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-foreground h-7 w-7 cursor-pointer sm:h-8 sm:w-8"
+                className="text-muted-foreground hover:text-foreground size-7 cursor-pointer sm:size-8"
               >
                 <Edit2 className="size-3 sm:size-3.5" />
               </Button>
