@@ -66,7 +66,7 @@ export function ContextPanel({
       {isStreaming && (
         <section aria-live="polite" aria-label="Agent status">
           <SectionTitle>Agent</SectionTitle>
-          <div className="bg-primary/5 border-primary/20 border-border/60 flex items-center gap-2.5 rounded-xl border px-3 py-2.5">
+          <div className="bg-primary/5 border-primary/20 flex items-center gap-2.5 rounded-xl border px-3 py-2.5">
             <Loader2 className="text-primary size-4 animate-spin" aria-hidden="true" />
             <span className="text-foreground text-sm font-medium">
               {streamingLabel ?? "FinAI is thinking…"}
@@ -79,7 +79,7 @@ export function ContextPanel({
       {!isStreaming && pendingConfirmation && (
         <section aria-label="Pending action context">
           <SectionTitle>Action</SectionTitle>
-          <div className="bg-card border-border/60 rounded-xl border px-3 py-3 shadow-sm">
+          <div className="bg-card border-border/60 rounded-xl border p-3 shadow-sm">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-4 shrink-0 text-amber-600" aria-hidden="true" />
               <p className="text-foreground min-w-0 flex-1 truncate text-sm font-semibold">

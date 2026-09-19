@@ -19,7 +19,7 @@ export function DeleteTransactionButton({ transactionId, onDelete }: DeleteTrans
         variant="ghost"
         size="icon"
         aria-label="Delete transaction"
-        className="text-muted-foreground hover:text-destructive h-7 w-7 cursor-pointer sm:h-8 sm:w-8"
+        className="text-muted-foreground hover:text-destructive size-7 cursor-pointer sm:size-8"
         onClick={() => setIsConfirmOpen(true)}
       >
         <Trash2 className="size-3 sm:size-3.5" />

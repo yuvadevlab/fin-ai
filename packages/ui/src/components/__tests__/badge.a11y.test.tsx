@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { axe } from "vitest-axe";
-import { Badge } from "../badge";
+import { Badge } from "@yuva-devlab/ui";
 
 describe("Badge A11y", () => {
   it("should have no accessibility violations with default variant", async () => {

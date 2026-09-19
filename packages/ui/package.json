@@ -37,6 +37,8 @@
   },
   "dependencies": {
     "@finai/shared-types": "workspace:*",
+    "@yuva-devlab/tokens": "link:../../../design-system/packages/tokens",
+    "@yuva-devlab/ui": "link:../../../design-system/packages/ui",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",

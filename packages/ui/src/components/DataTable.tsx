@@ -91,10 +91,7 @@ export function DataTable<T>({
               {columns.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className={cn(
-                    "px-3 py-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
-                    col.className,
-                  )}
+                  className={cn("p-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4", col.className)}
                 >
                   {col.accessor(item)}
                 </td>
@@ -173,7 +170,7 @@ export function DataTable<T>({
                     <td
                       key={colIndex}
                       className={cn(
-                        "px-3 py-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
+                        "p-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
                         col.className,
                       )}
                     >

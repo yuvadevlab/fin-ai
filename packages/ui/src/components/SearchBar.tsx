@@ -1,6 +1,6 @@
 import React from "react";
 import { Search } from "lucide-react";
-import { Input } from "../primitives/input";
+import { Input } from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
 
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {

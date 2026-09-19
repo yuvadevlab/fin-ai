@@ -23,6 +23,8 @@
     "@finai/shared-types": "workspace:*",
     "@finai/ui": "workspace:*",
     "@finai/validation": "workspace:*",
+    "@yuva-devlab/tokens": "link:../../../design-system/packages/tokens",
+    "@yuva-devlab/ui": "link:../../../design-system/packages/ui",
     "@tanstack/react-query": "^5.101.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

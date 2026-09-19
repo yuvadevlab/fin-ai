@@ -50,13 +50,17 @@ export { CashFlowChart, ExpenseBarChart, CategoryPie, TrendLine, CHART_COLORS } 
 // ─── Layout Components ───────────────────────────────────────────────────────
 export { AppShell, Sidebar, TopBar, DashboardTabs } from "./layouts";
 
-// ─── UI Primitives ──────────────────────────────────────────────────────────
-export { Button, buttonVariants } from "./primitives/button";
-export { Input } from "./primitives/input";
-export { Progress } from "./primitives/progress";
-export { Badge, badgeVariants } from "./primitives/badge";
-export { Avatar, AvatarImage, AvatarFallback } from "./primitives/avatar";
+// ─── UI Primitives (from @yuva-devlab/ui) ──────────────────────────────────
 export {
+  Button,
+  buttonVariants,
+  Input,
+  Progress,
+  Badge,
+  badgeVariants,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
   Select,
   SelectGroup,
   SelectValue,
@@ -67,15 +71,12 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
-} from "./primitives/select";
-export { Calendar } from "./primitives/calendar";
-export { DatePicker } from "./primitives/date-picker";
-export {
+  Calendar,
+  DatePicker,
+  type DatePickerProps,
   SearchableSelect,
   type SearchableSelectOption,
   type SearchableSelectProps,
-} from "./primitives/searchable-select";
-export {
   Dialog,
   DialogPortal,
   DialogOverlay,
@@ -86,8 +87,6 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-} from "./primitives/dialog";
-export {
   Sheet,
   SheetPortal,
   SheetOverlay,
@@ -98,22 +97,23 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
-} from "./primitives/sheet";
-export { Popover, PopoverTrigger, PopoverContent } from "./primitives/popover";
-export { Label } from "./primitives/label";
-export { Separator } from "./primitives/separator";
-export { Skeleton } from "./primitives/skeleton";
-export { Switch } from "./primitives/switch";
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./primitives/tooltip";
-export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Label,
+  Separator,
+  Skeleton,
+  Switch,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
   Card,
   CardHeader,
   CardFooter,
   CardTitle,
   CardDescription,
   CardContent,
-} from "./primitives/card";
-export {
   AlertDialog,
   AlertDialogPortal,
   AlertDialogOverlay,
@@ -125,10 +125,8 @@ export {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-} from "./primitives/alert-dialog";
-export { Toaster } from "./primitives/sonner";
-export { toast } from "sonner";
-export {
+  Toaster,
+  toast,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -144,11 +142,9 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-} from "./primitives/dropdown-menu";
-export { Toggle } from "./primitives/toggle";
-export { toggleVariants } from "./primitives/toggle.variants";
-export { useIsMobile } from "./hooks/use-mobile";
-export {
+  Toggle,
+  toggleVariants,
+  useIsMobile,
   Table,
   TableHeader,
   TableBody,
@@ -157,4 +153,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-} from "./primitives/table";
+  StatusChip,
+  type StatusChipProps,
+} from "@yuva-devlab/ui";

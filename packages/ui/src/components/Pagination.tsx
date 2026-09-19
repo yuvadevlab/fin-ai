@@ -1,14 +1,14 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "../primitives/button";
 import {
+  Button,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../primitives/select";
-import { cn } from "../lib/utils";
+  cn,
+} from "@yuva-devlab/ui";
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {
   currentPage: number;
@@ -66,7 +66,7 @@ export function Pagination({
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline">Per page:</span>
             <Select value={String(pageSize)} onValueChange={(val) => onPageSizeChange(Number(val))}>
-              <SelectTrigger className="h-8 w-[70px] text-xs" aria-label="Rows per page">
+              <SelectTrigger className="h-8 w-17.5 text-xs" aria-label="Rows per page">
                 <SelectValue placeholder={String(pageSize)} />
               </SelectTrigger>
               <SelectContent>
