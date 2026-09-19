@@ -1,9 +1,6 @@
 import React from "react";
 import { Bell, Menu, PanelLeft, PanelLeftClose, Plus, Search } from "lucide-react";
-import { Button } from "../primitives/button";
-import { Input } from "../primitives/input";
-import { Avatar, AvatarFallback } from "../primitives/avatar";
-import { cn } from "../lib/utils";
+import { Avatar, AvatarFallback, Button, cn, Input } from "@yuva-devlab/ui";
 
 export interface TopBarProps extends React.HTMLAttributes<HTMLElement> {
   leftContent?: React.ReactNode;
@@ -81,7 +78,7 @@ export function TopBar({
         {leftContent ?? workspaceMenu ?? (
           <div className="flex items-center gap-2">
             <span className="relative flex size-2.5" aria-hidden="true">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
               <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
             </span>
             <span className="text-foreground text-sm font-semibold tracking-tight">FinAI</span>

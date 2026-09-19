@@ -30,7 +30,7 @@ export function EmojiPickerField({ value, onChange }: EmojiPickerFieldProps) {
           className="h-10 w-full justify-start text-left font-normal hover:bg-transparent"
         >
           <span className="text-muted-foreground mr-2 text-sm">{value || "Select emoji"}</span>
-          <Smile className="ml-auto h-4 w-4 opacity-50" />
+          <Smile className="ml-auto size-4 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent

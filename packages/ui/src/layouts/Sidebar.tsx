@@ -1,9 +1,14 @@
 import React from "react";
 import { PanelLeftClose, PanelLeft } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../primitives/tooltip";
-import { Button } from "../primitives/button";
-import { Separator } from "../primitives/separator";
-import { cn } from "../lib/utils";
+import {
+  Button,
+  cn,
+  Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@yuva-devlab/ui";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarAiCard } from "./SidebarAiCard";
 import { IconMap, primaryNav, advancedNav, type DbMenuItem } from "./sidebarNavItems";

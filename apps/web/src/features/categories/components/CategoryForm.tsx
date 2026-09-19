@@ -93,7 +93,7 @@ export function CategoryForm({
             onClick={handleAiSuggest}
             disabled={isSuggesting}
           >
-            <Sparkles className="h-3 w-3" />
+            <Sparkles className="size-3" />
             {isSuggesting ? "Suggesting..." : "AI Suggest"}
           </Button>
         </div>

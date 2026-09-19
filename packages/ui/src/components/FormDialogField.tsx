@@ -1,16 +1,16 @@
-import { Input } from "../primitives/input";
+import React from "react";
 import {
+  DatePicker,
+  Input,
+  Label,
+  SearchableSelect,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../primitives/select";
-import { Textarea } from "../primitives/textarea";
-import { Label } from "@radix-ui/react-label";
-import React from "react";
-import { DatePicker } from "../primitives/date-picker";
-import { SearchableSelect } from "../primitives/searchable-select";
+  Textarea,
+} from "@yuva-devlab/ui";
 
 export interface BaseField {
   name: string;

@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { axe } from "vitest-axe";
-import { Button } from "../button";
+import { Button } from "@yuva-devlab/ui";
 
 describe("Button A11y", () => {
   it("should have no accessibility violations in default state", async () => {

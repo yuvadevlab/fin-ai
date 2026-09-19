@@ -3,6 +3,8 @@
 import { useState, type ReactNode } from "react";
 import { Sparkles, Check } from "lucide-react";
 import {
+  Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -10,10 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../primitives/dialog";
-import { Button } from "../primitives/button";
-import { toast } from "sonner";
-import { cn } from "../lib/utils";
+  toast,
+} from "@yuva-devlab/ui";
 
 export type AISuggestion = {
   title: string;

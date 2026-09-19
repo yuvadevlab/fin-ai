@@ -1,6 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../primitives/tooltip";
-import { cn } from "../lib/utils";
+import { cn, Tooltip, TooltipContent, TooltipTrigger } from "@yuva-devlab/ui";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavItem {
