@@ -8,7 +8,7 @@ import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { agentChatSchema, type AgentChatInput } from "@finai/validation";
 import { AgentService } from "./agent.service";
 import { AgentActionService } from "./action.service";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import type { AgentEventEmitter } from "./agent.types";
 
 /**

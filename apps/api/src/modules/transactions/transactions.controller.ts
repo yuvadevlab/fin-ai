@@ -16,7 +16,7 @@ import { TransactionsService } from "./services";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import {
   createTransactionSchema,
   updateTransactionSchema,

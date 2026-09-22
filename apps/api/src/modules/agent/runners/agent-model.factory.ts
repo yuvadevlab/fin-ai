@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { createChatModelFromEnv, type ChatModel, type AiProviderRole } from "@finai/ai-engine";
 
 /** Creates a {@link ChatModel} client per agent run, selected via env vars. */

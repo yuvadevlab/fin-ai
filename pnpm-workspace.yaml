@@ -11,5 +11,5 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
-  - "@yuva-devlab/ui@1.0.0"
-  - "@yuva-devlab/tokens@1.0.0"
+  - "@yuva-devlab/ui@1.1.0"
+  - "@yuva-devlab/logger@1.1.0"

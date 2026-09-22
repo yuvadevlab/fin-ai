@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { Request, Response } from "express";
 
 /**

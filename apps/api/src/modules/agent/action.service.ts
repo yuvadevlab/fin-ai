@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { randomUUID } from "crypto";
 import { AgentActionStatus, Prisma } from "@finai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";

@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
     "@finai/validation",
     "@finai/shared-types",
     "@yuva-devlab/ui",
-    "@yuva-devlab/tokens",
   ],
   images: {
     remotePatterns: [

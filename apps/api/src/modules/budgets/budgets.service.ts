@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";

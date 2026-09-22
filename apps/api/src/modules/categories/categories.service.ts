@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { type CreateCategoryInput, type UpdateCategoryInput } from "@finai/validation";
 import { DEFAULT_CATEGORIES } from "./default-categories";

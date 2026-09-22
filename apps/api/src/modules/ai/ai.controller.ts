@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { type Response } from "express";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { AiModelService } from "@/modules/ai/ai-model.service";

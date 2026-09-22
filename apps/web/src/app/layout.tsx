@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { QueryProvider, AppearanceProvider } from "@/providers";
-import { Toaster } from "@finai/ui";
+import { Toaster, ConfigProvider } from "@finai/ui";
 import { appearanceScript } from "@/lib/appearance-script";
 import "@finai/ui/styles.css";
 import "./globals.css";
@@ -47,10 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <QueryProvider>
-          <AppearanceProvider>
-            {children}
-            <Toaster />
-          </AppearanceProvider>
+          <ConfigProvider brand="finai" defaultTheme="system">
+            <AppearanceProvider>
+              {children}
+              <Toaster />
+            </AppearanceProvider>
+          </ConfigProvider>
         </QueryProvider>
       </body>
     </html>

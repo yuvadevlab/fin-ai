@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { Prisma } from "@finai/database";
 import { parseToolPlan, type LlmChatRequest, type AiProviderRole } from "@finai/ai-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
