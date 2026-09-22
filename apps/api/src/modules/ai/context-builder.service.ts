@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { formatINR } from "@finai/finance-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 

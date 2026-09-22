@@ -39,7 +39,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@finai/logger": "workspace:*",
+    "@yuva-devlab/logger": "^1.1.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "dotenv": "^17.4.2",

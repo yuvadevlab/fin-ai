@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { Prisma, TransactionType } from "@finai/database";
 import type { TransactionFilterInput } from "@finai/validation";

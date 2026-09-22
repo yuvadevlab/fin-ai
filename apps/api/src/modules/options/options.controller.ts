@@ -2,7 +2,7 @@ import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { OptionsService } from "./options.service";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 
 /**
  * Reference options controller — provides dynamic dropdown options that

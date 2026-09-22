@@ -6,7 +6,7 @@ import {
   type LogLevel,
   type LoggerConfig,
   loggerWithConfig,
-} from "@finai/logger";
+} from "@yuva-devlab/logger";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";

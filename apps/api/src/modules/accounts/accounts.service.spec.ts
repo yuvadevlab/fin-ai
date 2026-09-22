@@ -18,6 +18,11 @@ describe("AccountsService", () => {
           findFirst: vi.fn(),
           create: vi.fn(),
           update: vi.fn(),
+          count: vi.fn().mockResolvedValue(1),
+        },
+        user: {
+          findUnique: vi.fn().mockResolvedValue({ preferences: {} }),
+          update: vi.fn(),
         },
       },
     } as unknown as Partial<PrismaService>;
@@ -49,7 +54,10 @@ describe("AccountsService", () => {
         where: { userId: "user1", isActive: true },
         orderBy: { name: "asc" },
       });
-      expect(result).toEqual(mockAccounts);
+      expect(result).toEqual([
+        { id: "1", name: "Savings", userId: "user1", isDefault: false },
+        { id: "2", name: "Checking", userId: "user1", isDefault: false },
+      ]);
     });
   });
 

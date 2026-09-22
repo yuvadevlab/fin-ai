@@ -1,6 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 
 @ApiTags("Health")
 @Controller()

@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "@yuva-devlab/tokens/preset.css";
-@import "@yuva-devlab/tokens/themes/finai.css";
+@import "@yuva-devlab/ui/preset.css";
+@import "@yuva-devlab/ui/themes/finai.css";
 @import "tw-animate-css";
 @source "../../../../packages/ui";
 @source "../../node_modules/@yuva-devlab/ui/src";
