@@ -1,6 +1,6 @@
 import { Injectable, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 
 /**
  * JWT-based authentication guard.

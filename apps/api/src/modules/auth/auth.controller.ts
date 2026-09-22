@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UsePipes } from "@nestjs/
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { AuthService } from "@/modules/auth/auth.service";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import {
   loginSchema,
   registerSchema,

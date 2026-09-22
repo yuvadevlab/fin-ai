@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 
 @ApiTags("Analytics")
 @ApiBearerAuth()

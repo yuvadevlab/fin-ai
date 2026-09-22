@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { AccountType, Prisma } from "@finai/database";
 import { UserPreferences } from "@finai/shared-types";
 import { type CreateAccountInput, type UpdateAccountInput } from "@finai/validation";

@@ -13,7 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

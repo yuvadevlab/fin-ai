@@ -9,7 +9,7 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import * as bcrypt from "bcryptjs";
 import * as crypto from "crypto";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import { LoginInput, RegisterInput } from "@finai/validation";
 import { DEFAULT_CATEGORIES } from "@/modules/categories/default-categories";
 

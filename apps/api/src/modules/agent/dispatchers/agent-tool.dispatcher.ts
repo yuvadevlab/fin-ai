@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { Logger } from "@finai/logger";
+import { Logger } from "@yuva-devlab/logger";
 import type { LlmToolCall } from "@finai/ai-engine";
 import { ToolRegistry } from "../tool-registry";
 import { AgentActionService } from "../action.service";

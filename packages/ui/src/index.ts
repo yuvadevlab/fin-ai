@@ -155,4 +155,10 @@ export {
   TableCaption,
   StatusChip,
   type StatusChipProps,
+  ConfigProvider,
+  type ConfigProviderProps,
+  ThemeProvider,
+  type ThemeProviderProps,
+  useConfig,
+  useTheme,
 } from "@yuva-devlab/ui";
