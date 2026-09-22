@@ -1,4 +1,4 @@
-name: 🏗️ Build
+name: 💅 Format
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: format-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: 🏗️ Monorepo Build
+  format:
+    name: 💅 Prettier Formatting Check
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +38,5 @@ jobs:
       - name: 📥 Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🗄️ Generate Prisma Client
-        run: pnpm db:generate
-
-      - name: 🏗️ Execute Turbo Build
-        run: pnpm build
+      - name: 💅 Check Code Formatting
+        run: pnpm format:check

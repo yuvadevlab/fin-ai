@@ -1,4 +1,4 @@
-name: 🏗️ Build
+name: 🧹 Lint
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: lint-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: 🏗️ Monorepo Build
+  lint:
+    name: 🧹 ESLint Validation
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +38,5 @@ jobs:
       - name: 📥 Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🗄️ Generate Prisma Client
-        run: pnpm db:generate
-
-      - name: 🏗️ Execute Turbo Build
-        run: pnpm build
+      - name: 🧹 Execute ESLint
+        run: pnpm lint
