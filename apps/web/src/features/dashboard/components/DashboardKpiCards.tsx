@@ -2,7 +2,7 @@
 
 import React from "react";
 import { KPIGrid, StatCard } from "@finai/ui";
-import { calculateSavingsRate } from "@finai/finance-engine";
+import { calculateSavingsRate, formatINR } from "@finai/finance-engine";
 import { PrivacyMoney } from "@/components";
 import type { DashboardStats } from "../api";
 
@@ -78,7 +78,11 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
               }
             : undefined
         }
-        hint="vs last month"
+        hint={
+          stats?.netCashFlow !== undefined
+            ? `Net: ${stats.netCashFlow >= 0 ? "+" : ""}${formatINR(stats.netCashFlow)}`
+            : "vs last month"
+        }
       >
         <div className="bg-border/60 ml-auto h-1 w-16 shrink-0 overflow-hidden rounded-full">
           <div className="bg-primary h-full" style={{ width: `${Math.min(100, savingsRate)}%` }} />

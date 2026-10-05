@@ -23,6 +23,15 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
   const portfolioValue = investmentsData?.totalValue ?? 0;
   const investmentsCount = investmentsData?.investments?.length ?? 0;
 
+  const totalInvested = useMemo(
+    () => (investmentsData?.investments ?? []).reduce((sum, i) => sum + (i.investedAmount ?? 0), 0),
+    [investmentsData],
+  );
+
+  const totalReturns = portfolioValue - totalInvested;
+  const returnPercentage =
+    totalInvested > 0 ? ((totalReturns / totalInvested) * 100).toFixed(1) : "0.0";
+
   // Delegate all financial aggregations directly to pure functions in @finai/finance-engine
   const budgetSummary = useMemo(
     () => calculateAggregateBudget(Array.isArray(budgetsData) ? budgetsData : []),
@@ -64,15 +73,24 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               <PrivacyMoney value={portfolioValue} />
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              Mutual funds, stocks, gold & deposits
+              Invested: <PrivacyMoney value={totalInvested} /> · {investmentsCount} holdings
             </p>
           </div>
         </div>
 
         <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
-          <span>Net Cash Flow</span>
-          <span className="text-foreground font-semibold">
-            <PrivacyMoney value={stats?.netCashFlow ?? 0} />
+          <span>Total Returns</span>
+          <span
+            className={`flex items-center gap-1 font-semibold ${
+              totalReturns >= 0 ? "text-primary" : "text-destructive"
+            }`}
+          >
+            {totalReturns >= 0 ? "+" : ""}
+            <PrivacyMoney value={totalReturns} />
+            <span className="text-[11px] font-normal">
+              ({totalReturns >= 0 ? "+" : ""}
+              {returnPercentage}%)
+            </span>
           </span>
         </div>
       </ContentCard>
