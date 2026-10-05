@@ -28,9 +28,23 @@ export function calculateCashFlow(
   const now = new Date();
   const result: CashFlowDataPoint[] = [];
 
-  for (let i = months - 1; i >= 0; i--) {
+  let effectiveMonths = months;
+  if (months >= 120 && transactions.length > 0) {
+    const earliestTime = Math.min(...transactions.map((t) => new Date(t.date).getTime()));
+    const earliest = new Date(earliestTime);
+    const diffMonths =
+      (now.getFullYear() - earliest.getFullYear()) * 12 +
+      (now.getMonth() - earliest.getMonth()) +
+      1;
+    effectiveMonths = Math.max(1, Math.min(months, diffMonths));
+  }
+
+  for (let i = effectiveMonths - 1; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthKey = d.toLocaleString("en-US", { month: "short" });
+    const monthKey =
+      effectiveMonths > 12
+        ? `${d.toLocaleString("en-US", { month: "short" })} '${String(d.getFullYear()).slice(-2)}`
+        : d.toLocaleString("en-US", { month: "short" });
     const year = d.getFullYear();
     const month = d.getMonth();
 
@@ -47,7 +61,11 @@ export function calculateCashFlow(
       .filter((t) => t.type === TransactionType.EXPENSE)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
-    result.push({ month: monthKey, income, expense });
+    const investment = monthTransactions
+      .filter((t) => t.type === TransactionType.INVESTMENT)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    result.push({ month: monthKey, income, expense, investment });
   }
 
   return result;

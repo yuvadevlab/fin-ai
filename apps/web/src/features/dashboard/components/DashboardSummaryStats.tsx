@@ -46,7 +46,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               </div>
               <div>
                 <p className="text-foreground text-xs font-semibold">Invested Portfolio</p>
-                <p className="text-muted-foreground text-[10px]">
+                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
                   {investmentsCount} active holdings
                 </p>
               </div>
@@ -82,12 +82,12 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+              <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
                 <ShieldCheck className="size-4" />
               </div>
               <div>
                 <p className="text-foreground text-xs font-semibold">Budget Guardrail</p>
-                <p className="text-muted-foreground text-[10px]">
+                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
                   {budgetSummary.usagePercentage}% cap utilized
                 </p>
               </div>
@@ -132,7 +132,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               </div>
               <div>
                 <p className="text-foreground text-xs font-semibold">Savings Goals</p>
-                <p className="text-muted-foreground text-[10px]">
+                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
                   {stats?.goalCount ?? 0} targets tracking
                 </p>
               </div>

@@ -36,7 +36,10 @@ export function ProfileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="focus-visible:ring-ring cursor-pointer rounded-full outline-none">
+        <button
+          id="profile-menu-trigger"
+          className="focus-visible:ring-ring cursor-pointer rounded-full outline-none"
+        >
           <Avatar className="ring-border/60 size-8 ring-1 transition hover:opacity-80">
             <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">
               {initials}

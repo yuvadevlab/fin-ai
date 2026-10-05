@@ -1,7 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { Prisma } from "@finai/database";
-import { parseToolPlan, type LlmChatRequest, type AiProviderRole } from "@finai/ai-engine";
+import {
+  parseToolPlan,
+  formatActionProposalMessage,
+  AGENT_PROPOSAL_FAILED_MESSAGE,
+  AGENT_MAX_ITERATIONS_MESSAGE,
+  type LlmChatRequest,
+  type AiProviderRole,
+} from "@finai/ai-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { AgentModelFactory } from "./agent-model.factory";
@@ -10,7 +17,7 @@ import { AgentToolDispatcher } from "../dispatchers";
 import type { AgentEventEmitter } from "../agent.types";
 
 /** Safety cap: max model↔tool loop iterations per run. */
-const MAX_ITERATIONS = 6;
+const MAX_ITERATIONS = 8;
 
 export interface AgentRunParams {
   userId: string;
@@ -84,12 +91,17 @@ export class AgentOrchestratorService {
       });
 
       if (toolCalls.length === 0) {
+        let finalContent = runVisibleContent;
+        if (!hasPendingAction && /confirmation card/i.test(finalContent)) {
+          finalContent = AGENT_PROPOSAL_FAILED_MESSAGE;
+          emit({ type: "token_replace", content: finalContent });
+        }
         await this.finishRun(
           conversationId,
           model.model,
           runId,
           iteration,
-          runVisibleContent,
+          finalContent,
           tokensIn,
           tokensOut,
           emit,
@@ -99,6 +111,7 @@ export class AgentOrchestratorService {
 
       request.messages.push({ role: "assistant", content: turn.rawContent });
       let hasConfirmation = false;
+      let confirmationCount = 0;
 
       for (const call of toolCalls) {
         this.logger.log(
@@ -121,12 +134,12 @@ export class AgentOrchestratorService {
 
         if ((result as { status?: string }).status === "awaiting_confirmation") {
           hasConfirmation = true;
+          confirmationCount++;
         }
       }
 
       if (hasConfirmation) {
-        const msg =
-          "I've proposed an action for your confirmation. Please review the details on the card and confirm or reject.";
+        const msg = formatActionProposalMessage(confirmationCount);
         emit({ type: "token_replace", content: msg });
         await this.finishRun(
           conversationId,
@@ -142,9 +155,42 @@ export class AgentOrchestratorService {
       }
     }
 
+    try {
+      this.logger.log(
+        `[Run ${runId.slice(0, 8)}] Max turns reached — generating final synthesis...`,
+      );
+      request.messages.push({
+        role: "user",
+        content:
+          "Please provide your final answer and recommendations based on the data retrieved above.",
+      });
+      const finalTurn = await this.turnRunner.run(
+        model,
+        { ...request, tools: undefined },
+        emit,
+        MAX_ITERATIONS + 1,
+        hasPendingAction,
+      );
+      if (finalTurn.visibleContent.trim()) {
+        await this.finishRun(
+          conversationId,
+          model.model,
+          runId,
+          MAX_ITERATIONS + 1,
+          finalTurn.visibleContent,
+          tokensIn + finalTurn.tokensIn,
+          tokensOut + finalTurn.tokensOut,
+          emit,
+        );
+        return;
+      }
+    } catch (finalError) {
+      this.logger.error(`[Run ${runId.slice(0, 8)}] Final synthesis failed`, finalError);
+    }
+
     emit({
       type: "error",
-      error: "The agent used too many steps for this request. Try narrowing the question.",
+      error: AGENT_MAX_ITERATIONS_MESSAGE,
       code: "MAX_ITERATIONS",
     });
     emit({ type: "done" });

@@ -21,13 +21,13 @@ export function calculateBudgetUsage(spent: number, limit: number): number {
 
 /**
  * Map usage to the user-facing status pill.
- * Thresholds: >100% OVER, >85% NEAR_LIMIT (early warning to slow down
- * before the month ends), otherwise ON_TRACK. 85% is chosen so a warning
- * appears while there is still roughly a week of typical spending left.
+ * Thresholds: >100% OVER, =100% AT_LIMIT (fully spent, limit reached),
+ * >85% NEAR_LIMIT (early warning to slow down), otherwise ON_TRACK.
  */
 export function calculateBudgetStatus(spent: number, limit: number): BudgetStatus {
   const usage = calculateBudgetUsage(spent, limit);
   if (usage > 100) return "OVER";
+  if (usage === 100) return "AT_LIMIT";
   if (usage > 85) return "NEAR_LIMIT";
   return "ON_TRACK";
 }

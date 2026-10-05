@@ -2,6 +2,7 @@
 
 import React from "react";
 import { KPIGrid, StatCard } from "@finai/ui";
+import { calculateSavingsRate } from "@finai/finance-engine";
 import { PrivacyMoney } from "@/components";
 import type { DashboardStats } from "../api";
 
@@ -24,6 +25,14 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
           100
         ).toFixed(1)
       : null;
+
+  const lastMonthSavingsRate =
+    stats && stats.lastMonthIncome > 0
+      ? calculateSavingsRate(stats.lastMonthIncome, stats.lastMonthExpenses)
+      : null;
+
+  const savingsRateChange =
+    lastMonthSavingsRate !== null ? (savingsRate - lastMonthSavingsRate).toFixed(1) : null;
 
   return (
     <KPIGrid>
@@ -58,8 +67,20 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
         }
         hint="vs last month"
       />
-      <StatCard label="Savings Rate" value={`${savingsRate.toFixed(1)}%`}>
-        <div className="bg-border/60 ml-auto h-1 w-24 overflow-hidden rounded-full">
+      <StatCard
+        label="Savings Rate"
+        value={`${savingsRate.toFixed(1)}%`}
+        trend={
+          savingsRateChange !== null
+            ? {
+                value: `${Number(savingsRateChange) >= 0 ? "+" : ""}${savingsRateChange}%`,
+                kind: Number(savingsRateChange) >= 0 ? "up" : "down",
+              }
+            : undefined
+        }
+        hint="vs last month"
+      >
+        <div className="bg-border/60 ml-auto h-1 w-16 shrink-0 overflow-hidden rounded-full">
           <div className="bg-primary h-full" style={{ width: `${Math.min(100, savingsRate)}%` }} />
         </div>
       </StatCard>

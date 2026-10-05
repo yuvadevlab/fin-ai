@@ -28,10 +28,12 @@ export const appearanceScript = `
     var raw = localStorage.getItem('finai_appearance');
     var prefs = raw ? JSON.parse(raw) : {};
 
-    // 1. Theme — apply dark class before paint
+    // 1. Brand & Theme — apply data-brand, data-theme, and dark class before paint
+    root.setAttribute('data-brand', 'finai');
     var theme = prefs.theme || 'System';
     var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     var isDark = theme === 'Dark' || (theme === 'System' && prefersDark);
+    root.setAttribute('data-theme', isDark ? 'finai-dark' : 'finai');
     if (isDark) {
       root.classList.add('dark');
     }

@@ -108,7 +108,7 @@ export function buildAgentTools(deps: AgentToolDeps): AgentTool[] {
       deps.categoriesService,
     ),
     ...createCategoriesTools(deps.categoriesService),
-    ...createBudgetsTools(deps.budgetsService),
+    ...createBudgetsTools(deps.budgetsService, deps.categoriesService),
     ...createGoalsTools(deps.goalsService),
     ...createInvestmentsTools(deps.investmentsService),
     ...createInsightsTools(deps.analyticsService),

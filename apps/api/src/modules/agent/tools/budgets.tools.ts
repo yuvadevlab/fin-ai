@@ -1,21 +1,51 @@
 import { z } from "zod";
+import { BadRequestException } from "@nestjs/common";
 import { defineTool } from "../tool-factory";
 import type { BudgetsService } from "@/modules/budgets/budgets.service";
-import { createBudgetSchema, updateBudgetSchema } from "@finai/validation";
+import type { CategoriesService } from "@/modules/categories/categories.service";
+import {
+  agentCreateBudgetSchema,
+  agentUpdateBudgetSchema,
+  agentDeleteBudgetSchema,
+} from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import { resolveCategoryRef, splitRef } from "../entity-reference";
+
+async function resolveBudgetMatch(
+  budgetsService: BudgetsService,
+  categoriesService: CategoriesService,
+  userId: string,
+  refStr?: string | null,
+) {
+  if (!refStr) throw new BadRequestException("A budget ID or category name is required");
+  const ref = splitRef(refStr) ?? { name: refStr };
+  const budgets = await budgetsService.findAll(userId);
+  let match = ref.id ? budgets.find((b) => b.id === ref.id) : undefined;
+  if (!match) {
+    const category = await resolveCategoryRef(categoriesService, userId, ref);
+    match = budgets.find((b) => b.categoryId === category.id);
+  }
+  if (!match) {
+    throw new BadRequestException(
+      `No budget found matching "${refStr}". List budgets with budgets.list or create one with budgets.create.`,
+    );
+  }
+  return match;
+}
 
 /**
- * Read + write tools over the existing BudgetsService. Includes the
- * composite `budgets.transferAllocation` (move limit between budgets) —
- * exposed as a single tool so the model can't propose the two underlying
- * updates separately and leave limits inconsistent on failure.
+ * Read + write tools over the existing BudgetsService.
+ * Supports referencing categories by name or ID with auto-resolution.
  */
-export function createBudgetsTools(budgetsService: BudgetsService) {
+export function createBudgetsTools(
+  budgetsService: BudgetsService,
+  categoriesService: CategoriesService,
+) {
   return [
     defineTool({
       name: "budgets.list",
       description:
-        "List the user's budgets with their monthly limits and current spending status (ON_TRACK / NEAR_LIMIT / OVER).",
+        "List the user's budgets with their monthly limits and current spending status (ON_TRACK / NEAR_LIMIT / AT_LIMIT / OVER).",
       access: "read",
       confirmation: "none",
       label: "Reviewing budgets",
@@ -55,19 +85,45 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
     defineTool({
       name: "budgets.create",
       description:
-        "Create a spending budget for one of the user's categories. Requires confirmation. Fields: categoryId (resolve with categories.list or categories.resolve), limit (positive number), optional start date (YYYY-MM-DD, defaults to today).",
+        "Create a spending budget for one of the user's categories. Requires confirmation. Fields: category (name or ID, e.g. 'Healthcare', 'Groceries'), limit (positive number), optional start date (YYYY-MM-DD).",
       access: "write",
       confirmation: "required",
       label: "Creating budget",
       invalidates: ["budgets", "analytics"],
-      schema: createBudgetSchema,
-      execute: async (input, ctx) => budgetsService.create(ctx.userId, input),
+      schema: agentCreateBudgetSchema,
+      resolveInput: async (input, ctx) => {
+        const refStr = input.category ?? input.categoryId;
+        const category = await resolveCategoryRef(
+          categoriesService,
+          ctx.userId,
+          splitRef(refStr) ?? { name: refStr ?? "" },
+          { autoCreate: true },
+        );
+        return {
+          ...input,
+          categoryId: category.id,
+          category: category.name,
+        };
+      },
+      execute: async (input, ctx) => {
+        const categoryId = input.categoryId!;
+        const existing = await budgetsService.findAll(ctx.userId);
+        const found = existing.find((b) => b.categoryId === categoryId);
+        if (found) {
+          return budgetsService.update(found.id, ctx.userId, { limit: input.limit });
+        }
+        return budgetsService.create(ctx.userId, {
+          categoryId,
+          limit: input.limit,
+          startDate: input.startDate,
+        });
+      },
       describe: (input) => {
         const rows: [string, string][] = [
-          ["Category ID", input.categoryId],
+          ["Category", input.category ?? input.categoryId ?? "Category"],
           ["Limit", formatINR(input.limit)],
+          ["Start date", input.startDate ?? "Current month"],
         ];
-        rows.push(["Start date", input.startDate ?? "Today"]);
         return { type: "confirmation" as const, title: "Create budget", rows };
       },
       summarize: (output) => {
@@ -78,24 +134,28 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
     defineTool({
       name: "budgets.update",
       description:
-        "Change a budget's limit. Requires confirmation. Only the limit can be updated; resolve the budget ID with budgets.list first.",
+        "Change a budget's spending limit. Requires confirmation. Accepts budgetId OR category name (e.g. 'Groceries', 'Dining Out'), and new limit.",
       access: "write",
       confirmation: "required",
       label: "Updating budget limit",
       invalidates: ["budgets", "analytics"],
-      schema: updateBudgetSchema
-        .omit({ categoryId: true, startDate: true })
-        .extend({ budgetId: z.string().uuid("Invalid budget ID") })
-        .required({ limit: true }),
-      execute: async (input, ctx) => {
-        const { budgetId, ...changes } = input;
-        return budgetsService.update(budgetId, ctx.userId, changes);
+      schema: agentUpdateBudgetSchema,
+      resolveInput: async (input, ctx) => {
+        const match = await resolveBudgetMatch(
+          budgetsService,
+          categoriesService,
+          ctx.userId,
+          input.budgetId ?? input.category ?? input.categoryId,
+        );
+        return { ...input, budgetId: match.id, category: match.category?.name };
       },
+      execute: async (input, ctx) =>
+        budgetsService.update(input.budgetId!, ctx.userId, { limit: input.limit }),
       describe: (input) => ({
         type: "confirmation" as const,
         title: "Update budget",
         rows: [
-          ["Budget ID", input.budgetId],
+          ["Category", input.category ?? input.budgetId ?? "Budget"],
           ["New limit", formatINR(input.limit)],
         ],
       }),
@@ -104,20 +164,27 @@ export function createBudgetsTools(budgetsService: BudgetsService) {
     defineTool({
       name: "budgets.delete",
       description:
-        "Permanently delete one of the user's budgets. Requires confirmation — this is destructive; the category itself is not deleted.",
+        "Permanently delete one of the user's budgets. Requires confirmation. Accepts budgetId OR category name.",
       access: "write",
       confirmation: "required",
       label: "Deleting budget",
       invalidates: ["budgets", "analytics"],
-      schema: z.object({
-        budgetId: z.string().uuid("Invalid budget ID"),
-      }),
-      execute: async (input, ctx) => budgetsService.remove(input.budgetId, ctx.userId),
+      schema: agentDeleteBudgetSchema,
+      resolveInput: async (input, ctx) => {
+        const match = await resolveBudgetMatch(
+          budgetsService,
+          categoriesService,
+          ctx.userId,
+          input.budgetId ?? input.category ?? input.categoryId,
+        );
+        return { ...input, budgetId: match.id, category: match.category?.name };
+      },
+      execute: async (input, ctx) => budgetsService.remove(input.budgetId!, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
         title: "Delete budget",
         rows: [
-          ["Budget ID", input.budgetId],
+          ["Category", input.category ?? input.budgetId ?? "Budget"],
           ["Warning", "Permanent delete — budget tracking for this category stops"],
         ],
       }),

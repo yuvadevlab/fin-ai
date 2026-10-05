@@ -36,6 +36,7 @@ export type TransactionType = (typeof TransactionType)[keyof typeof TransactionT
 export const BudgetStatus = {
   ON_TRACK: "ON_TRACK",
   NEAR_LIMIT: "NEAR_LIMIT",
+  AT_LIMIT: "AT_LIMIT",
   OVER: "OVER",
 } as const;
 export type BudgetStatus = (typeof BudgetStatus)[keyof typeof BudgetStatus];

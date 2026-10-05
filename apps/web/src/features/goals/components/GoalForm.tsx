@@ -1,6 +1,7 @@
 "use client";
 
 import { FormDialogField, FormField } from "@finai/ui";
+import { GoalType } from "@finai/shared-types";
 import { useReferenceOptions } from "@/hooks/useReferenceOptions";
 
 export interface GoalFormProps {
@@ -11,10 +12,10 @@ export interface GoalFormProps {
 
 /** Fallback goal type options shown while DB options are loading. */
 const FALLBACK_GOAL_TYPE_OPTIONS = [
-  { label: "Emergency Fund", value: "EMERGENCY_FUND" },
-  { label: "Obligation", value: "OBLIGATION" },
-  { label: "Lifestyle", value: "LIFESTYLE" },
-  { label: "Personal", value: "PERSONAL" },
+  { label: "Emergency Fund", value: GoalType.EMERGENCY_FUND },
+  { label: "Obligation", value: GoalType.OBLIGATION },
+  { label: "Lifestyle", value: GoalType.LIFESTYLE },
+  { label: "Personal", value: GoalType.PERSONAL },
 ];
 
 export function GoalForm({ values, errors, onChange }: GoalFormProps) {
@@ -57,7 +58,7 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
     {
       type: "date",
       name: "deadline",
-      label: "Target Deadline",
+      label: "Target Date",
       autoComplete: "off",
     },
   ];

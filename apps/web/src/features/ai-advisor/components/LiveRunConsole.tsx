@@ -16,10 +16,10 @@ const LEVEL_BADGES: Record<AgentRunLogEntry["level"], { label: string; className
   CTX: { label: "CTX", className: "text-sky-400 bg-sky-950/80 border-sky-850" },
   LLM: { label: "LLM", className: "text-purple-400 bg-purple-950/80 border-purple-850" },
   TOOL: { label: "TOOL", className: "text-amber-400 bg-amber-950/80 border-amber-850" },
-  STREAM: { label: "STREAM", className: "text-emerald-400 bg-emerald-950/80 border-emerald-850" },
+  STREAM: { label: "STREAM", className: "text-primary bg-primary/20 border-primary/40" },
   ACTION: { label: "ACTION", className: "text-blue-400 bg-blue-950/80 border-blue-850" },
   DONE: { label: "DONE", className: "text-teal-400 bg-teal-950/80 border-teal-850" },
-  ERR: { label: "ERR", className: "text-rose-400 bg-rose-950/80 border-rose-850" },
+  ERR: { label: "ERR", className: "text-destructive bg-destructive/20 border-destructive/40" },
 };
 
 function formatOffset(ms: number): string {
@@ -64,8 +64,8 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
             Live Agent Log
           </span>
           {isStreaming && (
-            <span className="flex items-center gap-1 text-emerald-400">
-              <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+            <span className="text-primary flex items-center gap-1">
+              <span className="bg-primary size-1.5 animate-pulse rounded-full" />
               <span>running</span>
             </span>
           )}
@@ -82,7 +82,7 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
               onClick={handleCopy}
               title="Copy terminal logs"
             >
-              {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+              {copied ? <Check className="text-primary size-3" /> : <Copy className="size-3" />}
             </Button>
           )}
         </div>
@@ -128,7 +128,7 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
         )}
         {isStreaming && (
           <div className="flex animate-pulse items-center gap-2 px-1 text-[11px] text-zinc-500">
-            <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
+            <span className="bg-primary inline-block size-1.5 rounded-full" />
             <span>Processing next event…</span>
           </div>
         )}

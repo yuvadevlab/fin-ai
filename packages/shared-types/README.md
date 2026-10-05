@@ -30,7 +30,7 @@ export enum TransactionType {
 ### 3. Budget Status
 
 ```ts
-export type BudgetStatus = "ON_TRACK" | "NEAR_LIMIT" | "OVER";
+export type BudgetStatus = "ON_TRACK" | "NEAR_LIMIT" | "AT_LIMIT" | "OVER";
 ```
 
 ### 4. Health Metric Data Structure

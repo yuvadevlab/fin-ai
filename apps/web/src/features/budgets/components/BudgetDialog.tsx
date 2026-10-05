@@ -2,28 +2,34 @@
 
 import React, { useState, useMemo } from "react";
 import { FormDialog } from "@finai/ui";
-import { createBudgetSchema } from "@finai/validation";
+import { createBudgetSchema, updateBudgetSchema } from "@finai/validation";
 import { useCategories } from "@/features/categories/api";
 import { CategoryDialog } from "@/features/categories/components/CategoryDialog";
-import { useCreateBudget } from "../api";
+import { useCreateBudget, useUpdateBudget, type Budget } from "../api";
 import { BudgetForm } from "./BudgetForm";
 
 export interface BudgetDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  budget?: Budget;
+  onSuccess?: (budget: Budget) => void;
 }
 
 export function BudgetDialog({
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  budget,
+  onSuccess,
 }: BudgetDialogProps) {
+  const isEditMode = budget !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : localOpen;
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
 
   const createBudget = useCreateBudget();
+  const updateBudget = useUpdateBudget();
   const { data: categories = [] } = useCategories();
 
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
@@ -40,7 +46,6 @@ export function BudgetDialog({
   };
 
   const categoryOptions = useMemo(() => {
-    // Only allow budgeting for expense categories (excluding Income)
     return categories
       .filter((c) => c.group !== "Income")
       .map((c) => ({
@@ -50,17 +55,27 @@ export function BudgetDialog({
   }, [categories]);
 
   const [values, setValues] = useState<Record<string, string>>({
-    categoryId: "",
-    limit: "",
-    startDate: new Date().toISOString().split("T")[0],
+    categoryId: budget?.categoryId ?? "",
+    limit: budget ? String(budget.limit) : "",
+    startDate: budget?.startDate ?? new Date().toISOString().split("T")[0],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setValues({
+        categoryId: budget?.categoryId ?? "",
+        limit: budget ? String(budget.limit) : "",
+        startDate: budget?.startDate ?? new Date().toISOString().split("T")[0],
+      });
+      setErrors({});
+    }
+  }
+
   const handleChange = (name: string, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setValues((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -72,6 +87,37 @@ export function BudgetDialog({
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isEditMode) {
+      const parseResult = updateBudgetSchema.safeParse({
+        limit: Number(values.limit || 0),
+      });
+
+      if (!parseResult.success) {
+        const fieldErrors: Record<string, string> = {};
+        parseResult.error.issues.forEach((issue) => {
+          const path = issue.path[0] as string;
+          fieldErrors[path] = issue.message;
+        });
+        setErrors(fieldErrors);
+        return;
+      }
+
+      try {
+        const updated = await updateBudget.mutateAsync({
+          id: budget.id,
+          input: parseResult.data,
+        });
+        setOpen?.(false);
+        onSuccess?.(updated);
+      } catch (err) {
+        const apiErr = err as { message?: string };
+        setErrors({
+          root: apiErr?.message || "An error occurred while updating the budget.",
+        });
+      }
+      return;
+    }
 
     const parseResult = createBudgetSchema.safeParse({
       categoryId: values.categoryId,
@@ -90,9 +136,9 @@ export function BudgetDialog({
     }
 
     try {
-      await createBudget.mutateAsync(parseResult.data);
+      const created = await createBudget.mutateAsync(parseResult.data);
       setOpen?.(false);
-      // Reset form
+      onSuccess?.(created);
       setValues({
         categoryId: "",
         limit: "",
@@ -112,10 +158,14 @@ export function BudgetDialog({
         open={open}
         onOpenChange={setOpen}
         trigger={trigger}
-        title="Create Budget"
-        description="Set a monthly spending cap for a category."
-        submitLabel="Create Budget"
-        loading={createBudget.isPending}
+        title={isEditMode ? "Update Budget" : "Create Budget"}
+        description={
+          isEditMode
+            ? `Adjust the monthly spending cap for ${budget?.category?.name || "this category"}.`
+            : "Set a monthly spending cap for a category."
+        }
+        submitLabel={isEditMode ? "Update Limit" : "Create Budget"}
+        loading={createBudget.isPending || updateBudget.isPending}
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}
       >
@@ -131,6 +181,7 @@ export function BudgetDialog({
             onChange={handleChange}
             categories={categoryOptions}
             onAddCategory={handleOpenAddCategory}
+            isEditMode={isEditMode}
           />
         </div>
       </FormDialog>

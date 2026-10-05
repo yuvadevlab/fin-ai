@@ -53,7 +53,7 @@ export function BulkConfirmationCardItem({
         "bg-card border-border/70 min-w-60 flex-1 shrink-0 snap-start rounded-xl border border-l-4 p-3.5 shadow-xs transition-all sm:min-w-67.5",
         typeStyle.border,
         itemStatus === "rejected" && "opacity-60 grayscale-50",
-        itemStatus === "executed" && "ring-1 ring-emerald-500/30",
+        itemStatus === "executed" && "ring-primary/30 ring-1",
       )}
     >
       <div className="flex items-center justify-between gap-2">
@@ -103,7 +103,7 @@ export function BulkConfirmationCardItem({
       {itemStatus !== "pending" && (
         <div className="border-border/40 mt-3 flex items-center border-t pt-2.5">
           {itemStatus === "executed" ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
               <Check className="size-3" /> Recorded
             </span>
           ) : (

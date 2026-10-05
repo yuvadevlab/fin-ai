@@ -169,7 +169,7 @@ export function BulkConfirmationCarousel({
                 "rounded-full border px-2.5 py-0.5 text-xs font-medium",
                 rejectedCount === items.length
                   ? "border-border/60 bg-muted/40 text-muted-foreground"
-                  : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                  : "border-primary/20 bg-primary/10 text-primary",
               )}
             >
               {rejectedCount === items.length

@@ -105,7 +105,8 @@ The weighted foundations are monthly free cash (20%), savings rate (20%), emerge
   $$\text{Remaining} = \text{Limit} - \text{Spent}$$
 - **Status Classification**:
   - `OVER`: Usage > 100%
-  - `NEAR_LIMIT`: 85% < Usage $\le$ 100%
+  - `AT_LIMIT`: Usage = 100% (Limit reached)
+  - `NEAR_LIMIT`: 85% < Usage < 100%
   - `ON_TRACK`: Usage $\le$ 85%
 
 ---

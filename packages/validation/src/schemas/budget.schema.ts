@@ -19,3 +19,54 @@ export type CreateBudgetInput = z.infer<typeof createBudgetSchema>;
 export const updateBudgetSchema = createBudgetSchema.partial();
 
 export type UpdateBudgetInput = z.infer<typeof updateBudgetSchema>;
+
+/**
+ * Agent-facing budget schemas.
+ * Accepts category by name or by ID. The tool layer resolves names to real IDs.
+ */
+export const agentCreateBudgetSchema = z
+  .object({
+    category: z.string().min(1, "Category name is required").max(100).optional(),
+    categoryId: z.string().min(1, "Category ID is required").max(100).optional(),
+    limit: z.number().positive("Budget limit must be positive"),
+    startDate: z.string().date("Invalid date format").optional(),
+  })
+  .refine((v) => v.category !== undefined || v.categoryId !== undefined, {
+    message: "Provide a category name or categoryId",
+    path: ["category"],
+  });
+
+export type AgentCreateBudgetInput = z.infer<typeof agentCreateBudgetSchema>;
+
+export const agentUpdateBudgetSchema = z
+  .object({
+    budgetId: z.string().min(1).max(100).optional(),
+    category: z.string().min(1).max(100).optional(),
+    categoryId: z.string().min(1).max(100).optional(),
+    limit: z.number().positive("Budget limit must be positive"),
+  })
+  .refine(
+    (v) => v.budgetId !== undefined || v.category !== undefined || v.categoryId !== undefined,
+    {
+      message: "Provide a budget ID or category name",
+      path: ["budgetId"],
+    },
+  );
+
+export type AgentUpdateBudgetInput = z.infer<typeof agentUpdateBudgetSchema>;
+
+export const agentDeleteBudgetSchema = z
+  .object({
+    budgetId: z.string().min(1).max(100).optional(),
+    category: z.string().min(1).max(100).optional(),
+    categoryId: z.string().min(1).max(100).optional(),
+  })
+  .refine(
+    (v) => v.budgetId !== undefined || v.category !== undefined || v.categoryId !== undefined,
+    {
+      message: "Provide a budget ID or category name",
+      path: ["budgetId"],
+    },
+  );
+
+export type AgentDeleteBudgetInput = z.infer<typeof agentDeleteBudgetSchema>;

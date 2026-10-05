@@ -13,6 +13,7 @@ export interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> 
   footerLeft?: React.ReactNode;
   footerRight?: React.ReactNode;
   statusBadge?: React.ReactNode;
+  actions?: React.ReactNode;
   progressColorClass?: string;
   masked?: boolean;
   maskPlaceholder?: string;
@@ -28,6 +29,7 @@ export function ProgressCard({
   footerLeft,
   footerRight,
   statusBadge,
+  actions,
   progressColorClass,
   masked = false,
   maskPlaceholder = "••••••",
@@ -57,7 +59,10 @@ export function ProgressCard({
           <p className="text-base font-semibold">{title}</p>
           {subtitle && <p className="text-muted-foreground mt-1 text-xs">{subtitle}</p>}
         </div>
-        {statusBadge}
+        <div className="flex items-center gap-1.5">
+          {statusBadge}
+          {actions}
+        </div>
       </div>
       <div className="mt-5 flex items-baseline justify-between">
         <span className="text-2xl font-bold tracking-tight tabular-nums">

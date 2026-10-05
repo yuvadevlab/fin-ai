@@ -140,7 +140,14 @@ export class ContextBuilderService {
               const catName = b.category?.name ?? "Category";
               const spent = monthCategorySpend[catName] ?? 0;
               const pct = b.limit > 0 ? Math.round((spent / b.limit) * 100) : 0;
-              const status = pct > 100 ? "EXCEEDED" : pct >= 85 ? "AT_RISK" : "ON_TRACK";
+              const status =
+                pct > 100
+                  ? "EXCEEDED"
+                  : pct === 100
+                    ? "LIMIT_REACHED"
+                    : pct >= 85
+                      ? "AT_RISK"
+                      : "ON_TRACK";
               return `- ${catName}: Limit ${formatINR(b.limit)} | Spent ${formatINR(spent)} (${pct}%) [${status}]`;
             })
             .join("\n"),

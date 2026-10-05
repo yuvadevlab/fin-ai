@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "../lib/utils";
+import { normalizeMarkdownMath } from "../lib/markdown-math.utils";
 
 export interface MarkdownContentProps extends React.HTMLAttributes<HTMLDivElement> {
   content: string;
@@ -17,9 +18,9 @@ export interface MarkdownContentProps extends React.HTMLAttributes<HTMLDivElemen
 /**
  * Generic Markdown renderer using FinAI design-token classes.
  *
- * Supports GFM tables, callouts, lists, headers, code snippets, and inline
- * highlights. Renders partial/incomplete Markdown incrementally during
- * streaming — no buffering is applied.
+ * Supports GFM tables, callouts, lists, headers, code snippets, inline
+ * highlights, and LaTeX math notation normalization. Renders partial/incomplete
+ * Markdown incrementally during streaming — no buffering is applied.
  *
  * Extracted from the AI Advisor's `MarkdownMessage` so any feature can render
  * LLM-generated or user-authored Markdown with the shared styling.
@@ -31,13 +32,15 @@ export function MarkdownContent({
   ...props
 }: MarkdownContentProps) {
   // Strip a trailing follow-up suggestions section when requested.
-  const renderContent = stripSuggestions
+  const baseContent = stripSuggestions
     ? content
         .split(
           /###\s*(?:Follow-?[uU]p|Suggested|Recommended)\s*(?:Suggestions|Questions|Next Steps|Follow-ups)?[:\s]*/i,
         )[0]
         .trim()
     : content;
+
+  const renderContent = normalizeMarkdownMath(baseContent);
 
   return (
     <div
