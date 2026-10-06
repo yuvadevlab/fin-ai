@@ -1,4 +1,4 @@
-name: 🏗️ Build
+name: 🧪 Test
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: 🏗️ Monorepo Build
+  test:
+    name: 🧪 Unit & Integration Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -41,5 +41,5 @@ jobs:
       - name: 🗄️ Generate Prisma Client
         run: pnpm db:generate
 
-      - name: 🏗️ Execute Turbo Build
-        run: pnpm build
+      - name: 🧪 Execute Vitest Tests
+        run: pnpm test

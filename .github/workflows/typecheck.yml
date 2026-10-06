@@ -1,4 +1,4 @@
-name: 🏗️ Build
+name: 🔎 Typecheck
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: typecheck-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: 🏗️ Monorepo Build
+  typecheck:
+    name: 🔎 TypeScript Typecheck
     runs-on: ubuntu-latest
 
     steps:
@@ -41,5 +41,5 @@ jobs:
       - name: 🗄️ Generate Prisma Client
         run: pnpm db:generate
 
-      - name: 🏗️ Execute Turbo Build
-        run: pnpm build
+      - name: 🔎 Execute Typecheck
+        run: pnpm typecheck

@@ -25,7 +25,7 @@
     "db:pull": "prisma db pull",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "build": "tsup",
+    "build": "prisma generate && tsup",
     "clean": "rm -rf .turbo dist"
   },
   "prisma": {
