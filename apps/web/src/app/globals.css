@@ -1,9 +1,10 @@
 @import "tailwindcss";
+@source "../**";
+@source "../../../../packages/ui";
+@source "../../node_modules/@yuva-devlab/ui";
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
 @import "tw-animate-css";
-@source "../../../../packages/ui";
-@source "../../node_modules/@yuva-devlab/ui/src";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -65,6 +66,7 @@
   --page-padding-y: 1.25rem; /* 20px vertical page padding on mobile     */
   --page-max-width: 96rem; /* 1536px max content width             */
   --privacy-toggle-size: 2.5rem; /* 40px  ← Privacy toggle size             */
+  --investment: #3b82f6; /* Investment accent (blue)                        */
 
   /* Derived — reference these in components instead of duplicating maths */
   --content-height: calc(100dvh - var(--header-height));

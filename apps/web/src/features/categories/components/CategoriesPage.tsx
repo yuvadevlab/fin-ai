@@ -1,8 +1,18 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
-import { PageContainer, PageHeader, Button, ConfirmDialog } from "@finai/ui";
+import { Plus, Pencil, Trash2, Loader2, MoreVertical } from "lucide-react";
+import {
+  PageContainer,
+  PageHeader,
+  Button,
+  ConfirmDialog,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@finai/ui";
 import { Category, useCategories, useDeleteCategory } from "../api";
 import { CategoryDialog } from "./CategoryDialog";
 
@@ -120,24 +130,33 @@ export function CategoriesPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                          onClick={() => handleOpenEditCategory(cat)}
-                        >
-                          <Pencil className="size-3.5" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="text-muted-foreground hover:text-destructive size-8 cursor-pointer"
-                          onClick={() => handleOpenDeleteCategory(cat)}
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                            aria-label={`Actions for ${cat.name}`}
+                          >
+                            <MoreVertical className="size-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-36">
+                          <DropdownMenuItem
+                            onClick={() => handleOpenEditCategory(cat)}
+                            className="cursor-pointer"
+                          >
+                            <Pencil className="mr-2 size-3.5" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleOpenDeleteCategory(cat)}
+                            className="text-destructive focus:text-destructive cursor-pointer"
+                          >
+                            <Trash2 className="mr-2 size-3.5" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   ))}
                 </div>

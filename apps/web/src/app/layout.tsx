@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { QueryProvider, AppearanceProvider } from "@/providers";
-import { Toaster, ConfigProvider } from "@finai/ui";
+import { Toaster } from "@finai/ui";
 import { appearanceScript } from "@/lib/appearance-script";
 import "@finai/ui/styles.css";
 import "./globals.css";
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-brand="finai" data-theme="finai" suppressHydrationWarning>
       <head>
         {/*
          * Blocking script — must live in <head> so it runs synchronously
@@ -47,12 +47,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <QueryProvider>
-          <ConfigProvider brand="finai" defaultTheme="system">
-            <AppearanceProvider>
-              {children}
-              <Toaster />
-            </AppearanceProvider>
-          </ConfigProvider>
+          <AppearanceProvider>
+            {children}
+            <Toaster />
+          </AppearanceProvider>
         </QueryProvider>
       </body>
     </html>

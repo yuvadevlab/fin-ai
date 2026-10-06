@@ -52,4 +52,5 @@ export interface AgentActionHistoryItem {
   card: { type: string; title: string; rows?: [string, string][] };
   status: "pending" | "executed" | "rejected" | "failed";
   result?: unknown;
+  createdAt?: string;
 }

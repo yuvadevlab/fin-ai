@@ -1,23 +1,18 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import type { LlmToolCall } from "@finai/ai-engine";
+import { formatToolInvalidArgumentMessage } from "@finai/ai-engine";
 import { ToolRegistry } from "../tool-registry";
 import { AgentActionService } from "../action.service";
 import { AuditService } from "../audit.service";
 import { EntityMemoryService } from "../entity-memory";
 import { extractEntitiesFromInput, extractEntitiesFromOutput } from "../entity-extractor";
+import { handleSpecialAction } from "./special-action.handler";
 import type { AgentContext, AgentEventEmitter } from "../agent.types";
 
 /**
  * Validates and executes a single tool call surfaced by the model.
- *
- * This is the safety choke-point between the LLM and user data:
- *  1. Tool must exist in the registry.
- *  2. Arguments are Zod-validated — malformed model output never reaches a service.
- *  3. Referenced entities are recorded into conversation entity memory.
- *  4. Confirmation-required tools do NOT execute — a proposal is stored and
- *     a confirmation card is emitted.
- *  5. Read tools execute immediately; failures are caught and surfaced to the model.
+ * Safety choke-point between LLM and user data (validation, proposals, audit).
  */
 @Injectable()
 export class AgentToolDispatcher {
@@ -58,21 +53,21 @@ export class AgentToolDispatcher {
     let parsed: unknown;
     try {
       parsed = tool.schema.parse(JSON.parse(call.arguments || "{}"));
-    } catch {
-      this.logger.warn(
-        `Tool "${call.name}" received invalid arguments from model: ${call.arguments?.slice(0, 120)}`,
-      );
+    } catch (error) {
+      const zodErr = error as { issues?: { path: (string | number)[]; message: string }[] };
+      const details = zodErr.issues
+        ?.map((i) => `${i.path.join(".") || "field"}: ${i.message}`)
+        .join("; ");
+      const errMsg = formatToolInvalidArgumentMessage(call.name, details);
+      this.logger.error(`[dispatch] Tool "${call.name}" invalid arguments: ${errMsg}`);
       emit({
         type: "tool_result",
         tool: call.name,
         ok: false,
-        summary: "The agent supplied invalid arguments for this step",
+        summary: errMsg,
         label: tool.label,
       });
-      return {
-        ok: false,
-        error: `Invalid arguments for ${call.name}. Provide a JSON object matching the tool schema.`,
-      };
+      return { ok: false, error: errMsg };
     }
 
     try {
@@ -143,72 +138,16 @@ export class AgentToolDispatcher {
         extractEntitiesFromOutput(call.name, tool.serialize(output)),
       );
 
-      // Special handling for action.patch
-      if (call.name === "action.patch" && (output as { card?: unknown }).card) {
-        const patchOutput = output as {
-          ok: boolean;
-          actionId: string;
-          tool: string;
-          card: import("@finai/ai-engine").AgentCard;
-          error?: string;
-        };
-        if (patchOutput.ok && patchOutput.card) {
-          emit({
-            type: "action_updated",
-            actionId: patchOutput.actionId,
-            tool: patchOutput.tool,
-            card: patchOutput.card,
-          });
-          await this.auditService.record({
-            userId: ctx.userId,
-            runId: ctx.runId,
-            action: "action.patch",
-            tool: patchOutput.tool,
-            status: "success",
-          });
-          return {
-            ok: true,
-            status: "action_updated",
-            actionId: patchOutput.actionId,
-            message: "The pending action has been updated. Show the updated confirmation card.",
-          };
-        }
-        emit({
-          type: "tool_result",
-          tool: call.name,
-          ok: false,
-          summary: patchOutput.error || "Failed to patch the pending action",
-          label: tool.label,
-        });
-        return { ok: false, error: patchOutput.error || "Failed to patch" };
-      }
-
-      // Special handling for action.confirm
-      if (call.name === "action.confirm" && (output as { actionId?: string }).actionId) {
-        const confirmOutput = output as {
-          ok: boolean;
-          actionId: string;
-          tool: string;
-          error?: string;
-        };
-        if (confirmOutput.ok) {
-          emit({ type: "action_result", actionId: confirmOutput.actionId, ok: true });
-          await this.auditService.record({
-            userId: ctx.userId,
-            runId: ctx.runId,
-            action: "action.confirm",
-            tool: confirmOutput.tool,
-            status: "success",
-          });
-          return {
-            ok: true,
-            status: "action_executed",
-            actionId: confirmOutput.actionId,
-            message: "The action has been confirmed and executed.",
-          };
-        }
-        emit({ type: "action_result", actionId: confirmOutput.actionId, ok: false });
-        return { ok: false, error: confirmOutput.error || "Failed to confirm" };
+      const special = await handleSpecialAction(
+        call,
+        output,
+        { userId: ctx.userId, runId: ctx.runId },
+        emit,
+        this.auditService,
+        this.logger,
+      );
+      if (special.handled) {
+        return special.result!;
       }
 
       this.logger.log(

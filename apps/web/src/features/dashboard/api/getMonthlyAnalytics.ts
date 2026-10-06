@@ -6,12 +6,13 @@ export interface MonthlyCashFlow {
   month: string;
   income: number;
   expense: number;
+  investment?: number;
 }
 
-export const monthlyAnalyticsQueryKey = (months: number) =>
+export const monthlyAnalyticsQueryKey = (months: number | string) =>
   ["analytics", "monthly", months] as const;
 
-export function useMonthlyAnalytics(months = 6) {
+export function useMonthlyAnalytics(months: number | string = 6) {
   return useQuery<MonthlyCashFlow[]>({
     queryKey: monthlyAnalyticsQueryKey(months),
     queryFn: () => apiClient.get<MonthlyCashFlow[]>(`analytics/monthly?months=${months}`),

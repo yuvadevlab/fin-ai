@@ -31,7 +31,7 @@ const STATUS_META: Record<ConfirmationStatus, { label: string; className: string
   },
   executed: {
     label: "Confirmed & executed",
-    className: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+    className: "text-primary bg-primary/10 border-primary/20",
   },
   rejected: {
     label: "Rejected",

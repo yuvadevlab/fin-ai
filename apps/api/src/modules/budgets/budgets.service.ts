@@ -36,16 +36,24 @@ export class BudgetsService {
 
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
     const enriched = await Promise.all(
       budgets.map(async (budget) => {
+        // Budgets reset monthly. A budget active in the current month aggregates all
+        // expense transactions within the current month cycle.
+        if (budget.startDate && budget.startDate > endOfMonth) {
+          return { ...budget, spent: 0, status: calculateBudgetStatus(0, budget.limit) };
+        }
+
         const agg = await this.prisma.client.transaction.aggregate({
           where: {
             userId,
             categoryId: budget.categoryId,
             type: TransactionType.EXPENSE,
             date: {
-              gte: budget.startDate ?? startOfMonth,
+              gte: startOfMonth,
+              lte: endOfMonth,
             },
           },
           _sum: {
@@ -93,7 +101,9 @@ export class BudgetsService {
         userId,
         categoryId: input.categoryId,
         limit: input.limit,
-        startDate: input.startDate ? new Date(input.startDate) : new Date(),
+        startDate: input.startDate
+          ? new Date(input.startDate)
+          : new Date(new Date().getFullYear(), new Date().getMonth(), 1),
       },
       include: { category: true },
     });

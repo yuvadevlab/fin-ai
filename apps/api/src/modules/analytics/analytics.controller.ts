@@ -25,7 +25,7 @@ export class AnalyticsController {
   @Get("monthly")
   @ApiOperation({ summary: "Get monthly cash flow data (last N months)" })
   getMonthly(@CurrentUser("id") userId: string, @Query("months") months?: string) {
-    const parsed = months ? parseInt(months) : 6;
+    const parsed = months === "all" ? 120 : months ? parseInt(months, 10) || 3 : 3;
     this.logger.debug(
       `[GET /analytics/monthly] Fetching ${parsed}-month cash flow for user ${userId.slice(0, 8)}`,
     );

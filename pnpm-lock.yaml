@@ -195,9 +195,12 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.101.1
         version: 5.101.2(react@19.2.7)
-      '@yuva-devlab/ui':
+      '@yuva-devlab/tokens':
         specifier: ^1.1.0
-        version: 1.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 1.1.0
+      '@yuva-devlab/ui':
+        specifier: ^1.3.0
+        version: 1.3.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -391,6 +394,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@finai/finance-engine':
+        specifier: workspace:*
+        version: link:../finance-engine
       '@finai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -436,9 +442,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.6
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@yuva-devlab/ui':
+      '@yuva-devlab/tokens':
         specifier: ^1.1.0
-        version: 1.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 1.1.0
+      '@yuva-devlab/ui':
+        specifier: ^1.3.0
+        version: 1.3.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -4892,11 +4901,15 @@ packages:
   '@yuva-devlab/logger@1.1.0':
     resolution: {integrity: sha512-lxj5yv09fNQmzZbhoo1UJbSepbI/PKNXC5rYDg+ITr5pF3njeLTW0L0uTMaOMI0HSgtTOYbnRPg1EXMUeTrBaQ==}
 
-  '@yuva-devlab/ui@1.1.0':
-    resolution: {integrity: sha512-TwYyZVi1NFDFXURvXmlI6YXSNFDCZTI/yGs1uC/FKTORPZ/Qhnb1Ydt3Skk4Pt8lD21v3p5/MSXMccbON/q90g==}
+  '@yuva-devlab/tokens@1.1.0':
+    resolution: {integrity: sha512-g6W/2o8IGSvnZK4mKERVoMRVXv5HuI0X/Jo9E8lfSxFCyEed+6ZeoaBe6A0yUenoik/ERc9Ez+G0Is9/Da+l+A==}
+
+  '@yuva-devlab/ui@1.3.0':
+    resolution: {integrity: sha512-VDt71qxYmCsI+rxBfRHnyPJeRUrUn9k4a4znn5oPwUhhlYIEahaiKl/aGVAfG/ZyBRXd2tFn0Ur5u8dbCOwV4A==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
+      sonner: ^2.0.0
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -14222,7 +14235,9 @@ snapshots:
 
   '@yuva-devlab/logger@1.1.0': {}
 
-  '@yuva-devlab/ui@1.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@yuva-devlab/tokens@1.1.0': {}
+
+  '@yuva-devlab/ui@1.3.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
     dependencies:
       '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-alert-dialog': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -14250,6 +14265,7 @@ snapshots:
       '@radix-ui/react-toggle': 1.1.18(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-toggle-group': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-tooltip': 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@yuva-devlab/tokens': 1.1.0
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       cmdk: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)

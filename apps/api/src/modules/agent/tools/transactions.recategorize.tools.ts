@@ -5,14 +5,21 @@ import type { TransactionsService } from "@/modules/transactions/transactions.se
 import type { TransactionFilterInput } from "@finai/validation";
 import { resolveCategoryRef, splitRef } from "../entity-reference";
 
+const flexibleDateSchema = z
+  .string()
+  .refine(
+    (val) => !isNaN(Date.parse(val)),
+    "Invalid date format. Expected YYYY-MM-DD or ISO 8601 datetime",
+  );
+
 const recategorizeSchema = z
   .object({
     filter: z.object({
       category: z.string().optional(),
       account: z.string().optional(),
       type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
-      dateFrom: z.string().datetime().optional(),
-      dateTo: z.string().datetime().optional(),
+      dateFrom: flexibleDateSchema.optional(),
+      dateTo: flexibleDateSchema.optional(),
       search: z.string().max(200).optional(),
     }),
     targetCategoryId: z.string().uuid("Invalid target category ID").optional(),

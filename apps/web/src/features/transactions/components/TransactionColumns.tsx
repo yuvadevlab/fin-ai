@@ -1,10 +1,8 @@
 import React from "react";
-import { Badge, Button } from "@finai/ui";
+import { Badge } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
-import { Edit2 } from "lucide-react";
 import { Transaction } from "../api";
-import { DeleteTransactionButton } from "./DeleteTransactionButton";
-import { TransactionDialog } from "./TransactionDialog";
+import { TransactionRowActions } from "./TransactionRowActions";
 
 export function getTransactionColumns(onDelete: (id: string) => void) {
   return [
@@ -95,22 +93,8 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Actions",
       accessor: (t: Transaction) => (
-        <div className="flex justify-end gap-1 sm:gap-1.5">
-          <TransactionDialog
-            mode="edit"
-            transactionId={t.id}
-            initialValues={t}
-            trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground size-7 cursor-pointer sm:size-8"
-              >
-                <Edit2 className="size-3 sm:size-3.5" />
-              </Button>
-            }
-          />
-          <DeleteTransactionButton transactionId={t.id} onDelete={onDelete} />
+        <div className="flex justify-end">
+          <TransactionRowActions transaction={t} onDelete={onDelete} />
         </div>
       ),
       className: "text-right whitespace-nowrap",

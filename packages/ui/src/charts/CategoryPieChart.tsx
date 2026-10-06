@@ -1,5 +1,6 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { PIE_COLORS, tooltipStyle, inrShort } from "./chart-theme";
+import { formatCurrencyShort } from "@finai/finance-engine";
+import { PIE_COLORS, tooltipStyle } from "./chart-theme";
 
 interface CategoryPieDataPoint {
   name: string;
@@ -19,7 +20,10 @@ export function CategoryPie({ data }: CategoryPieProps) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <PieChart>
-        <Tooltip {...tooltipStyle()} formatter={(value) => inrShort(Number(value ?? 0))} />
+        <Tooltip
+          {...tooltipStyle()}
+          formatter={(value) => formatCurrencyShort(Number(value ?? 0))}
+        />
 
         <Pie
           data={chartData}
