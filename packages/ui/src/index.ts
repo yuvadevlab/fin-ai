@@ -32,6 +32,7 @@ export {
   type ConfirmationStatus,
 } from "./components/ConfirmationCard";
 export { MarkdownContent, type MarkdownContentProps } from "./components/MarkdownContent";
+export { normalizeMarkdownMath } from "./lib/markdown-math.utils";
 export { cn } from "./lib/utils";
 export { ChartCard } from "./components/ChartCard";
 export { FormDialog } from "./components/FormDialog";
@@ -84,6 +85,7 @@ export {
   DialogClose,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,

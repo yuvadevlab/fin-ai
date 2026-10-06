@@ -48,16 +48,18 @@ export function TopBar({
     >
       <div className="flex items-center gap-2">
         {onMenuClick && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMenuClick}
-            className="text-muted-foreground hover:text-foreground -ml-1.5 size-9 cursor-pointer md:hidden"
-            aria-label="Open navigation menu"
-            aria-haspopup="dialog"
-          >
-            <Menu className="size-5" aria-hidden="true" />
-          </Button>
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMenuClick}
+              className="text-muted-foreground hover:text-foreground -ml-1.5 size-9 cursor-pointer"
+              aria-label="Open navigation menu"
+              aria-haspopup="dialog"
+            >
+              <Menu className="size-5" aria-hidden="true" />
+            </Button>
+          </div>
         )}
         {onToggleSidebar && (
           <Button
@@ -78,8 +80,8 @@ export function TopBar({
         {leftContent ?? workspaceMenu ?? (
           <div className="flex items-center gap-2">
             <span className="relative flex size-2.5" aria-hidden="true">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
+              <span className="bg-primary absolute inline-flex size-full animate-ping rounded-full opacity-75" />
+              <span className="bg-primary relative inline-flex size-2.5 rounded-full" />
             </span>
             <span className="text-foreground text-sm font-semibold tracking-tight">FinAI</span>
           </div>
@@ -88,16 +90,13 @@ export function TopBar({
 
       <div className="flex items-center gap-3 md:gap-5">
         {onSearchChange && (
-          <div className="relative hidden md:block" role="search">
-            <Search
-              className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-              aria-hidden="true"
-            />
+          <div className="hidden md:block" role="search">
             <Input
+              startIcon={<Search className="text-muted-foreground size-4" aria-hidden="true" />}
               placeholder={searchPlaceholder}
               aria-label={searchPlaceholder}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 pl-10 text-sm transition-colors focus-visible:ring-1"
+              className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 text-sm transition-colors focus-visible:ring-1"
             />
           </div>
         )}

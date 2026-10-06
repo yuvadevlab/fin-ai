@@ -4,6 +4,13 @@ import type { TransactionsService } from "@/modules/transactions/transactions.se
 import type { TransactionFilterInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 
+const flexibleDateSchema = z
+  .string()
+  .refine(
+    (val) => !isNaN(Date.parse(val)),
+    "Invalid date format. Expected YYYY-MM-DD or ISO 8601 datetime",
+  );
+
 /**
  * Read tools over the existing TransactionsService (writes live in
  * transactions.write.tools). The list tool serializes to compact flat rows
@@ -20,8 +27,8 @@ export function createTransactionsTools(transactionsService: TransactionsService
       confirmation: "none",
       label: "Reviewing transactions",
       schema: z.object({
-        dateFrom: z.string().datetime().optional(),
-        dateTo: z.string().datetime().optional(),
+        dateFrom: flexibleDateSchema.optional(),
+        dateTo: flexibleDateSchema.optional(),
         category: z.string().optional(),
         account: z.string().optional(),
         type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
@@ -77,23 +84,35 @@ export function createTransactionsTools(transactionsService: TransactionsService
     defineTool({
       name: "transactions.summarize",
       description:
-        "Aggregate transaction totals over a date range, grouped by category name or transaction type. Useful for spending analysis.",
+        "Aggregate transaction totals over a date range, grouped by category name or transaction type. Fields: optional dateFrom (YYYY-MM-DD or ISO datetime, defaults to start of current month), optional dateTo (YYYY-MM-DD or ISO datetime, defaults to end of month), groupBy ('category' or 'type', defaults to 'category').",
       access: "read",
       confirmation: "none",
       label: "Summarizing transactions",
       schema: z.object({
-        dateFrom: z.string().datetime(),
-        dateTo: z.string().datetime(),
+        dateFrom: flexibleDateSchema.optional(),
+        dateTo: flexibleDateSchema.optional(),
         groupBy: z.enum(["category", "type"]).default("category"),
         type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
       }),
-      execute: async (input, ctx) =>
-        transactionsService.summarize(ctx.userId, {
-          dateFrom: input.dateFrom,
-          dateTo: input.dateTo,
+      execute: async (input, ctx) => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const endOfMonth = new Date(
+          now.getFullYear(),
+          now.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999,
+        ).toISOString();
+        return transactionsService.summarize(ctx.userId, {
+          dateFrom: input.dateFrom ?? startOfMonth,
+          dateTo: input.dateTo ?? endOfMonth,
           groupBy: input.groupBy,
           ...(input.type && { type: input.type }),
-        }),
+        });
+      },
       summarize: (output) => {
         const groups = output as { key: string; total: number }[];
         const top = groups.slice(0, 3).map((g) => `${g.key}: ${formatINR(g.total)}`);

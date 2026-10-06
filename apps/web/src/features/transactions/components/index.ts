@@ -4,3 +4,4 @@ export * from "./TransactionsPage";
 export * from "./BulkTransactionForm";
 export * from "./BulkTransactionDialog";
 export * from "./BulkTransactionRow";
+export * from "./TransactionRowActions";

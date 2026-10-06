@@ -15,4 +15,5 @@ export * from "./llm/json-planning";
 // ─── Agent runtime contracts ────────────────────────────────────────────────
 export * from "./agent/stream-events";
 export * from "./agent/agent-prompt";
+export * from "./agent/agent-messages";
 export * from "./agent/intent-router";

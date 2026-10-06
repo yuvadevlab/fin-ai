@@ -58,6 +58,7 @@ export function MoneyDisplay({
   return (
     <span
       data-privacy-sensitive
+      suppressHydrationWarning
       className={cn(
         "font-semibold tabular-nums",
         isNegative

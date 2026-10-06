@@ -1,5 +1,6 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { axisProps, tooltipStyle, inrShort } from "./chart-theme";
+import { formatCurrencyShort } from "@finai/finance-engine";
+import { axisProps, tooltipStyle } from "./chart-theme";
 
 interface ExpenseBarDataPoint {
   month: string;
@@ -16,8 +17,8 @@ export function ExpenseBarChart({ data }: ExpenseBarChartProps) {
       <BarChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis dataKey="month" {...axisProps} />
-        <YAxis {...axisProps} tickFormatter={inrShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v) => inrShort(Number(v))} />
+        <YAxis {...axisProps} tickFormatter={formatCurrencyShort} />
+        <Tooltip {...tooltipStyle()} formatter={(v) => formatCurrencyShort(Number(v))} />
         <Bar dataKey="expense" radius={[6, 6, 0, 0]} fill="oklch(0.63 0.14 156)" />
       </BarChart>
     </ResponsiveContainer>

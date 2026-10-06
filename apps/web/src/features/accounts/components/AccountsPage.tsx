@@ -1,9 +1,19 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Wallet, Star } from "lucide-react";
-import { PageContainer, PageHeader, Button, ConfirmDialog } from "@finai/ui";
-import { cn } from "@finai/ui";
+import { Plus, Pencil, Trash2, Wallet, Star, MoreVertical } from "lucide-react";
+import {
+  PageContainer,
+  PageHeader,
+  Button,
+  ConfirmDialog,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  cn,
+} from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { useIsClient } from "@/hooks";
 import { usePrivacyMode } from "@/hooks";
@@ -141,39 +151,42 @@ export function AccountsPage() {
                   </div>
                 </div>
 
-                {/* Edit & Delete Action Buttons — always visible */}
-                <div className="flex items-center gap-1">
-                  {!a.isDefault && accounts.length > 1 && (
+                {/* Actions Dropdown Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="text-muted-foreground hover:text-primary size-8 cursor-pointer"
-                      onClick={() => handleSetDefault(a.id)}
-                      aria-label={`Set ${a.name} as default`}
-                      title="Set as default account"
+                      className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                      aria-label={`Actions for ${a.name}`}
                     >
-                      <Star className="size-3.5" />
+                      <MoreVertical className="size-4" />
                     </Button>
-                  )}
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                    onClick={() => handleOpenEditAccount(a)}
-                    aria-label={`Edit ${a.name}`}
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-muted-foreground hover:text-destructive size-8 cursor-pointer"
-                    onClick={() => handleOpenDeleteAccount(a)}
-                    aria-label={`Delete ${a.name}`}
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    {!a.isDefault && accounts.length > 1 && (
+                      <DropdownMenuItem
+                        onClick={() => handleSetDefault(a.id)}
+                        className="cursor-pointer"
+                      >
+                        <Star className="mr-2 size-3.5" /> Set as Default
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      onClick={() => handleOpenEditAccount(a)}
+                      className="cursor-pointer"
+                    >
+                      <Pencil className="mr-2 size-3.5" /> Edit Account
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => handleOpenDeleteAccount(a)}
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                    >
+                      <Trash2 className="mr-2 size-3.5" /> Delete Account
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Account Balance */}

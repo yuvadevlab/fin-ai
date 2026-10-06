@@ -55,7 +55,7 @@ export const GridShowcase: Story = {
         label="Income"
         value="₹1,20,000"
         sub="This month"
-        icon={<ArrowUpRight className="size-5 text-emerald-500" />}
+        icon={<ArrowUpRight className="text-primary size-5" />}
       />
       <MiniStat
         label="Investments"

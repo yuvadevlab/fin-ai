@@ -6,6 +6,7 @@ export interface AiMessage {
   role: "USER" | "ASSISTANT";
   content: string;
   createdAt: string;
+  metadata?: { actionIds?: string[]; runId?: string; [key: string]: unknown } | null;
 }
 
 export interface AiConversation {

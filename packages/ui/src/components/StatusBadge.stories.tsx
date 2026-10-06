@@ -17,7 +17,7 @@ const meta: Meta<typeof StatusBadge> = {
   argTypes: {
     status: {
       control: "select",
-      options: ["ON_TRACK", "NEAR_LIMIT", "OVER"],
+      options: ["ON_TRACK", "NEAR_LIMIT", "AT_LIMIT", "OVER"],
     },
   },
 };
@@ -33,6 +33,11 @@ export const NearLimit: Story = {
   args: { status: "NEAR_LIMIT" },
 };
 
+/** At limit (100%) — limit reached with warning icon. */
+export const AtLimit: Story = {
+  args: { status: "AT_LIMIT" },
+};
+
 /** Over limit — destructive with icon. */
 export const Over: Story = {
   args: { status: "OVER" },
@@ -44,6 +49,7 @@ export const CustomLabels: Story = {
     <div className="flex flex-wrap gap-2">
       <StatusBadge status="ON_TRACK" trackText="Within budget" />
       <StatusBadge status="NEAR_LIMIT" warnText="Approaching cap" />
+      <StatusBadge status="AT_LIMIT" limitText="Cap reached" />
       <StatusBadge status="OVER" overText="Exceeded" />
     </div>
   ),
@@ -55,6 +61,7 @@ export const AllStatuses: Story = {
     <div className="flex flex-wrap gap-2">
       <StatusBadge status="ON_TRACK" />
       <StatusBadge status="NEAR_LIMIT" />
+      <StatusBadge status="AT_LIMIT" />
       <StatusBadge status="OVER" />
     </div>
   ),

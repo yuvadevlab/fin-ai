@@ -28,13 +28,4 @@ export function tooltipStyle() {
   };
 }
 
-export function inrShort(n: number): string {
-  const abs = Math.abs(n);
-  const sign = n < 0 ? "-" : "";
-  if (abs >= 100000) return sign + "₹" + (abs / 100000).toFixed(1) + "L";
-  if (abs >= 1000) return sign + "₹" + Math.round(abs / 1000) + "k";
-  const showDecimals = Number(abs.toFixed(2)) % 1 !== 0;
-  return sign + "₹" + (showDecimals ? abs.toFixed(2) : abs.toString());
-}
-
 export const CHART_COLORS = PIE_COLORS;

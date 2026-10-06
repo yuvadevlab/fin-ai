@@ -152,9 +152,7 @@ export function ActivityTimeline({
               <Terminal className="size-3" />
               <span>Live Console</span>
               {logs.length > 0 && <span className="text-[10px] opacity-75">({logs.length})</span>}
-              {isStreaming && (
-                <span className="size-1.5 animate-ping rounded-full bg-emerald-500" />
-              )}
+              {isStreaming && <span className="bg-primary size-1.5 animate-ping rounded-full" />}
             </button>
           </div>
           <span className="text-muted-foreground text-[11px]">
