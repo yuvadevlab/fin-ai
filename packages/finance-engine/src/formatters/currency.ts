@@ -37,10 +37,23 @@ export function formatCurrencyShort(value: number): string {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
 
-  if (abs >= 10_000_000) return sign + "₹" + (abs / 10_000_000).toFixed(1) + "Cr";
-  if (abs >= 100_000) return sign + "₹" + (abs / 100_000).toFixed(1) + "L";
-  if (abs >= 1_000) return sign + "₹" + Math.round(abs / 1_000) + "k";
-  return sign + "₹" + abs;
+  const formatCompact = (val: number): string => {
+    // 2-decimal precision with trimmed trailing zeroes: e.g. 1.16831 -> 1.17L, 1.18 -> 1.18L, 1.20 -> 1.2L
+    const rounded = Number(Math.round(Number(val + "e+2")) + "e-2");
+    return rounded.toString();
+  };
+
+  if (abs >= 10_000_000) {
+    return `${sign}₹${formatCompact(abs / 10_000_000)}Cr`;
+  }
+  if (abs >= 100_000) {
+    return `${sign}₹${formatCompact(abs / 100_000)}L`;
+  }
+  if (abs >= 1_000) {
+    return `${sign}₹${formatCompact(abs / 1_000)}k`;
+  }
+  const showDecimals = Number(abs.toFixed(2)) % 1 !== 0;
+  return sign + "₹" + (showDecimals ? abs.toFixed(2) : abs.toString());
 }
 
 /**

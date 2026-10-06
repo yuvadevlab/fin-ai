@@ -17,6 +17,12 @@ describe("StatusBadge A11y", () => {
     expect(results).toHaveNoViolations();
   });
 
+  it("should have no accessibility violations for AT_LIMIT", async () => {
+    const { container } = render(<StatusBadge status="AT_LIMIT" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
   it("should have no accessibility violations for OVER", async () => {
     const { container } = render(<StatusBadge status="OVER" overText="Over Budget" />);
     const results = await axe(container);

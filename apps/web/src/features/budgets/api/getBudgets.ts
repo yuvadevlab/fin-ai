@@ -1,4 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import type { BudgetStatus } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -10,8 +11,8 @@ export interface Budget {
   startDate: string;
   /** Computed by the API: total spent in this month */
   spent?: number;
-  /** Computed by the API: ON_TRACK | NEAR_LIMIT | OVER */
-  status?: string;
+  /** Computed by the API: BudgetStatus enum */
+  status?: BudgetStatus;
   category?: {
     id: string;
     name: string;

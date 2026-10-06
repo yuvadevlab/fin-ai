@@ -50,14 +50,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = useMemo(
     () => (
-      <Sidebar
-        pathname={pathname}
-        LinkComponent={CustomLinkComponent}
-        collapsed={isCollapsed}
-        onToggleCollapse={toggleCollapse}
-      />
+      <Sidebar pathname={pathname} LinkComponent={CustomLinkComponent} collapsed={isCollapsed} />
     ),
-    [pathname, isCollapsed, toggleCollapse],
+    [pathname, isCollapsed],
   );
 
   const topbar = useMemo(

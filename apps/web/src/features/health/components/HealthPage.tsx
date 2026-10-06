@@ -6,11 +6,6 @@ import { HEALTH_RATINGS } from "@finai/shared-types";
 import {
   Button,
   ContentCard,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   PageContainer,
   PageHeader,
   Progress,
@@ -22,7 +17,7 @@ import {
   cn,
 } from "@finai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
-import { HEALTH_GUIDE } from "../constants/healthGuide";
+import { HealthGuideDialog } from "./HealthGuideDialog";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -86,40 +81,7 @@ export function HealthPage() {
         }
       />
 
-      <Dialog open={guideOpen} onOpenChange={setGuideOpen}>
-        <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>How your financial health score works</DialogTitle>
-            <DialogDescription>
-              Your score is a guide to your financial resilience, not a judgement. We compare your
-              habits with practical targets and point to the next improvement.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid max-h-[60vh] gap-3 overflow-y-auto pr-1">
-            {HEALTH_GUIDE.map((item) => (
-              <div key={item.label} className="border-border bg-card rounded-lg border p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-foreground text-sm font-bold">{item.label}</p>
-                  <span className="text-primary shrink-0 text-right text-xs font-semibold">
-                    {item.target}
-                  </span>
-                </div>
-                <p className="text-muted-foreground mt-1 text-xs leading-5">{item.explanation}</p>
-                <p className="text-muted-foreground border-border mt-2 border-t pt-2 text-xs leading-5">
-                  <span className="text-foreground font-semibold">What counts:</span> {item.counts}
-                </p>
-                <p className="text-foreground bg-muted/40 mt-2 rounded-md p-2 text-xs">
-                  <span className="font-semibold">Improve it:</span> {item.improvement}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="text-muted-foreground text-xs leading-5">
-            A very low emergency fund, high debt pressure, or negative monthly cash flow can limit
-            the overall score even when another metric is strong. This keeps serious risks visible.
-          </p>
-        </DialogContent>
-      </Dialog>
+      <HealthGuideDialog open={guideOpen} onOpenChange={setGuideOpen} />
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ContentCard className="flex flex-col items-center justify-center p-8 text-center">

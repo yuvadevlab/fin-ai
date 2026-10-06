@@ -32,8 +32,14 @@ export {
 export {
   createBudgetSchema,
   updateBudgetSchema,
+  agentCreateBudgetSchema,
+  agentUpdateBudgetSchema,
+  agentDeleteBudgetSchema,
   type CreateBudgetInput,
   type UpdateBudgetInput,
+  type AgentCreateBudgetInput,
+  type AgentUpdateBudgetInput,
+  type AgentDeleteBudgetInput,
 } from "./schemas/budget.schema";
 
 export {

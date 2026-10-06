@@ -52,6 +52,7 @@ export interface CashFlowDataPoint {
   month: string;
   income: number;
   expense: number;
+  investment?: number;
 }
 
 export interface CategoryBreakdownItem {

@@ -8,6 +8,7 @@ export interface BudgetFormProps {
   onChange: (name: string, value: string) => void;
   categories: { label: string; value: string }[];
   onAddCategory?: (initialName?: string) => void;
+  isEditMode?: boolean;
 }
 
 export function BudgetForm({
@@ -16,6 +17,7 @@ export function BudgetForm({
   onChange,
   categories,
   onAddCategory,
+  isEditMode = false,
 }: BudgetFormProps) {
   const fields: FormField[] = [
     {
@@ -24,8 +26,9 @@ export function BudgetForm({
       label: "Category",
       options: categories,
       searchable: true,
+      disabled: isEditMode,
       searchPlaceholder: "Search category...",
-      onAddNew: onAddCategory,
+      onAddNew: isEditMode ? undefined : onAddCategory,
       addNewLabel: "+ Add Category",
     },
     {

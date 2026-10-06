@@ -12,7 +12,9 @@ import {
   calculateAssetAllocation,
   calculateUnrealisedPL,
   calculateFinancialHealthScore,
+  calculateCashFlow,
   formatINR,
+  formatCurrencyShort,
   formatPercentage,
 } from "../index";
 
@@ -33,6 +35,26 @@ describe("Finance Engine Calculations (Unit Tests)", () => {
       expect(calculateMonthlySavings(50000, 35000)).toBe(15000);
 
       expect(calculateMonthlySavings(30000, 45000)).toBe(0);
+    });
+  });
+
+  describe("Cash Flow Calculations", () => {
+    it("should compute income, expense, and investment streams", () => {
+      const now = new Date();
+      const thisMonthIso = new Date(now.getFullYear(), now.getMonth(), 15).toISOString();
+      const points = calculateCashFlow(
+        [
+          { amount: 116831, date: thisMonthIso, type: "INCOME" as never },
+          { amount: 35304, date: thisMonthIso, type: "EXPENSE" as never },
+          { amount: 25000, date: thisMonthIso, type: "INVESTMENT" as never },
+        ],
+        1,
+      );
+
+      expect(points).toHaveLength(1);
+      expect(points[0].income).toBe(116831);
+      expect(points[0].expense).toBe(35304);
+      expect(points[0].investment).toBe(25000);
     });
   });
 
@@ -81,7 +103,8 @@ describe("Finance Engine Calculations (Unit Tests)", () => {
       expect(calculateBudgetStatus(5000, 10000)).toBe("ON_TRACK"); // 50%
       expect(calculateBudgetStatus(8500, 10000)).toBe("ON_TRACK"); // exactly 85%
       expect(calculateBudgetStatus(8600, 10000)).toBe("NEAR_LIMIT"); // >85%
-      expect(calculateBudgetStatus(10000, 10000)).toBe("NEAR_LIMIT"); // 100%
+      expect(calculateBudgetStatus(9500, 10000)).toBe("NEAR_LIMIT"); // 95%
+      expect(calculateBudgetStatus(10000, 10000)).toBe("AT_LIMIT"); // 100% (limit reached)
       expect(calculateBudgetStatus(10500, 10000)).toBe("OVER"); // >100%
     });
   });
@@ -156,6 +179,23 @@ describe("Finance Engine Calculations (Unit Tests)", () => {
 
       expect(formatted).toContain("₹");
       expect(formatted).toContain("50,000");
+    });
+
+    it("should format compact currency accurately without crude rounding", () => {
+      expect(formatCurrencyShort(119651)).toBe("₹1.2L");
+      expect(formatCurrencyShort(118600)).toBe("₹1.19L");
+      expect(formatCurrencyShort(118000)).toBe("₹1.18L");
+      expect(formatCurrencyShort(116831)).toBe("₹1.17L");
+      expect(formatCurrencyShort(120000)).toBe("₹1.2L");
+      expect(formatCurrencyShort(100000)).toBe("₹1L");
+      expect(formatCurrencyShort(63205)).toBe("₹63.21k");
+      expect(formatCurrencyShort(78248.88)).toBe("₹78.25k");
+      expect(formatCurrencyShort(35303.66)).toBe("₹35.3k");
+      expect(formatCurrencyShort(17825)).toBe("₹17.83k");
+      expect(formatCurrencyShort(1000)).toBe("₹1k");
+      expect(formatCurrencyShort(10000000)).toBe("₹1Cr");
+      expect(formatCurrencyShort(11800000)).toBe("₹1.18Cr");
+      expect(formatCurrencyShort(450)).toBe("₹450");
     });
 
     it("should format percentages accurately", () => {

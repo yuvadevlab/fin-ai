@@ -7,7 +7,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { axisProps, tooltipStyle, inrShort } from "./chart-theme";
+import { formatCurrencyShort } from "@finai/finance-engine";
+import { axisProps, tooltipStyle } from "./chart-theme";
 
 interface TrendLineDataPoint {
   month: string;
@@ -24,8 +25,8 @@ export function TrendLine({ data }: TrendLineChartProps) {
       <LineChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis dataKey="month" {...axisProps} />
-        <YAxis {...axisProps} tickFormatter={inrShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v) => inrShort(Number(v))} />
+        <YAxis {...axisProps} tickFormatter={formatCurrencyShort} />
+        <Tooltip {...tooltipStyle()} formatter={(v) => formatCurrencyShort(Number(v))} />
         <Line
           type="monotone"
           dataKey="value"
