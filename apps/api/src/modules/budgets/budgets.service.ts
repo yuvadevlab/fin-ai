@@ -27,7 +27,7 @@ export class BudgetsService {
    * budget) using the pure `calculateBudgetStatus` helper from finance-engine.
    */
   async findAll(userId: string) {
-    this.logger.debug(`[findAll] Listing all budgets for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing all budgets for user ${userId.slice(0, 8)}`);
     const budgets = await this.prisma.client.budget.findMany({
       where: { userId },
       include: { category: true },
@@ -75,7 +75,7 @@ export class BudgetsService {
 
   /** Finds a single budget by ID, scoped to the user. Throws if not found. */
   async findOne(id: string, userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[findOne] Looking up budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     const budget = await this.prisma.client.budget.findFirst({

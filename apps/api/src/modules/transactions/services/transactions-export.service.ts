@@ -10,7 +10,7 @@ export class TransactionsExportService {
   constructor(private prisma: PrismaService) {}
 
   async generateExcelTemplate(userId: string): Promise<Buffer> {
-    this.logger.debug(`[generateExcelTemplate] Building template for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[generateExcelTemplate] Building template for user ${userId.slice(0, 8)}`);
     const [accounts, categories] = await Promise.all([
       this.prisma.client.account.findMany({
         where: { userId, isActive: true },
@@ -158,7 +158,7 @@ export class TransactionsExportService {
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    this.logger.log(
+    this.logger.info(
       `[generateExcelTemplate] Template built: ${accounts.length} account(s), ${categories.length} categorie(s) (user: ${userId.slice(0, 8)})`,
     );
     return Buffer.from(buffer);

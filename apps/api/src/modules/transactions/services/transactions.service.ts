@@ -32,14 +32,14 @@ export class TransactionsService {
   ) {}
 
   findAll(userId: string, filter: TransactionFilterInput) {
-    this.logger.debug(
+    this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
     return this.repo.findAll(userId, filter);
   }
 
   findOne(id: string, userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.repo.findOne(id, userId);
@@ -80,7 +80,7 @@ export class TransactionsService {
     dryRun = false,
   ) {
     if (dryRun) {
-      this.logger.debug(
+      this.logger.info(
         `[recategorize] Dry-run recategorize to ${targetCategoryId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
       );
     } else {
@@ -92,14 +92,14 @@ export class TransactionsService {
   }
 
   summarize(userId: string, filter: TransactionSummarizeFilter): Promise<TransactionSummaryItem[]> {
-    this.logger.debug(
+    this.logger.info(
       `[summarize] Summarizing by ${filter.groupBy} from ${filter.dateFrom} to ${filter.dateTo} (user: ${userId.slice(0, 8)})`,
     );
     return this.summary.summarize(userId, filter);
   }
 
   generateExcelTemplate(userId: string): Promise<Buffer> {
-    this.logger.debug(`[generateExcelTemplate] Generating template for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[generateExcelTemplate] Generating template for user ${userId.slice(0, 8)}`);
     return this.export_.generateExcelTemplate(userId);
   }
 }

@@ -28,7 +28,7 @@ export class TransactionsRepository {
 
   /** Returns paginated transactions with full relations. */
   async findAll(userId: string, filter: TransactionFilterInput) {
-    this.logger.debug(
+    this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
     const where = this.buildWhere(userId, filter);
@@ -55,7 +55,7 @@ export class TransactionsRepository {
 
   /** Fetches a single transaction by ID scoped to the user. */
   async findOne(id: string, userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     const tx = await this.prisma.client.transaction.findFirst({
@@ -159,7 +159,7 @@ export class TransactionsRepository {
         `Cannot record transaction: ${missing.join(", ")} not found for this user`,
       );
     }
-    this.logger.debug(`[assertOwnedRefs] All refs valid for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[assertOwnedRefs] All refs valid for user ${userId.slice(0, 8)}`);
   }
 
   /** Applies balance/investment/goal changes inside an active Prisma transaction. */

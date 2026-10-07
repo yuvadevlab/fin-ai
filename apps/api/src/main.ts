@@ -81,7 +81,7 @@ async function bootstrap() {
   await app.listen(port);
   appLogger.info(`🚀 FinAI API running on http://localhost:${port}`);
   appLogger.info(`📖 Swagger docs: http://localhost:${port}/api/docs`);
-  appLogger.debug(
+  appLogger.info(
     `Logger config: enabled=${logConfig.enabled}, level=${logConfig.level}, requests=${process.env.LOG_REQUESTS !== "false"}, persist=${process.env.LOG_PERSIST === "true"}, file=${logConfig.file ?? "(none)"}`,
   );
 }

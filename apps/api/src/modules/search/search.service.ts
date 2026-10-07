@@ -39,11 +39,11 @@ export class SearchService {
   constructor(private prisma: PrismaService) {}
 
   async search(userId: string, q: string): Promise<SearchResults> {
-    this.logger.debug(
+    this.logger.info(
       `[search] Searching for user ${userId.slice(0, 8)}, query: "${q?.slice(0, 50)}"`,
     );
     if (!q || q.trim().length < 2) {
-      this.logger.debug("[search] Query too short (< 2 chars) — returning empty results");
+      this.logger.info("[search] Query too short (< 2 chars) — returning empty results");
       return { transactions: [], accounts: [], goals: [] };
     }
 
@@ -90,7 +90,7 @@ export class SearchService {
       }),
     ]);
 
-    this.logger.log(
+    this.logger.info(
       `[search] Found ${transactions.length} transaction(s), ${accounts.length} account(s), ${goals.length} goal(s) for query "${query.slice(0, 30)}"`,
     );
     return {

@@ -24,7 +24,7 @@ export class InvestmentsService {
    * user can see how their portfolio is distributed.
    */
   async findAll(userId: string) {
-    this.logger.debug(`[findAll] Listing investments for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing investments for user ${userId.slice(0, 8)}`);
     const investments = await this.prisma.client.investment.findMany({
       where: { userId },
       orderBy: { currentValue: "desc" },
@@ -33,7 +33,7 @@ export class InvestmentsService {
     const totalValue = calculatePortfolioValue(investments);
     const allocated = calculateAssetAllocation(investments);
 
-    this.logger.log(
+    this.logger.info(
       `[findAll] Found ${investments.length} investment(s), total value: ${totalValue} (user: ${userId.slice(0, 8)})`,
     );
     return { investments: allocated, totalValue };
@@ -41,7 +41,7 @@ export class InvestmentsService {
 
   /** Finds a single investment by ID, scoped to the user. Throws if not found. */
   async findOne(id: string, userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[findOne] Looking up investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     const investment = await this.prisma.client.investment.findFirst({
@@ -70,7 +70,7 @@ export class InvestmentsService {
         investedAmount: input.investedAmount,
       },
     });
-    this.logger.log(
+    this.logger.info(
       `Created investment "${inv.name}" [${inv.assetClass}] value: ${inv.currentValue} for user ${userId.slice(0, 8)}`,
     );
     return inv;
@@ -86,7 +86,7 @@ export class InvestmentsService {
       where: { id },
       data: { currentValue },
     });
-    this.logger.log(
+    this.logger.info(
       `Updated investment ${id.slice(0, 8)} currentValue: ${currentValue} (user: ${userId.slice(0, 8)})`,
     );
     return updated;
@@ -99,7 +99,7 @@ export class InvestmentsService {
     );
     await this.findOne(id, userId);
     await this.prisma.client.investment.delete({ where: { id } });
-    this.logger.log(`Deleted investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Deleted investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { deleted: true };
   }
 }

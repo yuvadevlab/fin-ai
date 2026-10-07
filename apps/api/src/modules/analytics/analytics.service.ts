@@ -16,43 +16,43 @@ export class AnalyticsService {
   ) {}
 
   getDashboard(userId: string) {
-    this.logger.debug(`[getDashboard] Computing dashboard for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getDashboard] Computing dashboard for user ${userId.slice(0, 8)}`);
     return this.dashboard.getDashboard(userId);
   }
 
   getMonthlyAnalytics(userId: string, months = 6) {
-    this.logger.debug(
+    this.logger.info(
       `[getMonthlyAnalytics] Computing ${months}-month analytics for user ${userId.slice(0, 8)}`,
     );
     return this.dashboard.getMonthlyAnalytics(userId, months);
   }
 
   getSavingsTrend(userId: string, months = 6) {
-    this.logger.debug(
+    this.logger.info(
       `[getSavingsTrend] Computing ${months}-month savings trend for user ${userId.slice(0, 8)}`,
     );
     return this.dashboard.getSavingsTrend(userId, months);
   }
 
   getCategoryBreakdown(userId: string) {
-    this.logger.debug(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
     return this.trends.getCategoryBreakdown(userId);
   }
 
   getHealthScore(userId: string) {
-    this.logger.debug(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
     return this.trends.getHealthScore(userId);
   }
 
   getRecommendations(userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[getRecommendations] Generating recommendations for user ${userId.slice(0, 8)}`,
     );
     return this.trends.getRecommendations(userId);
   }
 
   getSafeToSpend(userId: string) {
-    this.logger.debug(`[getSafeToSpend] Computing safe-to-spend for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getSafeToSpend] Computing safe-to-spend for user ${userId.slice(0, 8)}`);
     return this.trends.getSafeToSpend(userId);
   }
 }

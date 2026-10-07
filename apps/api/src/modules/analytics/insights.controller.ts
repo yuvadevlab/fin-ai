@@ -16,8 +16,8 @@ export class InsightsController {
   @Get("recommendations")
   @ApiOperation({ summary: "Get deterministic prioritized financial recommendations" })
   getRecommendations(@CurrentUser("id") userId: string) {
-    this.logger.debug(
-      `[GET /insights/recommendations] Generating recommendations for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[getRecommendations] Generating recommendations for user ${userId.slice(0, 8)}`,
     );
     return this.analyticsService.getRecommendations(userId);
   }

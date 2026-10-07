@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, X, RefreshCw, ExternalLink, ChevronDown } from "lucide-react";
 import { cn, MarkdownContent } from "@finai/ui";
-import { useAiInsight, type InsightPage } from "../api";
-import { FEATURE_FLAGS } from "@/lib/app-constants";
+import { useAiInsight, type InsightPage } from "@/features/ai-advisor";
+import { FEATURE_FLAGS, APP_ROUTES } from "@/lib";
 
 /** Map route segments to their InsightPage value */
 const ROUTE_TO_PAGE: Record<string, InsightPage> = {
@@ -55,12 +55,7 @@ export function AIInsightFloatingWidget() {
   }
 
   // Don't render on the AI advisor page itself or if feature flag off
-  if (
-    !FEATURE_FLAGS.AI_INSIGHT ||
-    !page ||
-    pathname.startsWith("/advisor") ||
-    pathname.startsWith("/ai-advisor")
-  ) {
+  if (!FEATURE_FLAGS.AI_INSIGHT || !page || pathname.startsWith(APP_ROUTES.ADVISOR)) {
     return null;
   }
 
@@ -170,7 +165,7 @@ export function AIInsightFloatingWidget() {
         {hasLoaded && (
           <div className="border-border/60 bg-secondary/30 flex items-center justify-between border-t px-4 py-2">
             <Link
-              href="/ai-advisor"
+              href={APP_ROUTES.ADVISOR}
               className="text-primary hover:text-primary/80 flex items-center gap-1.5 text-xs font-medium transition-colors"
               onClick={() => setIsOpen(false)}
             >

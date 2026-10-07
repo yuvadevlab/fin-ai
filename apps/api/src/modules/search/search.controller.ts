@@ -16,8 +16,8 @@ export class SearchController {
   @Get()
   @ApiOperation({ summary: "Global search across transactions, accounts, and goals" })
   search(@CurrentUser("id") userId: string, @Query("q") q: string) {
-    this.logger.debug(
-      `[GET /search] Global search for user ${userId.slice(0, 8)}, query: "${(q ?? "").slice(0, 50)}"`,
+    this.logger.info(
+      `[search] Global search for user ${userId.slice(0, 8)}, query: "${(q ?? "").slice(0, 50)}"`,
     );
     return this.searchService.search(userId, q ?? "");
   }

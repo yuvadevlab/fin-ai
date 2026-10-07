@@ -46,6 +46,8 @@ export interface AgentEventPort {
   failStream(error: string): void;
   endStream(): void;
   onConversation(conversationId: string): void;
+  /** Emitted on first turn when a smart summary title is generated. */
+  onTitle?(title: string): void;
   /** Set once per run after routing resolves — which runtime answered. */
   onMode?(mode: AgentResolvedMode): void;
 }
@@ -54,6 +56,10 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
   switch (event.type) {
     case "conversation":
       port.onConversation(event.conversationId);
+      return false;
+
+    case "title":
+      port.onTitle?.(event.title);
       return false;
 
     case "run":

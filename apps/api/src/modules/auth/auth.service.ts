@@ -37,7 +37,7 @@ export class AuthService {
    * Uses bcrypt for constant-time password comparison against the stored hash.
    */
   async login(input: LoginInput) {
-    this.logger.debug(`[login] Attempting login for email: ${input.email}`);
+    this.logger.info(`[login] Attempting login for email: ${input.email}`);
     const user = await this.prisma.client.user.findUnique({
       where: { email: input.email },
     });
@@ -85,7 +85,7 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(input.password, 10);
-    this.logger.debug(`[register] Password hashed for user: ${input.email}`);
+    this.logger.info(`[register] Password hashed for user: ${input.email}`);
 
     const user = await this.prisma.client.user.create({
       data: {
@@ -133,7 +133,7 @@ export class AuthService {
 
     // Always return success to prevent email enumeration attacks
     if (!user) {
-      this.logger.debug(`[forgotPassword] No user found for email: ${email} (silently ignored)`);
+      this.logger.info(`[forgotPassword] No user found for email: ${email} (silently ignored)`);
       return { message: "If an account exists with that email, a reset link has been sent." };
     }
 
@@ -155,7 +155,7 @@ export class AuthService {
     this.logger.info(
       `[forgotPassword] Reset token generated for user ${user.id.slice(0, 8)}: ${resetUrl}`,
     );
-    this.logger.debug(`[forgotPassword] Token expires at: ${expires.toISOString()}`);
+    this.logger.info(`[forgotPassword] Token expires at: ${expires.toISOString()}`);
 
     return {
       message: "If an account exists with that email, a reset link has been sent.",
@@ -204,7 +204,7 @@ export class AuthService {
    * (e.g. deleted account).
    */
   async validateUserById(userId: string) {
-    this.logger.debug(`[validateUserById] Validating user ${userId.slice(0, 8)} from JWT`);
+    this.logger.info(`[validateUserById] Validating user ${userId.slice(0, 8)} from JWT`);
     const user = await this.prisma.client.user.findUnique({ where: { id: userId } });
     if (!user) {
       this.logger.warn(`[validateUserById] User not found for JWT subject: ${userId.slice(0, 8)}`);

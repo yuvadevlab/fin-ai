@@ -101,3 +101,16 @@ Rules:
 - Prefer commonly recognized emojis that users can quickly understand.
 - Avoid generic money emojis unless the category is directly related to money, income, investments, loans, or banking.
 `;
+
+/**
+ * Prompt template for generating a short, 3 to 6 word summary title for a conversation.
+ */
+export const TITLE_GENERATION_PROMPT_TEMPLATE = `You are a concise title generator.
+
+Summarize the following personal finance user request into a short 3 to 6 word title.
+Do NOT use quotation marks, punctuation, formatting, or prefixes like "Title:".
+Only return the title itself.
+
+User request: {question}
+
+Title:`;

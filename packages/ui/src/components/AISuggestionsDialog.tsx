@@ -6,6 +6,7 @@ import {
   Button,
   cn,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -61,41 +62,43 @@ export function AISuggestionsDialog({
           </DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
-        <ul className="space-y-2">
-          {suggestions.map((s) => {
-            const active = picked.includes(s.title);
-            return (
-              <li key={s.title}>
-                <button
-                  type="button"
-                  onClick={() => toggle(s.title)}
-                  className={cn(
-                    "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition",
-                    active
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-card hover:border-primary/40",
-                  )}
-                >
-                  <div
+        <DialogBody>
+          <ul className="space-y-2">
+            {suggestions.map((s) => {
+              const active = picked.includes(s.title);
+              return (
+                <li key={s.title}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(s.title)}
                     className={cn(
-                      "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border",
+                      "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition",
                       active
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border",
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-primary/40",
                     )}
                   >
-                    {active ? <Check className="size-3" /> : null}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold">{s.title}</p>
-                    <p className="text-muted-foreground mt-0.5 text-xs">{s.detail}</p>
-                    <p className="text-primary mt-2 text-xs font-medium">{s.impact}</p>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                    <div
+                      className={cn(
+                        "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border",
+                        active
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border",
+                      )}
+                    >
+                      {active ? <Check className="size-3" /> : null}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">{s.title}</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">{s.detail}</p>
+                      <p className="text-primary mt-2 text-xs font-medium">{s.impact}</p>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </DialogBody>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)}>
             Cancel

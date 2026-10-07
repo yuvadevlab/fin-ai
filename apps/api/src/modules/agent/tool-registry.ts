@@ -25,7 +25,7 @@ export class ToolRegistry {
       throw new Error(`Agent tool already registered: ${tool.name}`);
     }
     this.tools.set(tool.name, tool);
-    this.logger.log(`Registered agent tool: ${tool.name} [${tool.access}]`);
+    this.logger.info(`Registered agent tool: ${tool.name} [${tool.access}]`);
   }
 
   /** Registry lookup by exact tool name; undefined when the model invented a name. */
