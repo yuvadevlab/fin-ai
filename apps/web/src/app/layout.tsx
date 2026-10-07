@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { QueryProvider, AppearanceProvider } from "@/providers";
 import { Toaster } from "@finai/ui";
 import { appearanceScript } from "@/lib/appearance-script";
-import "@finai/ui/styles.css";
 import "./globals.css";
 
 // eslint-disable-next-line react-refresh/only-export-components

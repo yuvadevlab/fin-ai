@@ -2,37 +2,15 @@
 @source "../**";
 @source "../../../../packages/ui";
 @source "../../node_modules/@yuva-devlab/ui";
-@import "@yuva-devlab/ui/preset.css";
-@import "@yuva-devlab/ui/themes/finai.css";
+@import "@finai/ui/styles.css";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-ring-offset-background: var(--background);
-  --color-income: var(--income);
-  --color-expense: var(--expense);
-  --color-investment: var(--investment);
-}
-
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
-
   html,
   body {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
-  }
-
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
   }
 }
 
@@ -48,31 +26,12 @@
   animation: none !important;
 }
 
-/* ── Speed runner shimmer for agent progress bar ─────────────────────────── */
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 /* ── Layout Design Tokens ─────────────────────────────────────────────────── */
-/* All layout dimensions as CSS variables so calc() works throughout the shell */
+/* Responsive page container padding and max-width for standard and ultra-wide screens */
 :root {
-  --header-height: 4rem; /* 64px  ← TopBar h-16                  */
-  --sidebar-width: 16rem; /* 256px ← Sidebar expanded w-64        */
-  --sidebar-rail-width: 4.5rem; /* 72px  ← Sidebar collapsed rail w-18  */
-
   --page-padding-x: 1rem; /* 16px horizontal page padding on mobile   */
   --page-padding-y: 1.25rem; /* 20px vertical page padding on mobile     */
   --page-max-width: 96rem; /* 1536px max content width             */
-  --privacy-toggle-size: 2.5rem; /* 40px  ← Privacy toggle size             */
-  --investment: #3b82f6; /* Investment accent (blue)                        */
-
-  /* Derived — reference these in components instead of duplicating maths */
-  --content-height: calc(100dvh - var(--header-height));
 }
 
 @media (min-width: 640px) {
@@ -100,10 +59,6 @@
 }
 
 /* ── Density ─────────────────────────────────────────────────────────────── */
-body.density-compact {
-  --spacing-scale: 0.75;
-}
-
 body.density-compact .p-5 {
   padding: 0.75rem;
 }
