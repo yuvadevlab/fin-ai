@@ -58,3 +58,26 @@ apps/api/src/modules/<feature>/
    ```
 2. **Use `forwardRef` for Co-dependent Providers**: When two services must reference each other, use `@Inject(forwardRef(() => ServiceName))` on the constructor parameter.
 3. **Module Facades**: When decomposing a service into specialized sub-services, provide a thin root facade (e.g. `transactions.service.ts` or `analytics.service.ts`) to maintain 100% backward-compatible import paths.
+
+---
+
+## 4. Backend Logging Standards (`.info`, `.warn`, `.error` ONLY)
+
+1. **Strict Allowed Levels**:
+   - Use ONLY `.info`, `.warn`, and `.error`.
+   - FORBIDDEN: `.debug`, `.log`, `.verbose`, `.trace`.
+2. **Context & Formatting**:
+   - Instantiate with class name: `private readonly logger = new Logger(AccountsController.name);`
+   - Omit class name in the message payload (it is already prefixed by the logger).
+   - Format with method tag: `this.logger.info(`[methodName] action description`);`
+3. **Audit Records**: Write operations must emit audit log events via `AuditService.record()` for compliance tracking.
+
+---
+
+## 5. Canonical Enums & Contract Alignment
+
+1. **No String Literals in Event Pipelines**:
+   - SSE and agent stream events MUST use `AgentStreamEventType` (e.g. `AgentStreamEventType.RUN`, `AgentStreamEventType.DONE`, `AgentStreamEventType.ERROR`).
+   - Agent modes, execution phases, and phase statuses MUST use `AgentMode`, `ExecutionPhase`, `PhaseStatus`.
+2. **API Endpoint Constants**:
+   - Reference `API_ENDPOINTS` from `@finai/shared-types` rather than hardcoded endpoint strings in controller tests, route handlers, or client wrappers.

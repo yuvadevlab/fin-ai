@@ -1,5 +1,8 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { API_BASE_URL } from "@/lib/api-client";
+import { API_BASE_URL } from "@/lib";
+import { API_ENDPOINTS, SEARCH_PARAMS, StorageKey } from "@finai/shared-types";
 
 export type InsightPage =
   | "dashboard"
@@ -44,10 +47,10 @@ export function useAiInsight({ page, enabled = true }: UseAiInsightOptions): Use
     setIsError(false);
     setIsStreaming(true);
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("finai_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem(StorageKey.TOKEN) : null;
 
     try {
-      const url = `${API_BASE_URL}/ai/insight?page=${page}`;
+      const url = `${API_BASE_URL}/${API_ENDPOINTS.AI.INSIGHT}?${SEARCH_PARAMS.PAGE}=${page}`;
       const res = await fetch(url, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

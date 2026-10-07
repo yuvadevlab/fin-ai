@@ -38,3 +38,19 @@
    - **Phase 1 (Propose)**: The model proposes the write action. A `PROPOSED` row is stored with a 15-minute TTL, and a confirmation card is streamed to the client. The database state is NOT modified.
    - **Phase 2 (Confirm / Reject)**: The user explicitly confirms the proposed action via the UI card. Only upon user confirmation does the service execute the mutation.
 3. **Bulk Actions**: For destructive or bulk actions (like recategorization), always execute a dry-run preview first to report the exact count of affected items before proposing the change.
+
+---
+
+## 5. Web Client State Architecture & Streaming Contracts
+
+1. **Persistent Layout & Context**:
+   - `AgentChatProvider` wraps the `/ai-advisor` layout so active streams, messages, and approvals survive route transitions without remounting.
+   - Child pages access chat state through `useAgentChatContext()`.
+2. **Zero-Latency Message Hydration**:
+   - 0ms cache lookup: Checks in-memory `Map` followed by `sessionStorage` via `chatStorage.ts`.
+   - Hydrates actions and turns into message structures via `conversationHydration.ts`.
+3. **Streaming Event Enums**:
+   - Use canonical `AgentStreamEventType` enums (`AgentStreamEventType.RUN`, `AgentStreamEventType.PHASE`, `AgentStreamEventType.TITLE`, `AgentStreamEventType.DONE`, `AgentStreamEventType.ERROR`) instead of raw strings.
+4. **Clean RSC Boundaries**:
+   - Next.js Server Components (`layout.tsx`, `page.tsx`) must NOT import from the root feature barrel `@/features/ai-advisor`.
+   - Import UI components from `@/features/ai-advisor/components` and providers from `@/features/ai-advisor/context`.

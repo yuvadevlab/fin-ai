@@ -9,7 +9,7 @@ export class AppController {
   @Get("health")
   @ApiOperation({ summary: "System health check endpoint" })
   getHealth() {
-    this.logger.debug("[GET /health] Health check requested");
+    this.logger.info("[GET /health] Health check requested");
     return {
       status: "ok",
       timestamp: new Date().toISOString(),

@@ -39,7 +39,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    this.logger.debug(
+    this.logger.info(
       `[validate] Validating JWT for sub=${payload.sub.slice(0, 8)} email=${payload.email}`,
     );
     const user = await this.prisma.client.user.findUnique({
@@ -53,7 +53,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // Thrown as 401 by the guard — the account was deleted or the sub is forged.
       throw new UnauthorizedException("User for this token no longer exists");
     }
-    this.logger.debug(`[validate] Authenticated user ${user.id.slice(0, 8)} (${user.email})`);
+    this.logger.info(`[validate] Authenticated user ${user.id.slice(0, 8)} (${user.email})`);
     return user;
   }
 }

@@ -16,9 +16,7 @@ export class AnalyticsController {
   @Get("dashboard")
   @ApiOperation({ summary: "Get dashboard KPIs for the current user" })
   getDashboard(@CurrentUser("id") userId: string) {
-    this.logger.debug(
-      `[GET /analytics/dashboard] Fetching dashboard for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[getDashboard] Fetching dashboard for user ${userId.slice(0, 8)}`);
     return this.analyticsService.getDashboard(userId);
   }
 
@@ -26,8 +24,8 @@ export class AnalyticsController {
   @ApiOperation({ summary: "Get monthly cash flow data (last N months)" })
   getMonthly(@CurrentUser("id") userId: string, @Query("months") months?: string) {
     const parsed = months === "all" ? 120 : months ? parseInt(months, 10) || 3 : 3;
-    this.logger.debug(
-      `[GET /analytics/monthly] Fetching ${parsed}-month cash flow for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[getMonthly] Fetching ${parsed}-month cash flow for user ${userId.slice(0, 8)}`,
     );
     return this.analyticsService.getMonthlyAnalytics(userId, parsed);
   }
@@ -35,18 +33,14 @@ export class AnalyticsController {
   @Get("categories")
   @ApiOperation({ summary: "Get category breakdown for the current month" })
   getCategories(@CurrentUser("id") userId: string) {
-    this.logger.debug(
-      `[GET /analytics/categories] Fetching category breakdown for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[getCategories] Fetching category breakdown for user ${userId.slice(0, 8)}`);
     return this.analyticsService.getCategoryBreakdown(userId);
   }
 
   @Get("health")
   @ApiOperation({ summary: "Get financial health score and component metrics" })
   getHealth(@CurrentUser("id") userId: string) {
-    this.logger.debug(
-      `[GET /analytics/health] Computing health score for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[getHealth] Computing health score for user ${userId.slice(0, 8)}`);
     return this.analyticsService.getHealthScore(userId);
   }
 
@@ -54,8 +48,8 @@ export class AnalyticsController {
   @ApiOperation({ summary: "Get monthly savings trend (income - expense per month)" })
   getSavingsTrend(@CurrentUser("id") userId: string, @Query("months") months?: string) {
     const parsed = months ? parseInt(months) : 6;
-    this.logger.debug(
-      `[GET /analytics/savings-trend] Fetching ${parsed}-month savings trend for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[getSavingsTrend] Fetching ${parsed}-month savings trend for user ${userId.slice(0, 8)}`,
     );
     return this.analyticsService.getSavingsTrend(userId, parsed);
   }

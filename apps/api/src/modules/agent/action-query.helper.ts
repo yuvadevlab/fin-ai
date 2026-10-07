@@ -44,7 +44,7 @@ export async function rejectAgentAction(
     tool: action.tool,
     status: "rejected",
   });
-  logger.log(
+  logger.info(
     `Rejected action "${action.tool}" (actionId: ${actionId.slice(0, 8)}, userId: ${userId.slice(0, 8)})`,
   );
   return { rejected: true as const, action: updated };
@@ -56,7 +56,7 @@ export async function listProposedActions(
   userId: string,
   conversationId?: string,
 ) {
-  logger.debug(
+  logger.info(
     `[listProposed] Listing pending actions for user ${userId.slice(0, 8)}${conversationId ? ` (convo: ${conversationId.slice(0, 8)})` : ""}`,
   );
   return prisma.client.agentAction.findMany({

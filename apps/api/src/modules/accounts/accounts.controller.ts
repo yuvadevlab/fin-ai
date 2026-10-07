@@ -23,15 +23,15 @@ export class AccountsController {
   @Get()
   @ApiOperation({ summary: "List all accounts for the current user" })
   findAll(@CurrentUser("id") userId: string) {
-    this.logger.debug(`[GET /accounts] Listing all accounts for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing all accounts for user ${userId.slice(0, 8)}`);
     return this.accountsService.findAll(userId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single account" })
   findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
-    this.logger.debug(
-      `[GET /accounts/:id] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[findOne] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.accountsService.findOne(id, userId);
   }
@@ -43,7 +43,7 @@ export class AccountsController {
     @Body(new ZodValidationPipe(createAccountSchema)) body: CreateAccountInput,
   ) {
     this.logger.info(
-      `[POST /accounts] Creating account "${body.name}" [${body.type}] for user ${userId.slice(0, 8)}`,
+      `[create] Creating account "${body.name}" [${body.type}] for user ${userId.slice(0, 8)}`,
     );
     return this.accountsService.create(userId, body);
   }
@@ -55,9 +55,7 @@ export class AccountsController {
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateAccountSchema)) body: UpdateAccountInput,
   ) {
-    this.logger.info(
-      `[PATCH /accounts/:id] Updating account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[update] Updating account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return this.accountsService.update(id, userId, body);
   }
 
@@ -65,7 +63,7 @@ export class AccountsController {
   @ApiOperation({ summary: "Set an account as the default account" })
   setDefault(@CurrentUser("id") userId: string, @Param("id") id: string) {
     this.logger.info(
-      `[PATCH /accounts/:id/default] Setting default account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[setDefault] Setting default account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.accountsService.setDefault(id, userId);
   }
@@ -74,7 +72,7 @@ export class AccountsController {
   @ApiOperation({ summary: "Soft-delete an account" })
   remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
     this.logger.info(
-      `[DELETE /accounts/:id] Soft-deleting account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[remove] Soft-deleting account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.accountsService.remove(id, userId);
   }

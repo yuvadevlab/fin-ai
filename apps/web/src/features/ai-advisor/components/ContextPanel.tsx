@@ -1,41 +1,42 @@
 "use client";
 
+/**
+ * @file apps/web/src/features/ai-advisor/components/ContextPanel.tsx
+ * @description Docked sidebar panel displaying portfolio snapshot, quick prompts, and action reviews.
+ * @module @finai/web/features/ai-advisor/components/ContextPanel
+ */
+
 import { Bot, Loader2, ShieldCheck } from "lucide-react";
 import { cn } from "@finai/ui";
-import type { AgentActivity, AgentConfirmation } from "../api/agentTypes";
-import { activityLabel } from "../utils/deriveRunState";
-import { FinancialSnapshot } from "./FinancialSnapshot";
-import { QuickActions } from "./QuickActions";
+import { UI_COPY } from "@/lib";
+import {
+  type AgentActivity,
+  type AgentConfirmation,
+  activityLabel,
+  FinancialSnapshot,
+  QuickActions,
+} from "@/features/ai-advisor";
 
-interface ContextPanelProps {
-  /** Sends a quick-action message into the conversation. */
+/** Props configuration for the {@link ContextPanel} component */
+export interface ContextPanelProps {
+  /** Sends a quick-action message into the conversation */
   onQuickAction: (message: string) => void;
-  /** True while the agent run's SSE stream is open — shows the live block. */
+  /** True while the agent run's SSE stream is open */
   isStreaming?: boolean;
-  /** Current run status label while streaming (from deriveRunState). */
+  /** Current run status label while streaming */
   streamingLabel?: string;
-  /** The first pending confirmation, if an action awaits approval. */
+  /** The first pending confirmation, if an action awaits approval */
   pendingConfirmation?: AgentConfirmation | null;
-  /**
-   * Activities of the most recent completed run. Only resolved rows with a
-   * real server summary contribute to the "Just reviewed" block — the UI
-   * never invents numbers.
-   */
+  /** Activities of the most recent completed run */
   lastRunActivities?: AgentActivity[] | undefined;
+  /** Optional custom CSS class name */
   className?: string;
 }
 
 /**
- * The right-column "Context" workspace panel.
- *
- * It is deliberately *contextual*, not a static dashboard:
- * - While a run is streaming  → live "Agent" status block.
- * - While an action is pending → compact "Action" block (the full editable
- *   confirmation card stays in the conversation — never duplicated here).
- * - After a completed run     → "Just reviewed" list built from the real
- *   tool result summaries.
- * - Always                    → financial snapshot + current context counts
- *   from real API data.
+ * Contextual side panel rendering adaptive real-time information:
+ * live tool run state during execution, approval summaries during pending confirmations,
+ * and current portfolio balances.
  */
 export function ContextPanel({
   onQuickAction,
@@ -45,50 +46,50 @@ export function ContextPanel({
   lastRunActivities,
   className,
 }: ContextPanelProps) {
-  // Resolved activities that carried a real result summary, in arrival order.
+  // Resolved activities that carried a real result summary
   const reviewed = (lastRunActivities ?? [])
     .filter((a) => a.status === "success" && a.summary)
     .slice(-4);
 
-  // Compact action context: tool title + the first card rows (real data).
+  // Compact action context: tool title + the first card rows
   const actionRows = (pendingConfirmation?.card.rows ?? []).slice(0, 3);
   const showReview = reviewed.length > 0 && !isStreaming;
 
   return (
     <div className={cn("flex flex-col gap-5", className)}>
-      {/* Quick actions — compact chips */}
-      <section aria-label="Quick actions">
-        <SectionTitle>Quick actions</SectionTitle>
+      {/* Quick actions section */}
+      <section aria-label={UI_COPY.ADVISOR.CONTEXT.QUICK_ACTIONS_TITLE}>
+        <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.QUICK_ACTIONS_TITLE}</SectionTitle>
         <QuickActions onSelect={onQuickAction} className="grid grid-cols-2 gap-2" />
       </section>
 
-      {/* Adaptive: agent is live */}
+      {/* Adaptive: live agent streaming indicator */}
       {isStreaming && (
-        <section aria-live="polite" aria-label="Agent status">
-          <SectionTitle>Agent</SectionTitle>
+        <section aria-live="polite" aria-label={UI_COPY.ADVISOR.CONTEXT.AGENT_STATUS_TITLE}>
+          <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.AGENT_STATUS_TITLE}</SectionTitle>
           <div className="bg-primary/5 border-primary/20 flex items-center gap-2.5 rounded-xl border px-3 py-2.5">
             <Loader2 className="text-primary size-4 animate-spin" aria-hidden="true" />
             <span className="text-foreground text-sm font-medium">
-              {streamingLabel ?? "FinAI is thinking…"}
+              {streamingLabel ?? UI_COPY.ADVISOR.CONTEXT.STREAMING_DEFAULT}
             </span>
           </div>
         </section>
       )}
 
-      {/* Adaptive: an action is waiting for approval */}
+      {/* Adaptive: action awaiting human clearance */}
       {!isStreaming && pendingConfirmation && (
-        <section aria-label="Pending action context">
-          <SectionTitle>Action</SectionTitle>
+        <section aria-label={UI_COPY.ADVISOR.CONTEXT.ACTION_TITLE}>
+          <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.ACTION_TITLE}</SectionTitle>
           <div className="bg-card border-border/60 rounded-xl border p-3 shadow-sm">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-4 shrink-0 text-amber-600" aria-hidden="true" />
               <p className="text-foreground min-w-0 flex-1 truncate text-sm font-semibold">
-                {pendingConfirmation.card.title ?? "Pending action"}
+                {pendingConfirmation.card.title ?? UI_COPY.ADVISOR.COMPOSER.PENDING_PREFIX}
               </p>
             </div>
             <span className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-amber-600">
               <Bot className="size-3.5" aria-hidden="true" />
-              Waiting for your approval
+              {UI_COPY.ADVISOR.CONTEXT.WAITING_APPROVAL}
             </span>
             {actionRows.length > 0 && (
               <div className="bg-foreground/2 border-border/40 mt-2.5 space-y-1 border-t pt-2">
@@ -104,10 +105,10 @@ export function ContextPanel({
         </section>
       )}
 
-      {/* Adaptive: what the last run actually reviewed */}
+      {/* Adaptive: recent completed tool review log */}
       {showReview && (
-        <section aria-label="Recently reviewed data">
-          <SectionTitle>Just reviewed</SectionTitle>
+        <section aria-label={UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}>
+          <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}</SectionTitle>
           <ul className="bg-card border-border/60 divide-border/40 space-y-1.5 rounded-xl border px-3 py-2.5 shadow-sm">
             {reviewed.map((a, i) => (
               <li key={`${a.tool}-${i}`} className="flex flex-col gap-0.5">
@@ -119,9 +120,9 @@ export function ContextPanel({
         </section>
       )}
 
-      {/* Always-on, real financial context */}
-      <section aria-label="Financial snapshot">
-        <SectionTitle>Financial snapshot</SectionTitle>
+      {/* Always-on financial context */}
+      <section aria-label={UI_COPY.ADVISOR.CONTEXT.SNAPSHOT_TITLE}>
+        <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.SNAPSHOT_TITLE}</SectionTitle>
         <FinancialSnapshot />
       </section>
     </div>

@@ -16,3 +16,4 @@ export { AdvisorHeader } from "./AdvisorHeader";
 export { ContextPanel } from "./ContextPanel";
 export { FinancialSnapshot } from "./FinancialSnapshot";
 export { HistoryDrawer } from "./HistoryDrawer";
+export { ChatLoadingSkeleton } from "./ChatLoadingSkeleton";

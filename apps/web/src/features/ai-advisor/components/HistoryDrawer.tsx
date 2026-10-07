@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * @file apps/web/src/features/ai-advisor/components/HistoryDrawer.tsx
+ * @description Slide-over history drawer listing past conversational threads with instant switching.
+ * @module @finai/web/features/ai-advisor/components/HistoryDrawer
+ */
+
 import { MessageSquare, Trash2 } from "lucide-react";
 import {
   Button,
@@ -10,17 +16,31 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@finai/ui";
-import type { AiConversation } from "../api/useConversations";
+import { UI_COPY, APP_ROUTES } from "@/lib";
+import type { AiConversation } from "@/features/ai-advisor";
 
-interface HistoryDrawerProps {
+/** Props configuration for the {@link HistoryDrawer} component */
+export interface HistoryDrawerProps {
+  /** Controlled open state of the sheet modal */
   open: boolean;
+  /** Open change callback for the sheet primitive */
   onOpenChange: (open: boolean) => void;
+  /** Array of past conversations fetched from the API */
   conversations: AiConversation[] | undefined;
+  /** Active conversation UUID currently rendered in the chat view */
   activeConversationId?: string | null;
+  /** Selection handler invoked when clicking an existing thread */
   onSelectConversation: (conversation: AiConversation) => void;
+  /** Deletion handler invoked when confirming deletion */
   onDeleteConversation: (id: string, e: React.MouseEvent) => void;
 }
 
+/**
+ * Formats an ISO date string into human-friendly relative time (e.g. '5m ago', '2d ago').
+ *
+ * @param dateInput - ISO string or Date instance.
+ * @returns Formatted relative timestamp string.
+ */
 function formatRelativeTime(dateInput: string | Date): string {
   const date = new Date(dateInput);
   const diffInSeconds = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -35,9 +55,8 @@ function formatRelativeTime(dateInput: string | Date): string {
 }
 
 /**
- * Slide-over list of past conversations (Sheet primitive). Opened from the
- * header "History" button on every breakpoint — it never competes with the
- * contextual right panel.
+ * Slide-over drawer presenting the user's historical AI conversations.
+ * Accessible across all screen breakpoints with smooth keyboard and mouse interactions.
  */
 export function HistoryDrawer({
   open,
@@ -54,13 +73,15 @@ export function HistoryDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-80 overflow-y-auto sm:max-w-sm">
         <SheetHeader>
-          <SheetTitle>Past Conversations</SheetTitle>
-          <SheetDescription>Resume where you left off.</SheetDescription>
+          <SheetTitle>{UI_COPY.ADVISOR.DRAWER.TITLE}</SheetTitle>
+          <SheetDescription>{UI_COPY.ADVISOR.DRAWER.DESCRIPTION}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-4 space-y-1.5">
           {isEmpty && (
-            <p className="text-muted-foreground py-10 text-center text-sm">No conversations yet.</p>
+            <p className="text-muted-foreground py-10 text-center text-sm">
+              {UI_COPY.ADVISOR.DRAWER.EMPTY}
+            </p>
           )}
 
           {list.map((conversation) => {
@@ -75,31 +96,40 @@ export function HistoryDrawer({
                     : "hover:bg-secondary/60 text-muted-foreground hover:text-foreground",
                 )}
               >
-                <button
-                  type="button"
-                  onClick={() => onSelectConversation(conversation)}
+                {/* Semantic link: preserves browser a11y, middle-click and Cmd+click while enabling 0ms SPA clicks */}
+                <a
+                  href={APP_ROUTES.ADVISOR_THREAD(conversation.id)}
+                  onClick={(e) => {
+                    // Check for modifier keys (Cmd/Ctrl/Shift) to preserve browser native open-in-tab behaviors
+                    if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+                      e.preventDefault();
+                      onSelectConversation(conversation);
+                    }
+                  }}
                   className="focus-visible:ring-ring flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 outline-none focus-visible:ring-1"
                 >
                   <MessageSquare className="size-3.5 shrink-0" aria-hidden="true" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">
-                      {conversation.title || "Untitled chat"}
+                      {conversation.title || UI_COPY.ADVISOR.DRAWER.UNTITLED_CHAT}
                     </span>
                     <span className="text-muted-foreground block text-[11px]">
                       {formatRelativeTime(conversation.updatedAt)}
                     </span>
                   </span>
-                </button>
+                </a>
+
+                {/* Hover-reveal delete action */}
                 {onDeleteConversation && (
                   <Button
                     variant="ghost"
                     size="icon"
                     className="size-7 shrink-0 opacity-0 transition group-hover:opacity-100"
                     onClick={(e) => onDeleteConversation(conversation.id, e)}
-                    title="Delete chat"
+                    title={UI_COPY.ADVISOR.DRAWER.DELETE_TOOLTIP}
                   >
                     <Trash2 className="text-muted-foreground hover:text-destructive size-3.5" />
-                    <span className="sr-only">Delete conversation</span>
+                    <span className="sr-only">{UI_COPY.ADVISOR.DRAWER.DELETE_A11Y}</span>
                   </Button>
                 )}
               </div>

@@ -46,6 +46,7 @@ export class AiController {
   @Get("conversations")
   @ApiOperation({ summary: "List all AI conversations for the current user" })
   getConversations(@CurrentUser("id") userId: string): Promise<Record<string, unknown>[]> {
+    this.logger.info(`[getConversations] Fetching conversations for user ${userId.slice(0, 8)}`);
     return this.conversationService.getConversations(userId);
   }
 
@@ -55,7 +56,7 @@ export class AiController {
     if (!category) {
       throw new Error("Category name is required");
     }
-    this.logger.log(`[SuggestEmoji] Request for category: "${category}"`);
+    this.logger.info(`[suggestEmoji] Request for category: "${category}"`);
     const prompt = buildEmojiSuggestionUserPrompt(category);
 
     const response = await this.aiModelService.chat({
@@ -72,6 +73,9 @@ export class AiController {
     @Param("id") id: string,
     @CurrentUser("id") userId: string,
   ): Promise<Record<string, unknown> | null> {
+    this.logger.info(
+      `[getConversation] Fetching convo ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     return this.conversationService.getConversation(id, userId);
   }
 
@@ -81,6 +85,9 @@ export class AiController {
     @Param("id") id: string,
     @CurrentUser("id") userId: string,
   ): Promise<{ success: boolean }> {
+    this.logger.info(
+      `[deleteConversation] Deleting convo ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
     const success = await this.conversationService.deleteConversation(id, userId);
     return { success };
   }
@@ -131,8 +138,8 @@ export class AiController {
     }
 
     await this.conversationService.addMessage(conversationId, "user", body.question);
-    this.logger.log(
-      `[AdvisorChat] Streaming started for user ${userId.slice(0, 8)} (convo: ${conversationId}, prompt: "${body.question.slice(0, 50)}")`,
+    this.logger.info(
+      `[chat] Streaming started for user ${userId.slice(0, 8)} (convo: ${conversationId}, prompt: "${body.question.slice(0, 50)}")`,
     );
 
     // Emit conversationId first so the client can track the session
@@ -152,8 +159,8 @@ export class AiController {
     // Persist the full assistant response
     if (fullResponse && conversationId) {
       await this.conversationService.addMessage(conversationId, "assistant", fullResponse);
-      this.logger.log(
-        `[AdvisorChat] Stream finished (convo: ${conversationId}, response length: ${fullResponse.length})`,
+      this.logger.info(
+        `[chat] Stream finished (convo: ${conversationId}, response length: ${fullResponse.length})`,
       );
     }
   }
@@ -167,8 +174,8 @@ export class AiController {
     @Query("page") page: string = "dashboard",
     @Res() res: Response,
   ) {
-    this.logger.log(
-      `[Insight] Generating page insight for "${page}" (user: ${userId.slice(0, 8)})`,
+    this.logger.info(
+      `[insight] Generating page insight for "${page}" (user: ${userId.slice(0, 8)})`,
     );
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -181,6 +188,6 @@ export class AiController {
     const systemPrompt = buildInsightSystemPrompt(context);
 
     await this.aiModelService.streamChatWithCallback({ prompt, systemPrompt }, res);
-    this.logger.log(`[Insight] Stream finished for user ${userId.slice(0, 8)} (page: "${page}")`);
+    this.logger.info(`[insight] Stream finished for user ${userId.slice(0, 8)} (page: "${page}")`);
   }
 }

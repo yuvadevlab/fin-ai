@@ -1,37 +1,46 @@
-import { useCallback, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import type { AgentStreamEvent } from "@finai/ai-engine";
-import { API_BASE_URL, apiClient } from "@/lib/api-client";
-import { handleAgentStreamEvent, type AgentEventPort } from "./agentEventHandlers";
-import { useAgentActionRunner } from "./useAgentActionRunner";
-import { useAgentMessages } from "./useAgentMessages";
-import { fetchConversationActions, type AgentActionHistoryItem } from "./agentActions";
-import { hydrateConversationMessages } from "./conversationHydration";
-import type { AiConversation } from "./useConversations";
+"use client";
 
 /**
- * Streaming agent chat hook. Consumes the SSE `AgentStreamEvent` union from
- * POST /agent/chat and renders tool activity + confirmation cards alongside
- * the prose stream.
+ * @file apps/web/src/features/ai-advisor/api/useAgentChat.ts
+ * @description Primary client hook managing SSE streaming, tool action approvals, and zero-latency caching.
+ * @module @finai/web/features/ai-advisor/api/useAgentChat
  */
-export function useAgentChat() {
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { StorageKey, QUERY_KEYS } from "@finai/shared-types";
+import { APP_ROUTES } from "@/lib";
+import { type AgentEventPort } from "./agentEventHandlers";
+import { streamAgentChat } from "./agentChatStreamer";
+import { useAgentActionRunner } from "./useAgentActionRunner";
+import { useAgentMessages } from "./useAgentMessages";
+import { fetchAndHydrateConversation } from "./conversationHydration";
+import { loadCachedMessages, saveCachedMessages } from "./chatStorage";
+import type { AgentChatMessage } from "./agentTypes";
+
+/** Options configuration for the {@link useAgentChat} hook */
+export interface UseAgentChatOptions {
+  /** Callback fired whenever a new conversation UUID is assigned by the server */
+  onConversationAssigned?: (conversationId: string) => void;
+}
+
+/**
+ * Manages autonomous agent chat streaming, approval action execution, and conversation state.
+ *
+ * @param options - Optional configuration options including thread assignment callback.
+ * @returns State and dispatch methods for the AI Advisor interface.
+ */
+export function useAgentChat(options?: UseAgentChatOptions) {
   const queryClient = useQueryClient();
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const cacheRef = useRef<Map<string, AgentChatMessage[]>>(new Map());
+
   const {
     messages,
-    appendLog,
-    appendText,
-    replaceText,
-    appendActivity,
-    updateActivity,
-    resolveApprovalActivity,
-    appendConfirmation,
-    updateConfirmationStatus,
-    updateConfirmationCard,
-    failStream,
-    endStream,
+    portMethods,
     pushUserTurn,
     pushAssistantTurn,
     setMode,
@@ -39,35 +48,27 @@ export function useAgentChat() {
     clearMessages,
   } = useAgentMessages();
 
-  // Confirm/reject action lifecycle (button path) — separate hook for the
-  // 250-line cap; it mutates the same message state via the reducers above.
   const { executingActionId, confirmAction, rejectAction } = useAgentActionRunner({
-    updateConfirmationStatus,
-    resolveApprovalActivity,
+    updateConfirmationStatus: portMethods.updateConfirmationStatus,
+    resolveApprovalActivity: portMethods.resolveApprovalActivity,
   });
 
-  /**
-   * Aborts any in-flight SSE stream and marks streaming as complete. Called
-   * by the UI's "Stop" button and when starting a new chat while a stream is
-   * active.
-   */
+  /** Stops any in-flight SSE stream and updates streaming status */
   const stopStreaming = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
   }, []);
 
+  // Synchronize completed message history to fast in-memory & sessionStorage cache
+  useEffect(() => {
+    if (conversationId && messages.length > 0 && !isStreaming) {
+      cacheRef.current.set(conversationId, messages);
+      saveCachedMessages(conversationId, messages);
+    }
+  }, [conversationId, messages, isStreaming]);
+
+  /** Sends a prompt to the agent service and processes the SSE event stream */
   const sendMessage = useCallback(
-    /**
-     * Sends the user's question to the agent endpoint and processes the SSE
-     * stream event-by-event through the centralized event handler
-     * (`handleAgentStreamEvent`) — lifecycle phases, tool activity, approval
-     * steps, confirmation cards, and action results all map onto message
-     * state there. The loop buffers partial SSE frames so a chunk that
-     * arrives mid-line is handled on the next read.
-     *
-     * Runtime routing (agent loop vs tool-free chat) is decided by the API;
-     * the frontend never forces a mode.
-     */
     async (question: string) => {
       if (isStreaming) return;
 
@@ -75,143 +76,101 @@ export function useAgentChat() {
       pushAssistantTurn();
       setIsStreaming(true);
 
-      const token = typeof window !== "undefined" ? localStorage.getItem("finai_token") : null;
+      const token = typeof window !== "undefined" ? localStorage.getItem(StorageKey.TOKEN) : null;
       abortRef.current = new AbortController();
 
-      // The event → state port. Every SSE event is mapped onto message state
-      // by `handleAgentStreamEvent` (centralized in agentEventHandlers.ts):
-      // lifecycle phases, tool activity, approval steps, cards, failures.
       const port: AgentEventPort = {
-        appendLog,
-        appendText,
-        replaceText,
-        appendActivity,
-        updateActivity,
-        resolveApprovalActivity,
-        appendConfirmation,
-        updateConfirmationStatus,
-        updateConfirmationCard,
-        failStream,
-        endStream,
-        onConversation: (id) => setConversationId((prev) => prev ?? id),
+        ...portMethods,
+        onConversation: (id) => {
+          setConversationId((prev) => prev ?? id);
+          if (typeof window !== "undefined") {
+            window.history.replaceState(null, "", APP_ROUTES.ADVISOR_THREAD(id));
+          }
+          options?.onConversationAssigned?.(id);
+        },
+        onTitle: () => {
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AI.CONVERSATIONS });
+        },
         onMode: (mode) => setMode(mode),
       };
 
       try {
-        const res = await fetch(`${API_BASE_URL}/agent/chat`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({
-            question,
-            conversationId: conversationId ?? undefined,
-          }),
+        await streamAgentChat({
+          question,
+          conversationId: conversationId ?? null,
+          token,
           signal: abortRef.current.signal,
+          port,
         });
-
-        if (!res.ok || !res.body) {
-          throw new Error(`Agent service returned ${res.status}`);
-        }
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            const raw = line.slice(6).trim();
-            if (!raw) continue;
-
-            let event: AgentStreamEvent;
-            try {
-              event = JSON.parse(raw) as AgentStreamEvent;
-            } catch {
-              continue;
-            }
-
-            // Centralized event → UI mapping (phases, tool activity, approval
-            // steps, cards). Returns true on terminal events (`done`/`error`)
-            // — stop reading the stream.
-            if (handleAgentStreamEvent(event, port)) return;
-          }
-        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") return;
         const msg = err instanceof Error ? err.message : "Failed to connect to the agent";
-        failStream(msg);
+        portMethods.failStream(msg);
       } finally {
-        // Safety net: if the stream ended without a `done` event (connection
-        // drop, abort), make sure the message-level streaming flag is cleared.
-        endStream();
+        portMethods.endStream();
         setIsStreaming(false);
-        queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AI.CONVERSATIONS });
       }
     },
     [
       isStreaming,
       pushUserTurn,
       pushAssistantTurn,
-      appendLog,
-      appendText,
-      replaceText,
-      appendActivity,
-      updateActivity,
-      resolveApprovalActivity,
-      appendConfirmation,
-      updateConfirmationStatus,
-      updateConfirmationCard,
-      failStream,
-      endStream,
+      portMethods,
       setMode,
       conversationId,
       queryClient,
+      options,
     ],
   );
 
+  /** Loads conversation history using instant cache-first lookup followed by API fetch */
   const loadConversation = useCallback(
     async (id: string) => {
       if (isStreaming) return;
+      if (conversationId === id && messages.length > 0) return;
+
+      // 1. Instant 0ms cache check (in-memory Map followed by sessionStorage)
+      const cached = cacheRef.current.get(id) ?? loadCachedMessages(id);
+      if (cached && cached.length > 0) {
+        cacheRef.current.set(id, cached);
+        setConversationId(id);
+        replaceMessages(cached);
+        setIsLoadingConversation(false);
+        return;
+      }
+
+      // 2. Cold load from API when not cached locally
+      setIsLoadingConversation(true);
       try {
-        const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
-        if (!convo) return;
-        setConversationId(convo.id);
-
-        let actions: AgentActionHistoryItem[] = [];
-        try {
-          actions = await fetchConversationActions(convo.id);
-        } catch {
-          // Action history fetch failed — hydrate without cards
-        }
-
-        const hydratedMessages = hydrateConversationMessages(convo, actions);
-        replaceMessages(hydratedMessages);
+        const hydrated = await fetchAndHydrateConversation(id);
+        if (!hydrated) return;
+        setConversationId(id);
+        cacheRef.current.set(id, hydrated);
+        saveCachedMessages(id, hydrated);
+        replaceMessages(hydrated);
       } catch {
-        // failed to load
+        // Graceful error fallback
+      } finally {
+        setIsLoadingConversation(false);
       }
     },
-    [isStreaming, replaceMessages],
+    [isStreaming, conversationId, messages.length, replaceMessages],
   );
 
+  /** Resets state to start a fresh unattached conversational session */
   const startNewChat = useCallback(() => {
     abortRef.current?.abort();
     clearMessages();
     setConversationId(null);
     setIsStreaming(false);
+    setIsLoadingConversation(false);
   }, [clearMessages]);
 
   return {
     messages,
     isStreaming,
+    isLoadingConversation,
     conversationId,
     executingActionId,
     sendMessage,

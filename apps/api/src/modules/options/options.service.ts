@@ -1,3 +1,9 @@
+/**
+ * @file apps/api/src/modules/options/options.service.ts
+ * @description Dynamic database-backed reference options and application performance configuration service.
+ * @module @finai/api/modules/options/options.service
+ */
+
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
@@ -27,27 +33,30 @@ const BASELINE_OPTIONS = [
   { category: "TRANSACTION_TYPE", label: "Transfer", value: "transfer", order: 3 },
   { category: "TRANSACTION_TYPE", label: "Investment", value: "investment", order: 4 },
   { category: "TRANSACTION_TYPE", label: "Goal", value: "goal", order: 5 },
+
+  // Application Performance & Runtime Characteristics
+  { category: "APP_CONFIG", label: "12", value: "AI_HISTORY_WINDOW", order: 1 },
+  { category: "APP_CONFIG", label: "45000", value: "STREAM_TIMEOUT_MS", order: 2 },
+  { category: "APP_CONFIG", label: "50", value: "MAX_CONVERSATION_LIST_LIMIT", order: 3 },
 ] as const;
 
 /**
- * Provides dynamic reference options stored in the `reference_options` table.
- *
- * On first access the service auto-seeds baseline options using upsert so it
- * is safe to call repeatedly — it won't create duplicates.
- *
- * Supported categories: ASSET_CLASS, GOAL_TYPE, TRANSACTION_TYPE.
+ * Provides dynamic reference options and performance parameters stored in `reference_options`.
  */
 @Injectable()
 export class OptionsService {
   private readonly logger = new Logger(OptionsService.name);
-  constructor(private prisma: PrismaService) {}
+
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Returns all active reference options for a given category, ordered by `order`.
-   * Auto-seeds baseline options if the `reference_options` table is empty.
+   *
+   * @param category - Category grouping identifier (e.g. 'ASSET_CLASS', 'GOAL_TYPE').
+   * @returns Array of active reference options.
    */
   async getByCategory(category: string) {
-    this.logger.debug(`[getByCategory] Fetching options for category: ${category}`);
+    this.logger.info(`[getByCategory] Fetching options for category: ${category}`);
     await this.ensureSeeded();
 
     const options = await this.prisma.client.referenceOption.findMany({
@@ -55,17 +64,52 @@ export class OptionsService {
       orderBy: { order: "asc" },
       select: { id: true, category: true, label: true, value: true, order: true, isActive: true },
     });
+
     if (options.length === 0) {
-      this.logger.warn(`[getByCategory] No active options found for category: ${category}`);
+      this.logger.warn(`[getByCategory] No active options found for: ${category}`);
     } else {
-      this.logger.log(`[getByCategory] Found ${options.length} option(s) for ${category}`);
+      this.logger.info(`[getByCategory] Found ${options.length} option(s) for ${category}`);
     }
     return options;
   }
 
-  /** Returns all active reference options grouped by category. */
+  /**
+   * Retrieves a dynamic configuration parameter from the DB.
+   *
+   * @param key - The config key under category APP_CONFIG.
+   * @param fallback - Safe default string value if not found in DB.
+   * @returns Value from database or fallback.
+   */
+  async getConfig(key: string, fallback: string): Promise<string> {
+    this.logger.info(`[getConfig] Fetching config for key: ${key}`);
+    await this.ensureSeeded();
+
+    const option = await this.prisma.client.referenceOption.findUnique({
+      where: { category_value: { category: "APP_CONFIG", value: key } },
+    });
+    return option?.label ?? fallback;
+  }
+
+  /**
+   * Retrieves a numeric performance parameter from the DB.
+   *
+   * @param key - The config key under category APP_CONFIG.
+   * @param fallback - Safe default numeric value.
+   * @returns Parsed number from database or fallback.
+   */
+  async getNumberConfig(key: string, fallback: number): Promise<number> {
+    const raw = await this.getConfig(key, String(fallback));
+    const parsed = Number(raw);
+    return isNaN(parsed) ? fallback : parsed;
+  }
+
+  /**
+   * Returns all active reference options grouped by category.
+   *
+   * @returns Grouped dictionary of options by category.
+   */
   async getAll() {
-    this.logger.debug("[getAll] Fetching all reference options grouped by category");
+    this.logger.info("[getAll] Fetching all options grouped by category");
     await this.ensureSeeded();
 
     const options = await this.prisma.client.referenceOption.findMany({
@@ -74,8 +118,7 @@ export class OptionsService {
       select: { id: true, category: true, label: true, value: true, order: true, isActive: true },
     });
 
-    this.logger.log(`[getAll] Found ${options.length} active option(s)`);
-    // Group by category
+    this.logger.info(`[getAll] Found ${options.length} active option(s)`);
     return options.reduce(
       (acc, opt) => {
         if (!acc[opt.category]) acc[opt.category] = [];
@@ -87,17 +130,13 @@ export class OptionsService {
   }
 
   /**
-   * Seeds baseline options into the DB if the table is empty.
-   * Uses `upsert` to avoid duplicates — safe to call on every request during cold start.
+   * Seeds baseline options and performance configs into the DB if the table is empty.
    */
   private async ensureSeeded() {
     const count = await this.prisma.client.referenceOption.count();
-    if (count > 0) {
-      this.logger.debug(`[ensureSeeded] Table already seeded (${count} rows) — skipping`);
-      return;
-    }
+    if (count > 0) return;
 
-    this.logger.log(`[ensureSeeded] Seeding ${BASELINE_OPTIONS.length} baseline option(s)...`);
+    this.logger.info(`[ensureSeeded] Seeding ${BASELINE_OPTIONS.length} baseline options...`);
     await Promise.all(
       BASELINE_OPTIONS.map((opt) =>
         this.prisma.client.referenceOption.upsert({

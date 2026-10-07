@@ -13,7 +13,7 @@ export class DashboardStatsService {
   constructor(private repo: AnalyticsRepository) {}
 
   async getDashboard(userId: string) {
-    this.logger.debug(`[getDashboard] Computing dashboard KPIs for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getDashboard] Computing dashboard KPIs for user ${userId.slice(0, 8)}`);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -42,7 +42,7 @@ export class DashboardStatsService {
     );
     const savingsRate = calculateSavingsRate(thisMonth.income, thisMonth.expense);
 
-    this.logger.log(
+    this.logger.info(
       `[getDashboard] Dashboard computed for user ${userId.slice(0, 8)}: netWorth=${netWorth}, income=${thisMonth.income}, expenses=${thisMonth.expense}, savingsRate=${savingsRate}`,
     );
     return {
@@ -59,7 +59,7 @@ export class DashboardStatsService {
   }
 
   async getMonthlyAnalytics(userId: string, months = 6) {
-    this.logger.debug(
+    this.logger.info(
       `[getMonthlyAnalytics] Computing ${months}-month cash flow for user ${userId.slice(0, 8)}`,
     );
     const txns = await this.repo.getTransactionsInRange(
@@ -75,7 +75,7 @@ export class DashboardStatsService {
   }
 
   async getSavingsTrend(userId: string, months = 6) {
-    this.logger.debug(
+    this.logger.info(
       `[getSavingsTrend] Computing ${months}-month savings trend for user ${userId.slice(0, 8)}`,
     );
     const cashFlow = await this.getMonthlyAnalytics(userId, months);

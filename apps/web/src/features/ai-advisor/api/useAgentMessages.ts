@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useState } from "react";
 import type {
   AgentConfirmation,
@@ -104,6 +106,19 @@ export function useAgentMessages() {
 
   return {
     messages,
+    portMethods: {
+      appendLog,
+      appendText,
+      replaceText,
+      appendActivity,
+      updateActivity,
+      resolveApprovalActivity,
+      appendConfirmation,
+      updateConfirmationStatus,
+      updateConfirmationCard,
+      failStream,
+      endStream,
+    },
     appendLog,
     appendText,
     replaceText,

@@ -23,14 +23,14 @@ export class CategoriesController {
   @Get("groups")
   @ApiOperation({ summary: "Get all global category groups" })
   getCategoryGroups() {
-    this.logger.debug("[GET /categories/groups] Fetching global category groups");
+    this.logger.info("[getCategoryGroups] Fetching global category groups");
     return this.categoriesService.getCategoryGroups();
   }
 
   @Get()
   @ApiOperation({ summary: "Get all categories for current user" })
   getCategories(@CurrentUser("id") userId: string) {
-    this.logger.debug(`[GET /categories] Listing categories for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getCategories] Listing categories for user ${userId.slice(0, 8)}`);
     return this.categoriesService.getCategories(userId);
   }
 
@@ -41,7 +41,7 @@ export class CategoriesController {
     @Body(new ZodValidationPipe(createCategorySchema)) body: CreateCategoryInput,
   ) {
     this.logger.info(
-      `[POST /categories] Creating category "${body.name}" for user ${userId.slice(0, 8)}`,
+      `[createCategory] Creating category "${body.name}" for user ${userId.slice(0, 8)}`,
     );
     return this.categoriesService.createCategory(userId, body);
   }
@@ -54,7 +54,7 @@ export class CategoriesController {
     @Body(new ZodValidationPipe(updateCategorySchema)) body: UpdateCategoryInput,
   ) {
     this.logger.info(
-      `[PATCH /categories/:id] Updating category ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[updateCategory] Updating category ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.categoriesService.updateCategory(id, userId, body);
   }
@@ -63,7 +63,7 @@ export class CategoriesController {
   @ApiOperation({ summary: "Delete a custom category" })
   deleteCategory(@CurrentUser("id") userId: string, @Param("id") id: string) {
     this.logger.info(
-      `[DELETE /categories/:id] Deleting category ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[deleteCategory] Deleting category ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.categoriesService.deleteCategory(id, userId);
   }

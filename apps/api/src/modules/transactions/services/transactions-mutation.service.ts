@@ -65,7 +65,7 @@ export class TransactionsMutationService {
         1,
       );
 
-      this.logger.log(
+      this.logger.info(
         `Created transaction [${transaction.type}] ${transaction.amount} for user ${userId.slice(0, 8)} (id: ${transaction.id.slice(0, 8)})`,
       );
       return transaction;
@@ -122,7 +122,9 @@ export class TransactionsMutationService {
         );
         created.push(transaction);
       }
-      this.logger.log(`Bulk created ${created.length} transactions for user ${userId.slice(0, 8)}`);
+      this.logger.info(
+        `Bulk created ${created.length} transactions for user ${userId.slice(0, 8)}`,
+      );
       return created;
     });
   }
@@ -204,7 +206,7 @@ export class TransactionsMutationService {
         1,
       );
 
-      this.logger.log(
+      this.logger.info(
         `Updated transaction ${id.slice(0, 8)} [${updatedTx.type}] ${updatedTx.amount} for user ${userId.slice(0, 8)}`,
       );
       return updatedTx;
@@ -229,7 +231,7 @@ export class TransactionsMutationService {
       );
 
       await tx.transaction.delete({ where: { id } });
-      this.logger.log(
+      this.logger.info(
         `Deleted transaction ${id.slice(0, 8)} [${oldTx.type}] ${oldTx.amount} for user ${userId.slice(0, 8)}`,
       );
       return { deleted: true };

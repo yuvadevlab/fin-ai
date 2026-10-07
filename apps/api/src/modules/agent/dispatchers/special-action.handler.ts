@@ -34,7 +34,7 @@ export async function handleSpecialAction(
       error?: string;
     };
     if (patchOutput.ok && patchOutput.card) {
-      logger.log(`[special-action] Patched action ${patchOutput.actionId}`);
+      logger.info(`[special-action] Patched action ${patchOutput.actionId}`);
       emit({
         type: "action_updated",
         actionId: patchOutput.actionId,
@@ -76,7 +76,7 @@ export async function handleSpecialAction(
       error?: string;
     };
     if (confirmOutput.ok) {
-      logger.log(`[special-action] Confirmed action ${confirmOutput.actionId}`);
+      logger.info(`[special-action] Confirmed action ${confirmOutput.actionId}`);
       emit({ type: "action_result", actionId: confirmOutput.actionId, ok: true });
       await auditService.record({
         userId: ctx.userId,

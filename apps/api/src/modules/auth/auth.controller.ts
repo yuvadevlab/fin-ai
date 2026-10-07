@@ -25,7 +25,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(loginSchema))
   @ApiOperation({ summary: "Login with email and password" })
   login(@Body() body: LoginInput) {
-    this.logger.debug(`[POST /auth/login] Login attempt for: ${body.email}`);
+    this.logger.info(`[login] Login attempt for: ${body.email}`);
     return this.authService.login(body);
   }
 
@@ -34,7 +34,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(registerSchema))
   @ApiOperation({ summary: "Register a new user" })
   register(@Body() body: RegisterInput) {
-    this.logger.info(`[POST /auth/register] Registration attempt for: ${body.email}`);
+    this.logger.info(`[register] Registration attempt for: ${body.email}`);
     return this.authService.register(body);
   }
 
@@ -43,7 +43,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(forgotPasswordSchema))
   @ApiOperation({ summary: "Request a password reset token" })
   forgotPassword(@Body() body: ForgotPasswordInput) {
-    this.logger.info(`[POST /auth/forgot-password] Reset requested for: ${body.email}`);
+    this.logger.info(`[forgotPassword] Reset requested for: ${body.email}`);
     return this.authService.forgotPassword(body.email);
   }
 
@@ -52,9 +52,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(resetPasswordSchema))
   @ApiOperation({ summary: "Reset password using token" })
   resetPassword(@Body() body: ResetPasswordInput) {
-    this.logger.info(
-      `[POST /auth/reset-password] Reset attempted with token: ${body.token.slice(0, 8)}...`,
-    );
+    this.logger.info(`[resetPassword] Reset attempted with token: ${body.token.slice(0, 8)}...`);
     return this.authService.resetPassword(body.token, body.password);
   }
 }

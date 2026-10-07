@@ -38,7 +38,7 @@ export class TransactionsSummaryService {
     targetCategoryId: string,
     dryRun = false,
   ) {
-    this.logger.debug(
+    this.logger.info(
       `[recategorize] Recategorizing to ${targetCategoryId.slice(0, 8)} (dryRun: ${dryRun}) for user ${userId.slice(0, 8)}`,
     );
     const targetCategory = await this.prisma.client.category.findFirst({
@@ -52,16 +52,16 @@ export class TransactionsSummaryService {
     }
 
     const matched = await this.repo.findForRecategorize(userId, filter);
-    this.logger.log(
+    this.logger.info(
       `[recategorize] Matched ${matched.length} transaction(s) for user ${userId.slice(0, 8)}`,
     );
 
     if (dryRun) {
-      this.logger.debug(`[recategorize] Dry-run complete — ${matched.length} would be updated`);
+      this.logger.info(`[recategorize] Dry-run complete — ${matched.length} would be updated`);
       return { dryRun: true, matched: matched.length, updated: 0 };
     }
     if (matched.length === 0) {
-      this.logger.debug("[recategorize] No transactions matched — nothing to update");
+      this.logger.info("[recategorize] No transactions matched — nothing to update");
       return { dryRun: false, matched: 0, updated: 0 };
     }
 
@@ -70,7 +70,7 @@ export class TransactionsSummaryService {
       targetCategoryId,
     );
 
-    this.logger.log(
+    this.logger.info(
       `[recategorize] Updated ${matched.length} transaction(s) to "${targetCategory.name}" for user ${userId.slice(0, 8)}`,
     );
     return { dryRun: false, matched: matched.length, updated: matched.length };
@@ -84,7 +84,7 @@ export class TransactionsSummaryService {
     userId: string,
     filter: TransactionSummarizeFilter,
   ): Promise<TransactionSummaryItem[]> {
-    this.logger.debug(
+    this.logger.info(
       `[summarize] Summarizing by ${filter.groupBy} from ${filter.dateFrom} to ${filter.dateTo} (user: ${userId.slice(0, 8)})`,
     );
     const dateFrom = new Date(filter.dateFrom);
@@ -92,7 +92,7 @@ export class TransactionsSummaryService {
 
     if (filter.groupBy === "type") {
       const grouped = await this.repo.groupByType(userId, dateFrom, dateTo, filter.type);
-      this.logger.log(
+      this.logger.info(
         `[summarize] Grouped by type: ${grouped.length} group(s) for user ${userId.slice(0, 8)}`,
       );
       return grouped.map((g) => ({ key: g.type, total: g._sum.amount ?? 0 }));
@@ -107,7 +107,7 @@ export class TransactionsSummaryService {
     });
     const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
-    this.logger.log(
+    this.logger.info(
       `[summarize] Grouped by category: ${grouped.length} group(s) for user ${userId.slice(0, 8)}`,
     );
     return grouped.map((g) => ({

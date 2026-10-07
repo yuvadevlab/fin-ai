@@ -29,7 +29,7 @@ export class AccountsService {
    * Returns `null` when no preference is set or the user has no preferences.
    */
   private async getDefaultAccountId(userId: string): Promise<string | null> {
-    this.logger.debug(
+    this.logger.info(
       `[getDefaultAccountId] Reading default account preference for user ${userId.slice(0, 8)}`,
     );
     const user = await this.prisma.client.user.findUnique({
@@ -38,7 +38,7 @@ export class AccountsService {
     });
     const prefs = (user?.preferences as unknown as UserPreferences) || {};
     const defaultId = prefs.defaultAccountId ?? null;
-    this.logger.debug(
+    this.logger.info(
       `[getDefaultAccountId] User ${userId.slice(0, 8)} default: ${defaultId ? defaultId.slice(0, 8) : "none"}`,
     );
     return defaultId;
@@ -54,7 +54,7 @@ export class AccountsService {
    * callers must ensure ownership before calling.
    */
   private async setDefaultAccountId(userId: string, accountId: string | null): Promise<void> {
-    this.logger.debug(
+    this.logger.info(
       `[setDefaultAccountId] Setting default for user ${userId.slice(0, 8)}: ${accountId ? accountId.slice(0, 8) : "clear"}`,
     );
     const user = await this.prisma.client.user.findUnique({
@@ -64,10 +64,10 @@ export class AccountsService {
     const current = (user?.preferences as unknown as UserPreferences) || {};
     const updated: UserPreferences = { ...current };
     if (accountId === null) {
-      this.logger.debug(`[setDefaultAccountId] Clearing default for user ${userId.slice(0, 8)}`);
+      this.logger.info(`[setDefaultAccountId] Clearing default for user ${userId.slice(0, 8)}`);
       delete updated.defaultAccountId;
     } else {
-      this.logger.debug(
+      this.logger.info(
         `[setDefaultAccountId] Setting default to ${accountId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
       );
       updated.defaultAccountId = accountId;
@@ -90,7 +90,7 @@ export class AccountsService {
    * Runs the account fetch and default-preference read in parallel.
    */
   async findAll(userId: string) {
-    this.logger.debug(`[findAll] Listing all accounts for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing all accounts for user ${userId.slice(0, 8)}`);
     const [accounts, defaultAccountId] = await Promise.all([
       this.prisma.client.account.findMany({
         where: { userId, isActive: true },
@@ -120,7 +120,7 @@ export class AccountsService {
    * another user.
    */
   async findOne(id: string, userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[findOne] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     const account = await this.prisma.client.account.findFirst({
@@ -166,7 +166,7 @@ export class AccountsService {
       }
     }
 
-    this.logger.log(
+    this.logger.info(
       `Created account "${account.name}" [${account.type}] for user ${userId.slice(0, 8)}`,
     );
     return account;
@@ -190,7 +190,7 @@ export class AccountsService {
         ...(input.balance !== undefined && { balance: input.balance }),
       },
     });
-    this.logger.log(`Updated account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Updated account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return updated;
   }
 
@@ -201,7 +201,7 @@ export class AccountsService {
   async setDefault(id: string, userId: string) {
     await this.findOne(id, userId);
     await this.setDefaultAccountId(userId, id);
-    this.logger.log(`Set default account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Set default account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { success: true };
   }
 
@@ -223,7 +223,7 @@ export class AccountsService {
       where: { id },
       data: { isActive: false },
     });
-    this.logger.log(`Soft-deleted account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Soft-deleted account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { deleted: true };
   }
 }

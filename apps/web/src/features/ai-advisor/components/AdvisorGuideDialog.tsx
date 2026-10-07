@@ -1,32 +1,50 @@
 "use client";
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@finai/ui";
-import { ADVISOR_GUIDE_SECTIONS } from "../constants/advisorGuide";
-import { Sparkles, HelpCircle } from "lucide-react";
+/**
+ * @file apps/web/src/features/ai-advisor/components/AdvisorGuideDialog.tsx
+ * @description Educational modal dialog explaining financial advisor capabilities and examples.
+ * @module @finai/web/features/ai-advisor/components/AdvisorGuideDialog
+ */
 
-interface AdvisorGuideDialogProps {
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@finai/ui";
+import { Sparkles, HelpCircle } from "lucide-react";
+import { UI_COPY } from "@/lib";
+import { ADVISOR_GUIDE_SECTIONS } from "@/features/ai-advisor";
+
+/** Props configuration for the {@link AdvisorGuideDialog} modal */
+export interface AdvisorGuideDialogProps {
+  /** Controlled open state of the dialog */
   open: boolean;
+  /** Callback fired when dialog open state transitions */
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Modal dialog presenting new and returning users with AI Advisor best practices,
+ * supported quick actions, and prompt examples.
+ */
 export function AdvisorGuideDialog({ open, onOpenChange }: AdvisorGuideDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-2xl">
+      <DialogContent size="xl">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="bg-primary/10 flex size-7 items-center justify-center rounded-lg">
               <Sparkles className="text-primary size-4" aria-hidden="true" />
             </div>
-            <DialogTitle>How FinAI Advisor Works</DialogTitle>
+            <DialogTitle>{UI_COPY.ADVISOR.GUIDE.TITLE}</DialogTitle>
           </div>
-          <DialogDescription>
-            Your intelligent assistant for logging transactions, tracking budgets, and getting
-            personalized financial insights safely with two-phase confirmations.
-          </DialogDescription>
+          <DialogDescription>{UI_COPY.ADVISOR.GUIDE.DESCRIPTION}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid max-h-[60vh] gap-3 overflow-y-auto pr-1">
+        <DialogBody className="space-y-3">
           {ADVISOR_GUIDE_SECTIONS.map((section) => (
             <div
               key={section.title}
@@ -42,9 +60,10 @@ export function AdvisorGuideDialog({ open, onOpenChange }: AdvisorGuideDialogPro
                 {section.description}
               </p>
 
+              {/* Practical prompt examples */}
               <div className="border-border/60 mt-2.5 border-t pt-2.5">
                 <p className="text-foreground/90 text-[11px] font-semibold tracking-wider uppercase">
-                  Examples you can try:
+                  {UI_COPY.ADVISOR.GUIDE.EXAMPLES_LABEL}
                 </p>
                 <ul className="mt-1.5 space-y-1">
                   {section.examples.map((example, i) => (
@@ -58,15 +77,17 @@ export function AdvisorGuideDialog({ open, onOpenChange }: AdvisorGuideDialogPro
                 </ul>
               </div>
 
+              {/* Pro tips section */}
               <div className="bg-primary/5 border-primary/10 mt-2.5 flex items-start gap-2 rounded-lg border p-2 text-xs">
                 <HelpCircle className="text-primary mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
                 <p className="text-foreground/80 text-[11px] leading-relaxed">
-                  <span className="font-semibold">Pro tip:</span> {section.tips}
+                  <span className="font-semibold">{UI_COPY.ADVISOR.GUIDE.PRO_TIP}</span>{" "}
+                  {section.tips}
                 </p>
               </div>
             </div>
           ))}
-        </div>
+        </DialogBody>
       </DialogContent>
     </Dialog>
   );
