@@ -21,14 +21,14 @@ export class SpendingTrendsService {
   constructor(private repo: AnalyticsRepository) {}
 
   async getCategoryBreakdown(userId: string) {
-    this.logger.debug(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const result = await this.repo.getCategoryExpenseGrouped(userId, startOfMonth);
     const categoryIds = result.map((r) => r.categoryId).filter((id): id is string => id !== null);
     const categories = await this.repo.getCategoriesByIds(categoryIds);
     const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c]));
-    this.logger.log(
+    this.logger.info(
       `[getCategoryBreakdown] Breakdown computed: ${result.length} categorie(s) for user ${userId.slice(0, 8)}`,
     );
     return result.map((r) => ({
@@ -39,7 +39,7 @@ export class SpendingTrendsService {
   }
 
   async getHealthScore(userId: string) {
-    this.logger.debug(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 

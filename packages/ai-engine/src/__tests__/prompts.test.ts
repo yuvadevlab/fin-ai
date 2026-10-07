@@ -4,6 +4,8 @@ import {
   buildInsightSystemPrompt,
   buildPageInsightUserPrompt,
   buildEmojiSuggestionUserPrompt,
+  buildTitleGenerationPrompt,
+  sanitizeConversationTitle,
 } from "../prompt-builder";
 import { extractFollowUpQuestions } from "../extract-follow-ups";
 
@@ -37,6 +39,22 @@ describe("AI Engine (Unit Tests)", () => {
       const category = "Groceries";
       const prompt = buildEmojiSuggestionUserPrompt(category);
       expect(prompt).toBe(`Category name: ${category}\nSuggested emoji:`);
+    });
+
+    it("should build title generation prompt correctly", () => {
+      const prompt = buildTitleGenerationPrompt("Can you review my monthly grocery budget?");
+      expect(prompt).toContain("Can you review my monthly grocery budget?");
+      expect(prompt).toContain("3 to 6 word title");
+    });
+
+    it("should sanitize title and strip quotes, prefixes, and newlines", () => {
+      expect(sanitizeConversationTitle('"Grocery Budget Review"', "fallback")).toBe(
+        "Grocery Budget Review",
+      );
+      expect(sanitizeConversationTitle("Title: Expense Breakdown\nMore text", "fallback")).toBe(
+        "Expense Breakdown",
+      );
+      expect(sanitizeConversationTitle("", "Default Title")).toBe("Default Title");
     });
   });
 

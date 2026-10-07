@@ -13,7 +13,7 @@ export class AgentModelFactory {
     // through without editing this file. Tests inject via process.env.
     const env: Record<string, string | undefined> = { ...process.env };
     const model = createChatModelFromEnv(env, role);
-    this.logger.log(`AI provider [${role}]: ${model.provider} (${model.model})`);
+    this.logger.info(`AI provider [${role}]: ${model.provider} (${model.model})`);
     return model;
   }
 

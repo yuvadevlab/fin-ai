@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { QUERY_KEYS, API_ENDPOINTS } from "@finai/shared-types";
+import { apiClient } from "@/lib";
 
 export interface AiMessage {
   id: string;
@@ -20,16 +21,16 @@ export interface AiConversation {
 
 export function useConversations() {
   return useQuery<AiConversation[]>({
-    queryKey: ["ai", "conversations"],
-    queryFn: () => apiClient.get<AiConversation[]>("ai/conversations"),
+    queryKey: QUERY_KEYS.AI.CONVERSATIONS,
+    queryFn: () => apiClient.get<AiConversation[]>(API_ENDPOINTS.AI.CONVERSATIONS),
     staleTime: 10_000,
   });
 }
 
 export function useConversation(conversationId: string | null) {
   return useQuery<AiConversation>({
-    queryKey: ["ai", "conversation", conversationId],
-    queryFn: () => apiClient.get<AiConversation>(`ai/conversations/${conversationId}`),
+    queryKey: QUERY_KEYS.AI.CONVERSATION(conversationId ?? ""),
+    queryFn: () => apiClient.get<AiConversation>(API_ENDPOINTS.AI.CONVERSATION(conversationId!)),
     enabled: !!conversationId,
   });
 }
@@ -39,9 +40,9 @@ export function useDeleteConversation() {
 
   return useMutation({
     mutationFn: (conversationId: string) =>
-      apiClient.delete<{ success: boolean }>(`ai/conversations/${conversationId}`),
+      apiClient.delete<{ success: boolean }>(API_ENDPOINTS.AI.CONVERSATION(conversationId)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AI.CONVERSATIONS });
     },
   });
 }

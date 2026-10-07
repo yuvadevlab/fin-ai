@@ -16,14 +16,14 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   readonly client = prisma;
 
   async onModuleInit(): Promise<void> {
-    this.logger.log("Connecting to database...");
+    this.logger.info("Connecting to database...");
     await this.client.$connect();
-    this.logger.log("Database connection established");
+    this.logger.info("Database connection established");
   }
 
   async onModuleDestroy(): Promise<void> {
-    this.logger.log("Disconnecting from database...");
+    this.logger.info("Disconnecting from database...");
     await this.client.$disconnect();
-    this.logger.log("Database connection closed");
+    this.logger.info("Database connection closed");
   }
 }

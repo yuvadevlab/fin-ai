@@ -12,7 +12,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async getProfile(userId: string) {
-    this.logger.debug(`[getProfile] Fetching profile for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getProfile] Fetching profile for user ${userId.slice(0, 8)}`);
     const user = await this.prisma.client.user.findUnique({
       where: { id: userId },
       select: {
@@ -34,7 +34,7 @@ export class UsersService {
     if (input.name !== undefined) changed.push("name");
     if (input.email !== undefined) changed.push("email");
     if (input.preferences !== undefined) changed.push("preferences");
-    this.logger.debug(
+    this.logger.info(
       `[updateProfile] Updating profile for user ${userId.slice(0, 8)}: [${changed.join(", ")}]`,
     );
     const data: Prisma.UserUpdateInput = {};

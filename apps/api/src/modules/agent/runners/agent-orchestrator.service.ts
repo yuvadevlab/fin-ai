@@ -58,7 +58,7 @@ export class AgentOrchestratorService {
     role,
   }: AgentRunParams): Promise<void> {
     const model = this.modelFactory.create(role ?? "agent");
-    this.logger.log(
+    this.logger.info(
       `[Run ${runId.slice(0, 8)}] Started (role: ${role ?? "agent"}, provider: ${model.provider}, model: ${model.model})`,
     );
     let tokensIn = 0;
@@ -66,7 +66,7 @@ export class AgentOrchestratorService {
     let runVisibleContent = "";
 
     for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
-      this.logger.log(
+      this.logger.info(
         `[Run ${runId.slice(0, 8)}] Turn ${iteration}/${MAX_ITERATIONS} evaluating...`,
       );
       const turn = await this.turnRunner.run(model, request, emit, iteration, hasPendingAction);
@@ -77,7 +77,7 @@ export class AgentOrchestratorService {
       const toolCalls =
         turn.toolCalls.length > 0 ? turn.toolCalls : (parseToolPlan(turn.rawContent) ?? []);
 
-      this.logger.log(
+      this.logger.info(
         `[Run ${runId.slice(0, 8)}] Turn ${iteration} completed (${toolCalls.length} tool calls, tokens: +${turn.tokensIn} in / +${turn.tokensOut} out)`,
       );
 
@@ -114,7 +114,7 @@ export class AgentOrchestratorService {
       let confirmationCount = 0;
 
       for (const call of toolCalls) {
-        this.logger.log(
+        this.logger.info(
           `[Run ${runId.slice(0, 8)}] Dispatching tool "${call.name}" args: ${call.arguments.slice(0, 80)}`,
         );
         const result = await this.toolDispatcher.dispatch(
@@ -122,7 +122,7 @@ export class AgentOrchestratorService {
           { userId, conversationId, runId },
           emit,
         );
-        this.logger.log(
+        this.logger.info(
           `[Run ${runId.slice(0, 8)}] Tool "${call.name}" status: ${(result as { status?: string }).status ?? "ok"}`,
         );
 
@@ -156,7 +156,7 @@ export class AgentOrchestratorService {
     }
 
     try {
-      this.logger.log(
+      this.logger.info(
         `[Run ${runId.slice(0, 8)}] Max turns reached — generating final synthesis...`,
       );
       request.messages.push({
@@ -207,7 +207,7 @@ export class AgentOrchestratorService {
     tokensOut: number,
     emit: AgentEventEmitter,
   ): Promise<void> {
-    this.logger.log(
+    this.logger.info(
       `[Run ${runId.slice(0, 8)}] Complete (${iterations} turn(s), model: ${modelName}, tokens: ${tokensIn} in / ${tokensOut} out)`,
     );
     const message = await this.conversationService.addMessage(

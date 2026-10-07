@@ -25,15 +25,15 @@ export class InvestmentsController {
     summary: "Get portfolio with total value and asset allocation",
   })
   findAll(@CurrentUser("id") userId: string) {
-    this.logger.debug(`[GET /investments] Fetching portfolio for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Fetching portfolio for user ${userId.slice(0, 8)}`);
     return this.investmentsService.findAll(userId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single investment" })
   findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
-    this.logger.debug(
-      `[GET /investments/:id] Fetching investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[findOne] Fetching investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.investmentsService.findOne(id, userId);
   }
@@ -46,7 +46,7 @@ export class InvestmentsController {
     body: CreateInvestmentInput,
   ) {
     this.logger.info(
-      `[POST /investments] Adding investment "${body.name}" [${body.assetClass}] (user: ${userId.slice(0, 8)})`,
+      `[create] Adding investment "${body.name}" [${body.assetClass}] (user: ${userId.slice(0, 8)})`,
     );
     return this.investmentsService.create(userId, body);
   }
@@ -59,7 +59,7 @@ export class InvestmentsController {
     @Body(new ZodValidationPipe(updateInvestmentValueSchema)) body: UpdateInvestmentValueInput,
   ) {
     this.logger.info(
-      `[PATCH /investments/:id/value] Updating investment ${id.slice(0, 8)} to ${body.currentValue} (user: ${userId.slice(0, 8)})`,
+      `[updateValue] Updating investment ${id.slice(0, 8)} to ${body.currentValue} (user: ${userId.slice(0, 8)})`,
     );
     return this.investmentsService.updateValue(id, userId, body.currentValue);
   }
@@ -68,7 +68,7 @@ export class InvestmentsController {
   @ApiOperation({ summary: "Remove an investment" })
   remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
     this.logger.info(
-      `[DELETE /investments/:id] Removing investment ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
+      `[remove] Removing investment ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
     );
     return this.investmentsService.remove(id, userId);
   }

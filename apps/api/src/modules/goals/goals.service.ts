@@ -24,13 +24,13 @@ export class GoalsService {
    * doesn't report >100%).
    */
   async findAll(userId: string) {
-    this.logger.debug(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
     const goals = await this.prisma.client.goal.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
-    this.logger.log(`[findAll] Found ${goals.length} goal(s) for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Found ${goals.length} goal(s) for user ${userId.slice(0, 8)}`);
     return goals.map((goal) => ({
       ...goal,
       progress: calculateGoalProgress(goal.currentAmount, goal.targetAmount),
@@ -39,7 +39,7 @@ export class GoalsService {
 
   /** Finds a single goal by ID, scoped to the user. Throws if not found. */
   async findOne(id: string, userId: string) {
-    this.logger.debug(`[findOne] Looking up goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findOne] Looking up goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     const goal = await this.prisma.client.goal.findFirst({
       where: { id, userId },
     });
@@ -65,7 +65,7 @@ export class GoalsService {
         type: input.type ?? GoalType.PERSONAL,
       },
     });
-    this.logger.log(
+    this.logger.info(
       `Created goal "${goal.name}" target: ${goal.targetAmount} for user ${userId.slice(0, 8)}`,
     );
     return goal;
@@ -73,7 +73,7 @@ export class GoalsService {
 
   /** Updates one or more mutable fields of a goal. Only provided fields are changed. */
   async update(id: string, userId: string, input: UpdateGoalInput) {
-    this.logger.debug(`[update] Updating goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[update] Updating goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     await this.findOne(id, userId);
     const updated = await this.prisma.client.goal.update({
       where: { id },
@@ -91,7 +91,7 @@ export class GoalsService {
         ...(input.type !== undefined && { type: input.type }),
       },
     });
-    this.logger.log(`Updated goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Updated goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return updated;
   }
 
@@ -115,7 +115,7 @@ export class GoalsService {
       where: { id },
       data: { currentAmount: newAmount },
     });
-    this.logger.log(
+    this.logger.info(
       `Contributed ${amount} to goal ${id.slice(0, 8)} → ${newAmount}/${goal.targetAmount} (user: ${userId.slice(0, 8)})`,
     );
     return updated;
@@ -126,7 +126,7 @@ export class GoalsService {
     this.logger.info(`[remove] Deleting goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     await this.findOne(id, userId);
     await this.prisma.client.goal.delete({ where: { id } });
-    this.logger.log(`Deleted goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    this.logger.info(`Deleted goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { deleted: true };
   }
 }

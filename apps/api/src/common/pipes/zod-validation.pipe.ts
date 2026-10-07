@@ -27,7 +27,7 @@ export class ZodValidationPipe implements PipeTransform {
       );
       throw new BadRequestException(`Validation failed: ${errorMsg}`);
     }
-    this.logger.debug(
+    this.logger.info(
       `[ZodValidationPipe] Validation passed (${metadata.metatype?.name ?? "body"})`,
     );
     return result.data;

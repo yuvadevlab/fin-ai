@@ -39,7 +39,7 @@ export class TransactionsController {
   @Get()
   @ApiOperation({ summary: "List all transactions for the current user" })
   findAll(@CurrentUser("id") userId: string, @Query() query: TransactionFilterInput) {
-    this.logger.debug(`[GET /transactions] Listing transactions for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[findAll] Listing transactions for user ${userId.slice(0, 8)}`);
     const filter = transactionFilterSchema.parse(query);
     return this.transactionsService.findAll(userId, filter);
   }
@@ -49,12 +49,10 @@ export class TransactionsController {
     summary: "Generate and download dynamic Excel template with in-cell DDL dropdowns",
   })
   async downloadTemplate(@CurrentUser("id") userId: string, @Res() res: Response) {
-    this.logger.debug(
-      `[GET /transactions/template] Generating Excel template for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[downloadTemplate] Generating Excel template for user ${userId.slice(0, 8)}`);
     const buffer = await this.transactionsService.generateExcelTemplate(userId);
-    this.logger.log(
-      `[GET /transactions/template] Template generated (${buffer.length} bytes) for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[downloadTemplate] Template generated (${buffer.length} bytes) for user ${userId.slice(0, 8)}`,
     );
     res.setHeader(
       "Content-Type",
@@ -70,8 +68,8 @@ export class TransactionsController {
   @Get(":id")
   @ApiOperation({ summary: "Get a single transaction" })
   findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
-    this.logger.debug(
-      `[GET /transactions/:id] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    this.logger.info(
+      `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.transactionsService.findOne(id, userId);
   }
@@ -84,7 +82,7 @@ export class TransactionsController {
     body: CreateBulkTransactionsInput,
   ) {
     this.logger.info(
-      `[POST /transactions/bulk] Bulk creating ${(body as unknown as unknown[]).length ?? "?"} transaction(s) for user ${userId.slice(0, 8)}`,
+      `[createBulk] Bulk creating ${(body as unknown as unknown[]).length ?? "?"} transaction(s) for user ${userId.slice(0, 8)}`,
     );
     return this.transactionsService.createBulk(userId, body);
   }
@@ -97,7 +95,7 @@ export class TransactionsController {
     body: CreateTransactionInput,
   ) {
     this.logger.info(
-      `[POST /transactions] Creating ${body.type} transaction amount: ${body.amount} (user: ${userId.slice(0, 8)})`,
+      `[create] Creating ${body.type} transaction amount: ${body.amount} (user: ${userId.slice(0, 8)})`,
     );
     return this.transactionsService.create(userId, body);
   }
@@ -111,7 +109,7 @@ export class TransactionsController {
     body: UpdateTransactionInput,
   ) {
     this.logger.info(
-      `[PATCH /transactions/:id] Updating transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[update] Updating transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.transactionsService.update(id, userId, body);
   }
@@ -120,7 +118,7 @@ export class TransactionsController {
   @ApiOperation({ summary: "Delete a transaction" })
   remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
     this.logger.info(
-      `[DELETE /transactions/:id] Deleting transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+      `[remove] Deleting transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
     return this.transactionsService.remove(id, userId);
   }

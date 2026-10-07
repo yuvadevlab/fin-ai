@@ -5,3 +5,4 @@ export * from "./agentActions";
 export * from "./useConversations";
 export * from "./useAiInsight";
 export * from "./agentEventHandlers";
+export * from "./chatStorage";

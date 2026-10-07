@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@finai/shared-types";
 import { confirmAgentAction, rejectAgentAction } from "./agentActions";
 import { invalidateForAgentTool } from "./agentInvalidationMap";
 import type { AgentActivity, AgentConfirmationStatus } from "./agentTypes";
@@ -34,7 +35,7 @@ export function useAgentActionRunner({
           updateConfirmationStatus(actionId, "executed");
           resolveApprovalActivity(actionId, { status: "success", summary: "Action completed" });
         }
-        queryClient.invalidateQueries({ queryKey: ["ai", "conversations"] });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AI.CONVERSATIONS });
         invalidateForAgentTool(queryClient, tool);
         return res;
       } catch (err) {

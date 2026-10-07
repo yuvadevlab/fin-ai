@@ -51,7 +51,7 @@ export class ActionManager {
       orderBy: { createdAt: "desc" },
     });
     if (pending) {
-      this.logger.debug(
+      this.logger.info(
         `[getPendingAction] Found pending "${pending.tool}" (${pending.id.slice(0, 8)}) in convo ${conversationId.slice(0, 8)}`,
       );
     }
@@ -80,7 +80,7 @@ export class ActionManager {
     userId: string,
     patch: Record<string, unknown>,
   ): Promise<{ action: { id: string; tool: string; input: unknown }; card: AgentCard }> {
-    this.logger.debug(
+    this.logger.info(
       `[patchAction] Patching action ${actionId.slice(0, 8)} for user ${userId.slice(0, 8)}: [${Object.keys(patch).join(", ")}]`,
     );
     const action = await this.prisma.client.agentAction.findFirst({
@@ -147,7 +147,7 @@ export class ActionManager {
       metadata: { patchedFields: Object.keys(patch) },
     });
 
-    this.logger.log(
+    this.logger.info(
       `Patched action "${action.tool}" (actionId: ${actionId.slice(0, 8)}, userId: ${userId.slice(0, 8)}) — fields: [${Object.keys(patch).join(", ")}], warnings: ${warnings.length}`,
     );
     return { action: { id: updated.id, tool: updated.tool, input: updated.input }, card };

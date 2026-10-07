@@ -18,7 +18,7 @@ export class UsersController {
   @Get("profile")
   @ApiOperation({ summary: "Get current user profile and preferences" })
   getProfile(@CurrentUser("id") userId: string) {
-    this.logger.debug(`[GET /users/profile] Fetching profile for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getProfile] Fetching profile for user ${userId.slice(0, 8)}`);
     return this.usersService.getProfile(userId);
   }
 
@@ -28,7 +28,7 @@ export class UsersController {
     @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(updateProfileSchema)) body: UpdateProfileInput,
   ) {
-    this.logger.info(`[PATCH /users/profile] Updating profile for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[updateProfile] Updating profile for user ${userId.slice(0, 8)}`);
     return this.usersService.updateProfile(userId, body);
   }
 }

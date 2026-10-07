@@ -10,7 +10,7 @@ export class AnalyticsRepository {
 
   /** Fetch active account balances. */
   async getAccountBalances(userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[getAccountBalances] Fetching active balances for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.account.findMany({
@@ -26,7 +26,7 @@ export class AnalyticsRepository {
     to?: Date,
     extraWhere?: Partial<{ type: TransactionType }>,
   ) {
-    this.logger.debug(
+    this.logger.info(
       `[getTransactionsInRange] Fetching txns from ${from.toISOString().slice(0, 10)}${to ? ` to ${to.toISOString().slice(0, 10)}` : ""} for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.transaction.findMany({
@@ -41,13 +41,13 @@ export class AnalyticsRepository {
 
   /** Fetch all goal IDs for counting. */
   async getGoalCount(userId: string) {
-    this.logger.debug(`[getGoalCount] Counting goals for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getGoalCount] Counting goals for user ${userId.slice(0, 8)}`);
     return this.prisma.client.goal.findMany({ where: { userId }, select: { id: true } });
   }
 
   /** Fetch investment current values. */
   async getInvestmentValues(userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[getInvestmentValues] Fetching investment values for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.investment.findMany({
@@ -58,7 +58,7 @@ export class AnalyticsRepository {
 
   /** Fetch goals with amounts and type. */
   async getGoals(userId: string) {
-    this.logger.debug(`[getGoals] Fetching goals for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getGoals] Fetching goals for user ${userId.slice(0, 8)}`);
     return this.prisma.client.goal.findMany({
       where: { userId },
       select: { currentAmount: true, targetAmount: true, type: true },
@@ -67,7 +67,7 @@ export class AnalyticsRepository {
 
   /** Fetch budgets with category spend aggregate for the current month. */
   async getBudgetsWithSpend(userId: string, startOfMonth: Date) {
-    this.logger.debug(
+    this.logger.info(
       `[getBudgetsWithSpend] Fetching budgets + spend for user ${userId.slice(0, 8)}`,
     );
     const budgets = await this.prisma.client.budget.findMany({
@@ -97,13 +97,13 @@ export class AnalyticsRepository {
 
   /** Fetch goals for recommendations (full details). */
   async getGoalsForRecommendations(userId: string) {
-    this.logger.debug(`[getGoalsForRecommendations] Fetching goals for user ${userId.slice(0, 8)}`);
+    this.logger.info(`[getGoalsForRecommendations] Fetching goals for user ${userId.slice(0, 8)}`);
     return this.prisma.client.goal.findMany({ where: { userId } });
   }
 
   /** Fetch investments for asset allocation. */
   async getInvestmentsForAllocation(userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[getInvestmentsForAllocation] Fetching investments for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.investment.findMany({
@@ -114,7 +114,7 @@ export class AnalyticsRepository {
 
   /** Fetch category expense breakdown grouped by categoryId. */
   async getCategoryExpenseGrouped(userId: string, startOfMonth: Date) {
-    this.logger.debug(
+    this.logger.info(
       `[getCategoryExpenseGrouped] Grouping expenses since ${startOfMonth.toISOString().slice(0, 10)} for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.transaction.groupBy({
@@ -128,16 +128,16 @@ export class AnalyticsRepository {
   /** Fetch category names for a list of IDs. */
   async getCategoriesByIds(ids: string[]) {
     if (ids.length === 0) {
-      this.logger.debug("[getCategoriesByIds] No category IDs — skipping query");
+      this.logger.info("[getCategoriesByIds] No category IDs — skipping query");
       return [];
     }
-    this.logger.debug(`[getCategoriesByIds] Resolving ${ids.length} categorie(s)`);
+    this.logger.info(`[getCategoriesByIds] Resolving ${ids.length} categorie(s)`);
     return this.prisma.client.category.findMany({ where: { id: { in: ids } } });
   }
 
   /** Fetch budgets with category name and per-category spend. */
   async getBudgetsWithCategorySpend(userId: string, startOfMonth: Date) {
-    this.logger.debug(
+    this.logger.info(
       `[getBudgetsWithCategorySpend] Fetching budgets + category spend since ${startOfMonth.toISOString().slice(0, 10)} for user ${userId.slice(0, 8)}`,
     );
     const budgets = await this.prisma.client.budget.findMany({
@@ -168,7 +168,7 @@ export class AnalyticsRepository {
 
   /** Fetch safe-to-spend data: balances, month transactions, budgets, goals. */
   async getSafeToSpendData(userId: string, startOfMonth: Date) {
-    this.logger.debug(
+    this.logger.info(
       `[getSafeToSpendData] Fetching safe-to-spend inputs for user ${userId.slice(0, 8)}`,
     );
     return Promise.all([
@@ -193,7 +193,7 @@ export class AnalyticsRepository {
 
   /** Fetch investments with asset class for diversification. */
   async getInvestmentsWithAssetClass(userId: string) {
-    this.logger.debug(
+    this.logger.info(
       `[getInvestmentsWithAssetClass] Fetching investments + asset class for user ${userId.slice(0, 8)}`,
     );
     return this.prisma.client.investment.findMany({

@@ -75,7 +75,7 @@ export async function executeActionConfirm(
       status: "success",
       after: output,
     });
-    logger.log(
+    logger.info(
       `Confirmed action "${action.tool}" (actionId: ${action.id.slice(0, 8)}, userId: ${userId.slice(0, 8)}) — executed successfully`,
     );
     return { alreadyExecuted: false as const, action: updated, result: output };

@@ -2,7 +2,9 @@
 
 import { Landmark, PiggyBank, ListChecks } from "lucide-react";
 import { cn } from "@finai/ui";
+import { AccountType } from "@finai/shared-types";
 import { PrivacyMoney } from "@/components";
+import { UI_COPY } from "@/lib";
 import { useAccounts } from "@/features/accounts/api/getAccounts";
 import { useBudgets } from "@/features/budgets/api/getBudgets";
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
@@ -23,7 +25,9 @@ export function FinancialSnapshot() {
   const { data: budgets } = useBudgets();
 
   const cashAvailable =
-    accounts?.filter((a) => a.type !== "CREDIT_CARD").reduce((sum, a) => sum + a.balance, 0) ?? 0;
+    accounts
+      ?.filter((a) => a.type !== AccountType.CREDIT_CARD)
+      .reduce((sum, a) => sum + a.balance, 0) ?? 0;
   const hasStats = stats !== undefined;
   const accountCount = accounts?.length ?? stats?.accountCount;
   const goalCount = stats?.goalCount;
@@ -32,20 +36,28 @@ export function FinancialSnapshot() {
   return (
     <div className="space-y-3">
       <SnapshotStat
-        label="Cash available"
+        label={UI_COPY.ADVISOR.SNAPSHOT.CASH_AVAILABLE}
         value={cashAvailable}
         loading={!accounts}
         className="text-2xl"
       />
       <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
         <p className="text-muted-foreground mb-1.5 text-[11px] font-semibold tracking-wider uppercase">
-          This month
+          {UI_COPY.ADVISOR.SNAPSHOT.THIS_MONTH}
         </p>
         <div className="space-y-1">
-          <SnapshotRow label="Income" value={stats?.monthlyIncome} hasData={hasStats} />
-          <SnapshotRow label="Expenses" value={stats?.monthlyExpenses} hasData={hasStats} />
           <SnapshotRow
-            label="Net cash flow"
+            label={UI_COPY.ADVISOR.SNAPSHOT.INCOME}
+            value={stats?.monthlyIncome}
+            hasData={hasStats}
+          />
+          <SnapshotRow
+            label={UI_COPY.ADVISOR.SNAPSHOT.EXPENSES}
+            value={stats?.monthlyExpenses}
+            hasData={hasStats}
+          />
+          <SnapshotRow
+            label={UI_COPY.ADVISOR.SNAPSHOT.NET_CASH_FLOW}
             value={stats?.netCashFlow}
             hasData={hasStats}
             emphasis={stats ? (stats.netCashFlow >= 0 ? "positive" : "negative") : undefined}
@@ -54,7 +66,7 @@ export function FinancialSnapshot() {
       </div>
       <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
         <p className="text-muted-foreground mb-1.5 text-[11px] font-semibold tracking-wider uppercase">
-          Net worth
+          {UI_COPY.ADVISOR.SNAPSHOT.NET_WORTH}
         </p>
         {hasStats ? (
           <PrivacyMoney value={stats?.netWorth ?? 0} className="text-foreground text-lg" />
@@ -69,18 +81,26 @@ export function FinancialSnapshot() {
       {/* Current context counts */}
       <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
         <p className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wider uppercase">
-          Current context
+          {UI_COPY.ADVISOR.SNAPSHOT.CURRENT_CONTEXT}
         </p>
         <ul className="space-y-1.5 text-xs">
-          <ContextCount icon={Landmark} label="Accounts" value={accountCount} />
-          <ContextCount icon={ListChecks} label="Budgets" value={budgetCount} />
-          <ContextCount icon={PiggyBank} label="Goals" value={goalCount} />
+          <ContextCount
+            icon={Landmark}
+            label={UI_COPY.ADVISOR.SNAPSHOT.ACCOUNTS}
+            value={accountCount}
+          />
+          <ContextCount
+            icon={ListChecks}
+            label={UI_COPY.ADVISOR.SNAPSHOT.BUDGETS}
+            value={budgetCount}
+          />
+          <ContextCount icon={PiggyBank} label={UI_COPY.ADVISOR.SNAPSHOT.GOALS} value={goalCount} />
         </ul>
         {accounts && (
           <p className="text-muted-foreground border-border/50 mt-2 border-t pt-1.5 text-[11px]">
-            Default account:{" "}
+            {UI_COPY.ADVISOR.SNAPSHOT.DEFAULT_ACCOUNT}{" "}
             <span className="text-foreground font-medium">
-              {accounts.find((a) => a.isDefault)?.name ?? "None set"}
+              {accounts.find((a) => a.isDefault)?.name ?? UI_COPY.ADVISOR.SNAPSHOT.NONE_SET}
             </span>
           </p>
         )}

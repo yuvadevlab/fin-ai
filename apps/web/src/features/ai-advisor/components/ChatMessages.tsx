@@ -2,8 +2,9 @@
 
 import { ArrowRight, User } from "lucide-react";
 import { extractFollowUpQuestions } from "@finai/ai-engine";
+import { UI_COPY } from "@/lib";
 import { AgentRun } from "./AgentRun";
-import type { AgentChatMessage } from "../api";
+import type { AgentChatMessage } from "@/features/ai-advisor";
 
 interface ChatMessagesProps {
   messages: AgentChatMessage[];
@@ -72,7 +73,7 @@ export function ChatMessages({
             {followUps.length > 0 && onSelectFollowUp && (
               <div className="flex flex-col gap-2">
                 <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                  Suggested follow-ups
+                  {UI_COPY.ADVISOR.FEED.SUGGESTED_FOLLOW_UPS}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {followUps.map((question, qIdx) => (

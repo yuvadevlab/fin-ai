@@ -195,7 +195,7 @@ export class ContextBuilderService {
     ];
 
     const snapshot = lines.join("\n");
-    this.logger.debug(
+    this.logger.info(
       `Built finance context for user ${userId.slice(0, 8)}: ${accounts.length} accounts, ${monthTxns.length} monthly txns, ${budgets.length} budgets, ${goals.length} goals, ${investments.length} investments — ${snapshot.length} chars`,
     );
     return snapshot;

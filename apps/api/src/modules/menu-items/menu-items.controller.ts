@@ -15,7 +15,7 @@ export class MenuItemsController {
   @Get()
   @ApiOperation({ summary: "Get all navigation menu items with active flags" })
   findAll() {
-    this.logger.debug("[GET /menu-items] Fetching all menu items");
+    this.logger.info("[findAll] Fetching all menu items");
     return this.menuItemsService.findAll();
   }
 }

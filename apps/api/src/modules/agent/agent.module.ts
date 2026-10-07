@@ -18,14 +18,12 @@ import { ToolRegistry } from "./tool-registry";
 import { EntityMemoryService } from "./entity-memory";
 import { AgentModelFactory, AgentOrchestratorService, AgentTurnRunner } from "./runners";
 import { AgentToolDispatcher } from "./dispatchers";
+import { AgentTitleService } from "./agent-title.service";
 
 /**
  * AgentModule wires the full agent stack: HTTP transport (controller), the
  * decision loop (AgentService), two-phase writes (AgentActionService + AuditService),
- * the tool catalog (ToolRegistry), entity memory, and the three extracted sub-services:
- *   - AgentModelFactory  → creates a fresh Ollama client per run
- *   - AgentTurnRunner    → streams one model turn
- *   - AgentToolDispatcher → validates, audits, and executes tool calls
+ * the tool catalog (ToolRegistry), entity memory, and the extracted sub-services.
  */
 @Module({
   imports: [
@@ -44,6 +42,7 @@ import { AgentToolDispatcher } from "./dispatchers";
   providers: [
     AgentService,
     AgentActionService,
+    AgentTitleService,
     ActionManager,
     AuditService,
     ToolRegistry,

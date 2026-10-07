@@ -6,6 +6,7 @@ import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { agentChatSchema, type AgentChatInput } from "@finai/validation";
+import { AgentStreamEventType } from "@finai/shared-types";
 import { AgentService } from "./agent.service";
 import { AgentActionService } from "./action.service";
 import { Logger } from "@yuva-devlab/logger";
@@ -53,7 +54,7 @@ export class AgentController {
     @Res() res: Response,
   ) {
     this.logger.info(
-      `[POST /agent/chat] SSE stream started for user ${userId.slice(0, 8)}: "${body.question.slice(0, 50)}" (convo: ${(body.conversationId ?? "").slice(0, 8) || "new"})`,
+      `[chat] SSE stream started for user ${userId.slice(0, 8)}: "${body.question.slice(0, 50)}" (convo: ${(body.conversationId ?? "").slice(0, 8) || "new"})`,
     );
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -66,13 +67,16 @@ export class AgentController {
 
     try {
       await this.agentService.chat(body, userId, emit);
-      this.logger.debug(`[POST /agent/chat] SSE stream completed for user ${userId.slice(0, 8)}`);
+      this.logger.info(`[chat] SSE stream completed for user ${userId.slice(0, 8)}`);
     } catch (error) {
       this.logger.error(
-        `[POST /agent/chat] Stream failed for user ${userId.slice(0, 8)}: ${(error as Error).message}`,
+        `[chat] Stream failed for user ${userId.slice(0, 8)}: ${(error as Error).message}`,
       );
-      emit({ type: "error", error: (error as Error).message || "Agent failure" });
-      emit({ type: "done" });
+      emit({
+        type: AgentStreamEventType.ERROR,
+        error: (error as Error).message || "Agent failure",
+      });
+      emit({ type: AgentStreamEventType.DONE });
     } finally {
       res.end();
     }
@@ -88,7 +92,7 @@ export class AgentController {
     @Body() body?: { itemIndex?: number },
   ) {
     this.logger.info(
-      `[POST /agent/actions/:id/confirm] Confirming action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
+      `[confirm] Confirming action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
     );
     return this.actionService.confirm(id, userId, body);
   }
@@ -101,7 +105,7 @@ export class AgentController {
     @Body() body?: { itemIndex?: number },
   ) {
     this.logger.info(
-      `[POST /agent/actions/:id/reject] Rejecting action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
+      `[reject] Rejecting action ${id.slice(0, 8)} for user ${userId.slice(0, 8)}${body?.itemIndex !== undefined ? ` (item ${body.itemIndex})` : ""}`,
     );
     return this.actionService.reject(id, userId, body);
   }
@@ -112,8 +116,8 @@ export class AgentController {
     @CurrentUser("id") userId: string,
     @Query("conversationId") conversationId?: string,
   ) {
-    this.logger.debug(
-      `[GET /agent/actions/proposed] Listing pending actions for user ${userId.slice(0, 8)}${conversationId ? ` (convo: ${conversationId.slice(0, 8)})` : ""}`,
+    this.logger.info(
+      `[listProposed] Listing pending actions for user ${userId.slice(0, 8)}${conversationId ? ` (convo: ${conversationId.slice(0, 8)})` : ""}`,
     );
     return this.actionService.listProposed(userId, conversationId);
   }
@@ -124,8 +128,8 @@ export class AgentController {
     @CurrentUser("id") userId: string,
     @Query("conversationId") conversationId: string,
   ) {
-    this.logger.debug(
-      `[GET /agent/actions/history] Listing all actions for user ${userId.slice(0, 8)} convo ${(conversationId ?? "").slice(0, 8)}`,
+    this.logger.info(
+      `[listByConversation] Listing all actions for user ${userId.slice(0, 8)} convo ${(conversationId ?? "").slice(0, 8)}`,
     );
     return this.actionService.listByConversation(userId, conversationId);
   }

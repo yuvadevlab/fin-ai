@@ -8,11 +8,11 @@ export class MenuItemsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    this.logger.debug("[findAll] Fetching all menu items");
+    this.logger.info("[findAll] Fetching all menu items");
     const items = await this.prisma.client.menuItem.findMany({
       orderBy: { order: "asc" },
     });
-    this.logger.log(`[findAll] Found ${items.length} menu item(s)`);
+    this.logger.info(`[findAll] Found ${items.length} menu item(s)`);
     return items;
   }
 }

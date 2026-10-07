@@ -1,4 +1,5 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib";
+import { API_ENDPOINTS, SEARCH_PARAMS } from "@finai/shared-types";
 
 /**
  * Response shape returned by POST `/agent/actions/:id/confirm`.
@@ -21,7 +22,7 @@ export function confirmAgentAction(
   actionId: string,
   itemIndex?: number,
 ): Promise<AgentActionResponse> {
-  return apiClient.post<AgentActionResponse>(`agent/actions/${actionId}/confirm`, {
+  return apiClient.post<AgentActionResponse>(API_ENDPOINTS.AGENT.CONFIRM_ACTION(actionId), {
     itemIndex,
   });
 }
@@ -32,7 +33,7 @@ export function rejectAgentAction(
   itemIndex?: number,
 ): Promise<{ rejected?: boolean; itemIndex?: number; allCompleted?: boolean }> {
   return apiClient.post<{ rejected?: boolean; itemIndex?: number; allCompleted?: boolean }>(
-    `agent/actions/${actionId}/reject`,
+    API_ENDPOINTS.AGENT.REJECT_ACTION(actionId),
     { itemIndex },
   );
 }
@@ -42,7 +43,7 @@ export function fetchConversationActions(
   conversationId: string,
 ): Promise<AgentActionHistoryItem[]> {
   return apiClient.get<AgentActionHistoryItem[]>(
-    `agent/actions/history?conversationId=${encodeURIComponent(conversationId)}`,
+    `${API_ENDPOINTS.AGENT.ACTION_HISTORY}?${SEARCH_PARAMS.CONVERSATION_ID}=${encodeURIComponent(conversationId)}`,
   );
 }
 

@@ -64,7 +64,7 @@ export class EntityMemoryService {
 
   /** Load entity memory for a conversation (returns empty if none). */
   async load(conversationId: string): Promise<EntityMemory> {
-    this.logger.debug(`[load] Loading entity memory for convo ${conversationId.slice(0, 8)}`);
+    this.logger.info(`[load] Loading entity memory for convo ${conversationId.slice(0, 8)}`);
     const row = await this.prisma.client.conversation.findUnique({
       where: { id: conversationId },
       select: { lastEntityRef: true },
@@ -108,7 +108,7 @@ export class EntityMemoryService {
 
     const newCount = Object.values(delta).reduce((n, list) => n + (list?.length ?? 0), 0);
     if (newCount > 0) {
-      this.logger.debug(
+      this.logger.info(
         `EntityMemory updated for conversation ${conversationId.slice(0, 8)}: +${newCount} ref(s) — accounts:${merged.accounts.length} categories:${merged.categories.length} budgets:${merged.budgets.length} goals:${merged.goals.length} txns:${merged.transactions.length}`,
       );
     }
@@ -122,7 +122,7 @@ export class EntityMemoryService {
       where: { id: conversationId },
       data: { lastEntityRef: null },
     });
-    this.logger.log(`EntityMemory cleared for conversation ${conversationId.slice(0, 8)}`);
+    this.logger.info(`EntityMemory cleared for conversation ${conversationId.slice(0, 8)}`);
   }
 
   /**

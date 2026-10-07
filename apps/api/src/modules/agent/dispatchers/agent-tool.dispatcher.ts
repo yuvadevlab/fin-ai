@@ -93,7 +93,7 @@ export class AgentToolDispatcher {
           runId: ctx.runId,
         });
 
-        this.logger.log(
+        this.logger.info(
           `Tool "${call.name}" proposed (actionId: ${proposal.id}, warnings: ${warnings.length}, runId: ${ctx.runId.slice(0, 8)})`,
         );
         emit({
@@ -150,7 +150,7 @@ export class AgentToolDispatcher {
         return special.result!;
       }
 
-      this.logger.log(
+      this.logger.info(
         `Tool "${call.name}" executed successfully (runId: ${ctx.runId.slice(0, 8)})`,
       );
       emit({

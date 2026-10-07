@@ -38,7 +38,7 @@ export class AiModelService {
     // through without editing this file. Tests inject via process.env.
     const env: Record<string, string | undefined> = { ...process.env };
     this.model = createChatModelFromEnv(env, "chat");
-    this.logger.log(`AI provider [chat]: ${this.model.provider} (${this.model.model})`);
+    this.logger.info(`AI provider [chat]: ${this.model.provider} (${this.model.model})`);
   }
 
   /** Convert legacy options into the provider-agnostic LlmChatRequest. */
@@ -65,7 +65,7 @@ export class AiModelService {
     onToken?: (token: string) => void,
   ): Promise<void> {
     const request = this.toRequest(options);
-    this.logger.log(`[Stream] Started via ${this.model.provider} (${this.model.model})`);
+    this.logger.info(`[Stream] Started via ${this.model.provider} (${this.model.model})`);
     let error: Error | undefined;
 
     try {
@@ -85,7 +85,7 @@ export class AiModelService {
             );
             break;
           case "done":
-            this.logger.log(`[Stream] Finished via ${this.model.provider} (${this.model.model})`);
+            this.logger.info(`[Stream] Finished via ${this.model.provider} (${this.model.model})`);
             res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
             res.end();
             return;
@@ -93,7 +93,7 @@ export class AiModelService {
       }
 
       // Stream ended without explicit "done" — flush terminal events
-      this.logger.log(`[Stream] Ended via ${this.model.provider} (${this.model.model})`);
+      this.logger.info(`[Stream] Ended via ${this.model.provider} (${this.model.model})`);
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     } catch (err) {
@@ -111,7 +111,7 @@ export class AiModelService {
   /** Non-streaming chat response. */
   async chat(options: AiModelStreamOptions): Promise<string> {
     const request = this.toRequest(options);
-    this.logger.log(
+    this.logger.info(
       `[Complete] Invoking completion via ${this.model.provider} (${this.model.model})`,
     );
     const result = await this.model.complete(request);

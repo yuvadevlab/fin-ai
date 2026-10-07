@@ -62,7 +62,7 @@ export class AgentActionService {
    * proposals self-retire.
    */
   async propose(input: ProposeActionInput) {
-    this.logger.debug(
+    this.logger.info(
       `[propose] Proposing action "${input.tool}" for user ${input.userId.slice(0, 8)} (run: ${(input.runId ?? "").slice(0, 8) || "n/a"})`,
     );
     const tool = this.registry.get(input.tool);
@@ -94,7 +94,7 @@ export class AgentActionService {
         },
       })
       .then((action) => {
-        this.logger.log(
+        this.logger.info(
           `Proposed action "${input.tool}" (actionId: ${action.id}, userId: ${input.userId.slice(0, 8)}, runId: ${(input.runId ?? "").slice(0, 8)})`,
         );
         return action;

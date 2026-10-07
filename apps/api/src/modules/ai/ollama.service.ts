@@ -32,7 +32,7 @@ export class OllamaService {
     onToken?: (token: string) => void,
   ): Promise<void> {
     const { prompt, systemPrompt, historyMessages = [], model = this.model } = options;
-    this.logger.debug(
+    this.logger.info(
       `[streamChatWithCallback] Streaming prompt via Ollama model "${model}" (${historyMessages.length} history msg(s))`,
     );
 
@@ -102,7 +102,7 @@ export class OllamaService {
    */
   async chat(options: OllamaStreamOptions): Promise<string> {
     const { prompt, systemPrompt, model = this.model } = options;
-    this.logger.debug(
+    this.logger.info(
       `[chat] Ollama completion via model "${model}", prompt: ${prompt.slice(0, 60)}`,
     );
 
@@ -134,7 +134,7 @@ export class OllamaService {
       if (!content) {
         this.logger.warn("[chat] Ollama returned empty content");
       } else {
-        this.logger.log(`[chat] Ollama completion received (${content.length} chars)`);
+        this.logger.info(`[chat] Ollama completion received (${content.length} chars)`);
       }
       return content;
     } catch (error) {

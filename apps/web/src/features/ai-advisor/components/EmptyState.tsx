@@ -1,18 +1,27 @@
 "use client";
 
+/**
+ * @file apps/web/src/features/ai-advisor/components/EmptyState.tsx
+ * @description Landing view for empty AI Advisor conversations with quick action prompt triggers.
+ * @module @finai/web/features/ai-advisor/components/EmptyState
+ */
+
 import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@finai/ui";
-import { QUICK_ACTIONS } from "../constants/quickActions";
+import { UI_COPY } from "@/lib";
+import { QUICK_ACTIONS } from "@/features/ai-advisor";
 
-interface EmptyStateProps {
+/** Props configuration for the {@link EmptyState} component */
+export interface EmptyStateProps {
+  /** Callback fired when a quick-action prompt is selected */
   onSelect: (message: string) => void;
+  /** Optional custom CSS class name */
   className?: string;
 }
 
 /**
- * Landing state for the Advisor when the conversation is empty. Communicates
- * that FinAI can *analyze, plan, and act* — not merely answer questions —
- * with a compact set of action-oriented entry points.
+ * Landing state for the Advisor when the conversation is empty.
+ * Displays quick-action starter chips and guidance on what the AI agent can accomplish.
  */
 export function EmptyState({ onSelect, className }: EmptyStateProps) {
   return (
@@ -22,19 +31,20 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
         className,
       )}
     >
-      {/* Hero */}
+      {/* Hero identity */}
       <div className="flex flex-col items-center gap-2.5">
         <div className="bg-primary/10 flex size-14 items-center justify-center rounded-2xl">
           <Sparkles className="text-primary size-7" aria-hidden="true" />
         </div>
-        <h2 className="text-foreground mt-1 text-xl font-semibold tracking-tight">AI Advisor</h2>
+        <h2 className="text-foreground mt-1 text-xl font-semibold tracking-tight">
+          {UI_COPY.ADVISOR.EMPTY_STATE.TITLE}
+        </h2>
         <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
-          What can I help you with? Analyze your finances, plan your money, or ask me to take an
-          action.
+          {UI_COPY.ADVISOR.EMPTY_STATE.SUBTITLE}
         </p>
       </div>
 
-      {/* Action chips — first four quick actions */}
+      {/* Action starter chips — first four quick actions */}
       <div className="grid w-full max-w-md grid-cols-2 gap-2">
         {QUICK_ACTIONS.slice(0, 4).map((action) => (
           <button
@@ -52,7 +62,7 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
         ))}
       </div>
 
-      <p className="text-muted-foreground text-xs">…or ask anything below.</p>
+      <p className="text-muted-foreground text-xs">{UI_COPY.ADVISOR.EMPTY_STATE.OR_ASK_BELOW}</p>
     </div>
   );
 }

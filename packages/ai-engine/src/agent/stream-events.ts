@@ -24,6 +24,8 @@ export interface AgentCard {
 export type AgentStreamEvent =
   /** First event: the conversation this run belongs to (new or existing). */
   | { type: "conversation"; conversationId: string }
+  /** Generated short summary title for the conversation (1st turn). */
+  | { type: "title"; title: string }
   /** Unique id for this agent run — correlates usage/audit across events. */
   | { type: "run"; runId: string }
   /**

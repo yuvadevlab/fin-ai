@@ -1,6 +1,7 @@
 import {
   Button,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -69,7 +70,7 @@ export function FormDialog({
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-2 sm:px-6">{children}</div>
+          <DialogBody className="space-y-4 px-4 py-2 sm:px-6">{children}</DialogBody>
 
           <DialogFooter className="flex-col-reverse gap-2 p-4 pt-2 sm:flex-row sm:gap-2 sm:p-6 sm:pt-2">
             <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
