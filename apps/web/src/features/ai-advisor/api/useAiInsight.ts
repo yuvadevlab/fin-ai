@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/lib";
 import { API_ENDPOINTS, SEARCH_PARAMS, StorageKey } from "@finai/shared-types";

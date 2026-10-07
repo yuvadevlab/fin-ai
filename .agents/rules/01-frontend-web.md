@@ -56,15 +56,48 @@ src/features/<feature-name>/components/
 
 1. **Location**: Place feature API hooks under `src/features/<feature-name>/api/`.
 2. **React Query**: Use `@tanstack/react-query` (`useQuery`, `useMutation`).
-3. **Automatic Cache Invalidation**: Invalidate affected query keys in `onSuccess` mutation handlers:
+3. **Centralized Query Keys**: Use `QUERY_KEYS` from `@finai/shared-types`. NEVER use inline raw string arrays:
    ```ts
-   queryClient.invalidateQueries({ queryKey: ["transactions", workspaceId] });
+   // CORRECT:
+   queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL });
+
+   // FORBIDDEN:
+   queryClient.invalidateQueries({ queryKey: ["transactions"] });
    ```
-4. **Optimistic Updates**: Use optimistic updates only for simple toggle or deletion actions with immediate rollback on error.
+4. **Centralized API Endpoints**: Use `API_ENDPOINTS` from `@finai/shared-types` or `API_ROUTES` from `@/lib/routes`. Never hardcode raw endpoint URLs.
+5. **Optimistic Updates**: Use optimistic updates only for simple toggle or deletion actions with immediate rollback on error.
 
 ---
 
-## 4. UI & Styling Guidelines (`packages/ui`)
+## 4. Barrel Imports & Next.js RSC Boundary Discipline
+
+1. **Barrel Imports**: Always use barrel imports for feature consumers and common utilities:
+   ```ts
+   // CORRECT:
+   import { UI_COPY, APP_ROUTES } from "@/lib";
+   import { AiAdvisorPage } from "@/features/ai-advisor/components";
+
+   // FORBIDDEN:
+   import { UI_COPY } from "../../../lib/ui-copy/advisor";
+   ```
+2. **RSC Server Boundaries**:
+   - Next.js Server Components (such as dashboard `layout.tsx` or `page.tsx` exporting `metadata`) must NOT import from barrels that re-export client hooks (`use*`).
+   - Import client components from `@/features/<feature>/components` or `@/features/<feature>/context` to preserve clean server/client compilation boundaries.
+3. **Mandatory `"use client"` Directive**:
+   - Every custom React hook using `useState`, `useEffect`, `useRef`, or `useCallback` MUST have `"use client";` on line 1.
+   - Every interactive component rendering forms, buttons, or dialogs MUST have `"use client";` on line 1.
+
+---
+
+## 5. UI Copy Dictionaries (Zero Hardcoded Text)
+
+1. **Catalog Location**: All user-facing strings must reside in `@/lib/ui-copy/`.
+2. **Dictionary Structure**: Group strings by feature and section (`UI_COPY.<FEATURE>.<SECTION>`).
+3. **Components**: Components must read copy exclusively from `UI_COPY`. No inline hardcoded strings for button labels, card headers, empty states, or dialog bodies.
+
+---
+
+## 6. UI & Styling Guidelines (`packages/ui`)
 
 1. **TailwindCSS Exclusively**: Use semantic Tailwind utility tokens. Never use hardcoded arbitrary hex values.
    - Backgrounds & Foreground: `bg-background`, `text-foreground`, `bg-card`, `border-border`, `text-muted-foreground`

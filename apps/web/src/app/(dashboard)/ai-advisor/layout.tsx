@@ -5,7 +5,7 @@
  */
 
 import type { Metadata } from "next";
-import { AgentChatProvider } from "@/features/ai-advisor";
+import { AgentChatProvider } from "@/features/ai-advisor/context";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {

@@ -5,7 +5,7 @@
  * @module @finai/web/app/(dashboard)/ai-advisor/[[...id]]
  */
 
-import { AiAdvisorPage } from "@/features/ai-advisor";
+import { AiAdvisorPage } from "@/features/ai-advisor/components";
 
 /**
  * AI Advisor conversational route page component.

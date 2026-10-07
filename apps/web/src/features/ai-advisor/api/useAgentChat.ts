@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * @file apps/web/src/features/ai-advisor/api/useAgentChat.ts
  * @description Primary client hook managing SSE streaming, tool action approvals, and zero-latency caching.
@@ -6,17 +8,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { AgentStreamEvent } from "@finai/ai-engine";
 import { StorageKey, QUERY_KEYS } from "@finai/shared-types";
-import { API_BASE_URL, apiClient, APP_ROUTES, API_ROUTES } from "@/lib";
-import { handleAgentStreamEvent, type AgentEventPort } from "./agentEventHandlers";
+import { APP_ROUTES } from "@/lib";
+import { type AgentEventPort } from "./agentEventHandlers";
+import { streamAgentChat } from "./agentChatStreamer";
 import { useAgentActionRunner } from "./useAgentActionRunner";
 import { useAgentMessages } from "./useAgentMessages";
-import { fetchConversationActions } from "./agentActions";
-import { hydrateConversationMessages } from "./conversationHydration";
+import { fetchAndHydrateConversation } from "./conversationHydration";
 import { loadCachedMessages, saveCachedMessages } from "./chatStorage";
 import type { AgentChatMessage } from "./agentTypes";
-import type { AiConversation } from "./useConversations";
 
 /** Options configuration for the {@link useAgentChat} hook */
 export interface UseAgentChatOptions {
@@ -40,17 +40,7 @@ export function useAgentChat(options?: UseAgentChatOptions) {
 
   const {
     messages,
-    appendLog,
-    appendText,
-    replaceText,
-    appendActivity,
-    updateActivity,
-    resolveApprovalActivity,
-    appendConfirmation,
-    updateConfirmationStatus,
-    updateConfirmationCard,
-    failStream,
-    endStream,
+    portMethods,
     pushUserTurn,
     pushAssistantTurn,
     setMode,
@@ -59,8 +49,8 @@ export function useAgentChat(options?: UseAgentChatOptions) {
   } = useAgentMessages();
 
   const { executingActionId, confirmAction, rejectAction } = useAgentActionRunner({
-    updateConfirmationStatus,
-    resolveApprovalActivity,
+    updateConfirmationStatus: portMethods.updateConfirmationStatus,
+    resolveApprovalActivity: portMethods.resolveApprovalActivity,
   });
 
   /** Stops any in-flight SSE stream and updates streaming status */
@@ -90,17 +80,7 @@ export function useAgentChat(options?: UseAgentChatOptions) {
       abortRef.current = new AbortController();
 
       const port: AgentEventPort = {
-        appendLog,
-        appendText,
-        replaceText,
-        appendActivity,
-        updateActivity,
-        resolveApprovalActivity,
-        appendConfirmation,
-        updateConfirmationStatus,
-        updateConfirmationCard,
-        failStream,
-        endStream,
+        ...portMethods,
         onConversation: (id) => {
           setConversationId((prev) => prev ?? id);
           if (typeof window !== "undefined") {
@@ -115,52 +95,19 @@ export function useAgentChat(options?: UseAgentChatOptions) {
       };
 
       try {
-        const res = await fetch(`${API_BASE_URL}/${API_ROUTES.AGENT_CHAT}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ question, conversationId: conversationId ?? undefined }),
+        await streamAgentChat({
+          question,
+          conversationId: conversationId ?? null,
+          token,
           signal: abortRef.current.signal,
+          port,
         });
-
-        if (!res.ok || !res.body) throw new Error(`Agent service returned ${res.status}`);
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            const raw = line.slice(6).trim();
-            if (!raw) continue;
-
-            let event: AgentStreamEvent;
-            try {
-              event = JSON.parse(raw) as AgentStreamEvent;
-            } catch {
-              continue;
-            }
-
-            // Map incoming SSE event onto React state (returns true on done/error)
-            if (handleAgentStreamEvent(event, port)) return;
-          }
-        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") return;
         const msg = err instanceof Error ? err.message : "Failed to connect to the agent";
-        failStream(msg);
+        portMethods.failStream(msg);
       } finally {
-        endStream();
+        portMethods.endStream();
         setIsStreaming(false);
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AI.CONVERSATIONS });
       }
@@ -169,17 +116,7 @@ export function useAgentChat(options?: UseAgentChatOptions) {
       isStreaming,
       pushUserTurn,
       pushAssistantTurn,
-      appendLog,
-      appendText,
-      replaceText,
-      appendActivity,
-      updateActivity,
-      resolveApprovalActivity,
-      appendConfirmation,
-      updateConfirmationStatus,
-      updateConfirmationCard,
-      failStream,
-      endStream,
+      portMethods,
       setMode,
       conversationId,
       queryClient,
@@ -206,14 +143,12 @@ export function useAgentChat(options?: UseAgentChatOptions) {
       // 2. Cold load from API when not cached locally
       setIsLoadingConversation(true);
       try {
-        const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
-        if (!convo) return;
-        setConversationId(convo.id);
-        const actions = await fetchConversationActions(convo.id).catch(() => []);
-        const hydratedMessages = hydrateConversationMessages(convo, actions);
-        cacheRef.current.set(convo.id, hydratedMessages);
-        saveCachedMessages(convo.id, hydratedMessages);
-        replaceMessages(hydratedMessages);
+        const hydrated = await fetchAndHydrateConversation(id);
+        if (!hydrated) return;
+        setConversationId(id);
+        cacheRef.current.set(id, hydrated);
+        saveCachedMessages(id, hydrated);
+        replaceMessages(hydrated);
       } catch {
         // Graceful error fallback
       } finally {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS, API_ENDPOINTS } from "@finai/shared-types";
 import { apiClient } from "@/lib";
