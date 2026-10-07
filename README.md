@@ -72,7 +72,7 @@ fin-ai/
 │   ├── web/Dockerfile         # Multi-stage Next.js Dockerfile
 │   └── nginx/                 # Nginx Reverse Proxy & SSL Setup
 │
-├── .github/workflows/         # Code Quality CI Workflow (build.yml)
+├── .github/workflows/         # Code Quality CI Pipeline (ci.yml)
 ├── docker-compose.yml         # Production Container Orchestration
 ├── package.json               # Root Workspace Scripts
 ├── pnpm-workspace.yaml        # Monorepo Workspace Configuration

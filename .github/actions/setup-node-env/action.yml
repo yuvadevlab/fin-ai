@@ -1,0 +1,42 @@
+name: "Setup Node Environment"
+description: "Sets up Node.js, pnpm, installs dependencies, generates Prisma client, and configures Turborepo caching."
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "24"
+  db-generate:
+    description: "Whether to run Prisma db:generate"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: ⚡ Setup pnpm Package Manager
+      uses: pnpm/action-setup@v4
+
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "pnpm"
+
+    - name: 📥 Install Dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: 🗄️ Generate Prisma Client
+      if: ${{ inputs.db-generate == 'true' }}
+      shell: bash
+      run: pnpm db:generate
+
+    - name: ⚡ Cache Turborepo
+      uses: actions/cache@v4
+      with:
+        path: |
+          .turbo
+          node_modules/.cache/turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-

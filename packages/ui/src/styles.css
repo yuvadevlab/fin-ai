@@ -6,6 +6,9 @@
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-ring-offset-background: var(--background);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-investment: var(--investment);
 }
 
 @layer base {

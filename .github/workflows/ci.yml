@@ -1,0 +1,82 @@
+name: 🛡️ CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: 🧹 Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment
+        uses: ./.github/actions/setup-node-env
+
+      - name: 🧹 Execute ESLint
+        run: pnpm lint
+
+  format:
+    name: 💅 Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment
+        uses: ./.github/actions/setup-node-env
+        with:
+          db-generate: "false"
+
+      - name: 💅 Check Code Formatting
+        run: pnpm format:check
+
+  typecheck:
+    name: 🔎 Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment
+        uses: ./.github/actions/setup-node-env
+
+      - name: 🔎 Execute Typecheck
+        run: pnpm typecheck
+
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment
+        uses: ./.github/actions/setup-node-env
+
+      - name: 🧪 Execute Tests
+        run: pnpm test
+
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment
+        uses: ./.github/actions/setup-node-env
+
+      - name: 🏗️ Execute Turbo Build
+        run: pnpm build
