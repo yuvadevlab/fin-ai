@@ -105,13 +105,13 @@ sequenceDiagram
     autonumber
     participant Client as FinAI Web (:3000)
     participant API as FinAI API (:4000)
-    participant DP as DevLab Portal (:3010)
+    participant DP as DevLab Portal (:3015)
     participant Engine as @finai/finance-engine
     participant DL as DevLab Logs (:3020)
     participant IA as IncidentAI (:8085)
 
     Client->>API: POST /api/v1/advisory/chat (Prompt: "Can I afford a $1,200/mo car?")
-    API->>DP: 1. Verify User Tier & Feature Access (:3010)
+    API->>DP: 1. Verify User Tier & Feature Access (:3015)
     DP-->>API: Active Subscription (Tier: PRO)
     API->>API: 2. Fetch User Financial Snapshot from PostgreSQL
     API->>Engine: 3. Compute Runway & Cash Flow Impact (Pure Math)
@@ -130,7 +130,7 @@ sequenceDiagram
 
 | Ecosystem Member    | Direction | Protocol & Transport   | Exact Payload Contract & Endpoint                       | Purpose & Operational Behavior                                                                                      |
 | :------------------ | :-------: | :--------------------- | :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------ |
-| **`devlab-portal`** |  Inbound  | HTTP REST & Redis JWKS | `GET http://localhost:3010/api/v1/subscriptions/verify` | Validates user subscription tiers, feature flags, and API quotas before allowing advanced advisory modeling.        |
+| **`devlab-portal`** |  Inbound  | HTTP REST & Redis JWKS | `GET http://localhost:3015/api/v1/subscriptions/verify` | Validates user subscription tiers, feature flags, and API quotas before allowing advanced advisory modeling.        |
 | **`devlab-logs`**   | Outbound  | HTTP/2 POST            | `POST http://localhost:3020/api/v1/logs/ingest`         | Streams structured audit logs, user advisory session events, and backend latency metrics for centralized telemetry. |
 | **`incidentai`**    | Outbound  | HTTP POST Webhook      | `POST http://localhost:8085/api/v1/incidents/webhook`   | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.     |
 | **`devlab-guard`**  |  Inbound  | CLI Git Pre-commit     | `uv run devlab-guard scan --path .`                     | Enforces the 250-line rule, verifies that all enums are strictly used, and guarantees zero inline regexes.          |
@@ -194,7 +194,7 @@ pnpm typecheck
 | `DATABASE_URL`           | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
 | `REDIS_URL`              | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
 | `NEXT_PUBLIC_API_URL`    | String | `http://localhost:4000`  |   Yes    | Base URL consumed by the Next.js frontend.                                            |
-| `DEVLAB_PORTAL_URL`      | String | `http://localhost:3010`  |   Yes    | DevLab Portal API URL for subscription and key checks.                                |
+| `DEVLAB_PORTAL_URL`      | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription and key checks.                                |
 | `DEVLAB_LOGS_URL`        | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
 | `INCIDENTAI_WEBHOOK_URL` | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
 
