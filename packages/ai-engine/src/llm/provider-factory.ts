@@ -25,11 +25,14 @@
  * state and is consumable directly from the API layer or from tests.
  */
 
-import { OllamaChatModel } from "./ollama-chat.model";
-import { OpenRouterChatModel } from "./openrouter-chat.model";
-import { GroqChatModel } from "./groq-chat.model";
-import { GoogleAiStudioChatModel } from "./google-ai-studio.model";
-import type { ChatModel, ChatModelConfig } from "./types";
+import type { ChatModel } from "./types";
+import {
+  GroqAdapter,
+  GoogleAdapter,
+  OllamaAdapter as DevLabOllamaAdapter,
+  OpenAIAdapter,
+} from "@yuva-devlab/ai-client";
+import { DevLabChatModel } from "./devlab-chat.model";
 
 /** Discriminated union of all supported provider identifiers. */
 export type AiProvider = "openrouter" | "groq" | "google-ai-studio" | "ollama";
@@ -149,17 +152,28 @@ export function createChatModel(
     );
   }
 
-  const config: ChatModelConfig = { baseUrl, apiPath, model, apiKey };
-
+  // Delegate provider execution to canonical @yuva-devlab/ai-client adapters
   switch (provider) {
     case "openrouter":
-      return new OpenRouterChatModel(config);
+      return new DevLabChatModel(
+        provider,
+        model,
+        new OpenAIAdapter({ apiKey: apiKey ?? "", baseUrl }),
+      );
     case "groq":
-      return new GroqChatModel(config);
+      return new DevLabChatModel(
+        provider,
+        model,
+        new GroqAdapter({ apiKey: apiKey ?? "", baseUrl }),
+      );
     case "google-ai-studio":
-      return new GoogleAiStudioChatModel(config);
+      return new DevLabChatModel(
+        provider,
+        model,
+        new GoogleAdapter({ apiKey: apiKey ?? "", baseUrl }),
+      );
     case "ollama":
-      return new OllamaChatModel(config);
+      return new DevLabChatModel(provider, model, new DevLabOllamaAdapter({ baseUrl }));
     default:
       throw new Error(`Unknown AI provider: ${provider}`);
   }

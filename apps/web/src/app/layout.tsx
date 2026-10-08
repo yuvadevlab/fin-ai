@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { QueryProvider, AppearanceProvider } from "@/providers";
 import { Toaster } from "@finai/ui";
+import { DevLabAuthProvider } from "@yuva-devlab/auth-react";
 import { appearanceScript } from "@/lib/appearance-script";
 import "./globals.css";
 
@@ -46,10 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <QueryProvider>
-          <AppearanceProvider>
-            {children}
-            <Toaster />
-          </AppearanceProvider>
+          <DevLabAuthProvider appId="finai">
+            <AppearanceProvider>
+              {children}
+              <Toaster />
+            </AppearanceProvider>
+          </DevLabAuthProvider>
         </QueryProvider>
       </body>
     </html>

@@ -55,5 +55,11 @@
     "*.{json,md,yml,yaml,css,scss}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@yuva-devlab/agent-core": "link:../devlab-shared/packages/agent-core",
+    "@yuva-devlab/ai-client": "link:../devlab-shared/packages/ai-client",
+    "@yuva-devlab/auth-react": "link:../devlab-shared/packages/auth-react",
+    "@yuva-devlab/auth-server": "link:../devlab-shared/packages/auth-server"
   }
 }

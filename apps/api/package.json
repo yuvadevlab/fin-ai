@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@yuva-devlab/agent-core": "link:../../../devlab-shared/packages/agent-core",
     "@finai/ai-engine": "workspace:*",
     "@finai/database": "workspace:*",
     "@finai/finance-engine": "workspace:*",
