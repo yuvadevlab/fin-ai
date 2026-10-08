@@ -1,187 +1,220 @@
-# FinAI — Product Specification, Technical Dossier & Operations Manual
+# FinAI — Master Product Specification, Technical Dossier & Operations Manual
 
 ---
 
-## 1. Executive Product Dossier & Market Vision
+## 1. Product File: Strategic Vision & Market Requirements
 
-### 1.1 The Operational Problem Space
+### 1.1 Executive Product Summary
 
-In the digital personal and family finance space, existing platforms (Mint, YNAB, Monarch, Copilot) exhibit critical architectural shortcomings:
+**FinAI** is an autonomous AI-powered personal and family wealth intelligence platform engineered to deliver proactive, private, and mathematically verifiable financial guidance.
 
-- **Passive History Displays**: Traditional apps show backward-looking pie charts and historical spend totals, but fail to provide proactive, forward-looking strategic advice.
-- **Severe Privacy Vulnerabilities**: Cloud-based consumer fintech apps feed unmasked user bank balances, transaction histories, and net worth figures to third-party closed-source LLMs (OpenAI, Anthropic), creating severe data privacy and compliance risks.
-- **The "Hallucinated Math" Trap**: When standard conversational AI bots calculate loan amortization, compound interest, or retirement horizons directly inside neural network attention weights, they hallucinate arithmetic figures, offering mathematically invalid financial advice.
-- **Accidental State Mutation**: Unconstrained AI agents can trigger accidental bank transfers or delete budget categories without explicit user authorization or impact preview.
+Existing consumer financial applications (Mint, YNAB, Monarch, Copilot) are fundamentally passive: they categorize historical spending into pie charts and show historical balances, but fail to provide strategic forward-looking advisory. Conversely, generic generative AI chat wrappers suffer from dangerous "hallucinated arithmetic" (e.g. producing mathematically impossible loan amortization or retirement projections) and leak sensitive banking data to public third-party LLMs.
 
-### 1.2 The FinAI Value Proposition
+FinAI eliminates these failure modes through three architectural pillars:
 
-**FinAI** is an **Autonomous AI Financial Intelligence and Wealth Management Platform**:
+1. **Deterministic, Zero-Hallucination Math Core**: All financial figures, net worth calculations, runway projections, and amortization schedules are computed exclusively by `@finai/finance-engine`—a pure functional TypeScript library with **zero I/O, zero network dependencies, and 100% deterministic test coverage**.
+2. **Local & Private Cognitive Advisory**: Powered by Ollama on-premise models and private DevLab inference rails, ensuring sensitive banking records and balances never leak to public model training corpora.
+3. **Mandatory Two-Phase Confirmation Protocol**: The AI agent is strictly restricted to read-only tools during conversation. Any state-mutating action (creating budgets, logging transactions, reallocating funds) requires an interactive 2-phase confirmation modal displaying an explicit financial impact preview before execution.
 
-1. **Privacy-Preserving Hybrid Intelligence**: Powered by Ollama local models and private DevLab Chat endpoints, guaranteeing that sensitive financial records never leak to public training sets.
-2. **Deterministic, Zero-Hallucination Math Engine**: All financial calculations (net worth, cash flow, runway, budget adherence, Sharpe ratios, retirement Monte Carlo) are executed in `@finai/finance-engine`—a pure functional TypeScript library with **zero I/O, zero network, and zero side-effects**.
-3. **Conversational ReAct Cognitive Advisory**: An AI advisor that retrieves verified ledger facts via read-only tools before synthesizing actionable recommendations.
-4. **Mandatory 2-Phase Confirmation Protocol**: Any state-mutating operation (creating budgets, logging transactions, moving funds) requires interactive preview cards displaying the financial impact before user confirmation.
-5. **Strict 2-File Feature Modal Pattern**: Standardizes frontend engineering across all financial features with decoupled presentation and mutation logic.
+### 1.2 Target Personas & Primary Use Cases
+
+| Persona                                  | Operational Context                                                  | Primary Pain Points Addressed                                                                                            |
+| :--------------------------------------- | :------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| **High-Earning Tech Professional**       | Managing multiple brokerage accounts, crypto wallets, and RSUs       | Inability to calculate true liquid runway, tax-efficient drawdown strategies, and automated debt payoff optimization.    |
+| **Family Financial Planner**             | Coordinating multi-account household budgets and emergency savings   | Tedious manual transaction reconciliation, opaque spending leaks, and fear of unvetted AI moving money.                  |
+| **Independent Freelancer / Solopreneur** | Fluctuating monthly revenue with irregular quarterly tax obligations | Inaccurate monthly budgeting due to variable income; lack of automated cash flow smoothing and tax reserve calculations. |
+| **Security & Privacy-Conscious User**    | Demands institutional financial insights without cloud data sharing  | Reluctance to upload banking credentials and net worth statements to third-party closed AI clouds.                       |
+
+### 1.3 The Problem Space: The Hallucinated Math Trap
+
+When standard Large Language Models calculate compound interest or loan amortization directly within neural network weights, their probabilistic nature causes arithmetic hallucination. A prompt asking _"How much interest will I pay on a $450,000 mortgage at 6.5% over 30 years?"_ will frequently yield numbers that deviate by tens of thousands of dollars.
+
+In FinAI:
+
+- **LLMs never do math**: The LLM serves solely as an intent parser and conversational synthesizer.
+- **The Engine does the math**: When the user asks a financial question, the AI advisor calls verified, deterministic tools in `@finai/finance-engine` and incorporates the exact computed outputs into its narrative response.
 
 ---
 
-## 2. Exhaustive Feature Matrix & Deep Technical Explanation
+## 2. Exhaustive Feature Directory & Technical Mechanics
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                              FINAI PLATFORM ARCHITECTURE                               │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-                 [Next.js 15 Web Dashboard (:3000)]
-                                │  (React Query / REST)
-                                ▼
-                 [NestJS 11 Backend API (:4000)]
-                                │
-    ┌───────────────────────────┼───────────────────────────┐
-    ▼                           ▼                           ▼
-[1. Ledger Engine]      [2. AI ReAct Advisor]       [3. Finance Engine]
- • Accounts & Txns       • DevLab Chat / Ollama      • Pure Math (Zero-IO)
- • Double-Entry Ledger   • 2-Phase Write Rail        • Projections & Ratios
-    │                           │                           │
-    └───────────────────────────┼───────────────────────────┘
-                                ▼
-                 [PostgreSQL & Prisma 7 (:5432)]
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                       FINAI SYSTEM ARCHITECTURE                                        │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                    [Next.js 15 Web Dashboard (:3000)]
+                                     │  (React Query / REST / SSE)
+                                     ▼
+                    [NestJS 11 Backend API (:4000)]
+                                     │  (JWT Auth, Rate Limiter, Fastify Engine)
+     ┌───────────────────────────────┼───────────────────────────────┐
+     ▼                               ▼                               ▼
+[Deterministic Math Engine]  [ReAct Advisory Loop]        [Transactional Outbox & Ledger]
+ • Pure Functional TS         • Read-Only Tool Harness     • Double-Entry Bookkeeping
+ • Zero-Side-Effect Math      • Local Ollama / DevLab      • Integer Cents Representation
+ • Monte Carlo Simulations    • Two-Phase Confirmation     • Audit Trail Records
+     │                               │                               │
+     └───────────────────────────────┴───────────────┬───────────────┘
+                                                     ▼
+                                      [PostgreSQL 16 & Redis 7]
 ```
 
-### Feature 1: Multi-Account Net Worth & Ledger Tracker
+### 2.1 Application Layer Breakdown
 
-- **Modules**: `apps/web/src/features/accounts/` & `apps/api/src/modules/account/`
-- **Objective**: Consolidate bank accounts, credit cards, investment portfolios, and loans into an accurate real-time net worth balance.
-- **How It Works**:
-  - Double-entry ledger architecture where every transaction is associated with an account ID.
-  - Balances are evaluated dynamically:
-    $$\text{Net Worth} = \sum \text{Assets (Cash, Investments, Real Estate)} - \sum \text{Liabilities (Credit Cards, Loans, Mortgages)}$$
-  - Enforces currency isolation with multi-currency conversion support.
+#### 1. Web Dashboard (`apps/web` — Port `3000`)
 
-### Feature 2: Transaction Categorization & Deduplication
+- **Technology Stack**: Next.js 15 (App Router), React 19, Tailwind CSS v4, React Query v5, `@finai/ui`, `@yuva-devlab/tokens`.
+- **Purpose**: High-performance, responsive wealth management web application.
+- **Detailed Features**:
+  - **Net Worth Command Center**: Real-time aggregation of liquid assets, investments, real estate, and liabilities with historical trend charting.
+  - **Cash Flow & Sankey Visualization**: Visual representation of gross income flowing into tax reserves, fixed obligations, discretionary spending, and savings buckets.
+  - **Liquid Runway Radar**: Dynamically calculates how many months the household can sustain current lifestyle spending in the event of total income cessation.
+  - **Two-Phase Action Confirmation Modals**: Standardized modal pattern (`<Feature>Modal.tsx` + `<Feature>Form.tsx`) displaying a side-by-side "Before vs After" impact preview prior to persisting budget modifications or manual transactions.
+  - **Conversational Financial Advisory Drawer**: Floating sliding drawer providing real-time streaming advice, scenario modeling, and contextual action chips.
 
-- **Modules**: `apps/web/src/features/transactions/` & `apps/api/src/modules/transaction/`
-- **Objective**: Ingest bank transaction feeds, eliminate duplicates, and automatically classify spend categories.
-- **How It Works**:
-  - Computes cryptographic hash fingerprints (`account_id + date + amount + payee`) to prevent duplicate transaction imports.
-  - Categorizes expenses into standard buckets (Housing, Utilities, Groceries, Discretionary) using heuristic matching and local embedding similarity.
+#### 2. Backend API Gateway (`apps/api` — Port `4000`)
 
-### Feature 3: Deterministic Financial Mathematics Engine
-
-- **Module**: `packages/finance-engine/`
-- **Objective**: Eliminate LLM hallucination by executing 100% of mathematical projections in pure TypeScript functions.
-- **Core Algorithms**:
-  - **Budget Adherence Score**: Computes variance ratios between budgeted allowances and actual spend, outputting a 0-100 adherence index.
-  - **Emergency Fund Runway**: Calculates months of financial survival under complete income loss:
-    $$\text{Runway (Months)} = \frac{\text{Liquid Cash Assets}}{\text{Average Monthly Non-Discretionary Spend}}$$
-  - **Investment Sharpe Ratio & Volatility**: Evaluates risk-adjusted returns of stock/crypto holdings against the risk-free rate.
-  - **Retirement Horizon**: Evaluates future portfolio values using compound interest and inflation adjustments.
-- **Invariants**: ZERO dependencies, ZERO network calls, ZERO file I/O.
-
-### Feature 4: Autonomous Conversational ReAct Advisor
-
-- **Module**: `packages/ai-engine/` & `apps/api/src/modules/agent/`
-- **Objective**: Conversational Socratic financial planner operating through a ReAct (Reason + Act) loop.
-- **How It Works**:
-  - The advisor ingests user prompts (e.g. "Can I afford to purchase a $45,000 car with financing?").
-  - Invokes read-only tools against the database (`get_monthly_cashflow`, `get_net_worth`, `calculate_loan_amortization`).
-  - Synthesizes personalized recommendations citing exact dollar figures and projected debt-to-income ratios.
-
-### Feature 5: Two-Phase Mutating Safeguards
-
-- **Module**: `packages/ai-engine/src/tools/` & `apps/web/src/features/advisor/`
-- **Objective**: Guarantee that the AI advisor never mutates financial data without explicit user review.
-- **How It Works**:
-  - Phase 1 (Simulation): The AI synthesizes the planned action and emits a preview payload (e.g. "Create Budget: Dining Out = $400/mo").
-  - The UI renders an interactive confirmation card detailing the balance delta.
-  - Phase 2 (Execution): The user clicks "Approve", dispatching a cryptographically signed execution request to commit the change.
-
-### Feature 6: Standardized 2-File Feature Modal Pattern
-
-- **Module**: `apps/web/src/features/*/components/`
-- **Objective**: Maintain clean architectural separation between UI presentation and React Query state logic.
-- **Pattern**:
-  - **`<Entity>Form.tsx`**: Pure presentational form component rendering accessible fields via `@finai/ui`. Contains zero API mutations.
-  - **`<Entity>Dialog.tsx`**: Manages modal open/close state, handles Zod schema validation using `.safeParse()`, and dispatches TanStack React Query mutations with automated cache invalidation.
+- **Technology Stack**: NestJS 11, Fastify HTTP adapter, Prisma ORM, PostgreSQL 16.
+- **Purpose**: Secure enterprise backend handling authentication, banking ledger management, and financial advisory orchestration.
+- **Detailed Features**:
+  - **Double-Entry Accounting Ledger**: Every monetary event is stored as balanced debit and credit entries. Balances are derived by summing immutable journal entries, preventing race-condition balance discrepancies.
+  - **Integer Arithmetic Representation**: All currency values are stored as 64-bit integer cents (e.g. `$100.50` -> `10050`) to eliminate IEEE-754 floating-point rounding errors.
+  - **Mock Banking Sync Pipeline**: High-throughput transaction ingestion service with deduplication hashing (`SHA-256(account_id + date + amount + merchant)`), idempotency checking, and automatic category classification.
+  - **Advisory ReAct Controller**: Manages conversation history, token budgeting, tool invocation resolution, and streaming output generation.
 
 ---
 
-## 3. How FinAI Interacts with the Multi-Repo Ecosystem
+### 2.2 Core Package Catalog
+
+| Package                     | Purpose & Core Invariants                                                                                                                                                                                                                                                        |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`@finai/finance-engine`** | **The Pure Math Core**: Pure functional TypeScript. Zero I/O, zero network, zero dependencies. Implements net worth aggregation, cash flow formulas, debt amortization tables, emergency runway calculations, Sharpe ratio calculations, and retirement Monte Carlo simulations. |
+| **`@finai/ai-engine`**      | **Cognitive Advisory Harness**: Implements the ReAct (Reason + Act + Observe) advisory loop. Restricts the LLM to read-only tool calls (`get_accounts`, `get_transactions`, `get_budget_status`, `calculate_runway`).                                                            |
+| **`@finai/shared-types`**   | **Canonical Financial Enums**: Houses domain enums (`AccountType`, `TransactionCategory`, `BudgetPeriod`, `AdvisoryConfidence`, `LedgerEntryType`). Zero bare string literals allowed.                                                                                           |
+| **`@finai/constants`**      | **Domain Taxonomies**: Centralized currency codes (ISO 4217), category trees, default asset allocation weights, and benchmark risk-free rates.                                                                                                                                   |
+| **`@finai/database`**       | **Prisma Client & Migrations**: PostgreSQL schema definitions, migration scripts, and typed repository access layers.                                                                                                                                                            |
+| **`@finai/ui`**             | **Financial Component System**: Custom financial UI primitives including currency inputs, net worth trend badges, transaction rows, and balance chips.                                                                                                                           |
+| **`@finai/validation`**     | **Zod Schemas**: Strict runtime validation schemas for banking payloads, user input forms, and advisory tool arguments.                                                                                                                                                          |
+
+---
+
+## 3. Inter-System Ecosystem Collaboration ("How It Works With Others")
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant User as User / Investor
-    participant Web as FinAI Web (:3000)
+    participant Client as FinAI Web (:3000)
     participant API as FinAI API (:4000)
     participant DP as DevLab Portal (:3010)
-    participant Redis as Redis Cache (:6379)
+    participant Engine as @finai/finance-engine
     participant DL as DevLab Logs (:3020)
+    participant IA as IncidentAI (:8085)
 
-    User->>Web: Open Financial Advisory Session
-    Web->>API: POST /api/v1/agent/chat (Bearer API Key)
-    API->>Redis: Validate API Key & Tenant Quota (<1ms)
-    Redis-->>API: Valid Key Approved
-    API->>API: Execute ReAct Loop via DevLab Chat Model
-    API->>DL: Stream Audit Log & Tool Invocations
-    alt Action Mutates Ledger
-        API-->>Web: Render 2-Phase Confirmation Dialog
-        User->>Web: Approve Action
-        Web->>API: POST /api/v1/agent/confirm
+    Client->>API: POST /api/v1/advisory/chat (Prompt: "Can I afford a $1,200/mo car?")
+    API->>DP: 1. Verify User Tier & Feature Access (:3010)
+    DP-->>API: Active Subscription (Tier: PRO)
+    API->>API: 2. Fetch User Financial Snapshot from PostgreSQL
+    API->>Engine: 3. Compute Runway & Cash Flow Impact (Pure Math)
+    Engine-->>API: Result: Debt-to-Income jumps from 18% to 34%, Runway drops 1.8 mos
+    API->>API: 4. Synthesize AI Guidance with Verified Math
+    API-->>Client: Stream AI Recommendation + Action Preview Card
+    API->>DL: 5. Stream Audit Log & Token Telemetry (:3020)
+
+    alt Ingestion Failure or Math Invariant Violation
+        API->>IA: 6. Dispatch Webhook Alert to IncidentAI (:8085)
+        IA->>API: 7. Run Automated Sandbox Diagnosis & Alert SRE
     end
-    API->>API: Commit Transaction to PostgreSQL
-    API-->>Web: Return Updated Financial Dashboard
 ```
 
-### Detailed Ecosystem Interaction Matrix
+### 3.1 Inter-Repository Integration Matrix
 
-| Ecosystem Member    | Direction | Protocol / Transport      | Data Payload / Contract                                                                                |
-| :------------------ | :-------: | :------------------------ | :----------------------------------------------------------------------------------------------------- |
-| **`devlab-portal`** |  Inbound  | Redis Pub/Sub & REST API  | Authenticates incoming client API keys and enforces sub-millisecond kill-switch revocations.           |
-| **`devlab-logs`**   | Outbound  | HTTP POST (`:3020`)       | Streams structured audit events, agent reasoning tokens, and financial calculation logs.               |
-| **`incidentai`**    |  Inbound  | Monorepo Workspace        | IncidentAI monitors database connection health and automatically fixes database pool timeouts.         |
-| **`devlab-shared`** |  Static   | Internal npm package link | Consumes `@yuva-devlab/ui` design system components, `@yuva-devlab/tokens`, and `@yuva-devlab/logger`. |
-
----
-
-## 4. Technical Guidelines & Invariants
-
-### 4.1 Invariants & Quality Standards
-
-1. **Hard 250-Line Maximum Rule**: Every file in `apps/api/src/`, `apps/web/src/`, and packages must remain strictly under 250 lines.
-2. **Pure Finance Engine**: `@finai/finance-engine` must remain strictly functional: zero side-effects, zero I/O, zero database queries.
-3. **Centralized Zod Validation**: ALL input schemas must reside in `@finai/validation` and use `.safeParse()`.
-4. **2-File Feature Modal Pattern**: All entity forms must follow `<Entity>Form.tsx` (presentation) + `<Entity>Dialog.tsx` (state).
-5. **Zero Magic Strings & Numbers**: Domain statuses (`active`, `pending`, `completed`) must use canonical enums from `@finai/shared-types`.
+| Ecosystem Member    | Direction | Protocol & Transport   | Exact Payload Contract & Endpoint                       | Purpose & Operational Behavior                                                                                      |
+| :------------------ | :-------: | :--------------------- | :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------ |
+| **`devlab-portal`** |  Inbound  | HTTP REST & Redis JWKS | `GET http://localhost:3010/api/v1/subscriptions/verify` | Validates user subscription tiers, feature flags, and API quotas before allowing advanced advisory modeling.        |
+| **`devlab-logs`**   | Outbound  | HTTP/2 POST            | `POST http://localhost:3020/api/v1/logs/ingest`         | Streams structured audit logs, user advisory session events, and backend latency metrics for centralized telemetry. |
+| **`incidentai`**    | Outbound  | HTTP POST Webhook      | `POST http://localhost:8085/api/v1/incidents/webhook`   | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.     |
+| **`devlab-guard`**  |  Inbound  | CLI Git Pre-commit     | `uv run devlab-guard scan --path .`                     | Enforces the 250-line rule, verifies that all enums are strictly used, and guarantees zero inline regexes.          |
+| **`devlab-shared`** |  Static   | npm Package Imports    | Direct package import                                   | Imports `@yuva-devlab/ui`, `@yuva-devlab/tokens`, `@yuva-devlab/resilience`, and `@yuva-devlab/logger`.             |
 
 ---
 
-## 5. Complete Usage Runbook & Operations Manual
+## 4. Technical Guidelines & Invariant Rules
 
-### 5.1 Installation & Setup
+### 4.1 Prime Non-Negotiable Invariants
+
+1. **Deterministic Math Core Purity**:
+   - Every financial calculation MUST reside in `@finai/finance-engine`.
+   - The engine must NEVER make network calls, read environment variables, or access databases.
+   - All monetary figures must be computed and stored as integer cents to avoid floating-point drift.
+2. **Mandatory Two-Phase Confirmation**:
+   - The AI advisor is NEVER permitted to execute state mutations directly.
+   - Any transaction creation, budget adjustment, or account modification MUST generate an impact preview requiring explicit user approval via a confirmation modal.
+3. **Hard 250-Line Maximum Rule**:
+   - No code file across `apps/*` or `packages/*` may exceed 250 lines. Decompose early at 200 lines.
+4. **Zero Magic Strings & Canonical Enums**:
+   - All categories, account types, and ledger statuses must use canonical enums from `@finai/shared-types`.
+
+---
+
+## 5. Developer Usage Guidelines & Operations Manual
+
+### 5.1 Local Prerequisites
+
+- **Node.js**: `v22.x` or later.
+- **pnpm**: `v9.x` or later.
+- **PostgreSQL 16**: Running on port `5432`.
+- **Redis 7**: Running on port `6379`.
+
+### 5.2 Step-by-Step Installation & Bootstrapping
 
 ```bash
-# Clone the repository
-git clone https://github.com/yuvadevlab/fin-ai.git finai
+# 1. Clone the repository
+git clone https://github.com/yuvadevlab/finai.git
 cd finai
 
-# Install dependencies via pnpm
+# 2. Install monorepo dependencies
 pnpm install
 
-# Run database migrations and generate Prisma client
+# 3. Start local database & run Prisma migrations
 pnpm db:generate
 pnpm db:migrate
 
-# Start Web and API applications concurrently
+# 4. Start Web (:3000) and API (:4000) in development mode
 pnpm dev
+
+# 5. Run full typechecks
+pnpm typecheck
 ```
 
-### 5.2 Environment Variables Reference
+### 5.3 Complete Environment Variables Reference
 
-| Variable              | Type   | Default                  | Description                                          |
-| :-------------------- | :----- | :----------------------- | :--------------------------------------------------- |
-| `PORT`                | Number | `4000`                   | HTTP port for NestJS Backend API.                    |
-| `DATABASE_URL`        | String | Required                 | PostgreSQL connection URL with public schema.        |
-| `REDIS_URL`           | String | `redis://localhost:6379` | Redis connection URL for caching and rate limiting.  |
-| `OLLAMA_BASE_URL`     | String | `http://localhost:11434` | Ollama model server endpoint for local AI inference. |
-| `NEXT_PUBLIC_API_URL` | String | `http://localhost:4000`  | Backend API URL consumed by the web console.         |
-| `DEVLAB_LOGS_URL`     | String | `http://localhost:3020`  | Telemetry endpoint for streaming structured logs.    |
+| Variable                 |  Type  |         Default          | Required | Description                                                                           |
+| :----------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
+| `PORT`                   | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
+| `DATABASE_URL`           | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
+| `REDIS_URL`              | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
+| `NEXT_PUBLIC_API_URL`    | String | `http://localhost:4000`  |   Yes    | Base URL consumed by the Next.js frontend.                                            |
+| `DEVLAB_PORTAL_URL`      | String | `http://localhost:3010`  |   Yes    | DevLab Portal API URL for subscription and key checks.                                |
+| `DEVLAB_LOGS_URL`        | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
+| `INCIDENTAI_WEBHOOK_URL` | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
+
+### 5.4 Testing Financial Math in the Pure Engine
+
+```typescript
+import { calculateRunwayMonths, calculateNetWorth } from "@finai/finance-engine";
+
+const netWorth = calculateNetWorth({
+  assets: [
+    { type: "CHECKING", balanceCents: 1500000 },
+    { type: "INVESTMENT", balanceCents: 8500000 },
+  ],
+  liabilities: [{ type: "CREDIT_CARD", balanceCents: 200000 }],
+});
+// netWorth === 9800000 ($98,000.00)
+
+const runway = calculateRunwayMonths({
+  liquidAssetsCents: 1500000, // $15,000
+  averageMonthlyBurnCents: 300000, // $3,000 / mo
+});
+// runway === 5.0 months
+```
