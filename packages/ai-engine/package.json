@@ -22,7 +22,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@yuva-devlab/ai-client": "link:../../devlab-shared/packages/ai-client",
+    "@yuva-devlab/ai-client": "^0.2.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

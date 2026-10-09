@@ -18,7 +18,7 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
-    "@yuva-devlab/auth-react": "link:../../../devlab-shared/packages/auth-react",
+    "@yuva-devlab/auth-react": "^0.2.0",
     "@finai/ai-engine": "workspace:*",
     "@finai/finance-engine": "workspace:*",
     "@finai/shared-types": "workspace:*",
