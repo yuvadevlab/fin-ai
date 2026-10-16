@@ -4,18 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@yuva-devlab/agent-core': link:../devlab-shared/packages/agent-core
-  '@yuva-devlab/ai-client': link:../devlab-shared/packages/ai-client
-  '@yuva-devlab/auth-client': link:../devlab-shared/packages/auth-client
-  '@yuva-devlab/auth-server': link:../devlab-shared/packages/auth-server
-  '@yuva-devlab/billing': link:../devlab-shared/packages/billing
-  '@yuva-devlab/events': link:../devlab-shared/packages/events
-  '@yuva-devlab/rag': link:../devlab-shared/packages/rag
-  '@yuva-devlab/resilience': link:../devlab-shared/packages/resilience
-  '@yuva-devlab/sdk': link:../devlab-shared/packages/sdk
-  '@yuva-devlab/semantic-cache': link:../devlab-shared/packages/semantic-cache
-
 importers:
 
   .:
@@ -123,11 +111,11 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0(@nestjs/common@10.4.22(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.22)(reflect-metadata@0.2.2)
       '@yuva-devlab/agent-core':
-        specifier: link:../../../devlab-shared/packages/agent-core
-        version: link:../../../devlab-shared/packages/agent-core
+        specifier: ^0.2.0
+        version: 0.2.0
       '@yuva-devlab/auth-server':
-        specifier: link:../../../devlab-shared/packages/auth-server
-        version: link:../../../devlab-shared/packages/auth-server
+        specifier: ^0.3.0
+        version: 0.3.0
       '@yuva-devlab/logger':
         specifier: ^1.2.0
         version: 1.2.0
@@ -214,8 +202,8 @@ importers:
         specifier: ^5.101.1
         version: 5.101.2(react@19.2.7)
       '@yuva-devlab/auth-client':
-        specifier: link:../../../devlab-shared/packages/auth-client
-        version: link:../../../devlab-shared/packages/auth-client
+        specifier: ^0.3.0
+        version: 0.3.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@yuva-devlab/tokens':
         specifier: ^1.1.1
         version: 1.1.1
@@ -338,8 +326,8 @@ importers:
   packages/ai-engine:
     dependencies:
       '@yuva-devlab/ai-client':
-        specifier: link:../../../devlab-shared/packages/ai-client
-        version: link:../../../devlab-shared/packages/ai-client
+        specifier: ^0.2.0
+        version: 0.2.0
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -4909,8 +4897,29 @@ packages:
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
 
+  '@yuva-devlab/agent-core@0.2.0':
+    resolution: {integrity: sha512-PLRcri+Nl9mwsuA3dzbrD3qxpqBSC8h2v0uzGaUIpsnkgrM50x9bKOf8eL6sqqppOqFC+KOXhL/6rOahj2q4iw==}
+
+  '@yuva-devlab/ai-client@0.2.0':
+    resolution: {integrity: sha512-0h1+8d0dipgyCIRPNxrRyS0doWoDS0o/vHGt71Qmq9ZPxUPFjNN6ERgV/DT22q3xlmGuImE97PjTMIOGa5x4Gw==}
+
+  '@yuva-devlab/auth-client@0.3.0':
+    resolution: {integrity: sha512-EjuRdPAsB/PcHgZLMYzTBoUr35OhbzT+AwA7ur3pd4GLzPeCDgQfypaZJwoBs7Opb9RFogcbTU9MJ7mdBba2/A==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@yuva-devlab/auth-server@0.3.0':
+    resolution: {integrity: sha512-cNLnzcF2jX/mshR74Ckms4cuTYJ0bDVBstBohNfGClEhs/61ffRH921O28fxY2xrR9p8TTKKdLIwlypELJPgLg==}
+
+  '@yuva-devlab/errors@0.2.0':
+    resolution: {integrity: sha512-eGunJ1eDbkGfEida3MJx9gaWRTeWjx/UPFUHUs+r7m++hkbShw4VKekaH5MMb7gIIc5sUmb4mESgir0TYnE30w==}
+
   '@yuva-devlab/logger@1.2.0':
     resolution: {integrity: sha512-BbJaY1XXX5cYLvf0ExQZXXLdbydV5b3bBHXXxwG+xBx7mZc5eHOlhYZeZ9XWHn92pWeSQpXAPAh9FSSyuxTfng==}
+
+  '@yuva-devlab/resilience@0.2.0':
+    resolution: {integrity: sha512-aVNCG6GZHMfVWKcs5vxXe86kKxeYWnd1iaZZSPd/3zqQYHsxIyZHLl+6bWCZ9ldnzb5PkmwIElGGDABUnDwGgg==}
 
   '@yuva-devlab/tokens@1.1.1':
     resolution: {integrity: sha512-+Dt3u8uP5fo6DZvUkcMh3Qrha2qgCzAmk160ou9jW7LLCN+YAqXbQJUiqJJDKZk4W4OSFqUGWxjxUoeS1Rpo/g==}
@@ -14229,7 +14238,40 @@ snapshots:
 
   '@xtuc/long@4.2.2': {}
 
+  '@yuva-devlab/agent-core@0.2.0':
+    dependencies:
+      '@yuva-devlab/errors': 0.2.0
+      '@yuva-devlab/logger': 1.2.0
+      zod: 3.25.76
+
+  '@yuva-devlab/ai-client@0.2.0':
+    dependencies:
+      '@yuva-devlab/errors': 0.2.0
+      '@yuva-devlab/logger': 1.2.0
+      '@yuva-devlab/resilience': 0.2.0
+      zod: 3.25.76
+
+  '@yuva-devlab/auth-client@0.3.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@yuva-devlab/errors': 0.2.0
+      '@yuva-devlab/logger': 1.2.0
+      lucide-react: 0.575.0(react@19.2.7)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+
+  '@yuva-devlab/auth-server@0.3.0':
+    dependencies:
+      '@yuva-devlab/errors': 0.2.0
+      '@yuva-devlab/logger': 1.2.0
+      zod: 3.25.76
+
+  '@yuva-devlab/errors@0.2.0': {}
+
   '@yuva-devlab/logger@1.2.0': {}
+
+  '@yuva-devlab/resilience@0.2.0':
+    dependencies:
+      '@yuva-devlab/errors': 0.2.0
 
   '@yuva-devlab/tokens@1.1.1': {}
 
