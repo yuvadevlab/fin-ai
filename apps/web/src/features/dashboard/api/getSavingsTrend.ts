@@ -1,4 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS, SEARCH_PARAMS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -7,13 +8,15 @@ export interface SavingsTrendPoint {
   value: number;
 }
 
-export const savingsTrendQueryKey = (months: number) =>
-  ["analytics", "savings-trend", months] as const;
+export const savingsTrendQueryKey = (months: number) => QUERY_KEYS.ANALYTICS.SAVINGS_TREND(months);
 
 export function useSavingsTrend(months = 6) {
   return useQuery<SavingsTrendPoint[]>({
     queryKey: savingsTrendQueryKey(months),
-    queryFn: () => apiClient.get<SavingsTrendPoint[]>(`analytics/savings-trend?months=${months}`),
+    queryFn: () =>
+      apiClient.get<SavingsTrendPoint[]>(
+        `${API_ENDPOINTS.ANALYTICS.SAVINGS_TREND}?${SEARCH_PARAMS.MONTHS}=${months}`,
+      ),
   });
 }
 
@@ -21,6 +24,9 @@ export async function prefetchSavingsTrend(queryClient: QueryClient, token: stri
   await queryClient.prefetchQuery({
     queryKey: savingsTrendQueryKey(months),
     queryFn: () =>
-      serverFetch<SavingsTrendPoint[]>(`analytics/savings-trend?months=${months}`, token),
+      serverFetch<SavingsTrendPoint[]>(
+        `${API_ENDPOINTS.ANALYTICS.SAVINGS_TREND}?${SEARCH_PARAMS.MONTHS}=${months}`,
+        token,
+      ),
   });
 }

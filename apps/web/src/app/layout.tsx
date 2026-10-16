@@ -1,8 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
-import { QueryProvider, AppearanceProvider } from "@/providers";
-import { Toaster } from "@finai/ui";
+import { AppProviders } from "@/providers";
 import { appearanceScript } from "@/lib/appearance-script";
+import { APP_ID } from "@/lib/app-constants";
 import "./globals.css";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -22,9 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Root SSR Server Layout for FinAI.
+ * Wraps page tree in appearance script and the unified AppProviders component.
+ */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-brand="finai" data-theme="finai" suppressHydrationWarning>
+    <html lang="en" data-brand={APP_ID} data-theme={APP_ID} suppressHydrationWarning>
       <head>
         {/*
          * Blocking script — must live in <head> so it runs synchronously
@@ -40,17 +44,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          */}
         <a
           href="#main-content"
-          className="bg-primary text-primary-foreground focus:ring-ring fixed top-4 left-4 z-9999 -translate-y-20 rounded-lg px-4 py-2 text-sm font-semibold shadow-lg transition-transform focus:translate-y-0 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+          className="bg-primary text-primary-foreground focus:ring-ring fixed top-4 left-4 z-9999 -translate-y-20 rounded-lg px-4 py-2 text-sm font-semibold shadow-lg transition-transform focus:ring-2 focus:ring-offset-2 focus:outline-none"
         >
           Skip to main content
         </a>
 
-        <QueryProvider>
-          <AppearanceProvider>
-            {children}
-            <Toaster />
-          </AppearanceProvider>
-        </QueryProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

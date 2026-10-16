@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
+import { StorageKey } from "@finai/shared-types";
 import { AppearanceContext, AppearancePrefs } from "./appearance-context";
 
-const STORAGE_KEY = "finai_appearance";
+const STORAGE_KEY = StorageKey.APPEARANCE;
 
 const defaults: AppearancePrefs = {
   theme: "System",

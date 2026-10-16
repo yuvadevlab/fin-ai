@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api-client";
+import { StorageKey, API_ENDPOINTS } from "@finai/shared-types";
 import { BulkRow } from "@/features/transactions/components/BulkTransactionForm";
 
 export interface SelectOption {
@@ -19,11 +20,16 @@ function generateRowId(): string {
  * Downloads the dynamic Excel template directly from the backend API.
  */
 export async function downloadExcelTemplateFromApi() {
-  const token = typeof window !== "undefined" ? localStorage.getItem("finai_token") : null;
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem(StorageKey.TOKEN) ||
+        localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
+        localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN)
+      : null;
   const headers: Record<string, string> = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE_URL}/transactions/template`, {
+  const res = await fetch(`${API_BASE_URL}/${API_ENDPOINTS.TRANSACTIONS.TEMPLATE}`, {
     method: "GET",
     headers,
   });

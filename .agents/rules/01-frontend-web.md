@@ -1,3 +1,13 @@
+## 0. Page & Layout Invariant (Pure SSR Wrappers)
+
+- All `page.tsx` and `layout.tsx` files MUST remain Server Components (`SSR`).
+- NEVER place `"use client"` on `page.tsx` or `layout.tsx`.
+- Pages and layouts serve strictly as server wrappers: handling metadata, server data prefetching, and rendering client view components.
+- All interactive client components, forms, and dialogs must reside under `src/features/<feature>/components/`.
+- All authentication pages MUST be grouped under `app/(auth)/...`.
+
+---
+
 # FinAI Frontend & Web Architecture Rules (`apps/web`)
 
 > **Scope**: Applies to `apps/web` (Next.js 15 App Router) and `@finai/ui`.

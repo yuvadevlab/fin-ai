@@ -1,7 +1,7 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS, type GoalType } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
-import type { GoalType } from "@finai/shared-types";
 
 export interface Goal {
   id: string;
@@ -15,18 +15,18 @@ export interface Goal {
   updatedAt: string;
 }
 
-export const goalsQueryKey = () => ["goals"] as const;
+export const goalsQueryKey = () => QUERY_KEYS.GOALS.ALL;
 
 export function useGoals() {
   return useQuery<Goal[]>({
     queryKey: goalsQueryKey(),
-    queryFn: () => apiClient.get<Goal[]>("goals"),
+    queryFn: () => apiClient.get<Goal[]>(API_ENDPOINTS.GOALS.BASE),
   });
 }
 
 export async function prefetchGoals(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
     queryKey: goalsQueryKey(),
-    queryFn: () => serverFetch<Goal[]>("goals", token),
+    queryFn: () => serverFetch<Goal[]>(API_ENDPOINTS.GOALS.BASE, token),
   });
 }

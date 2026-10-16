@@ -35,14 +35,17 @@ export const QUERY_KEYS = {
     DETAIL: (id: string) => ["goals", id] as const,
   },
   INVESTMENTS: {
+    ALL: ["investments"] as const,
     PORTFOLIO: ["investments"] as const,
     DETAIL: (id: string) => ["investments", id] as const,
   },
   CATEGORIES: {
     ALL: ["categories"] as const,
     GROUPS: ["categories", "groups"] as const,
+    DETAIL: (id: string) => ["categories", id] as const,
   },
   ANALYTICS: {
+    ALL: ["analytics"] as const,
     DASHBOARD: ["analytics", "dashboard"] as const,
     MONTHLY: (months?: string | number) => ["analytics", "monthly", String(months ?? "3")] as const,
     HEALTH: ["analytics", "health"] as const,
@@ -58,10 +61,14 @@ export const QUERY_KEYS = {
     CATEGORY: (cat: string) => ["options", cat] as const,
   },
   USER: {
-    PROFILE: ["users", "profile"] as const,
+    PROFILE: ["user-profile"] as const,
   },
   MENU_ITEMS: {
     ALL: ["menu-items"] as const,
+  },
+  SEARCH: {
+    ALL: ["search"] as const,
+    QUERY: (q: string) => ["search", q] as const,
   },
 } as const;
 

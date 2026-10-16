@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { TransactionType } from "@finai/shared-types";
 import { Transaction } from "../api";
 import { TransactionRowActions } from "./TransactionRowActions";
 
@@ -39,11 +40,11 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
           </Badge>
           {/* Subtitle visible on mobile screens where Account column is hidden */}
           <span className="text-muted-foreground block max-w-32.5 truncate text-[11px] font-normal sm:hidden">
-            {t.type === "TRANSFER" && t.toAccount
+            {t.type === TransactionType.TRANSFER && t.toAccount
               ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-              : t.type === "INVESTMENT" && t.investment
+              : t.type === TransactionType.INVESTMENT && t.investment
                 ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
-                : t.type === "GOAL" && t.goal
+                : t.type === TransactionType.GOAL && t.goal
                   ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
                   : t.account?.name || t.notes || ""}
           </span>
@@ -55,11 +56,11 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
       header: "Account / Destination",
       accessor: (t: Transaction) => (
         <span className="text-muted-foreground text-xs font-normal sm:text-sm">
-          {t.type === "TRANSFER" && t.toAccount
+          {t.type === TransactionType.TRANSFER && t.toAccount
             ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-            : t.type === "INVESTMENT" && t.investment
+            : t.type === TransactionType.INVESTMENT && t.investment
               ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
-              : t.type === "GOAL" && t.goal
+              : t.type === TransactionType.GOAL && t.goal
                 ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
                 : t.account?.name || "Unknown"}
         </span>
@@ -78,12 +79,15 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Amount",
       accessor: (t: Transaction) => {
-        const isOutflow = t.type === "EXPENSE" || t.type === "INVESTMENT" || t.type === "GOAL";
+        const isOutflow =
+          t.type === TransactionType.EXPENSE ||
+          t.type === TransactionType.INVESTMENT ||
+          t.type === TransactionType.GOAL;
         const displayAmount = isOutflow ? -t.amount : t.amount;
         return (
           <PrivacyMoney
             value={displayAmount}
-            showSign={t.type === "INCOME"}
+            showSign={t.type === TransactionType.INCOME}
             className="text-xs font-semibold sm:text-sm"
           />
         );

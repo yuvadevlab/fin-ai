@@ -1,4 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -29,18 +30,18 @@ export interface InvestmentsResponse {
   totalValue: number;
 }
 
-export const investmentsQueryKey = () => ["investments"] as const;
+export const investmentsQueryKey = () => QUERY_KEYS.INVESTMENTS.ALL;
 
 export function useInvestments() {
   return useQuery<InvestmentsResponse>({
     queryKey: investmentsQueryKey(),
-    queryFn: () => apiClient.get<InvestmentsResponse>("investments"),
+    queryFn: () => apiClient.get<InvestmentsResponse>(API_ENDPOINTS.INVESTMENTS.BASE),
   });
 }
 
 export async function prefetchInvestments(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
     queryKey: investmentsQueryKey(),
-    queryFn: () => serverFetch<InvestmentsResponse>("investments", token),
+    queryFn: () => serverFetch<InvestmentsResponse>(API_ENDPOINTS.INVESTMENTS.BASE, token),
   });
 }

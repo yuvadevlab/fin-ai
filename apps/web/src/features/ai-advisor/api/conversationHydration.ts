@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib";
+import { API_ENDPOINTS } from "@finai/shared-types";
 import type { AiConversation, AiMessage } from "./useConversations";
 import { fetchConversationActions, type AgentActionHistoryItem } from "./agentActions";
 import type { AgentChatMessage, AgentConfirmation } from "./agentTypes";
@@ -143,7 +144,7 @@ function toAgentConfirmation(action: AgentActionHistoryItem): AgentConfirmation 
  * Fetches conversation metadata and actions from the API and produces hydrated chat messages.
  */
 export async function fetchAndHydrateConversation(id: string): Promise<AgentChatMessage[] | null> {
-  const convo = await apiClient.get<AiConversation>(`ai/conversations/${id}`);
+  const convo = await apiClient.get<AiConversation>(API_ENDPOINTS.AI.CONVERSATION(id));
   if (!convo) return null;
   const actions = await fetchConversationActions(convo.id).catch(() => []);
   return hydrateConversationMessages(convo, actions);
