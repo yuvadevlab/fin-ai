@@ -11,12 +11,21 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
+  - "@yuva-devlab/auth-server@0.3.0"
+  - "@yuva-devlab/sdk@0.2.1"
   - "@yuva-devlab/ui@1.3.0 || 1.3.1 || 1.3.2"
   - "@yuva-devlab/logger@1.1.0 || 1.2.0"
   - "@yuva-devlab/tokens@1.1.0 || 1.1.1"
-  - "@yuva-devlab/auth-react@0.2.0"
+  - "@yuva-devlab/auth-client@0.2.0 || 0.3.0"
   - "@yuva-devlab/errors@0.2.0"
 overrides:
   "@yuva-devlab/agent-core": link:../devlab-shared/packages/agent-core
   "@yuva-devlab/ai-client": link:../devlab-shared/packages/ai-client
+  "@yuva-devlab/auth-client": link:../devlab-shared/packages/auth-client
   "@yuva-devlab/auth-server": link:../devlab-shared/packages/auth-server
+  "@yuva-devlab/billing": link:../devlab-shared/packages/billing
+  "@yuva-devlab/events": link:../devlab-shared/packages/events
+  "@yuva-devlab/rag": link:../devlab-shared/packages/rag
+  "@yuva-devlab/resilience": link:../devlab-shared/packages/resilience
+  "@yuva-devlab/sdk": link:../devlab-shared/packages/sdk
+  "@yuva-devlab/semantic-cache": link:../devlab-shared/packages/semantic-cache

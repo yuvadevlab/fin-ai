@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, PieChart as PieIcon } from "lucide-react";
 import { ChartCard, CategoryPie, CHART_COLORS } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { APP_ROUTES } from "@/lib";
 import type { CategoryBreakdownItem } from "../api";
 
 export interface DashboardCategoryCardProps {
@@ -59,7 +60,7 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
       className="flex h-full flex-col justify-between"
       hint={
         <Link
-          href="/categories"
+          href={APP_ROUTES.CATEGORIES}
           className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
         >
           View all <ArrowUpRight className="size-3" aria-hidden="true" />

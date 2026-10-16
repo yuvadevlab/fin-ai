@@ -14,6 +14,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/providers";
 import { useIsClient } from "@/hooks";
+import { APP_ROUTES } from "@/lib";
 
 export function ProfileMenu() {
   const { user, logout } = useAuth();
@@ -56,12 +57,15 @@ export function ProfileMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/settings?section=profile" className="flex cursor-pointer items-center gap-2">
+          <Link
+            href={`${APP_ROUTES.SETTINGS}?section=profile`}
+            className="flex cursor-pointer items-center gap-2"
+          >
             <User className="size-4" /> Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex cursor-pointer items-center gap-2">
+          <Link href={APP_ROUTES.SETTINGS} className="flex cursor-pointer items-center gap-2">
             <Settings className="size-4" /> Settings
           </Link>
         </DropdownMenuItem>

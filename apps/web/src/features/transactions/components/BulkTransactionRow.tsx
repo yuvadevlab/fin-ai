@@ -3,6 +3,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { FormDialogField } from "@finai/ui";
+import { TransactionKind } from "@finai/shared-types";
 import { BulkRow } from "./BulkTransactionForm";
 
 export interface BulkTransactionRowProps {
@@ -19,9 +20,9 @@ export interface BulkTransactionRowProps {
 }
 
 const TYPE_OPTIONS = [
-  { label: "Expense", value: "expense" },
-  { label: "Income", value: "income" },
-  { label: "Transfer", value: "transfer" },
+  { label: "Expense", value: TransactionKind.EXPENSE },
+  { label: "Income", value: TransactionKind.INCOME },
+  { label: "Transfer", value: TransactionKind.TRANSFER },
 ];
 
 export function BulkTransactionRow({
@@ -36,7 +37,7 @@ export function BulkTransactionRow({
   errors,
   canDelete,
 }: BulkTransactionRowProps) {
-  const isTransfer = row.kind === "transfer";
+  const isTransfer = row.kind === TransactionKind.TRANSFER;
 
   return (
     <div className="bg-card border-border/70 rounded-xl border p-4 shadow-xs">

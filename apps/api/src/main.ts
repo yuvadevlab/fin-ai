@@ -1,25 +1,12 @@
 import "reflect-metadata";
-import "dotenv/config";
-import {
-  Logger,
-  requestLogger,
-  type LogLevel,
-  type LoggerConfig,
-  loggerWithConfig,
-} from "@yuva-devlab/logger";
+import { config } from "./config";
+import { Logger, requestLogger, type LoggerConfig, loggerWithConfig } from "@yuva-devlab/logger";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { IncomingMessage, ServerResponse } from "http";
-
-/** Minimum log level to emit — parsed from LOG_LEVEL, defaults to "info". */
-function parseLogLevel(raw?: string): LogLevel {
-  if (!raw) return "info";
-  const v = raw.trim().toLowerCase();
-  return ["debug", "info", "warn", "error"].includes(v) ? (v as LogLevel) : "info";
-}
 
 /** Random short id used as the per-request correlation id. */
 function makeRequestId(): string {
@@ -29,13 +16,14 @@ function makeRequestId(): string {
 
 async function bootstrap() {
   const logConfig: LoggerConfig = {
-    enabled: process.env.LOG_ENABLED !== "false",
-    level: parseLogLevel(process.env.LOG_LEVEL),
-    file: process.env.LOG_FILE ?? undefined,
+    enabled: config.logEnabled,
+    level: config.logLevel,
+    file: config.logFile,
   };
+
   // Env-aware loggers: both the Nest app logger and the HTTP request logger
-  // honor LOG_ENABLED / LOG_LEVEL / LOG_PERSIST / LOG_FILE, while keeping a
-  // stable context string for the '[API]' / '[HTTP]' tags.
+  // honor config.logEnabled / config.logLevel / config.logPersist / config.logFile,
+  // while keeping a stable context string for the '[API]' / '[HTTP]' tags.
   const appLogger = loggerWithConfig(new Logger("API"), logConfig);
   const httpLogger = loggerWithConfig(new Logger("HTTP"), logConfig);
 
@@ -44,10 +32,9 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix("api/v1");
 
-  // Request logger — mounted only when LOG_REQUESTS is not explicitly "false".
-  // Attaches a per-request correlation id so every log block (controller,
-  // service, request-logger, exception filter) can include it when debugging.
-  if (process.env.LOG_REQUESTS !== "false") {
+  // Request logger — mounted only when config.logRequests is true.
+  // Attaches a per-request correlation id so every log block can include it when debugging.
+  if (config.logRequests) {
     app.use((req: IncomingMessage, _res: ServerResponse, next: () => void) => {
       req.headers["x-request-id"] = (req.headers["x-request-id"] as string) ?? makeRequestId();
       next();
@@ -55,9 +42,9 @@ async function bootstrap() {
     app.use(requestLogger(httpLogger as unknown as Logger));
   }
 
-  // CORS
+  // CORS configuration using canonical allowed origins parsed from WEB_URL
   app.enableCors({
-    origin: process.env.WEB_URL?.split(",") ?? ["http://localhost:3000"],
+    origin: config.corsOrigins,
     credentials: true,
   });
 
@@ -67,22 +54,21 @@ async function bootstrap() {
   // Global response transform interceptor
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // Swagger / OpenAPI
-  const config = new DocumentBuilder()
+  // Swagger / OpenAPI documentation setup
+  const swaggerConfig = new DocumentBuilder()
     .setTitle("FinAI API")
     .setDescription("AI-powered Personal Finance Platform API")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api/docs", app, document);
 
-  const port = process.env.PORT ?? 4000;
-  await app.listen(port);
-  appLogger.info(`🚀 FinAI API running on http://localhost:${port}`);
-  appLogger.info(`📖 Swagger docs: http://localhost:${port}/api/docs`);
+  await app.listen(config.port);
+  appLogger.info(`🚀 FinAI API running on http://localhost:${config.port}`);
+  appLogger.info(`📖 Swagger docs: http://localhost:${config.port}/api/docs`);
   appLogger.info(
-    `Logger config: enabled=${logConfig.enabled}, level=${logConfig.level}, requests=${process.env.LOG_REQUESTS !== "false"}, persist=${process.env.LOG_PERSIST === "true"}, file=${logConfig.file ?? "(none)"}`,
+    `Logger config: enabled=${config.logEnabled}, level=${config.logLevel}, requests=${config.logRequests}, persist=${config.logPersist}, file=${config.logFile ?? "(none)"}`,
   );
 }
 

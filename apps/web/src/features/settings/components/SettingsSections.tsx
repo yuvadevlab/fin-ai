@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { APP_ROUTES } from "@/lib";
 import { Button, Input, Label, Switch, Badge, toast } from "@finai/ui";
 import { type Category } from "@/features/categories";
 
@@ -118,11 +120,11 @@ export function CategorySettingsList({ categories }: { categories: Category[] })
         ))}
       </div>
       <div className="pt-2">
-        <a href="/categories">
+        <Link href={APP_ROUTES.CATEGORIES}>
           <Button size="sm" variant="outline" className="w-full cursor-pointer">
             Manage Categories
           </Button>
-        </a>
+        </Link>
       </div>
     </div>
   );

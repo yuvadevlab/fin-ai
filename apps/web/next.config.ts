@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     "@finai/validation",
     "@finai/shared-types",
     "@yuva-devlab/ui",
+    "@yuva-devlab/auth-client",
   ],
   webpack: (config, { isServer }) => {
     if (!isServer) {

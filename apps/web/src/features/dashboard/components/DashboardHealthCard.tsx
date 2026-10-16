@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ChartCard, ScoreGauge, Progress, cn } from "@finai/ui";
+import { APP_ROUTES } from "@/lib";
 import { useHealthScore } from "../api/getHealthScore";
 
 function scoreColor(v: number) {
@@ -33,7 +34,7 @@ export function DashboardHealthCard() {
       title="Financial Health"
       hint={
         <Link
-          href="/health"
+          href={APP_ROUTES.HEALTH}
           className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
         >
           View all <ArrowUpRight className="size-3" aria-hidden="true" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { TransactionKind } from "@finai/shared-types";
 import { FormDialogField, FormField } from "@finai/ui";
 
 export interface TransactionFormProps {
@@ -42,11 +43,11 @@ export function TransactionForm({
     name: "kind",
     label: "Type",
     options: [
-      { label: "Expense", value: "expense" },
-      { label: "Income", value: "income" },
-      { label: "Transfer", value: "transfer" },
-      { label: "Investment", value: "investment" },
-      { label: "Goal", value: "goal" },
+      { label: "Expense", value: TransactionKind.EXPENSE },
+      { label: "Income", value: TransactionKind.INCOME },
+      { label: "Transfer", value: TransactionKind.TRANSFER },
+      { label: "Investment", value: TransactionKind.INVESTMENT },
+      { label: "Goal", value: TransactionKind.GOAL },
     ],
   };
 
@@ -87,9 +88,9 @@ export function TransactionForm({
     type: "select",
     name: "account",
     label:
-      values.kind === "transfer"
+      values.kind === TransactionKind.TRANSFER
         ? "From Account"
-        : values.kind === "investment" || values.kind === "goal"
+        : values.kind === TransactionKind.INVESTMENT || values.kind === TransactionKind.GOAL
           ? "Pay From Account"
           : "Account",
     options: accounts,
@@ -139,11 +140,11 @@ export function TransactionForm({
     <div className="space-y-4">
       {renderField(amountField)}
       {renderField(kindField)}
-      {values.kind === "investment" && renderField(investmentField)}
-      {values.kind === "goal" && renderField(goalField)}
+      {values.kind === TransactionKind.INVESTMENT && renderField(investmentField)}
+      {values.kind === TransactionKind.GOAL && renderField(goalField)}
       {renderField(categoryField)}
       {renderField(accountField)}
-      {values.kind === "transfer" && renderField(toAccountField)}
+      {values.kind === TransactionKind.TRANSFER && renderField(toAccountField)}
       {renderField(dateField)}
       {renderField(notesField)}
     </div>

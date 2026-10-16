@@ -2,8 +2,7 @@ import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 import { TransactionFilterInput } from "@finai/validation";
-
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType, API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 
 export interface Transaction {
   id: string;
@@ -52,7 +51,7 @@ export interface PaginatedTransactions {
 }
 
 export const transactionsQueryKey = (filter?: TransactionFilterInput) =>
-  ["transactions", filter] as const;
+  QUERY_KEYS.TRANSACTIONS.FILTERED(filter);
 
 export function useTransactions(filter?: TransactionFilterInput) {
   const queryParams = new URLSearchParams();
@@ -66,7 +65,7 @@ export function useTransactions(filter?: TransactionFilterInput) {
   if (filter?.pageSize) queryParams.append("pageSize", String(filter.pageSize));
 
   const queryStr = queryParams.toString();
-  const endpoint = `transactions${queryStr ? `?${queryStr}` : ""}`;
+  const endpoint = `${API_ENDPOINTS.TRANSACTIONS.BASE}${queryStr ? `?${queryStr}` : ""}`;
 
   return useQuery<PaginatedTransactions>({
     queryKey: transactionsQueryKey(filter),
@@ -81,6 +80,6 @@ export async function prefetchTransactions(
 ) {
   await queryClient.prefetchQuery({
     queryKey: transactionsQueryKey(filter),
-    queryFn: () => serverFetch<PaginatedTransactions>("transactions", token),
+    queryFn: () => serverFetch<PaginatedTransactions>(API_ENDPOINTS.TRANSACTIONS.BASE, token),
   });
 }

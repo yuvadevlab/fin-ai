@@ -1,3 +1,6 @@
+import { StorageKey } from "@finai/shared-types";
+import { APP_ID } from "./app-constants";
+
 /**
  * appearanceScript
  *
@@ -23,17 +26,17 @@ export const appearanceScript = `
 
     // Suppress ALL CSS transitions for the first paint so the dark class
     // change is instant — no colour-animation flash on sidebar active items.
-    root.classList.add('finai-no-transition');
+    root.classList.add('${APP_ID}-no-transition');
 
-    var raw = localStorage.getItem('finai_appearance');
+    var raw = localStorage.getItem('${StorageKey.APPEARANCE}');
     var prefs = raw ? JSON.parse(raw) : {};
 
     // 1. Brand & Theme — apply data-brand, data-theme, and dark class before paint
-    root.setAttribute('data-brand', 'finai');
+    root.setAttribute('data-brand', '${APP_ID}');
     var theme = prefs.theme || 'System';
     var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     var isDark = theme === 'Dark' || (theme === 'System' && prefersDark);
-    root.setAttribute('data-theme', isDark ? 'finai-dark' : 'finai');
+    root.setAttribute('data-theme', isDark ? '${APP_ID}-dark' : '${APP_ID}');
     if (isDark) {
       root.classList.add('dark');
     }
@@ -53,7 +56,7 @@ export const appearanceScript = `
     // Double rAF guarantees the browser has committed at least one frame.
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        root.classList.remove('finai-no-transition');
+        root.classList.remove('${APP_ID}-no-transition');
       });
     });
   } catch (e) {}

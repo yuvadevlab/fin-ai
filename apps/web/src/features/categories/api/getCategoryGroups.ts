@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 
 export interface CategoryGroup {
@@ -7,12 +8,12 @@ export interface CategoryGroup {
   order: number;
 }
 
-export const categoryGroupsQueryKey = () => ["category-groups"] as const;
+export const categoryGroupsQueryKey = () => QUERY_KEYS.CATEGORIES.GROUPS;
 
 export function useCategoryGroups() {
   return useQuery<CategoryGroup[]>({
     queryKey: categoryGroupsQueryKey(),
-    queryFn: () => apiClient.get<CategoryGroup[]>("categories/groups"),
+    queryFn: () => apiClient.get<CategoryGroup[]>(API_ENDPOINTS.CATEGORIES.GROUPS),
     staleTime: Infinity, // global data, rarely changes
   });
 }

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowRight, Receipt, Wallet, Target, SearchX } from "lucide-react";
 import { cn } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { TransactionType } from "@finai/shared-types";
+import { APP_ROUTES } from "@/lib";
 import { useSearch } from "../api";
 
 interface SearchDropdownProps {
@@ -51,7 +53,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
           {data!.transactions.map((t) => (
             <Link
               key={t.id}
-              href="/transactions"
+              href={APP_ROUTES.TRANSACTIONS}
               onClick={onClose}
               className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
             >
@@ -69,7 +71,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               <span
                 className={cn(
                   "shrink-0 text-sm font-semibold",
-                  t.type === "EXPENSE" ? "text-destructive" : "text-primary",
+                  t.type === TransactionType.EXPENSE ? "text-destructive" : "text-primary",
                 )}
               >
                 <PrivacyMoney value={t.amount} />
@@ -93,7 +95,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
           {data!.accounts.map((a) => (
             <Link
               key={a.id}
-              href="/accounts"
+              href={APP_ROUTES.ACCOUNTS}
               onClick={onClose}
               className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
             >
@@ -129,7 +131,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
             return (
               <Link
                 key={g.id}
-                href="/goals"
+                href={APP_ROUTES.GOALS}
                 onClick={onClose}
                 className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
               >

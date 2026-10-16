@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, TrendingUp, Target, ShieldCheck } from "lucide-react";
 import { ContentCard, Progress, StatusBadge } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { APP_ROUTES } from "@/lib";
 import { useInvestments } from "@/features/investments/api/getInvestments";
 import { useBudgets } from "@/features/budgets/api/getBudgets";
 import { useGoals } from "@/features/goals/api/getGoals";
@@ -61,7 +62,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               </div>
             </div>
             <Link
-              href="/investments"
+              href={APP_ROUTES.INVESTMENTS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
               View all <ArrowUpRight className="size-3" />
@@ -111,7 +112,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               </div>
             </div>
             <Link
-              href="/budgets"
+              href={APP_ROUTES.BUDGETS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
               Manage <ArrowUpRight className="size-3" />
@@ -156,7 +157,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               </div>
             </div>
             <Link
-              href="/goals"
+              href={APP_ROUTES.GOALS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
               View goals <ArrowUpRight className="size-3" />

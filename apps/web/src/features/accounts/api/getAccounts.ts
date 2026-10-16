@@ -1,4 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -11,18 +12,18 @@ export interface Account {
   isDefault?: boolean;
 }
 
-export const accountsQueryKey = () => ["accounts"] as const;
+export const accountsQueryKey = () => QUERY_KEYS.ACCOUNTS.ALL;
 
 export function useAccounts() {
   return useQuery<Account[]>({
     queryKey: accountsQueryKey(),
-    queryFn: () => apiClient.get<Account[]>("accounts"),
+    queryFn: () => apiClient.get<Account[]>(API_ENDPOINTS.ACCOUNTS.BASE),
   });
 }
 
 export async function prefetchAccounts(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
     queryKey: accountsQueryKey(),
-    queryFn: () => serverFetch<Account[]>("accounts", token),
+    queryFn: () => serverFetch<Account[]>(API_ENDPOINTS.ACCOUNTS.BASE, token),
   });
 }

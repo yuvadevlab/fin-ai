@@ -1,7 +1,9 @@
+import { DEFAULT_API_BASE_URL } from "./app-constants";
+
 /**
  * Server-side fetch helper for Next.js RSC (page.tsx) prefetching.
  *
- * - Reads the API base URL from NEXT_PUBLIC_API_URL env var (falls back to localhost).
+ * - Reads the API base URL from NEXT_PUBLIC_API_URL env var (falls back to DEFAULT_API_BASE_URL).
  * - Attaches the auth Bearer token from cookies.
  * - Unwraps the NestJS TransformInterceptor envelope { success, data } automatically.
  * - Throws on non-OK HTTP responses so React Query can catch the error gracefully.
@@ -9,7 +11,7 @@
 
 const SERVER_API_BASE = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-  : "http://localhost:4000/api/v1";
+  : DEFAULT_API_BASE_URL;
 
 export async function serverFetch<T>(endpoint: string, token: string): Promise<T> {
   const url = `${SERVER_API_BASE}/${endpoint.replace(/^\//, "")}`;

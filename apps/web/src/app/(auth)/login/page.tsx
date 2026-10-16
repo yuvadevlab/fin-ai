@@ -1,120 +1,16 @@
-"use client";
+import React from "react";
+import type { Metadata } from "next";
+import { LoginView } from "@/features/auth";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button, Input, Label, ContentCard, FinAILogo, toast } from "@finai/ui";
-import { apiClient } from "@/lib/api-client";
+// eslint-disable-next-line react-refresh/only-export-components
+export const metadata: Metadata = {
+  title: "Sign In — FinAI",
+  description: "Sign in to your FinAI personal wealth and finance management dashboard.",
+};
 
+/**
+ * Pure SSR Server Component route wrapper for FinAI login.
+ */
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const response = await toast
-        .promise(
-          apiClient.post<{ accessToken: string; user: unknown }>("auth/login", {
-            email,
-            password,
-          }),
-          {
-            loading: "Signing you in...",
-            success: "Welcome back! Login successful.",
-            error: (error: { message?: string }) =>
-              error?.message || "Invalid credentials. Please try again.",
-          },
-        )
-        .unwrap();
-      localStorage.setItem("finai_token", response.accessToken);
-      localStorage.setItem("finai_user", JSON.stringify(response.user));
-      document.cookie = `finai_token=${response.accessToken}; path=/; max-age=604800; SameSite=Lax`;
-
-      router.push("/");
-    } catch (err) {
-      const apiErr = err as { message?: string };
-      setError(apiErr?.message || "Invalid credentials. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="bg-background flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <FinAILogo showName={false} />
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
-          <p className="text-muted-foreground text-sm">
-            Sign in to your FinAI dashboard to manage your wealth
-          </p>
-        </div>
-
-        <ContentCard className="p-8">
-          <form onSubmit={handleLogin} className="space-y-4">
-            {error && (
-              <div className="bg-destructive/15 text-destructive rounded-lg p-3 text-sm font-medium">
-                {error}
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                className="bg-secondary/40 border-border/80"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-primary text-xs font-semibold hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="bg-secondary/40 border-border/80"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="mt-2 w-full cursor-pointer font-semibold shadow-sm"
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </Button>
-          </form>
-        </ContentCard>
-
-        <div className="text-muted-foreground text-center text-sm">
-          Don't have an account?{" "}
-          <Link href="/register" className="text-primary font-semibold hover:underline">
-            Sign up
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+  return <LoginView />;
 }
