@@ -2,8 +2,7 @@
 import React, { useEffect } from "react";
 import type { Preview } from "@storybook/react";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
-import { TooltipProvider } from "../src/primitives/tooltip";
-import { Toaster } from "../src/primitives/sonner";
+import { TooltipProvider, Toaster } from "@yuva-devlab/ui";
 import "./storybook.css";
 
 /**

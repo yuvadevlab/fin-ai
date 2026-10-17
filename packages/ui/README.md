@@ -1,6 +1,6 @@
 # @finai/ui
 
-`@finai/ui` is the shared React component library for FinAI, built with TailwindCSS, Radix UI primitives, Lucide icons, Class Variance Authority (`cva`), and `clsx`.
+`@finai/ui` is the shared React component library for FinAI, built on top of `@yuva-devlab/ui` primitives, Tailwind CSS v4, Lucide icons, and Recharts.
 
 ---
 
@@ -9,29 +9,17 @@
 ```text
 packages/ui/
 ├── src/
-│   ├── primitives/               # Radix UI wrapper primitives
-│   │   ├── accordion.tsx
-│   │   ├── alert-dialog.tsx
-│   │   ├── avatar.tsx
-│   │   ├── badge.tsx
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── dialog.tsx
-│   │   ├── dropdown-menu.tsx
-│   │   ├── input.tsx
-│   │   ├── select.tsx
-│   │   ├── table.tsx
-│   │   └── tooltip.tsx
-│   │
-│   ├── components/               # High-level layout & modal components
+│   ├── charts/                   # Recharts wrappers (CashFlow, TrendLine, CategoryPie)
+│   ├── components/               # High-level domain & display components
 │   │   ├── ConfirmDialog.tsx     # Confirmation dialog modal
+│   │   ├── DataTable.tsx         # Data table with pagination and sorting
 │   │   ├── FormDialog.tsx        # Standardized form dialog container
 │   │   ├── FormDialogField.tsx   # Dynamic form input, select & textarea field renderer
 │   │   ├── PageContainer.tsx     # Standardized page wrapper
 │   │   └── PageHeader.tsx        # Title, description, and action button bar
-│   │
-│   └── styles/                   # CSS theme tokens & Tailwind imports
-│       └── globals.css
+│   ├── layouts/                  # AppShell, Sidebar, TopBar navigation layouts
+│   ├── styles.css                # Imports @yuva-devlab/ui preset & finai theme
+│   └── index.ts                  # Re-exports domain components + @yuva-devlab/ui primitives
 ```
 
 ---
