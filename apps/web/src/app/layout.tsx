@@ -1,9 +1,22 @@
 import React from "react";
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { AppProviders } from "@/providers";
 import { appearanceScript } from "@/lib/appearance-script";
 import { APP_ID } from "@/lib/app-constants";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
@@ -28,7 +41,13 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-brand={APP_ID} data-theme={APP_ID} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      data-brand={APP_ID}
+      data-theme={APP_ID}
+      suppressHydrationWarning
+    >
       <head>
         {/*
          * Blocking script — must live in <head> so it runs synchronously
@@ -36,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          */}
         <script dangerouslySetInnerHTML={{ __html: appearanceScript }} />
       </head>
-      <body className="antialiased">
+      <body className="font-sans antialiased">
         {/*
          * Skip-to-content link — visually hidden until focused via Tab key.
          * Allows keyboard-only and screen-reader users to bypass the sidebar
