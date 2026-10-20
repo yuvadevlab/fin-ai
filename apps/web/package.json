@@ -18,13 +18,15 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
-    "@yuva-devlab/auth-client": "^0.3.0",
     "@finai/ai-engine": "workspace:*",
     "@finai/finance-engine": "workspace:*",
     "@finai/shared-types": "workspace:*",
     "@finai/ui": "workspace:*",
     "@finai/validation": "workspace:*",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tanstack/react-query": "^5.101.1",
+    "@yuva-devlab/auth-client": "^1.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.19.1",
