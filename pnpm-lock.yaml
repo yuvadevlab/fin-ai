@@ -114,8 +114,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       '@yuva-devlab/auth-server':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^0.3.0
+        version: 0.3.0
       '@yuva-devlab/logger':
         specifier: ^1.2.0
         version: 1.2.0
@@ -4855,8 +4855,8 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  '@yuva-devlab/auth-server@1.0.0':
-    resolution: {integrity: sha512-a5Mxs2VFns+8Zx4YI+t8jJ4bXFrXiUJayUObMX4JNywBJdW2BrWRzwcKK7QjLVHrCOpaqmzubm25mIqFT0Rhiw==}
+  '@yuva-devlab/auth-server@0.3.0':
+    resolution: {integrity: sha512-cNLnzcF2jX/mshR74Ckms4cuTYJ0bDVBstBohNfGClEhs/61ffRH921O28fxY2xrR9p8TTKKdLIwlypELJPgLg==}
 
   '@yuva-devlab/errors@0.2.0':
     resolution: {integrity: sha512-eGunJ1eDbkGfEida3MJx9gaWRTeWjx/UPFUHUs+r7m++hkbShw4VKekaH5MMb7gIIc5sUmb4mESgir0TYnE30w==}
@@ -14209,7 +14209,7 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
-  '@yuva-devlab/auth-server@1.0.0':
+  '@yuva-devlab/auth-server@0.3.0':
     dependencies:
       '@yuva-devlab/errors': 0.2.0
       '@yuva-devlab/logger': 1.2.0
