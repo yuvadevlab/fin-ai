@@ -5,6 +5,7 @@ import { FormDialog } from "@finai/ui";
 import { updateInvestmentValueSchema } from "@finai/validation";
 import { useUpdateInvestmentValue } from "../api";
 import { UpdateInvestmentValueForm } from "./UpdateInvestmentValueForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface UpdateInvestmentValueDialogProps {
   trigger?: React.ReactNode;
@@ -84,7 +85,7 @@ export function UpdateInvestmentValueDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "An error occurred while updating market value.",
+        root: apiErr?.message || UI_COPY.INVESTMENTS.UPDATE_FAILED,
       });
     }
   };
@@ -94,9 +95,9 @@ export function UpdateInvestmentValueDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title="Update Market Value"
-      description="Update current market value to reflect market movements or portfolio changes."
-      submitLabel="Save Market Value"
+      title={UI_COPY.INVESTMENTS.UPDATE_MARKET_VALUE}
+      description={UI_COPY.INVESTMENTS.UPDATE_VALUE_DESCRIPTION}
+      submitLabel={UI_COPY.INVESTMENTS.SAVE_MARKET_VALUE}
       loading={updateValueMutation.isPending}
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}

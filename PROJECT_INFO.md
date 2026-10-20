@@ -188,15 +188,15 @@ pnpm typecheck
 
 ### 5.3 Complete Environment Variables Reference
 
-| Variable                 |  Type  |         Default          | Required | Description                                                                           |
-| :----------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
-| `PORT`                   | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
-| `DATABASE_URL`           | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
-| `REDIS_URL`              | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
-| `NEXT_PUBLIC_API_URL`    | String | `http://localhost:4000`  |   Yes    | Base URL consumed by the Next.js frontend.                                            |
-| `DEVLAB_PORTAL_URL`      | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription and key checks.                                |
-| `DEVLAB_LOGS_URL`        | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
-| `INCIDENTAI_WEBHOOK_URL` | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
+| Variable                            |  Type  |         Default          | Required | Description                                                                           |
+| :---------------------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
+| `PORT`                              | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
+| `DATABASE_URL`                      | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
+| `REDIS_URL`                         | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
+| `DEVLAB_PORTAL_API_URL`             | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription, OIDC, and JWKS verification.                  |
+| `NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL` | String | `http://localhost:3005`  |   Yes    | DevLab Portal Web UI URL for browser SSO login and redirects.                         |
+| `DEVLAB_LOGS_URL`                   | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
+| `INCIDENTAI_WEBHOOK_URL`            | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
 
 ### 5.4 Testing Financial Math in the Pure Engine
 

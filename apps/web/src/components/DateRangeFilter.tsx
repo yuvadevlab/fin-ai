@@ -5,6 +5,7 @@ import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label } from "@finai/ui";
 import { format } from "date-fns";
 import { getPresetDateRanges, PresetDateRangeKeys } from "@/lib/dateCycle";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface DateRangeFilterProps {
   onRangeChange: (range: { startDate: Date; endDate: Date }) => void;
@@ -84,7 +85,7 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
         align="end"
       >
         <div className="text-muted-foreground px-1 text-xs font-semibold tracking-wider uppercase">
-          Select Date Range
+          {UI_COPY.DASHBOARD.DATE_RANGE.SELECT_DATE_RANGE}
         </div>
         <div className="space-y-1">
           {Object.entries(presets).map(([key, item]) => (
@@ -103,10 +104,14 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
         </div>
 
         <div className="border-border space-y-2 border-t pt-3">
-          <div className="text-muted-foreground px-1 text-xs font-semibold">Custom Range</div>
+          <div className="text-muted-foreground px-1 text-xs font-semibold">
+            {UI_COPY.DASHBOARD.DATE_RANGE.CUSTOM}
+          </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label className="text-muted-foreground text-[10px]">From</Label>
+              <Label className="text-muted-foreground text-[10px]">
+                {UI_COPY.DASHBOARD.DATE_RANGE.FROM}
+              </Label>
               <Input
                 type="date"
                 value={customStart}
@@ -115,7 +120,9 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
               />
             </div>
             <div>
-              <Label className="text-muted-foreground text-[10px]">To</Label>
+              <Label className="text-muted-foreground text-[10px]">
+                {UI_COPY.DASHBOARD.DATE_RANGE.TO}
+              </Label>
               <Input
                 type="date"
                 value={customEnd}
@@ -125,7 +132,7 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
             </div>
           </div>
           <Button size="sm" onClick={handleCustomApply} className="mt-1 h-8 w-full text-xs">
-            Apply Custom Range
+            {UI_COPY.DASHBOARD.DATE_RANGE.APPLY_CUSTOM_RANGE}
           </Button>
         </div>
       </PopoverContent>

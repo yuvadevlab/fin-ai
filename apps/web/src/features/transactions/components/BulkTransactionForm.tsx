@@ -5,6 +5,7 @@ import { Plus, Sparkles, Upload, Download } from "lucide-react";
 import { formatINR } from "@finai/finance-engine";
 import { Button } from "@finai/ui";
 import { BulkTransactionRow } from "./BulkTransactionRow";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface BulkRow {
   id: string;
@@ -73,10 +74,10 @@ export function BulkTransactionForm({
           </div>
           <div>
             <h4 className="text-foreground text-xs font-bold tracking-wider uppercase">
-              Bulk Upload & Import Queue
+              {UI_COPY.TRANSACTIONS.IMPORT.QUEUE_TITLE}
             </h4>
             <p className="text-muted-foreground text-[11px]">
-              {rows.length} {rows.length === 1 ? "entry" : "entries"} ready for submit
+              {UI_COPY.TRANSACTIONS.IMPORT.READY_COUNT(rows.length)}
             </p>
           </div>
         </div>
@@ -84,7 +85,7 @@ export function BulkTransactionForm({
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div className="ml-2 flex items-center gap-3 text-right">
             <span className="text-muted-foreground block text-[10px] font-semibold tracking-wider uppercase">
-              Batch Total
+              {UI_COPY.TRANSACTIONS.IMPORT.BATCH_TOTAL}
             </span>
             <span className="text-foreground font-mono text-sm font-extrabold">
               {formatINR(totalAmount)}
@@ -98,9 +99,10 @@ export function BulkTransactionForm({
               size="sm"
               onClick={onDownloadTemplate}
               className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs font-medium"
-              title="Download formatted Excel sheet template pre-filled with your accounts & categories"
+              title={UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_TITLE}
             >
-              <Download className="text-primary size-3.5" /> Template (.xlsx)
+              <Download className="text-primary size-3.5" />{" "}
+              {UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_BUTTON}
             </Button>
 
             <Button
@@ -109,9 +111,9 @@ export function BulkTransactionForm({
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               className="h-8 cursor-pointer gap-1.5 text-xs font-semibold"
-              title="Upload Excel spreadsheet (.xlsx, .csv)"
+              title={UI_COPY.TRANSACTIONS.IMPORT.UPLOAD_TITLE}
             >
-              <Upload className="size-3.5" /> Upload Excel
+              <Upload className="size-3.5" /> {UI_COPY.TRANSACTIONS.IMPORT.UPLOAD_BUTTON}
             </Button>
           </div>
         </div>
@@ -149,7 +151,7 @@ export function BulkTransactionForm({
         onClick={onAddRow}
         className="border-border/80 hover:border-primary hover:bg-secondary/50 h-10 w-full cursor-pointer gap-2 rounded-xl border-dashed text-xs font-semibold"
       >
-        <Plus className="size-4" /> Add Another Entry
+        <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.IMPORT.ADD_ENTRY}
       </Button>
     </div>
   );

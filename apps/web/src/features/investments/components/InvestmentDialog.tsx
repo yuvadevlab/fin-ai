@@ -5,6 +5,7 @@ import { FormDialog } from "@finai/ui";
 import { createInvestmentSchema } from "@finai/validation";
 import { useCreateInvestment, type Investment } from "../api";
 import { InvestmentForm } from "./InvestmentForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface InvestmentDialogProps {
   trigger?: React.ReactNode;
@@ -90,7 +91,7 @@ export function InvestmentDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "An error occurred while tracking the investment.",
+        root: apiErr?.message || UI_COPY.INVESTMENTS.TRACK_FAILED,
       });
     }
   };
@@ -100,9 +101,9 @@ export function InvestmentDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title="Track Investment"
-      description="Record stock buys, mutual funds, gold or other investments."
-      submitLabel="Track Investment"
+      title={UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
+      description={UI_COPY.INVESTMENTS.TRACK_DESCRIPTION}
+      submitLabel={UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
       loading={createInvestment.isPending}
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}

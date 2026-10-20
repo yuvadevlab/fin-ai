@@ -26,6 +26,7 @@ import { useCategoryBreakdown, useDashboardStats, useMonthlyAnalytics } from "..
 import { DashboardKpiCards } from "./DashboardKpiCards";
 import { DashboardCategoryCard } from "./DashboardCategoryCard";
 import { DashboardHealthCard } from "./DashboardHealthCard";
+import { UI_COPY } from "@/lib/ui-copy";
 import { DashboardSummaryStats } from "./DashboardSummaryStats";
 import { TrendCalculationDialog, type TrendGuideType } from "./TrendCalculationDialog";
 
@@ -64,13 +65,14 @@ export function DashboardPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Financial Overview"
-        description="Your aggregated wealth across personal accounts, investments, and goals."
+        title={UI_COPY.DASHBOARD.PAGE.TITLE}
+        description={UI_COPY.DASHBOARD.PAGE.DESCRIPTION}
         actions={
           <TransactionDialog
             trigger={
               <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
-                <Plus className="size-4" aria-hidden="true" /> Add Transaction
+                <Plus className="size-4" aria-hidden="true" />{" "}
+                {UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
               </Button>
             }
           />
@@ -84,22 +86,26 @@ export function DashboardPage() {
       <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="min-w-0 lg:col-span-2">
           <ChartCard
-            title="Monthly Cash Flow"
+            title={UI_COPY.DASHBOARD.PAGE.MONTHLY_CASH_FLOW}
             action={
               <Select value={cashFlowRange} onValueChange={setCashFlowRange}>
                 <SelectTrigger
                   id="cashflow-range-trigger"
                   className="h-8 w-34 cursor-pointer text-xs font-medium"
-                  aria-label="Select cash flow time period"
+                  aria-label={UI_COPY.DASHBOARD.CASH_FLOW.RANGE_LABEL}
                 >
-                  <SelectValue placeholder="Period" />
+                  <SelectValue placeholder={UI_COPY.DASHBOARD.CASH_FLOW.PERIOD_PLACEHOLDER} />
                 </SelectTrigger>
                 <SelectContent align="end">
-                  <SelectItem value="3">Last 3 months</SelectItem>
-                  <SelectItem value="6">Last 6 months</SelectItem>
-                  <SelectItem value="12">Last 12 months</SelectItem>
-                  <SelectItem value="24">Last 2 years</SelectItem>
-                  <SelectItem value="all">All time</SelectItem>
+                  <SelectItem value="3">
+                    {UI_COPY.DASHBOARD.CASH_FLOW.RANGES.THREE_MONTHS}
+                  </SelectItem>
+                  <SelectItem value="6">{UI_COPY.DASHBOARD.CASH_FLOW.RANGES.SIX_MONTHS}</SelectItem>
+                  <SelectItem value="12">
+                    {UI_COPY.DASHBOARD.CASH_FLOW.RANGES.TWELVE_MONTHS}
+                  </SelectItem>
+                  <SelectItem value="24">{UI_COPY.DASHBOARD.CASH_FLOW.RANGES.TWO_YEARS}</SelectItem>
+                  <SelectItem value="all">{UI_COPY.DASHBOARD.CASH_FLOW.RANGES.ALL_TIME}</SelectItem>
                 </SelectContent>
               </Select>
             }
@@ -117,8 +123,8 @@ export function DashboardPage() {
       {/* Row 2: Deep Dive — Expense Trend, Savings Trend & Category Allocation (3 equal columns) */}
       <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-3">
         <ChartCard
-          title="Expense Trend"
-          hint="Monthly total"
+          title={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND}
+          hint={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT}
           action={
             <TooltipProvider>
               <Tooltip>
@@ -127,13 +133,13 @@ export function DashboardPage() {
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-foreground -mr-1 size-6 cursor-pointer rounded-md"
-                    aria-label="Learn how expense trend is calculated"
+                    aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_EXPENSE}
                     onClick={() => setTrendGuide("expense")}
                   >
                     <Info className="size-3.5" aria-hidden="true" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>How this is calculated</TooltipContent>
+                <TooltipContent>{UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           }
@@ -143,8 +149,8 @@ export function DashboardPage() {
         </ChartCard>
 
         <ChartCard
-          title="Savings Trend"
-          hint="Amount saved / month"
+          title={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND}
+          hint={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND_HINT}
           action={
             <TooltipProvider>
               <Tooltip>
@@ -153,13 +159,13 @@ export function DashboardPage() {
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-foreground -mr-1 size-6 cursor-pointer rounded-md"
-                    aria-label="Learn how savings trend is calculated"
+                    aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_SAVINGS}
                     onClick={() => setTrendGuide("savings")}
                   >
                     <Info className="size-3.5" aria-hidden="true" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>How this is calculated</TooltipContent>
+                <TooltipContent>{UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           }

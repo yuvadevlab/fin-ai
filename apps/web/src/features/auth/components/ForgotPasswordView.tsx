@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { GATEWAY_URL, APP_ID } from "@/lib";
+import { DEVLAB_PORTAL_ROUTES } from "@/lib";
 
 export function ForgotPasswordView() {
-  const portalUrl = process.env.NEXT_PUBLIC_DEVLAB_PORTAL_URL || GATEWAY_URL;
-
   useEffect(() => {
     if (typeof window !== "undefined") {
-      window.location.href = portalUrl + "/forgot-password?app=" + encodeURIComponent(APP_ID);
+      window.location.href = DEVLAB_PORTAL_ROUTES.FORGOT_PASSWORD();
     }
-  }, [portalUrl]);
+  }, []);
 
   return (
     <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4 text-center">

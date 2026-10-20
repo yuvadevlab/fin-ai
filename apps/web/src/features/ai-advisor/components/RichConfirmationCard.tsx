@@ -8,6 +8,7 @@ import { partitionRows } from "../utils/partitionRows";
 import { getTransactionTypeAccent, STATUS_META } from "../utils/confirmationCardStyles";
 import { BulkConfirmationCarousel } from "./BulkConfirmationCarousel";
 import { ConfirmationEffectPreview } from "./ConfirmationEffectPreview";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface RichConfirmationCardProps {
   confirmation: AgentConfirmation;
@@ -45,7 +46,10 @@ export function RichConfirmationCard({
   const { card, status } = confirmation;
   const pending = status === "pending";
   const meta = isExecuting
-    ? { label: "Executing…", className: "text-amber-500 bg-amber-500/10 border-amber-500/20" }
+    ? {
+        label: UI_COPY.ADVISOR.CONFIRMATION_STATUS.EXECUTING,
+        className: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      }
     : STATUS_META[status];
 
   const { effectRows, detailRows } = partitionRows(card.rows ?? []);

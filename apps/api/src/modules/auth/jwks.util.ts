@@ -53,14 +53,17 @@ interface JwksResponse {
 
 /**
  * Resolves the RSA public key in PEM format for a given key ID (kid) from the
- * DevLab Gateway JWKS endpoint (`/.well-known/jwks.json`). Caches results in-memory
+ * DevLab Portal API JWKS endpoint (`/.well-known/jwks.json`). Caches results in-memory
  * to prevent high-frequency network roundtrips during authentication.
  *
- * @param gatewayUrl - Base URL of the DevLab Gateway (e.g., http://localhost:3015)
+ * @param portalApiUrl - Base URL of the DevLab Portal API (defaults to DEVLAB_PORTAL_API_URL or http://localhost:3015)
  * @param kid - Optional key ID matching the JWT protected header
  * @returns RSA public key formatted as an SPKI PEM string
  */
-export async function getDevLabPublicKey(gatewayUrl: string, kid?: string): Promise<string> {
+export async function getDevLabPublicKey(
+  portalApiUrl = process.env.DEVLAB_PORTAL_API_URL || "http://localhost:3015",
+  kid?: string,
+): Promise<string> {
   const cacheKey = kid || "default";
   const now = Date.now();
   const cached = keyCache.get(cacheKey);
@@ -70,7 +73,7 @@ export async function getDevLabPublicKey(gatewayUrl: string, kid?: string): Prom
     return cached.pem;
   }
 
-  const normalizedUrl = gatewayUrl.replace(/\/+$/, "");
+  const normalizedUrl = portalApiUrl.replace(/\/+$/, "");
   const jwksUrl = `${normalizedUrl}/.well-known/jwks.json`;
 
   try {

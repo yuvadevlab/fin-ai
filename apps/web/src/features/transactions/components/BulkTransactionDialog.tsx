@@ -8,6 +8,7 @@ import { useInlineEntityCreation } from "../hooks";
 import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils";
 import { BulkTransactionForm, type BulkRow } from "./BulkTransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
+import { UI_COPY } from "@/lib/ui-copy";
 
 function generateRowId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -112,9 +113,9 @@ export function BulkTransactionDialog({
     try {
       await toast
         .promise(downloadExcelTemplateFromApi(), {
-          loading: "Generating Excel template...",
-          success: "Excel upload template with in-cell dropdowns downloaded!",
-          error: "Failed to generate Excel template.",
+          loading: UI_COPY.TRANSACTIONS.IMPORT.GENERATE_TEMPLATE,
+          success: UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_DOWNLOADED,
+          error: UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_FAILED,
         })
         .unwrap();
     } catch {
@@ -126,10 +127,10 @@ export function BulkTransactionDialog({
     try {
       const importedRows = await toast
         .promise(parseExcelOrCsvFile(file, accounts, categories), {
-          loading: "Importing transactions from Excel...",
-          success: (data: BulkRow[]) =>
-            `Successfully imported ${data.length} transactions from Excel!`,
-          error: (error: { message?: string }) => error?.message || "Error reading Excel file.",
+          loading: UI_COPY.TRANSACTIONS.IMPORT.IMPORTING,
+          success: (data: BulkRow[]) => UI_COPY.TRANSACTIONS.IMPORT.IMPORT_SUCCESS(data.length),
+          error: (error: { message?: string }) =>
+            error?.message || UI_COPY.TRANSACTIONS.IMPORT.READ_EXCEL_FAILED,
         })
         .unwrap();
       setRows(importedRows);
@@ -149,7 +150,7 @@ export function BulkTransactionDialog({
 
     if (invalidRows.length > 0) {
       setErrors({
-        root: "Please fill in valid Amount, Category, Account, and Date for all rows.",
+        root: UI_COPY.TRANSACTIONS.IMPORT.VALIDATION_FAILED,
       });
       return;
     }
@@ -179,7 +180,7 @@ export function BulkTransactionDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "Failed to submit bulk transactions.",
+        root: apiErr?.message || UI_COPY.TRANSACTIONS.IMPORT.SUBMIT_FAILED,
       });
     }
   };
@@ -190,9 +191,9 @@ export function BulkTransactionDialog({
         open={open}
         onOpenChange={setOpen}
         trigger={trigger}
-        title="Bulk Import & Transaction Upload"
-        description="Import transactions via Excel spreadsheet (.xlsx, .csv) or batch enter multiple rows."
-        submitLabel={`Save All (${rows.length}) Transactions`}
+        title={UI_COPY.TRANSACTIONS.IMPORT.DIALOG_TITLE}
+        description={UI_COPY.TRANSACTIONS.IMPORT.DIALOG_DESCRIPTION}
+        submitLabel={UI_COPY.TRANSACTIONS.IMPORT.SAVE_ALL(rows.length)}
         loading={createBulk.isPending}
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}

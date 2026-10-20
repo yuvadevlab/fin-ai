@@ -21,7 +21,12 @@ export const ApiConfigSchema = z.object({
   webUrl: z.string().default("http://localhost:3000"),
 
   /**
-   * DevLab Gateway base URL for OIDC discovery and JWKS public key verification.
+   * DevLab Portal API base URL for OIDC discovery and JWKS public key verification.
+   */
+  portalApiUrl: z.string().default("http://localhost:3015"),
+
+  /**
+   * @deprecated Use portalApiUrl instead.
    */
   gatewayUrl: z.string().default("http://localhost:3015"),
 

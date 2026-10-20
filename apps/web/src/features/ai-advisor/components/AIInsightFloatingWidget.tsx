@@ -7,6 +7,7 @@ import { Sparkles, X, RefreshCw, ExternalLink, ChevronDown } from "lucide-react"
 import { cn, MarkdownContent } from "@finai/ui";
 import { useAiInsight, type InsightPage } from "@/features/ai-advisor";
 import { FEATURE_FLAGS, APP_ROUTES } from "@/lib";
+import { UI_COPY } from "@/lib/ui-copy";
 
 /** Map route segments to their InsightPage value */
 const ROUTE_TO_PAGE: Record<string, InsightPage> = {
@@ -22,14 +23,14 @@ const ROUTE_TO_PAGE: Record<string, InsightPage> = {
 };
 
 const PAGE_TITLES: Record<InsightPage, string> = {
-  dashboard: "Dashboard Overview",
-  health: "Financial Health",
-  transactions: "Transactions",
-  budgets: "Budgets & Spending",
-  investments: "Investment Portfolio",
-  goals: "Savings Goals",
-  reports: "Financial Reports",
-  accounts: "Linked Accounts",
+  dashboard: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.dashboard,
+  health: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.health,
+  transactions: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.transactions,
+  budgets: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.budgets,
+  investments: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.investments,
+  goals: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.goals,
+  reports: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.reports,
+  accounts: UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.linkedAccounts,
 };
 
 function resolveInsightPage(pathname: string): InsightPage | null {
@@ -60,7 +61,7 @@ export function AIInsightFloatingWidget() {
   }
 
   const hasLoaded = !!text || isStreaming || isError;
-  const pageTitle = PAGE_TITLES[page] ?? "Financial";
+  const pageTitle = PAGE_TITLES[page] ?? UI_COPY.ADVISOR.WIDGET.PAGE_TITLES.fallback;
   // Pure derived state: show notification dot only if insight was generated but widget is closed
   const hasNewInsight = !isOpen && !isStreaming && Boolean(text);
 
@@ -98,12 +99,12 @@ export function AIInsightFloatingWidget() {
             <div>
               <span className="text-sm font-semibold">{pageTitle}</span>
               <p className="mt-0.5 text-[10px] leading-none font-medium text-white/80">
-                AI Live Analysis
+                {UI_COPY.ADVISOR.WIDGET.LIVE_ANALYSIS}
               </p>
             </div>
             {isStreaming && (
               <span className="ml-1 animate-pulse rounded-full bg-white/20 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase">
-                live
+                {UI_COPY.ADVISOR.WIDGET.LIVE_BADGE}
               </span>
             )}
           </div>
@@ -111,7 +112,7 @@ export function AIInsightFloatingWidget() {
             {hasLoaded && !isStreaming && (
               <button
                 onClick={refetch}
-                title="Refresh insight"
+                title={UI_COPY.ADVISOR.WIDGET.REFRESH}
                 className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95"
               >
                 <RefreshCw className="size-3.5" />
@@ -120,7 +121,7 @@ export function AIInsightFloatingWidget() {
             <button
               onClick={() => setIsOpen(false)}
               className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95"
-              aria-label="Close AI insight"
+              aria-label={UI_COPY.ADVISOR.WIDGET.CLOSE}
             >
               <ChevronDown className="size-4" />
             </button>
@@ -130,13 +131,11 @@ export function AIInsightFloatingWidget() {
         {/* Panel body */}
         <div className="max-h-72 overflow-y-auto px-4 py-3 text-sm">
           {isError ? (
-            <p className="text-destructive text-xs">
-              Could not load insight. Make sure AI service is running...
-            </p>
+            <p className="text-destructive text-xs">{UI_COPY.ADVISOR.WIDGET.ERROR}</p>
           ) : isStreaming && !text ? (
             <div className="text-muted-foreground flex items-center gap-2 py-4 text-xs">
               <RefreshCw className="text-primary size-3.5 animate-spin" />
-              <span>Analyzing {pageTitle.toLowerCase()} data…</span>
+              <span>{UI_COPY.ADVISOR.WIDGET.ANALYZING(pageTitle)}</span>
             </div>
           ) : text ? (
             <MarkdownContent content={text} className="text-[13px]">
@@ -147,15 +146,14 @@ export function AIInsightFloatingWidget() {
           ) : (
             <div className="space-y-3 py-2 text-center">
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Generate a real-time, personalized AI analysis grounded in your live{" "}
-                {pageTitle.toLowerCase()} numbers.
+                {UI_COPY.ADVISOR.WIDGET.READY_DESCRIPTION(pageTitle)}
               </p>
               <button
                 onClick={handleGenerate}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all active:scale-95"
               >
                 <Sparkles className="size-3.5 animate-pulse" />
-                Generate Insight
+                {UI_COPY.ADVISOR.WIDGET.GENERATE}
               </button>
             </div>
           )}
@@ -170,9 +168,11 @@ export function AIInsightFloatingWidget() {
               onClick={() => setIsOpen(false)}
             >
               <ExternalLink className="size-3" />
-              Ask AI Advisor in Chat
+              {UI_COPY.ADVISOR.WIDGET.ASK_IN_CHAT}
             </Link>
-            <span className="text-muted-foreground text-[10px]">FinAI Advisor</span>
+            <span className="text-muted-foreground text-[10px]">
+              {UI_COPY.ADVISOR.WIDGET.BRAND}
+            </span>
           </div>
         )}
       </div>
@@ -181,7 +181,7 @@ export function AIInsightFloatingWidget() {
       <div className="pointer-events-auto">
         <button
           onClick={handleToggle}
-          aria-label={isOpen ? "Close AI Insight" : "Open AI Insight"}
+          aria-label={isOpen ? UI_COPY.ADVISOR.WIDGET.CLOSE : UI_COPY.ADVISOR.WIDGET.OPEN}
           aria-expanded={isOpen}
           className={cn(
             "group relative flex cursor-pointer items-center shadow-xl transition-all duration-300 active:scale-95",
@@ -207,7 +207,7 @@ export function AIInsightFloatingWidget() {
                 : "max-w-0 opacity-0 group-hover:max-w-32 group-hover:opacity-100",
             )}
           >
-            {isOpen ? "Close Insight" : "AI Insight"}
+            {isOpen ? UI_COPY.ADVISOR.WIDGET.TOGGLE_CLOSE : UI_COPY.ADVISOR.WIDGET.TOGGLE_OPEN}
           </span>
 
           {/* Notification dot — shown when insight is ready but panel is closed */}

@@ -15,6 +15,7 @@ import {
 } from "@finai/ui";
 import { Category, useCategories, useDeleteCategory } from "../api";
 import { CategoryDialog } from "./CategoryDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export function CategoriesPage() {
   const { data: categories = [], isLoading } = useCategories();
@@ -88,11 +89,11 @@ export function CategoriesPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Categories"
-        description="Organise and personalise your income and expense categories."
+        title={UI_COPY.CATEGORIES.PAGE_TITLE}
+        description={UI_COPY.CATEGORIES.PAGE_DESCRIPTION}
         actions={
           <Button size="sm" onClick={handleOpenAddCategory} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> Add Category
+            <Plus className="size-4" /> {UI_COPY.CATEGORIES.ADD}
           </Button>
         }
       />
@@ -125,7 +126,9 @@ export function CategoriesPage() {
                         <div>
                           <p className="text-sm font-semibold">{cat.name}</p>
                           {cat.isDefault && (
-                            <span className="text-muted-foreground text-[10px]">Default</span>
+                            <span className="text-muted-foreground text-[10px]">
+                              {UI_COPY.CATEGORIES.DEFAULT}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -136,7 +139,7 @@ export function CategoriesPage() {
                             size="icon"
                             variant="ghost"
                             className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                            aria-label={`Actions for ${cat.name}`}
+                            aria-label={UI_COPY.CATEGORIES.ACTIONS_FOR(cat.name)}
                           >
                             <MoreVertical className="size-4" />
                           </Button>
@@ -146,14 +149,14 @@ export function CategoriesPage() {
                             onClick={() => handleOpenEditCategory(cat)}
                             className="cursor-pointer"
                           >
-                            <Pencil className="mr-2 size-3.5" /> Edit
+                            <Pencil className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.EDIT}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => handleOpenDeleteCategory(cat)}
                             className="text-destructive focus:text-destructive cursor-pointer"
                           >
-                            <Trash2 className="mr-2 size-3.5" /> Delete
+                            <Trash2 className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.DELETE}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -178,10 +181,10 @@ export function CategoriesPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Category"
-        description={`Are you sure you want to delete "${categoryToDelete?.name}"? This action cannot be undone.`}
+        title={UI_COPY.CATEGORIES.DELETE_TITLE}
+        description={UI_COPY.CATEGORIES.DELETE_CONFIRMATION(categoryToDelete?.name ?? "")}
         onConfirm={handleDeleteCategoryConfirm}
-        confirmText="Delete"
+        confirmText={UI_COPY.COMMON.ACTIONS.DELETE}
         destructive
       />
     </PageContainer>

@@ -44,7 +44,8 @@
     "react-markdown": "^10.1.0",
     "recharts": "^3.9.2",
     "remark-gfm": "^4.0.0",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "tw-animate-css": "^1.3.4"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.6.18",

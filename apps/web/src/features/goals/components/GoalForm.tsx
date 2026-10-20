@@ -3,6 +3,7 @@
 import { FormDialogField, FormField } from "@finai/ui";
 import { GoalType } from "@finai/shared-types";
 import { useReferenceOptions } from "@/hooks/useReferenceOptions";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface GoalFormProps {
   values: Record<string, string>;
@@ -12,10 +13,10 @@ export interface GoalFormProps {
 
 /** Fallback goal type options shown while DB options are loading. */
 const FALLBACK_GOAL_TYPE_OPTIONS = [
-  { label: "Emergency Fund", value: GoalType.EMERGENCY_FUND },
-  { label: "Obligation", value: GoalType.OBLIGATION },
-  { label: "Lifestyle", value: GoalType.LIFESTYLE },
-  { label: "Personal", value: GoalType.PERSONAL },
+  { label: UI_COPY.GOALS.FORM.TYPES.EMERGENCY_FUND, value: GoalType.EMERGENCY_FUND },
+  { label: UI_COPY.GOALS.FORM.TYPES.OBLIGATION, value: GoalType.OBLIGATION },
+  { label: UI_COPY.GOALS.FORM.TYPES.LIFESTYLE, value: GoalType.LIFESTYLE },
+  { label: UI_COPY.GOALS.FORM.TYPES.PERSONAL, value: GoalType.PERSONAL },
 ];
 
 export function GoalForm({ values, errors, onChange }: GoalFormProps) {
@@ -30,35 +31,35 @@ export function GoalForm({ values, errors, onChange }: GoalFormProps) {
     {
       type: "text",
       name: "name",
-      label: "Goal Name",
-      placeholder: "e.g. Emergency Fund, Dream Vacation, New Home",
+      label: UI_COPY.GOALS.FORM.NAME,
+      placeholder: UI_COPY.GOALS.FORM.NAME_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "select",
       name: "type",
-      label: "Goal Type",
-      placeholder: "Select a goal type",
+      label: UI_COPY.GOALS.FORM.TYPE,
+      placeholder: UI_COPY.GOALS.FORM.TYPE_PLACEHOLDER,
       options: typeOptions,
     },
     {
       type: "number",
       name: "targetAmount",
-      label: "Target Amount (₹)",
-      placeholder: "0.00",
+      label: UI_COPY.GOALS.FORM.TARGET_AMOUNT,
+      placeholder: UI_COPY.GOALS.FORM.AMOUNT_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "number",
       name: "currentAmount",
-      label: "Current Amount Saved (₹)",
-      placeholder: "0.00",
+      label: UI_COPY.GOALS.FORM.CURRENT_AMOUNT,
+      placeholder: UI_COPY.GOALS.FORM.AMOUNT_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "date",
       name: "deadline",
-      label: "Target Date",
+      label: UI_COPY.GOALS.FORM.TARGET_DATE,
       autoComplete: "off",
     },
   ];

@@ -19,17 +19,18 @@ import { PrivacyMoney } from "@/components";
 import { useInvestments, Investment } from "../api";
 import { InvestmentDialog } from "./InvestmentDialog";
 import { UpdateInvestmentValueDialog } from "./UpdateInvestmentValueDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
-  MUTUAL_FUND: "Mutual Fund",
-  STOCK: "Stocks",
-  FIXED_DEPOSIT: "Fixed Deposit",
-  GOLD: "Gold",
-  EPF: "EPF",
-  PPF: "PPF",
-  REAL_ESTATE: "Real Estate",
-  CRYPTO: "Crypto",
-  OTHER: "Other",
+  MUTUAL_FUND: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.MUTUAL_FUND,
+  STOCK: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.STOCK,
+  FIXED_DEPOSIT: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.FIXED_DEPOSIT,
+  GOLD: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.GOLD,
+  EPF: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.EPF,
+  PPF: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.PPF,
+  REAL_ESTATE: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.REAL_ESTATE,
+  CRYPTO: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.CRYPTO,
+  OTHER: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.OTHER,
 };
 
 export function InvestmentsPage() {
@@ -75,7 +76,7 @@ export function InvestmentsPage() {
   const columns = useMemo(
     () => [
       {
-        header: "Asset",
+        header: UI_COPY.INVESTMENTS.ASSET,
         accessor: (a: Investment) => (
           <div>
             <p className="font-semibold">{a.name}</p>
@@ -84,17 +85,17 @@ export function InvestmentsPage() {
         ),
       },
       {
-        header: "Invested",
+        header: UI_COPY.INVESTMENTS.INVESTED,
         accessor: (a: Investment) => <PrivacyMoney value={a.investedAmount ?? 0} />,
         className: "text-right",
       },
       {
-        header: "Current Value",
+        header: UI_COPY.INVESTMENTS.CURRENT_VALUE,
         accessor: (a: Investment) => <PrivacyMoney value={a.currentValue ?? 0} />,
         className: "text-right",
       },
       {
-        header: "P&L",
+        header: UI_COPY.INVESTMENTS.PL,
         accessor: (a: Investment) => {
           const pl = (a.currentValue ?? 0) - (a.investedAmount ?? 0);
           const pct = a.investedAmount > 0 ? ((pl / a.investedAmount) * 100).toFixed(1) : "0.0";
@@ -113,7 +114,7 @@ export function InvestmentsPage() {
         className: "text-right",
       },
       {
-        header: "Actions",
+        header: UI_COPY.INVESTMENTS.ACTIONS,
         accessor: (a: Investment) => (
           <div className="flex justify-end">
             <UpdateInvestmentValueDialog
@@ -123,7 +124,7 @@ export function InvestmentsPage() {
                   variant="ghost"
                   size="sm"
                   className="text-muted-foreground hover:text-foreground h-8 cursor-pointer gap-1.5 px-2 text-xs"
-                  title="Update Market Value"
+                  title={UI_COPY.INVESTMENTS.UPDATE_MARKET_VALUE}
                 >
                   <Pencil className="size-3.5" />
                 </Button>
@@ -140,13 +141,13 @@ export function InvestmentsPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Investments"
-        description="Portfolio across mutual funds, stocks, gold, and retirement instruments."
+        title={UI_COPY.INVESTMENTS.PAGE_TITLE}
+        description={UI_COPY.INVESTMENTS.PAGE_DESCRIPTION}
         actions={
           <InvestmentDialog
             trigger={
               <Button size="sm" className="cursor-pointer gap-1.5">
-                <Plus className="size-4" /> Track Investment
+                <Plus className="size-4" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
               </Button>
             }
           />
@@ -155,17 +156,17 @@ export function InvestmentsPage() {
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
-          label="Total Value"
+          label={UI_COPY.INVESTMENTS.TOTAL_VALUE}
           value={<PrivacyMoney value={totalValue} />}
-          hint="Current market value"
+          hint={UI_COPY.INVESTMENTS.CURRENT_MARKET_HINT}
         />
         <StatCard
-          label="Total Invested"
+          label={UI_COPY.INVESTMENTS.TOTAL_INVESTED}
           value={<PrivacyMoney value={totalInvested} />}
-          hint="Principal amount"
+          hint={UI_COPY.INVESTMENTS.PRINCIPAL_HINT}
         />
         <StatCard
-          label="Unrealised P&L"
+          label={UI_COPY.INVESTMENTS.UNREALISED_PL}
           value={<PrivacyMoney value={Math.abs(unrealisedPL)} />}
           trend={
             unrealisedPL >= 0 ? { value: "Gain", kind: "up" } : { value: "Loss", kind: "down" }
@@ -176,7 +177,7 @@ export function InvestmentsPage() {
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ContentCard>
-          <SectionHeader title="Asset Allocation" />
+          <SectionHeader title={UI_COPY.INVESTMENTS.ASSET_ALLOCATION} />
           <CategoryPie data={pieData} />
           <ul className="mt-4 space-y-2.5 text-sm">
             {allocationByClass.map((a, i) => (

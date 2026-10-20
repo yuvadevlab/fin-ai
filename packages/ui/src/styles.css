@@ -1,5 +1,9 @@
+@import "tailwindcss";
+@import "tw-animate-css";
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
+@source "../**";
+@source "../node_modules/@yuva-devlab/ui";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -15,6 +19,13 @@
 @layer base {
   * {
     border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   body {

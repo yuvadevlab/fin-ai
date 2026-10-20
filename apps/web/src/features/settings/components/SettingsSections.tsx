@@ -5,6 +5,7 @@ import Link from "next/link";
 import { APP_ROUTES } from "@/lib";
 import { Button, Input, Label, Switch, Badge, toast } from "@finai/ui";
 import { type Category } from "@/features/categories";
+import { UI_COPY } from "@/lib/ui-copy";
 
 function Field({
   label,
@@ -27,9 +28,9 @@ function Field({
 export function ProfileSettings({ user }: { user: { name?: string; email?: string } }) {
   return (
     <div className="space-y-4">
-      <Field label="Full name" defaultValue={user?.name ?? ""} />
-      <Field label="Email" defaultValue={user?.email ?? ""} type="email" />
-      <Field label="Currency" defaultValue="INR (₹)" />
+      <Field label={UI_COPY.SETTINGS.NAME_LABEL} defaultValue={user?.name ?? ""} />
+      <Field label={UI_COPY.SETTINGS.EMAIL_LABEL} defaultValue={user?.email ?? ""} type="email" />
+      <Field label={UI_COPY.SETTINGS.CURRENCY_LABEL} defaultValue={UI_COPY.SETTINGS.INR_CURRENCY} />
     </div>
   );
 }
@@ -38,13 +39,7 @@ export function ProfileSettings({ user }: { user: { name?: string; email?: strin
 export function NotificationSettings() {
   return (
     <div className="space-y-3">
-      {[
-        "Bill due reminders",
-        "Budget hit 80%",
-        "New AI insight",
-        "Large transaction (> ₹10k)",
-        "Weekly summary",
-      ].map((l) => (
+      {[...UI_COPY.SETTINGS.NOTIFICATIONS].map((l) => (
         <div
           key={l}
           className="border-border flex items-center justify-between rounded-lg border p-3"
@@ -63,24 +58,24 @@ export function SecuritySettings() {
     <div className="space-y-3">
       <div className="border-border flex items-center justify-between rounded-lg border p-3">
         <div>
-          <p className="text-sm font-medium">Two-factor authentication</p>
-          <p className="text-muted-foreground text-xs">Adds an extra step at sign-in.</p>
+          <p className="text-sm font-medium">{UI_COPY.SETTINGS.TWO_FACTOR_TITLE}</p>
+          <p className="text-muted-foreground text-xs">{UI_COPY.SETTINGS.TWO_FACTOR_DESCRIPTION}</p>
         </div>
         <Switch defaultChecked />
       </div>
       <div className="border-border flex items-center justify-between rounded-lg border p-3">
         <div>
-          <p className="text-sm font-medium">Biometric unlock</p>
-          <p className="text-muted-foreground text-xs">Use Face ID / fingerprint on mobile.</p>
+          <p className="text-sm font-medium">{UI_COPY.SETTINGS.BIOMETRIC_TITLE}</p>
+          <p className="text-muted-foreground text-xs">{UI_COPY.SETTINGS.BIOMETRIC_DESCRIPTION}</p>
         </div>
         <Switch />
       </div>
       <Button
         variant="outline"
         className="w-full cursor-pointer"
-        onClick={() => toast("Signed out of other sessions")}
+        onClick={() => toast(UI_COPY.SETTINGS.SIGNED_OUT_OTHER_SESSIONS)}
       >
-        Sign out of all other sessions
+        {UI_COPY.SETTINGS.SIGN_OUT_OTHER_SESSIONS}
       </Button>
     </div>
   );
@@ -91,10 +86,16 @@ export function AppearanceSettings() {
   return (
     <div className="space-y-3">
       {[
-        { l: "Theme", v: "System" },
-        { l: "Density", v: "Comfortable" },
-        { l: "Default landing tab", v: "Overview" },
-        { l: "Number format", v: "Indian (1,00,000)" },
+        { l: UI_COPY.SETTINGS.APPEARANCE.THEME, v: UI_COPY.SETTINGS.APPEARANCE.SYSTEM },
+        { l: UI_COPY.SETTINGS.APPEARANCE.DENSITY, v: UI_COPY.SETTINGS.APPEARANCE.COMFORTABLE },
+        {
+          l: UI_COPY.SETTINGS.APPEARANCE.DEFAULT_LANDING_TAB,
+          v: UI_COPY.SETTINGS.APPEARANCE.OVERVIEW,
+        },
+        {
+          l: UI_COPY.SETTINGS.APPEARANCE.NUMBER_FORMAT,
+          v: UI_COPY.SETTINGS.APPEARANCE.INDIAN_FORMAT,
+        },
       ].map((r) => (
         <div
           key={r.l}

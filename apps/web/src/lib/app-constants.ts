@@ -4,17 +4,21 @@
  * @module @finai/web/lib/app-constants
  */
 
+import { DEVLAB_CONFIG } from "@finai/shared-types";
+
 /** Application platform identifier consumed by DevLab auth and telemetry */
-export const APP_ID = process.env.NEXT_PUBLIC_APP_ID || "finai";
+export const APP_ID = process.env.NEXT_PUBLIC_APP_ID || DEVLAB_CONFIG.APP_ID;
 
 /** Fallback base API URL when NEXT_PUBLIC_API_URL environment variable is unset */
 export const DEFAULT_API_BASE_URL = "http://localhost:4000/api/v1";
 
-/** Fallback DevLab Gateway URL when NEXT_PUBLIC_GATEWAY_URL is unset */
-export const DEFAULT_GATEWAY_URL = "http://localhost:3015";
+/** DevLab Portal Web UI URL (for login redirects) */
+export const DEVLAB_PORTAL_WEB_URL =
+  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || "http://localhost:3005";
 
-/** Canonical DevLab Gateway URL for unified single sign-on */
-export const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || DEFAULT_GATEWAY_URL;
+/** DevLab Portal API URL (for token verification / OIDC) */
+export const DEVLAB_PORTAL_API_URL =
+  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_API_URL || "http://localhost:3015";
 
 /** Page-level access and navigation toggles */
 export const PAGE_FLAGS = {

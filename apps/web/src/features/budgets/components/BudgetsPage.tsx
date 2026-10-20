@@ -25,6 +25,7 @@ import { BudgetStatus } from "@finai/shared-types";
 import { usePrivacyMode } from "@/hooks";
 import { useBudgets, useDeleteBudget, type Budget } from "../api";
 import { BudgetDialog } from "./BudgetDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export function BudgetsPage() {
   const { isPrivacyMode } = usePrivacyMode();
@@ -68,11 +69,11 @@ export function BudgetsPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Budgets"
-        description="Monthly caps by category. AI flags categories at risk of overspend."
+        title={UI_COPY.BUDGETS.PAGE_TITLE}
+        description={UI_COPY.BUDGETS.PAGE_DESCRIPTION}
         actions={
           <Button size="sm" onClick={handleOpenCreateBudget} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> New Budget
+            <Plus className="size-4" /> {UI_COPY.BUDGETS.NEW_BUDGET}
           </Button>
         }
       />
@@ -82,17 +83,16 @@ export function BudgetsPage() {
           <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
             <PiggyBank className="text-muted-foreground size-6" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">No budgets set yet</h3>
+          <h3 className="text-foreground text-base font-semibold">{UI_COPY.BUDGETS.EMPTY_TITLE}</h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Set monthly spending caps on categories like Groceries, Dining Out, or Entertainment to
-            keep your expenses on track.
+            {UI_COPY.BUDGETS.EMPTY_DESCRIPTION}
           </p>
           <Button
             size="sm"
             onClick={handleOpenCreateBudget}
             className="mt-5 cursor-pointer gap-1.5"
           >
-            <Plus className="size-4" /> Create First Budget
+            <Plus className="size-4" /> {UI_COPY.BUDGETS.CREATE_FIRST}
           </Button>
         </div>
       ) : (
@@ -109,12 +109,12 @@ export function BudgetsPage() {
             const formattedDiff = isPrivacyMode ? "₹ ••••••" : formatINR(Math.abs(diff));
 
             const footerText = isOver
-              ? `${formattedDiff} over limit`
+              ? `${formattedDiff} ${UI_COPY.BUDGETS.OVER_LIMIT}`
               : isAtLimit
                 ? isPrivacyMode
-                  ? "Fully spent · ₹ ••••••"
-                  : "Fully spent · ₹0 left"
-                : `${formattedDiff} remaining this month`;
+                  ? UI_COPY.BUDGETS.FULLY_SPENT_MASKED
+                  : UI_COPY.BUDGETS.FULLY_SPENT_REMAINING
+                : `${formattedDiff} ${UI_COPY.BUDGETS.REMAINING_THIS_MONTH}`;
 
             const progressColorClass = isOver
               ? "[&>div]:bg-destructive"
@@ -140,7 +140,7 @@ export function BudgetsPage() {
                         size="icon"
                         variant="ghost"
                         className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                        aria-label={`Actions for ${name} budget`}
+                        aria-label={UI_COPY.BUDGETS.ACTIONS_FOR(name)}
                       >
                         <MoreVertical className="size-4" />
                       </Button>
@@ -150,14 +150,14 @@ export function BudgetsPage() {
                         onClick={() => handleOpenEditBudget(b)}
                         className="cursor-pointer"
                       >
-                        <Pencil className="mr-2 size-3.5" /> Edit
+                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => handleOpenDeleteBudget(b)}
                         className="text-destructive focus:text-destructive cursor-pointer"
                       >
-                        <Trash2 className="mr-2 size-3.5" /> Delete
+                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -180,9 +180,11 @@ export function BudgetsPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Budget"
-        description={`Are you sure you want to remove the budget for "${budgetToDelete?.category?.name ?? "this category"}"? Your transactions will remain intact, but budget tracking for this category will stop.`}
-        confirmText="Delete Budget"
+        title={UI_COPY.BUDGETS.DELETE_TITLE}
+        description={UI_COPY.BUDGETS.DELETE_CONFIRMATION(
+          budgetToDelete?.category?.name ?? "this category",
+        )}
+        confirmText={UI_COPY.BUDGETS.DELETE_TITLE}
         destructive
         onConfirm={handleDeleteBudgetConfirm}
       />

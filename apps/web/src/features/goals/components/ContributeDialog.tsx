@@ -5,6 +5,7 @@ import { FormDialog } from "@finai/ui";
 import { contributeSchema } from "@finai/validation";
 import { useContributeGoal } from "../api";
 import { ContributeForm } from "./ContributeForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface ContributeDialogProps {
   goalId: string;
@@ -56,7 +57,7 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
       setErrors({});
     } catch (err) {
       const apiErr = err as { message?: string };
-      setErrors({ amount: apiErr?.message || "An error occurred while contributing." });
+      setErrors({ amount: apiErr?.message || UI_COPY.GOALS.CONTRIBUTION_ERROR });
     }
   };
 
@@ -65,9 +66,9 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title={`Contribute to ${goalName}`}
-      description="Add funds from your accounts toward this goal."
-      submitLabel="Record Contribution"
+      title={UI_COPY.GOALS.CONTRIBUTE_TITLE(goalName)}
+      description={UI_COPY.GOALS.CONTRIBUTION_DESCRIPTION}
+      submitLabel={UI_COPY.GOALS.RECORD_CONTRIBUTION}
       loading={contributeGoal.isPending}
       onCancel={() => setOpen(false)}
       onSubmit={handleSubmit}

@@ -17,6 +17,7 @@ import {
 import { formatINR } from "@finai/finance-engine";
 import { useIsClient } from "@/hooks";
 import { usePrivacyMode } from "@/hooks";
+import { UI_COPY } from "@/lib/ui-copy";
 import { PrivacyMoney } from "@/components";
 import { AccountDialog } from "./AccountDialog";
 import { Account, useAccounts, useDeleteAccount, useSetDefaultAccount } from "../api";
@@ -43,13 +44,13 @@ export function AccountsPage() {
   const getAccountTypeLabel = (type: string) => {
     switch (type) {
       case "BANK":
-        return "Bank Account";
+        return UI_COPY.ACCOUNTS.TYPES.BANK;
       case "CREDIT_CARD":
-        return "Credit Card";
+        return UI_COPY.ACCOUNTS.TYPES.CREDIT_CARD;
       case "WALLET":
-        return "Digital Wallet";
+        return UI_COPY.ACCOUNTS.TYPES.DIGITAL_WALLET;
       case "CASH":
-        return "Cash Wallet";
+        return UI_COPY.ACCOUNTS.TYPES.CASH_WALLET;
       default:
         return type;
     }
@@ -92,15 +93,18 @@ export function AccountsPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Accounts"
+        title={UI_COPY.ACCOUNTS.PAGE_TITLE}
         description={
           isClient && accounts.length > 0
-            ? `Consolidated net position across ${accounts.length} accounts: ${isPrivacyMode ? "₹ ••••••" : formatINR(total)}.`
-            : "Consolidated net position across all your linked bank accounts, cards, and wallets."
+            ? UI_COPY.ACCOUNTS.BALANCE_DESCRIPTION(
+                accounts.length,
+                isPrivacyMode ? "₹ ••••••" : formatINR(total),
+              )
+            : UI_COPY.ACCOUNTS.PAGE_DESCRIPTION
         }
         actions={
           <Button size="sm" onClick={handleOpenAddAccount} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> Link Account
+            <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
           </Button>
         }
       />
@@ -110,13 +114,14 @@ export function AccountsPage() {
           <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
             <Wallet className="text-muted-foreground size-6" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">No accounts linked yet</h3>
+          <h3 className="text-foreground text-base font-semibold">
+            {UI_COPY.ACCOUNTS.EMPTY_TITLE}
+          </h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Link your bank accounts, credit cards, or digital wallets to track your net worth and
-            cash flow.
+            {UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}
           </p>
           <Button size="sm" onClick={handleOpenAddAccount} className="mt-5 cursor-pointer gap-1.5">
-            <Plus className="size-4" /> Link First Account
+            <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
           </Button>
         </div>
       ) : (
@@ -143,7 +148,7 @@ export function AccountsPage() {
                       {a.isDefault && (
                         <span className="bg-primary/10 text-primary flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold">
                           <Star className="size-2.5 fill-current" />
-                          Default
+                          {UI_COPY.ACCOUNTS.DEFAULT_BADGE}
                         </span>
                       )}
                     </div>
@@ -169,21 +174,21 @@ export function AccountsPage() {
                         onClick={() => handleSetDefault(a.id)}
                         className="cursor-pointer"
                       >
-                        <Star className="mr-2 size-3.5" /> Set as Default
+                        <Star className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem
                       onClick={() => handleOpenEditAccount(a)}
                       className="cursor-pointer"
                     >
-                      <Pencil className="mr-2 size-3.5" /> Edit Account
+                      <Pencil className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => handleOpenDeleteAccount(a)}
                       className="text-destructive focus:text-destructive cursor-pointer"
                     >
-                      <Trash2 className="mr-2 size-3.5" /> Delete Account
+                      <Trash2 className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -201,7 +206,7 @@ export function AccountsPage() {
 
               {/* Status Footer */}
               <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs">
-                <span className="text-muted-foreground">Status: Active</span>
+                <span className="text-muted-foreground">{UI_COPY.ACCOUNTS.ACTIVE_STATUS}</span>
                 <span className="text-muted-foreground font-semibold">{a.currency}</span>
               </div>
             </div>
@@ -220,9 +225,9 @@ export function AccountsPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Remove Account"
-        description={`Are you sure you want to remove "${accountToDelete?.name}"? This will hide the account from your dashboard while keeping your transaction history intact.`}
-        confirmText="Remove"
+        title={UI_COPY.ACCOUNTS.REMOVE_TITLE}
+        description={UI_COPY.ACCOUNTS.REMOVE_CONFIRMATION(accountToDelete?.name ?? "")}
+        confirmText={UI_COPY.ACCOUNTS.REMOVE_BUTTON}
         destructive
         onConfirm={handleDeleteAccountConfirm}
       />

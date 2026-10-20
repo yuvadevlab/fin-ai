@@ -1,39 +1,22 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { GATEWAY_URL, APP_ID } from "@/lib";
+import { DEVLAB_PORTAL_ROUTES } from "@/lib";
 
 /**
  * Client view for FinAI authentication.
  * Automatically delegates authentication to DevLab Portal Central SSO.
  */
 export function LoginView() {
-  const portalUrl = process.env.NEXT_PUBLIC_DEVLAB_PORTAL_URL || GATEWAY_URL;
-
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const currentUrl = window.location.origin;
-      const targetUrl =
-        portalUrl +
-        "/login?app=" +
-        encodeURIComponent(APP_ID) +
-        "&redirect=" +
-        encodeURIComponent(currentUrl);
-
-      // Smooth auto-redirect
-      window.location.href = targetUrl;
+      window.location.href = DEVLAB_PORTAL_ROUTES.LOGIN(window.location.origin);
     }
-  }, [portalUrl]);
+  }, []);
 
   const handleManualRedirect = () => {
     if (typeof window !== "undefined") {
-      const currentUrl = window.location.origin;
-      window.location.href =
-        portalUrl +
-        "/login?app=" +
-        encodeURIComponent(APP_ID) +
-        "&redirect=" +
-        encodeURIComponent(currentUrl);
+      window.location.href = DEVLAB_PORTAL_ROUTES.LOGIN(window.location.origin);
     }
   };
 

@@ -1,7 +1,6 @@
 import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
-import { config } from "@/config";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -16,10 +15,10 @@ export class AuthController {
   @Get("sso-url")
   @ApiOperation({ summary: "Get centralized DevLab Portal SSO login URL" })
   getSsoUrl() {
-    const portalUrl = config.gatewayUrl || "http://localhost:3015";
+    const portalWebUrl = process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || "http://localhost:3005";
     return {
-      ssoUrl: `${portalUrl}/login?app=finai`,
-      portalUrl,
+      ssoUrl: `${portalWebUrl}/login?app=finai`,
+      portalUrl: portalWebUrl,
     };
   }
 }

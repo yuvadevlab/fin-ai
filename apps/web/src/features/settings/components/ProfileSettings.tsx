@@ -3,12 +3,17 @@
 import React, { useState } from "react";
 import { FormDialogField, Button, toast } from "@finai/ui";
 import { useProfile, useUpdateProfile, type UserProfile } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export function ProfileSettings() {
   const { data: profile, isLoading } = useProfile();
 
   if (isLoading || !profile) {
-    return <div className="text-muted-foreground py-4 text-center text-sm">Loading profile...</div>;
+    return (
+      <div className="text-muted-foreground py-4 text-center text-sm">
+        {UI_COPY.SETTINGS.LOADING_PROFILE}
+      </div>
+    );
   }
 
   return <ProfileForm profile={profile} />;
@@ -22,20 +27,20 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      toast.error("Name is required");
+      toast.error(UI_COPY.SETTINGS.NAME_REQUIRED);
       return;
     }
     if (!email.trim()) {
-      toast.error("Email is required");
+      toast.error(UI_COPY.SETTINGS.EMAIL_REQUIRED);
       return;
     }
 
     try {
       await toast
         .promise(updateProfile.mutateAsync({ name, email }), {
-          loading: "Saving profile...",
-          success: "Profile updated successfully!",
-          error: (error: Error) => error.message || "Failed to update profile",
+          loading: UI_COPY.SETTINGS.PROFILE_SAVING,
+          success: UI_COPY.SETTINGS.PROFILE_UPDATED,
+          error: (error: Error) => error.message || UI_COPY.SETTINGS.PROFILE_UPDATE_FAILED,
         })
         .unwrap();
     } catch {
@@ -49,8 +54,8 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
         field={{
           type: "text",
           name: "name",
-          label: "Full name",
-          placeholder: "e.g. Aditya Sharma",
+          label: UI_COPY.SETTINGS.NAME_LABEL,
+          placeholder: UI_COPY.SETTINGS.NAME_PLACEHOLDER,
         }}
         value={name}
         onChange={(n, v) => setName(v)}
@@ -60,8 +65,8 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
         field={{
           type: "text",
           name: "email",
-          label: "Email",
-          placeholder: "name@example.com",
+          label: UI_COPY.SETTINGS.EMAIL_LABEL,
+          placeholder: UI_COPY.SETTINGS.EMAIL_PLACEHOLDER,
         }}
         value={email}
         onChange={(n, v) => setEmail(v)}
@@ -71,10 +76,10 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
         field={{
           type: "text",
           name: "currency",
-          label: "Currency",
+          label: UI_COPY.SETTINGS.CURRENCY_LABEL,
           disabled: true,
         }}
-        value="INR (₹)"
+        value={UI_COPY.SETTINGS.INR_CURRENCY}
         onChange={() => {}}
       />
 
@@ -83,7 +88,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
         onClick={handleSave}
         disabled={updateProfile.isPending}
       >
-        {updateProfile.isPending ? "Saving..." : "Save Changes"}
+        {updateProfile.isPending ? UI_COPY.COMMON.ACTIONS.SAVING : UI_COPY.COMMON.ACTIONS.SAVE}
       </Button>
     </div>
   );

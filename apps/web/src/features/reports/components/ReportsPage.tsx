@@ -16,6 +16,7 @@ import {
   CHART_COLORS,
 } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { UI_COPY } from "@/lib/ui-copy";
 
 import { useDashboardStats } from "@/features/dashboard/api/getDashboardStats";
 import { useMonthlyAnalytics } from "@/features/dashboard/api/getMonthlyAnalytics";
@@ -59,24 +60,24 @@ export function ReportsPage() {
   return (
     <PageContainer>
       <PageHeader
-        title={`Monthly Report · ${monthLabel}`}
-        description="Auto-generated summary of your finances with AI commentary."
+        title={UI_COPY.REPORTS.REPORT_TITLE(monthLabel)}
+        description={UI_COPY.REPORTS.DESCRIPTION}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               className="cursor-pointer gap-1.5"
-              onClick={() => toast.success("PDF export started — check downloads")}
+              onClick={() => toast.success(UI_COPY.REPORTS.PDF_STARTED)}
             >
-              <FileText className="size-4" /> Export PDF
+              <FileText className="size-4" /> {UI_COPY.REPORTS.EXPORT_PDF}
             </Button>
             <Button
               size="sm"
               className="cursor-pointer gap-1.5"
-              onClick={() => toast.success("CSV export ready — check downloads")}
+              onClick={() => toast.success(UI_COPY.REPORTS.CSV_READY)}
             >
-              <Download className="size-4" /> Export CSV
+              <Download className="size-4" /> {UI_COPY.REPORTS.EXPORT_CSV}
             </Button>
           </div>
         }
@@ -84,7 +85,7 @@ export function ReportsPage() {
 
       <KPIGrid>
         <StatCard
-          label="Total Income"
+          label={UI_COPY.REPORTS.TOTAL_INCOME}
           value={<PrivacyMoney value={stats?.monthlyIncome ?? 0} />}
           trend={
             incomeChange !== null
@@ -96,7 +97,7 @@ export function ReportsPage() {
           }
         />
         <StatCard
-          label="Total Expenses"
+          label={UI_COPY.REPORTS.TOTAL_EXPENSES}
           value={<PrivacyMoney value={stats?.monthlyExpenses ?? 0} />}
           trend={
             expenseChange !== null
@@ -108,28 +109,28 @@ export function ReportsPage() {
           }
         />
         <StatCard
-          label="Net Saved"
+          label={UI_COPY.REPORTS.NET_SAVED}
           value={<PrivacyMoney value={netSaved} />}
           trend={{
-            value: `${stats?.savingsRate?.toFixed(1) ?? 0}% savings rate`,
+            value: `${stats?.savingsRate?.toFixed(1) ?? 0}% ${UI_COPY.REPORTS.SAVINGS_RATE}`,
             kind: (stats?.savingsRate ?? 0) > 40 ? "up" : "flat",
           }}
         />
         <StatCard
-          label="Active Goals"
+          label={UI_COPY.REPORTS.ACTIVE_GOALS}
           value={String(stats?.goalCount ?? 0)}
-          hint={`${stats?.accountCount ?? 0} accounts linked`}
+          hint={UI_COPY.REPORTS.ACCOUNTS_LINKED(stats?.accountCount ?? 0)}
         />
       </KPIGrid>
 
       <ContentCard className="w-full">
-        <SectionHeader title="Cash Flow" />
+        <SectionHeader title={UI_COPY.REPORTS.CASH_FLOW} />
         <CashFlowChart data={monthlyCashFlow} />
       </ContentCard>
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
         <ContentCard>
-          <SectionHeader title="Top Spending Categories" />
+          <SectionHeader title={UI_COPY.REPORTS.TOP_CATEGORIES} />
           <ul className="mt-4 max-h-55 space-y-3.5 overflow-y-auto">
             {categoryBreakdown.map((c, i) => (
               <li
@@ -152,7 +153,7 @@ export function ReportsPage() {
         </ContentCard>
 
         <ContentCard>
-          <SectionHeader title="Expense Split" />
+          <SectionHeader title={UI_COPY.REPORTS.EXPENSE_SPLIT} />
           <div className="flex h-55 w-full items-center justify-center">
             <CategoryPie data={categoryBreakdown.map((c) => ({ name: c.name, value: c.total }))} />
           </div>

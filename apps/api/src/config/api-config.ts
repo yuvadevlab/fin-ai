@@ -76,8 +76,8 @@ export function loadApiConfig(): ApiConfig {
   const parsed = ApiConfigSchema.parse({
     port: process.env.PORT,
     webUrl: rawWebUrl,
-    gatewayUrl:
-      process.env.GATEWAY_URL || process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:3015",
+    portalApiUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:3015",
+    gatewayUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:3015",
     nodeEnv: process.env.NODE_ENV,
     databaseUrl: process.env.DATABASE_URL,
     jwtSecret: process.env.JWT_SECRET,

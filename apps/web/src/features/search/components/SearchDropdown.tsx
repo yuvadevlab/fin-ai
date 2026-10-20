@@ -7,6 +7,7 @@ import { cn } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
 import { TransactionType } from "@finai/shared-types";
 import { APP_ROUTES } from "@/lib";
+import { UI_COPY } from "@/lib/ui-copy";
 import { useSearch } from "../api";
 
 interface SearchDropdownProps {
@@ -27,7 +28,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
     <div
       className="border-border/60 bg-background/95 ring-border/40 absolute inset-x-0 top-[calc(100%+8px)] z-50 max-h-105 overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
       role="listbox"
-      aria-label="Search results"
+      aria-label={UI_COPY.SEARCH.RESULTS_LABEL}
     >
       {isFetching && !data && (
         <div className="space-y-2 p-3">
@@ -40,7 +41,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
       {!isFetching && !hasResults && (
         <div className="flex flex-col items-center gap-2 py-10 text-center">
           <SearchX className="text-muted-foreground size-8" />
-          <p className="text-muted-foreground text-sm">No results for &ldquo;{query}&rdquo;</p>
+          <p className="text-muted-foreground text-sm">{UI_COPY.SEARCH.NO_RESULTS(query)}</p>
         </div>
       )}
 
@@ -48,7 +49,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
       {(data?.transactions?.length ?? 0) > 0 && (
         <section className="p-2">
           <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            Transactions
+            {UI_COPY.SEARCH.TRANSACTIONS}
           </p>
           {data!.transactions.map((t) => (
             <Link
