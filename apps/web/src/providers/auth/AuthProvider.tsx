@@ -15,15 +15,44 @@ export interface AuthProviderProps {
  * Authentication context provider wrapping both legacy token state and the
  * centralized DevLab platform auth provider with platform kill-switch support.
  */
+function parseJwtPayload(jwt: string): Record<string, unknown> | null {
+  try {
+    const parts = jwt.split(".");
+    if (parts.length !== 3) return null;
+    return JSON.parse(atob(parts[1]));
+  } catch {
+    return null;
+  }
+}
+
+function readCookieToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)(?:finai_token|devlab_access_token)=([^;]+)/);
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
+}
+
 export function AuthProvider({ initialToken = null, children }: AuthProviderProps) {
   const [token] = useState<string | null>(() => {
-    if (initialToken) return initialToken;
+    if (initialToken) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(StorageKey.TOKEN, initialToken);
+        localStorage.setItem(StorageKey.DEVLAB_ACCESS_TOKEN, initialToken);
+      }
+      return initialToken;
+    }
     if (typeof window !== "undefined") {
-      return (
+      const stored =
         localStorage.getItem(StorageKey.TOKEN) ||
         localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
-        localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN)
-      );
+        localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN);
+      if (stored) return stored;
+
+      const cookieToken = readCookieToken();
+      if (cookieToken) {
+        localStorage.setItem(StorageKey.TOKEN, cookieToken);
+        localStorage.setItem(StorageKey.DEVLAB_ACCESS_TOKEN, cookieToken);
+        return cookieToken;
+      }
     }
     return null;
   });
@@ -36,7 +65,26 @@ export function AuthProvider({ initialToken = null, children }: AuthProviderProp
         try {
           return JSON.parse(storedUser);
         } catch {
-          return null;
+          // Fall through to JWT extraction
+        }
+      }
+
+      const activeToken =
+        initialToken ||
+        localStorage.getItem(StorageKey.TOKEN) ||
+        localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
+        readCookieToken();
+
+      if (activeToken) {
+        const payload = parseJwtPayload(activeToken);
+        if (payload && typeof payload.email === "string") {
+          const authUser: AuthUser = {
+            id: String(payload.sub || payload.id || ""),
+            email: payload.email,
+            name: typeof payload.name === "string" ? payload.name : payload.email.split("@")[0],
+          };
+          localStorage.setItem(StorageKey.USER, JSON.stringify(authUser));
+          return authUser;
         }
       }
     }

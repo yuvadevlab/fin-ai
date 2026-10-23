@@ -15,6 +15,30 @@ import { DEVLAB_PORTAL_ROUTES } from "@/lib/routes";
  * directly to the DevLab Portal Web UI login.
  */
 export function middleware(request: NextRequest) {
+  // 1. If returning from DevLab Portal SSO with token in query params
+  const tokenParam =
+    request.nextUrl.searchParams.get("token") || request.nextUrl.searchParams.get("access_token");
+
+  if (tokenParam) {
+    const cleanUrl = new URL(request.url);
+    cleanUrl.searchParams.delete("token");
+    cleanUrl.searchParams.delete("access_token");
+
+    const response = NextResponse.redirect(cleanUrl);
+    response.cookies.set(StorageKey.TOKEN, tokenParam, {
+      path: "/",
+      maxAge: 604800,
+      sameSite: "lax",
+    });
+    response.cookies.set(StorageKey.DEVLAB_ACCESS_TOKEN, tokenParam, {
+      path: "/",
+      maxAge: 604800,
+      sameSite: "lax",
+    });
+    return response;
+  }
+
+  // 2. Validate token from cookies
   const token =
     request.cookies.get(StorageKey.TOKEN)?.value ||
     request.cookies.get(StorageKey.DEVLAB_ACCESS_TOKEN)?.value;

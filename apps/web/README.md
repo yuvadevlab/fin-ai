@@ -114,7 +114,7 @@ const nextConfig: NextConfig = {
 ## Running Locally
 
 ```bash
-# Start development server on port 3000
+# Start development server on port 3001
 pnpm --filter @finai/web dev
 
 # Build standalone production bundle

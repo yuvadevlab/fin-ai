@@ -15,7 +15,7 @@ export class AuthController {
   @Get("sso-url")
   @ApiOperation({ summary: "Get centralized DevLab Portal SSO login URL" })
   getSsoUrl() {
-    const portalWebUrl = process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || "http://localhost:3005";
+    const portalWebUrl = process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || "http://localhost:3000";
     return {
       ssoUrl: `${portalWebUrl}/login?app=finai`,
       portalUrl: portalWebUrl,

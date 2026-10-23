@@ -61,7 +61,7 @@ interface JwksResponse {
  * @returns RSA public key formatted as an SPKI PEM string
  */
 export async function getDevLabPublicKey(
-  portalApiUrl = process.env.DEVLAB_PORTAL_API_URL || "http://localhost:3015",
+  portalApiUrl = process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000",
   kid?: string,
 ): Promise<string> {
   const cacheKey = kid || "default";
