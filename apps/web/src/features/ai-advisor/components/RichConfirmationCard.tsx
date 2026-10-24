@@ -4,6 +4,7 @@ import { Check, Loader2, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@finai/ui";
 import { usePrivacyMode } from "@/hooks";
 import type { AgentConfirmation } from "../api/agentTypes";
+import { ConfirmationRowLabel } from "@finai/shared-types";
 import { partitionRows } from "../utils/partitionRows";
 import { getTransactionTypeAccent, STATUS_META } from "../utils/confirmationCardStyles";
 import { BulkConfirmationCarousel } from "./BulkConfirmationCarousel";
@@ -31,7 +32,7 @@ export function RichConfirmationCard({
 }: RichConfirmationCardProps) {
   const { isPrivacyMode } = usePrivacyMode();
 
-  if (confirmation.card.rows?.[0]?.[0] === "__bulk_count__") {
+  if (confirmation.card.rows?.[0]?.[0] === ConfirmationRowLabel.BULK_COUNT) {
     return (
       <BulkConfirmationCarousel
         confirmation={confirmation}
@@ -97,7 +98,7 @@ export function RichConfirmationCard({
       {detailRows.length > 0 && (
         <div
           className={cn(
-            "border-border/40 divide-border/40 divide-y overflow-hidden border-t",
+            "border-border/40 divide-y overflow-hidden border-t",
             effectRows.length > 0 && "border-t-0",
           )}
         >

@@ -1,4 +1,5 @@
 import type { AgentCard } from "@finai/ai-engine";
+import type { AiProviderRole } from "@finai/shared-types";
 
 /**
  * Runtime the server selected/forced for a single run, streamed via the SSE
@@ -6,7 +7,7 @@ import type { AgentCard } from "@finai/ai-engine";
  * "chat" = tool-free advisor fast-path (conversational only). Surfaced per
  * turn so the user always knows which mode answered.
  */
-export type AgentResolvedMode = "agent" | "chat";
+export type AgentResolvedMode = AiProviderRole;
 
 /**
  * Snapshot of an agent tool call's execution state, surfaced as an inline

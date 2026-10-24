@@ -2,6 +2,14 @@ import { z } from "zod";
 import { defineTool } from "../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { Account } from "@finai/shared-types";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { createAccountSchema, updateAccountSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 
@@ -16,12 +24,11 @@ import { formatINR } from "@finai/finance-engine";
 export function createAccountsTools(accountsService: AccountsService) {
   return [
     defineTool({
-      name: "accounts.list",
-      description:
-        "List the user's active FinAI accounts with balances, types, and the default account flag. Use this to resolve account names (e.g. 'my HDFC account') to IDs.",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing your accounts",
+      name: AgentToolName.ACCOUNTS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const accounts = await accountsService.findAll(ctx.userId);
@@ -33,12 +40,11 @@ export function createAccountsTools(accountsService: AccountsService) {
       },
     }),
     defineTool({
-      name: "accounts.get",
-      description:
-        "Get details of a single account by ID. Use this to confirm an account exists and check its current balance before recording a transaction against it.",
-      access: "read",
-      confirmation: "none",
-      label: "Fetching account details",
+      name: AgentToolName.ACCOUNTS_GET,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_GET],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_GET],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),
@@ -49,13 +55,12 @@ export function createAccountsTools(accountsService: AccountsService) {
       },
     }),
     defineTool({
-      name: "accounts.create",
-      description:
-        "Create (link) a new FinAI account for the user. Requires confirmation. Fields: name, type (BANK | CREDIT_CARD | WALLET | CASH), optional opening balance (defaults 0), currency (defaults INR), optional isDefault flag.",
-      access: "write",
-      confirmation: "required",
-      label: "Creating your account",
-      invalidates: ["accounts", "analytics"],
+      name: AgentToolName.ACCOUNTS_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_CREATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_CREATE],
+      invalidates: [ToolInvalidationTag.ACCOUNTS, ToolInvalidationTag.ANALYTICS],
       schema: createAccountSchema,
       execute: async (input, ctx) => accountsService.create(ctx.userId, input),
       serialize: (output) => {
@@ -70,24 +75,27 @@ export function createAccountsTools(accountsService: AccountsService) {
       },
       describe: (input) => {
         const rows: [string, string][] = [
-          ["Name", input.name],
-          ["Type", input.type],
-          ["Opening balance", formatINR(input.balance ?? 0)],
-          ["Currency", input.currency ?? "INR"],
+          [ConfirmationRowLabel.NAME, input.name],
+          [ConfirmationRowLabel.TYPE, input.type],
+          [ConfirmationRowLabel.OPENING_BALANCE, formatINR(input.balance ?? 0)],
+          [ConfirmationRowLabel.CURRENCY, input.currency ?? "INR"],
         ];
-        if (input.isDefault) rows.push(["Set as default", "Yes"]);
-        return { type: "confirmation" as const, title: "Create account", rows };
+        if (input.isDefault) rows.push([ConfirmationRowLabel.SET_AS_DEFAULT, "Yes"]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_CREATE],
+          rows,
+        };
       },
       summarize: (output) => `Created account ${(output as Account).name}`,
     }),
     defineTool({
-      name: "accounts.rename",
-      description:
-        "Rename one of the user's FinAI accounts. Safe cosmetic change — no confirmation needed. Resolve the account ID with accounts.list first.",
-      access: "write",
-      confirmation: "none",
-      label: "Renaming account",
-      invalidates: ["accounts"],
+      name: AgentToolName.ACCOUNTS_RENAME,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_RENAME],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_RENAME],
+      invalidates: [ToolInvalidationTag.ACCOUNTS],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
         name: z.string().min(1, "Account name is required").max(100),
@@ -101,13 +109,12 @@ export function createAccountsTools(accountsService: AccountsService) {
       summarize: (output) => `Renamed account to ${(output as Account).name}`,
     }),
     defineTool({
-      name: "accounts.update",
-      description:
-        "Update an account's balance or mark it as the user's default account. Requires confirmation. Only name, balance and isDefault are supported; type and currency cannot be changed.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating account",
-      invalidates: ["accounts", "analytics"],
+      name: AgentToolName.ACCOUNTS_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_UPDATE],
+      invalidates: [ToolInvalidationTag.ACCOUNTS, ToolInvalidationTag.ANALYTICS],
       schema: updateAccountSchema.extend({
         accountId: z.string().uuid("Invalid account ID"),
       }),
@@ -120,32 +127,36 @@ export function createAccountsTools(accountsService: AccountsService) {
         return { id: account.id, name: account.name, balance: account.balance };
       },
       describe: (input) => {
-        const rows: [string, string][] = [["Account ID", input.accountId]];
-        if (input.name !== undefined) rows.push(["Name", input.name]);
-        if (input.balance !== undefined) rows.push(["Balance", formatINR(input.balance)]);
-        if (input.isDefault === true) rows.push(["Set as default", "Yes"]);
-        return { type: "confirmation" as const, title: "Update account", rows };
+        const rows: [string, string][] = [[ConfirmationRowLabel.ACCOUNT_ID, input.accountId]];
+        if (input.name !== undefined) rows.push([ConfirmationRowLabel.NAME, input.name]);
+        if (input.balance !== undefined)
+          rows.push([ConfirmationRowLabel.BALANCE, formatINR(input.balance)]);
+        if (input.isDefault === true) rows.push([ConfirmationRowLabel.SET_AS_DEFAULT, "Yes"]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_UPDATE],
+          rows,
+        };
       },
       summarize: (output) => `Updated account ${(output as Account).name}`,
     }),
     defineTool({
-      name: "accounts.delete",
-      description:
-        "Deactivate (soft-delete) one of the user's FinAI accounts. Requires confirmation. The account is hidden from the app but its history is retained; transactions are not deleted.",
-      access: "write",
-      confirmation: "required",
-      label: "Removing account",
-      invalidates: ["accounts", "analytics"],
+      name: AgentToolName.ACCOUNTS_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACCOUNTS_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_DELETE],
+      invalidates: [ToolInvalidationTag.ACCOUNTS, ToolInvalidationTag.ANALYTICS],
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),
       execute: async (input, ctx) => accountsService.remove(input.accountId, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Remove account",
+        title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_DELETE],
         rows: [
-          ["Account ID", input.accountId],
-          ["Effect", "The account will be deactivated (soft delete)"],
+          [ConfirmationRowLabel.ACCOUNT_ID, input.accountId],
+          [ConfirmationRowLabel.EFFECT, "The account will be deactivated (soft delete)"],
         ],
       }),
       summarize: () => "Account removed",

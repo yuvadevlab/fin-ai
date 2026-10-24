@@ -3,6 +3,15 @@ import { defineTool } from "../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { TransactionFilterInput } from "@finai/validation";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+  TransactionType,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { resolveCategoryRef, splitRef } from "../entity-reference";
 
 const flexibleDateSchema = z
@@ -17,7 +26,7 @@ const recategorizeSchema = z
     filter: z.object({
       category: z.string().optional(),
       account: z.string().optional(),
-      type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
+      type: z.nativeEnum(TransactionType).optional(),
       dateFrom: flexibleDateSchema.optional(),
       dateTo: flexibleDateSchema.optional(),
       search: z.string().max(200).optional(),
@@ -72,11 +81,11 @@ export function createTransactionsRecategorizeTools(
 ) {
   return [
     defineTool({
-      name: "transactions.recategorize",
-      description:
-        "DRY-RUN ONLY: count the user's transactions matching a filter that would be re-categorized to a target category. Nothing is changed. Run this first, report the matched count to the user, then propose transactions.recategorizeApply for confirmation. targetCategory accepts a category name or ID.",
-      access: "read",
-      confirmation: "none",
+      name: AgentToolName.TRANSACTIONS_RECATEGORIZE_PREVIEW,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_RECATEGORIZE_PREVIEW],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_RECATEGORIZE_PREVIEW],
       schema: recategorizeSchema,
       execute: async (input, ctx) => {
         const target = await resolveTargetCategory(categoriesService, ctx.userId, input);
@@ -93,11 +102,16 @@ export function createTransactionsRecategorizeTools(
       },
     }),
     defineTool({
-      name: "transactions.recategorizeApply",
-      description:
-        "Apply a re-categorization: move ALL transactions matching a filter to a target category, as counted by the transactions.recategorize dry-run. Requires confirmation. Only the category changes — account balances are never touched. targetCategory accepts a category name or ID.",
-      access: "write",
-      confirmation: "required",
+      name: AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY],
+      invalidates: [
+        ToolInvalidationTag.TRANSACTIONS,
+        ToolInvalidationTag.CATEGORIES,
+        ToolInvalidationTag.ANALYTICS,
+      ],
       schema: recategorizeSchema,
       execute: async (input, ctx) => {
         const target = await resolveTargetCategory(categoriesService, ctx.userId, input);
@@ -110,14 +124,23 @@ export function createTransactionsRecategorizeTools(
       },
       describe: (input) => {
         const rows: [string, string][] = [
-          ["Target category", input.targetCategory ?? input.targetCategoryId ?? "Unresolved"],
+          [
+            ConfirmationRowLabel.TARGET_CATEGORY,
+            input.targetCategory ?? input.targetCategoryId ?? ConfirmationRowLabel.UNRESOLVED,
+          ],
         ];
-        if (input.filter.category) rows.push(["Current category ID", input.filter.category]);
-        if (input.filter.type) rows.push(["Type", input.filter.type]);
-        if (input.filter.search) rows.push(["Notes contain", input.filter.search]);
-        if (input.filter.dateFrom) rows.push(["From", input.filter.dateFrom]);
-        if (input.filter.dateTo) rows.push(["To", input.filter.dateTo]);
-        return { type: "confirmation" as const, title: "Re-categorize transactions", rows };
+        if (input.filter.category)
+          rows.push([ConfirmationRowLabel.CURRENT_CATEGORY_ID, input.filter.category]);
+        if (input.filter.type) rows.push([ConfirmationRowLabel.TYPE, input.filter.type]);
+        if (input.filter.search)
+          rows.push([ConfirmationRowLabel.NOTES_CONTAIN, input.filter.search]);
+        if (input.filter.dateFrom) rows.push([ConfirmationRowLabel.FROM, input.filter.dateFrom]);
+        if (input.filter.dateTo) rows.push([ConfirmationRowLabel.TO, input.filter.dateTo]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY],
+          rows,
+        };
       },
       summarize: (output) => {
         const result = output as { updated: number };

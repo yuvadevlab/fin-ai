@@ -3,7 +3,17 @@ import { defineTool } from "../tool-factory";
 import type { UsersService } from "@/modules/auth/users.service";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { User } from "@finai/shared-types";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { updateProfileSchema } from "@finai/validation";
+
+const INVALIDATES_PROFILE_WRITES = [ToolInvalidationTag.USER_PROFILE, ToolInvalidationTag.ACCOUNTS];
 
 /**
  * Read + write tools over the existing UsersService and account
@@ -13,12 +23,11 @@ import { updateProfileSchema } from "@finai/validation";
 export function createProfileTools(usersService: UsersService, accountsService: AccountsService) {
   return [
     defineTool({
-      name: "profile.get",
-      description:
-        "Get the current user's profile: id, email, name, avatar URL, and preferences (appearance, notifications, security, default account).",
-      access: "read",
-      confirmation: "none",
-      label: "Loading your profile",
+      name: AgentToolName.PROFILE_GET,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.PROFILE_GET],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.PROFILE_GET],
       schema: z.object({}),
       execute: async (_input, ctx) => usersService.getProfile(ctx.userId),
       serialize: (output) => {
@@ -37,22 +46,25 @@ export function createProfileTools(usersService: UsersService, accountsService: 
       },
     }),
     defineTool({
-      name: "profile.update",
-      description:
-        "Update the user's own profile: display name, email, or preference sections (appearance, notifications, security). Requires confirmation. Only pass the fields that should change.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating your profile",
-      invalidates: ["user-profile", "accounts"],
+      name: AgentToolName.PROFILE_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.PROFILE_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.PROFILE_UPDATE],
+      invalidates: INVALIDATES_PROFILE_WRITES,
       schema: updateProfileSchema,
       execute: async (input, ctx) => usersService.updateProfile(ctx.userId, input),
       describe: (input) => {
         const rows: [string, string][] = [];
-        if (input.name !== undefined) rows.push(["Name", input.name]);
-        if (input.email !== undefined) rows.push(["Email", input.email]);
+        if (input.name !== undefined) rows.push([ConfirmationRowLabel.NAME, input.name]);
+        if (input.email !== undefined) rows.push([ConfirmationRowLabel.EMAIL, input.email]);
         if (input.preferences !== undefined)
-          rows.push(["Preferences", JSON.stringify(input.preferences)]);
-        return { type: "confirmation" as const, title: "Update profile", rows };
+          rows.push([ConfirmationRowLabel.PREFERENCES, JSON.stringify(input.preferences)]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.PROFILE_UPDATE],
+          rows,
+        };
       },
       summarize: (output) => {
         const user = output as User;
@@ -60,21 +72,20 @@ export function createProfileTools(usersService: UsersService, accountsService: 
       },
     }),
     defineTool({
-      name: "profile.setDefaultAccount",
-      description:
-        "Set which of the user's FinAI accounts is the default account. Requires confirmation. Resolve the account ID with accounts.list first.",
-      access: "write",
-      confirmation: "required",
-      label: "Setting default account",
-      invalidates: ["user-profile", "accounts"],
+      name: AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT],
+      invalidates: INVALIDATES_PROFILE_WRITES,
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),
       execute: async (input, ctx) => accountsService.setDefault(input.accountId, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Set default account",
-        rows: [["Account ID", input.accountId]],
+        title: AGENT_TOOL_TITLES[AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT],
+        rows: [[ConfirmationRowLabel.ACCOUNT_ID, input.accountId]],
       }),
       summarize: () => "Default account updated",
     }),

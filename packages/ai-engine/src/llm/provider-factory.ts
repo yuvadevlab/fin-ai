@@ -33,12 +33,9 @@ import {
   OpenAIAdapter,
 } from "@yuva-devlab/ai-client";
 import { DevLabChatModel } from "./devlab-chat.model";
+import { AiProvider, AiProviderRole } from "@finai/shared-types";
 
-/** Discriminated union of all supported provider identifiers. */
-export type AiProvider = "openrouter" | "groq" | "google-ai-studio" | "ollama";
-
-/** Operational role for an LLM: tool-calling agent loop vs. fast conversational chat/insights. */
-export type AiProviderRole = "agent" | "chat";
+export { AiProvider, AiProviderRole };
 
 /**
  * Provider wiring — env var names for each credential/model.  There are NO
@@ -48,19 +45,19 @@ export type AiProviderRole = "agent" | "chat";
  * descriptive error when any of them is missing.
  */
 const PROVIDER_ENV_KEYS: Record<AiProvider, { envKey: string; envModel: string }> = {
-  openrouter: {
+  [AiProvider.OPENROUTER]: {
     envKey: "OPENROUTER_API_KEY",
     envModel: "OPENROUTER_MODEL",
   },
-  groq: {
+  [AiProvider.GROQ]: {
     envKey: "GROQ_API_KEY",
     envModel: "GROQ_MODEL",
   },
-  "google-ai-studio": {
+  [AiProvider.GOOGLE_AI_STUDIO]: {
     envKey: "GOOGLE_AI_STUDIO_API_KEY",
     envModel: "GOOGLE_AI_STUDIO_MODEL",
   },
-  ollama: {
+  [AiProvider.OLLAMA]: {
     envKey: "OLLAMA_API_KEY",
     envModel: "OLLAMA_MODEL",
   },
@@ -75,15 +72,19 @@ export function resolveAiProvider(
   role?: AiProviderRole,
 ): AiProvider {
   const roleKey =
-    role === "agent" ? "AI_PROVIDER_AGENT" : role === "chat" ? "AI_PROVIDER_CHAT" : undefined;
+    role === AiProviderRole.AGENT
+      ? "AI_PROVIDER_AGENT"
+      : role === AiProviderRole.CHAT
+        ? "AI_PROVIDER_CHAT"
+        : undefined;
   const candidate = roleKey && env[roleKey] ? env[roleKey] : env.AI_PROVIDER;
 
   if (!candidate) {
     const expected = roleKey ? `${roleKey} or AI_PROVIDER` : "AI_PROVIDER";
     throw new Error(
       `AI provider config error: required env var ${expected} is not set. ` +
-        `Set it in your .env file (e.g. AI_PROVIDER="groq"). ` +
-        `Supported values: openrouter, groq, google-ai-studio, ollama.`,
+        `Set it in your .env file (e.g. AI_PROVIDER="${AiProvider.GROQ}"). ` +
+        `Supported values: ${Object.values(AiProvider).join(", ")}.`,
     );
   }
 
@@ -91,15 +92,12 @@ export function resolveAiProvider(
   if (isAiProvider(raw)) return raw;
 
   throw new Error(
-    `Unknown AI provider: ${raw}. ` +
-      `Supported values: openrouter, groq, google-ai-studio, ollama.`,
+    `Unknown AI provider: ${raw}. ` + `Supported values: ${Object.values(AiProvider).join(", ")}.`,
   );
 }
 
 export function isAiProvider(value: string): value is AiProvider {
-  return (
-    value === "openrouter" || value === "groq" || value === "google-ai-studio" || value === "ollama"
-  );
+  return Object.values(AiProvider).includes(value as AiProvider);
 }
 
 /**
@@ -144,7 +142,7 @@ export function createChatModel(
   }
 
   // Ensure cloud providers have a key (local Ollama runs keyless).
-  const requiresKey = provider !== "ollama";
+  const requiresKey = provider !== AiProvider.OLLAMA;
   if (requiresKey && !apiKey) {
     throw new Error(
       `AI provider "${provider}" requires an API key but ${wiring.envKey} is not set. ` +
@@ -154,13 +152,13 @@ export function createChatModel(
 
   // Delegate provider execution to canonical @yuva-devlab/ai-client adapters
   switch (provider) {
-    case "openrouter":
+    case AiProvider.OPENROUTER:
       return new DevLabChatModel(
         provider,
         model,
         new OpenAIAdapter({ apiKey: apiKey ?? "", baseUrl }),
       );
-    case "groq": {
+    case AiProvider.GROQ: {
       const normalizedBaseUrl = baseUrl.replace(/\/+$/, "").endsWith("/openai/v1")
         ? baseUrl.replace(/\/+$/, "")
         : `${baseUrl.replace(/\/+$/, "")}/openai/v1`;
@@ -170,13 +168,13 @@ export function createChatModel(
         new GroqAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl }),
       );
     }
-    case "google-ai-studio":
+    case AiProvider.GOOGLE_AI_STUDIO:
       return new DevLabChatModel(
         provider,
         model,
         new GoogleAdapter({ apiKey: apiKey ?? "", baseUrl }),
       );
-    case "ollama":
+    case AiProvider.OLLAMA:
       return new DevLabChatModel(provider, model, new DevLabOllamaAdapter({ baseUrl }));
     default:
       throw new Error(`Unknown AI provider: ${provider}`);

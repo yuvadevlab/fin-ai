@@ -1,5 +1,10 @@
+/**
+ * @file apps/api/src/modules/agent/tools/budgets.tools.ts
+ * @description Read + write tools over the BudgetsService.
+ * @module @finai/api/agent/tools/budgets
+ */
+
 import { z } from "zod";
-import { BadRequestException } from "@nestjs/common";
 import { defineTool } from "../tool-factory";
 import type { BudgetsService } from "@/modules/budgets/budgets.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
@@ -9,46 +14,29 @@ import {
   agentDeleteBudgetSchema,
 } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { resolveCategoryRef, splitRef } from "../entity-reference";
+import { resolveBudgetMatch } from "./budgets.resolve";
+import { createBudgetTransferTool } from "./budgets.transfer.tool";
 
-async function resolveBudgetMatch(
-  budgetsService: BudgetsService,
-  categoriesService: CategoriesService,
-  userId: string,
-  refStr?: string | null,
-) {
-  if (!refStr) throw new BadRequestException("A budget ID or category name is required");
-  const ref = splitRef(refStr) ?? { name: refStr };
-  const budgets = await budgetsService.findAll(userId);
-  let match = ref.id ? budgets.find((b) => b.id === ref.id) : undefined;
-  if (!match) {
-    const category = await resolveCategoryRef(categoriesService, userId, ref);
-    match = budgets.find((b) => b.categoryId === category.id);
-  }
-  if (!match) {
-    throw new BadRequestException(
-      `No budget found matching "${refStr}". List budgets with budgets.list or create one with budgets.create.`,
-    );
-  }
-  return match;
-}
-
-/**
- * Read + write tools over the existing BudgetsService.
- * Supports referencing categories by name or ID with auto-resolution.
- */
 export function createBudgetsTools(
   budgetsService: BudgetsService,
   categoriesService: CategoriesService,
 ) {
   return [
     defineTool({
-      name: "budgets.list",
-      description:
-        "List the user's budgets with their monthly limits and current spending status (ON_TRACK / NEAR_LIMIT / AT_LIMIT / OVER).",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing budgets",
+      name: AgentToolName.BUDGETS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.BUDGETS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.BUDGETS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const budgets = await budgetsService.findAll(ctx.userId);
@@ -83,13 +71,12 @@ export function createBudgetsTools(
       },
     }),
     defineTool({
-      name: "budgets.create",
-      description:
-        "Create a spending budget for one of the user's categories. Requires confirmation. Fields: category (name or ID, e.g. 'Healthcare', 'Groceries'), limit (positive number), optional start date (YYYY-MM-DD).",
-      access: "write",
-      confirmation: "required",
-      label: "Creating budget",
-      invalidates: ["budgets", "analytics"],
+      name: AgentToolName.BUDGETS_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.BUDGETS_CREATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.BUDGETS_CREATE],
+      invalidates: [ToolInvalidationTag.BUDGETS, ToolInvalidationTag.ANALYTICS],
       schema: agentCreateBudgetSchema,
       resolveInput: async (input, ctx) => {
         const refStr = input.category ?? input.categoryId;
@@ -120,11 +107,18 @@ export function createBudgetsTools(
       },
       describe: (input) => {
         const rows: [string, string][] = [
-          ["Category", input.category ?? input.categoryId ?? "Category"],
-          ["Limit", formatINR(input.limit)],
-          ["Start date", input.startDate ?? "Current month"],
+          [
+            ConfirmationRowLabel.CATEGORY,
+            input.category ?? input.categoryId ?? ConfirmationRowLabel.CATEGORY,
+          ],
+          [ConfirmationRowLabel.LIMIT, formatINR(input.limit)],
+          [ConfirmationRowLabel.START_DATE, input.startDate ?? "Current month"],
         ];
-        return { type: "confirmation" as const, title: "Create budget", rows };
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_CREATE],
+          rows,
+        };
       },
       summarize: (output) => {
         const budget = output as { limit: number; category?: { name: string } };
@@ -132,13 +126,12 @@ export function createBudgetsTools(
       },
     }),
     defineTool({
-      name: "budgets.update",
-      description:
-        "Change a budget's spending limit. Requires confirmation. Accepts budgetId OR category name (e.g. 'Groceries', 'Dining Out'), and new limit.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating budget limit",
-      invalidates: ["budgets", "analytics"],
+      name: AgentToolName.BUDGETS_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.BUDGETS_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.BUDGETS_UPDATE],
+      invalidates: [ToolInvalidationTag.BUDGETS, ToolInvalidationTag.ANALYTICS],
       schema: agentUpdateBudgetSchema,
       resolveInput: async (input, ctx) => {
         const match = await resolveBudgetMatch(
@@ -153,22 +146,21 @@ export function createBudgetsTools(
         budgetsService.update(input.budgetId!, ctx.userId, { limit: input.limit }),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Update budget",
+        title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_UPDATE],
         rows: [
-          ["Category", input.category ?? input.budgetId ?? "Budget"],
-          ["New limit", formatINR(input.limit)],
+          [ConfirmationRowLabel.CATEGORY, input.category ?? input.budgetId ?? "Budget"],
+          [ConfirmationRowLabel.NEW_LIMIT, formatINR(input.limit)],
         ],
       }),
       summarize: () => "Budget limit updated",
     }),
     defineTool({
-      name: "budgets.delete",
-      description:
-        "Permanently delete one of the user's budgets. Requires confirmation. Accepts budgetId OR category name.",
-      access: "write",
-      confirmation: "required",
-      label: "Deleting budget",
-      invalidates: ["budgets", "analytics"],
+      name: AgentToolName.BUDGETS_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.BUDGETS_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.BUDGETS_DELETE],
+      invalidates: [ToolInvalidationTag.BUDGETS, ToolInvalidationTag.ANALYTICS],
       schema: agentDeleteBudgetSchema,
       resolveInput: async (input, ctx) => {
         const match = await resolveBudgetMatch(
@@ -182,47 +174,17 @@ export function createBudgetsTools(
       execute: async (input, ctx) => budgetsService.remove(input.budgetId!, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Delete budget",
+        title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_DELETE],
         rows: [
-          ["Category", input.category ?? input.budgetId ?? "Budget"],
-          ["Warning", "Permanent delete — budget tracking for this category stops"],
+          [ConfirmationRowLabel.CATEGORY, input.category ?? input.budgetId ?? "Budget"],
+          [
+            ConfirmationRowLabel.WARNING,
+            "Permanent delete — budget tracking for this category stops",
+          ],
         ],
       }),
       summarize: () => "Budget deleted",
     }),
-    defineTool({
-      name: "budgets.transferAllocation",
-      description:
-        "Composite: move part of one budget's limit to another budget atomically (reduces the source limit, increases the target). Requires confirmation. Resolve both budget IDs with budgets.list first.",
-      access: "write",
-      confirmation: "required",
-      label: "Transferring budget allocation",
-      invalidates: ["budgets", "analytics"],
-      schema: z.object({
-        fromBudgetId: z.string().uuid("Invalid source budget ID"),
-        toBudgetId: z.string().uuid("Invalid target budget ID"),
-        amount: z.number().positive("Transfer amount must be positive"),
-      }),
-      execute: async (input, ctx) =>
-        budgetsService.transferAllocation(
-          ctx.userId,
-          input.fromBudgetId,
-          input.toBudgetId,
-          input.amount,
-        ),
-      describe: (input) => ({
-        type: "confirmation" as const,
-        title: "Transfer budget allocation",
-        rows: [
-          ["From budget ID", input.fromBudgetId],
-          ["To budget ID", input.toBudgetId],
-          ["Amount", formatINR(input.amount)],
-        ],
-      }),
-      summarize: (output) => {
-        const budget = output as { limit: number; category?: { name: string } };
-        return `Allocation moved — target budget ${budget.category?.name ?? ""} now ${formatINR(budget.limit)}`;
-      },
-    }),
+    createBudgetTransferTool(budgetsService),
   ];
 }

@@ -2,8 +2,22 @@ import { z } from "zod";
 import { defineTool } from "../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { Category } from "@finai/shared-types";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { createCategorySchema, updateCategorySchema } from "@finai/validation";
 import { scoreEntityMatch } from "../entity-reference";
+
+const INVALIDATES_CATEGORY_WRITES = [
+  ToolInvalidationTag.CATEGORIES,
+  ToolInvalidationTag.TRANSACTIONS,
+  ToolInvalidationTag.BUDGETS,
+];
 
 /**
  * Read + write tools over the existing CategoriesService.
@@ -15,12 +29,11 @@ import { scoreEntityMatch } from "../entity-reference";
 export function createCategoriesTools(categoriesService: CategoriesService) {
   return [
     defineTool({
-      name: "categories.list",
-      description:
-        "List the user's spending/income categories with their group and icon. Auto-seeds default categories for new users. Prefer reusing these categories over creating new ones.",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing categories",
+      name: AgentToolName.CATEGORIES_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const categories = await categoriesService.getCategories(ctx.userId);
@@ -32,12 +45,11 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       },
     }),
     defineTool({
-      name: "categories.resolve",
-      description:
-        "Resolve a vague category name (e.g. 'food', 'groceries', 'rent') to the user's actual category IDs using fuzzy matching ('groceries' matches 'Groceries & Supermarket'). Use this before creating budgets or re-categorizing transactions when the user refers to a category loosely.",
-      access: "read",
-      confirmation: "none",
-      label: "Resolving category",
+      name: AgentToolName.CATEGORIES_RESOLVE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_RESOLVE],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_RESOLVE],
       schema: z.object({
         name: z.string().min(1, "Category name is required").max(100),
       }),
@@ -60,13 +72,12 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       },
     }),
     defineTool({
-      name: "categories.create",
-      description:
-        "Create a new custom category for the user. Requires confirmation. Fields: name (max 50 chars), optional group name (defaults 'Variable Expenses'), optional icon name.",
-      access: "write",
-      confirmation: "required",
-      label: "Creating category",
-      invalidates: ["categories", "transactions", "budgets"],
+      name: AgentToolName.CATEGORIES_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_CREATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_CREATE],
+      invalidates: INVALIDATES_CATEGORY_WRITES,
       schema: createCategorySchema,
       execute: async (input, ctx) => categoriesService.createCategory(ctx.userId, input),
       serialize: (output) => {
@@ -74,21 +85,24 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         return { id: category.id, name: category.name, group: category.group };
       },
       describe: (input) => {
-        const rows: [string, string][] = [["Name", input.name]];
-        if (input.group) rows.push(["Group", input.group]);
-        if (input.icon) rows.push(["Icon", input.icon]);
-        return { type: "confirmation" as const, title: "Create category", rows };
+        const rows: [string, string][] = [[ConfirmationRowLabel.NAME, input.name]];
+        if (input.group) rows.push([ConfirmationRowLabel.GROUP, input.group]);
+        if (input.icon) rows.push([ConfirmationRowLabel.ICON, input.icon]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_CREATE],
+          rows,
+        };
       },
       summarize: (output) => `Created category ${(output as Category).name}`,
     }),
     defineTool({
-      name: "categories.update",
-      description:
-        "Rename or restyle one of the user's categories. Requires confirmation. Only pass the fields that should change.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating category",
-      invalidates: ["categories", "transactions", "budgets"],
+      name: AgentToolName.CATEGORIES_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_UPDATE],
+      invalidates: INVALIDATES_CATEGORY_WRITES,
       schema: updateCategorySchema.extend({
         categoryId: z.string().uuid("Invalid category ID"),
       }),
@@ -97,32 +111,39 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         return categoriesService.updateCategory(categoryId, ctx.userId, changes);
       },
       describe: (input) => {
-        const rows: [string, string][] = [["Category ID", input.categoryId]];
-        if (input.name !== undefined) rows.push(["Name", input.name]);
-        if (input.group !== undefined) rows.push(["Group", input.group]);
-        if (input.icon !== undefined) rows.push(["Icon", input.icon ?? "(none)"]);
-        return { type: "confirmation" as const, title: "Update category", rows };
+        const rows: [string, string][] = [[ConfirmationRowLabel.CATEGORY_ID, input.categoryId]];
+        if (input.name !== undefined) rows.push([ConfirmationRowLabel.NAME, input.name]);
+        if (input.group !== undefined) rows.push([ConfirmationRowLabel.GROUP, input.group]);
+        if (input.icon !== undefined)
+          rows.push([ConfirmationRowLabel.ICON, input.icon ?? "(none)"]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_UPDATE],
+          rows,
+        };
       },
       summarize: (output) => `Updated category ${(output as Category).name}`,
     }),
     defineTool({
-      name: "categories.delete",
-      description:
-        "Permanently delete one of the user's categories. Requires confirmation. Fails if the category is still used by any transactions or budgets.",
-      access: "write",
-      confirmation: "required",
-      label: "Deleting category",
-      invalidates: ["categories", "transactions", "budgets"],
+      name: AgentToolName.CATEGORIES_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_DELETE],
+      invalidates: INVALIDATES_CATEGORY_WRITES,
       schema: z.object({
         categoryId: z.string().uuid("Invalid category ID"),
       }),
       execute: async (input, ctx) => categoriesService.deleteCategory(input.categoryId, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Delete category",
+        title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_DELETE],
         rows: [
-          ["Category ID", input.categoryId],
-          ["Warning", "Permanent delete — only possible when the category is unused"],
+          [ConfirmationRowLabel.CATEGORY_ID, input.categoryId],
+          [
+            ConfirmationRowLabel.WARNING,
+            "Permanent delete — only possible when the category is unused",
+          ],
         ],
       }),
       summarize: () => "Category deleted",

@@ -5,6 +5,14 @@ import type { CategoriesService } from "@/modules/categories/categories.service"
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { UpdateTransactionInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { agentUpdateTransactionSchema } from "../transactions.agent-schemas";
 import {
   checkTransactionRefs,
@@ -15,6 +23,13 @@ import {
 } from "../entity-reference";
 import { resolveAgentTransactionDate } from "../date-expression";
 import { createTransactionsRecategorizeTools } from "./transactions.recategorize.tools";
+
+const INVALIDATES_TRANSACTION_WRITES = [
+  ToolInvalidationTag.TRANSACTIONS,
+  ToolInvalidationTag.ACCOUNTS,
+  ToolInvalidationTag.ANALYTICS,
+  ToolInvalidationTag.BUDGETS,
+];
 
 /**
  * Write tools over the existing TransactionsService:
@@ -28,13 +43,12 @@ export function createTransactionsWriteTools(
   return [
     ...createTransactionsRecategorizeTools(transactionsService, categoriesService),
     defineTool({
-      name: "transactions.update",
-      description:
-        "Update an existing transaction's amount, date, notes, category, accounts or type. Requires confirmation. Balances rebalance automatically. Pass only the fields that should change; account/category accept a name or ID. For dates, follow the same rule as transactions.create: pass the user's wording in dateExpression ('yesterday', 'aug 15'), or set date directly; omit both to leave the date unchanged. Set toAccountId: null to clear a destination account.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating transaction",
-      invalidates: ["transactions", "accounts", "analytics", "budgets"],
+      name: AgentToolName.TRANSACTIONS_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_UPDATE],
+      invalidates: INVALIDATES_TRANSACTION_WRITES,
       schema: agentUpdateTransactionSchema,
       validate: async (input, ctx) => {
         const refInput: TransactionRefInput = {
@@ -107,12 +121,15 @@ export function createTransactionsWriteTools(
         return transactionsService.update(transactionId, ctx.userId, changes);
       },
       describe: (input) => {
-        const rows: [string, string][] = [["Transaction ID", input.transactionId]];
-        if (input.amount !== undefined) rows.push(["Amount", formatINR(input.amount)]);
+        const rows: [string, string][] = [
+          [ConfirmationRowLabel.TRANSACTION_ID, input.transactionId],
+        ];
+        if (input.amount !== undefined)
+          rows.push([ConfirmationRowLabel.AMOUNT, formatINR(input.amount)]);
         if (input.date !== undefined || input.dateExpression !== undefined) {
           try {
             rows.push([
-              "Date",
+              ConfirmationRowLabel.DATE,
               input.dateExpression
                 ? `${resolveAgentTransactionDate({
                     date: input.date,
@@ -121,40 +138,47 @@ export function createTransactionsWriteTools(
                 : input.date!,
             ]);
           } catch {
-            rows.push(["Date", input.date ?? input.dateExpression ?? ""]);
+            rows.push([ConfirmationRowLabel.DATE, input.date ?? input.dateExpression ?? ""]);
           }
         }
-        if (input.type !== undefined) rows.push(["Type", input.type]);
-        if (input.category !== undefined) rows.push(["Category", input.category]);
-        if (input.categoryId !== undefined) rows.push(["Category ID", input.categoryId]);
-        if (input.account !== undefined) rows.push(["Account", input.account]);
-        if (input.accountId !== undefined) rows.push(["Account ID", input.accountId]);
-        if (input.toAccount !== undefined) rows.push(["To account", input.toAccount]);
+        if (input.type !== undefined) rows.push([ConfirmationRowLabel.TYPE, input.type]);
+        if (input.category !== undefined)
+          rows.push([ConfirmationRowLabel.CATEGORY, input.category]);
+        if (input.categoryId !== undefined)
+          rows.push([ConfirmationRowLabel.CATEGORY_ID, input.categoryId]);
+        if (input.account !== undefined) rows.push([ConfirmationRowLabel.ACCOUNT, input.account]);
+        if (input.accountId !== undefined)
+          rows.push([ConfirmationRowLabel.ACCOUNT_ID, input.accountId]);
+        if (input.toAccount !== undefined)
+          rows.push([ConfirmationRowLabel.TO_ACCOUNT, input.toAccount]);
         if (input.toAccountId !== undefined)
-          rows.push(["To account ID", input.toAccountId ?? "(clear)"]);
-        if (input.notes !== undefined) rows.push(["Notes", input.notes ?? ""]);
-        return { type: "confirmation" as const, title: "Update transaction", rows };
+          rows.push([ConfirmationRowLabel.TO_ACCOUNT_ID, input.toAccountId ?? "(clear)"]);
+        if (input.notes !== undefined) rows.push([ConfirmationRowLabel.NOTES, input.notes ?? ""]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_UPDATE],
+          rows,
+        };
       },
       summarize: () => "Transaction updated",
     }),
     defineTool({
-      name: "transactions.delete",
-      description:
-        "Permanently delete one of the user's transactions and revert its balance impact. Requires confirmation — this is destructive and cannot be undone.",
-      access: "write",
-      confirmation: "required",
-      label: "Deleting transaction",
-      invalidates: ["transactions", "accounts", "analytics", "budgets"],
+      name: AgentToolName.TRANSACTIONS_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_DELETE],
+      invalidates: INVALIDATES_TRANSACTION_WRITES,
       schema: z.object({
         transactionId: z.string().uuid("Invalid transaction ID"),
       }),
       execute: async (input, ctx) => transactionsService.remove(input.transactionId, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Delete transaction",
+        title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_DELETE],
         rows: [
-          ["Transaction ID", input.transactionId],
-          ["Warning", "Permanent delete — the balance impact will be reverted"],
+          [ConfirmationRowLabel.TRANSACTION_ID, input.transactionId],
+          [ConfirmationRowLabel.WARNING, "Permanent delete — the balance impact will be reverted"],
         ],
       }),
       summarize: () => "Transaction deleted",

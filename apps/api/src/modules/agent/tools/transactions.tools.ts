@@ -3,6 +3,13 @@ import { defineTool } from "../tool-factory";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { TransactionFilterInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import {
+  AgentToolName,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  TransactionType,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
 
 const flexibleDateSchema = z
   .string()
@@ -20,18 +27,17 @@ const flexibleDateSchema = z
 export function createTransactionsTools(transactionsService: TransactionsService) {
   return [
     defineTool({
-      name: "transactions.list",
-      description:
-        "List the user's transactions with optional filters (date range, category, account, type, search) and pagination. Returns items plus total count.",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing transactions",
+      name: AgentToolName.TRANSACTIONS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_LIST],
       schema: z.object({
         dateFrom: flexibleDateSchema.optional(),
         dateTo: flexibleDateSchema.optional(),
         category: z.string().optional(),
         account: z.string().optional(),
-        type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
+        type: z.nativeEnum(TransactionType).optional(),
         search: z.string().max(200).optional(),
         page: z.number().int().positive().default(1),
         pageSize: z.number().int().positive().max(100).default(20),
@@ -82,17 +88,16 @@ export function createTransactionsTools(transactionsService: TransactionsService
       },
     }),
     defineTool({
-      name: "transactions.summarize",
-      description:
-        "Aggregate transaction totals over a date range, grouped by category name or transaction type. Fields: optional dateFrom (YYYY-MM-DD or ISO datetime, defaults to start of current month), optional dateTo (YYYY-MM-DD or ISO datetime, defaults to end of month), groupBy ('category' or 'type', defaults to 'category').",
-      access: "read",
-      confirmation: "none",
-      label: "Summarizing transactions",
+      name: AgentToolName.TRANSACTIONS_SUMMARIZE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_SUMMARIZE],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_SUMMARIZE],
       schema: z.object({
         dateFrom: flexibleDateSchema.optional(),
         dateTo: flexibleDateSchema.optional(),
         groupBy: z.enum(["category", "type"]).default("category"),
-        type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT"]).optional(),
+        type: z.nativeEnum(TransactionType).optional(),
       }),
       execute: async (input, ctx) => {
         const now = new Date();

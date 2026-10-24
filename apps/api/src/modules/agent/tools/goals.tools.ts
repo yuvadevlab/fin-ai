@@ -3,6 +3,20 @@ import { defineTool } from "../tool-factory";
 import type { GoalsService } from "@/modules/goals/goals.service";
 import { createGoalSchema, updateGoalSchema, contributeAmountSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import {
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+
+const INVALIDATES_GOAL_WRITES = [
+  ToolInvalidationTag.GOALS,
+  ToolInvalidationTag.ACCOUNTS,
+  ToolInvalidationTag.ANALYTICS,
+];
 
 /**
  * Read + write tools over the existing GoalsService. `goals.contribute`
@@ -13,11 +27,11 @@ import { formatINR } from "@finai/finance-engine";
 export function createGoalsTools(goalsService: GoalsService) {
   return [
     defineTool({
-      name: "goals.list",
-      description: "List the user's savings goals with progress percentage and deadlines.",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing goals",
+      name: AgentToolName.GOALS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.GOALS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.GOALS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
         const goals = await goalsService.findAll(ctx.userId);
@@ -54,24 +68,27 @@ export function createGoalsTools(goalsService: GoalsService) {
       },
     }),
     defineTool({
-      name: "goals.create",
-      description:
-        "Create a savings goal for the user. Requires confirmation. Fields: name, targetAmount, optional currentAmount already saved (defaults 0), optional deadline (date string), optional type (EMERGENCY_FUND | OBLIGATION | LIFESTYLE | PERSONAL).",
-      access: "write",
-      confirmation: "required",
-      label: "Creating savings goal",
-      invalidates: ["goals", "accounts", "analytics"],
+      name: AgentToolName.GOALS_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.GOALS_CREATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.GOALS_CREATE],
+      invalidates: INVALIDATES_GOAL_WRITES,
       schema: createGoalSchema,
       execute: async (input, ctx) => goalsService.create(ctx.userId, input),
       describe: (input) => {
         const rows: [string, string][] = [
-          ["Name", input.name],
-          ["Target", formatINR(input.targetAmount)],
-          ["Already saved", formatINR(input.currentAmount ?? 0)],
+          [ConfirmationRowLabel.NAME, input.name],
+          [ConfirmationRowLabel.TARGET, formatINR(input.targetAmount)],
+          [ConfirmationRowLabel.ALREADY_SAVED, formatINR(input.currentAmount ?? 0)],
         ];
-        if (input.deadline) rows.push(["Deadline", input.deadline]);
-        if (input.type) rows.push(["Type", input.type]);
-        return { type: "confirmation" as const, title: "Create goal", rows };
+        if (input.deadline) rows.push([ConfirmationRowLabel.DEADLINE, input.deadline]);
+        if (input.type) rows.push([ConfirmationRowLabel.TYPE, input.type]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.GOALS_CREATE],
+          rows,
+        };
       },
       summarize: (output) => {
         const goal = output as { name: string; targetAmount: number };
@@ -79,13 +96,12 @@ export function createGoalsTools(goalsService: GoalsService) {
       },
     }),
     defineTool({
-      name: "goals.update",
-      description:
-        "Update a goal's name, target amount, saved amount, deadline or type. Requires confirmation. Only pass the fields that should change.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating savings goal",
-      invalidates: ["goals", "accounts", "analytics"],
+      name: AgentToolName.GOALS_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.GOALS_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.GOALS_UPDATE],
+      invalidates: INVALIDATES_GOAL_WRITES,
       schema: updateGoalSchema.extend({
         goalId: z.string().uuid("Invalid goal ID"),
       }),
@@ -94,24 +110,30 @@ export function createGoalsTools(goalsService: GoalsService) {
         return goalsService.update(goalId, ctx.userId, changes);
       },
       describe: (input) => {
-        const rows: [string, string][] = [["Goal ID", input.goalId]];
-        if (input.name !== undefined) rows.push(["Name", input.name]);
-        if (input.targetAmount !== undefined) rows.push(["Target", formatINR(input.targetAmount)]);
-        if (input.currentAmount !== undefined) rows.push(["Saved", formatINR(input.currentAmount)]);
-        if (input.deadline !== undefined) rows.push(["Deadline", input.deadline ?? "(none)"]);
-        if (input.type !== undefined) rows.push(["Type", input.type]);
-        return { type: "confirmation" as const, title: "Update goal", rows };
+        const rows: [string, string][] = [[ConfirmationRowLabel.GOAL_ID, input.goalId]];
+        if (input.name !== undefined) rows.push([ConfirmationRowLabel.NAME, input.name]);
+        if (input.targetAmount !== undefined)
+          rows.push([ConfirmationRowLabel.TARGET, formatINR(input.targetAmount)]);
+        if (input.currentAmount !== undefined)
+          rows.push([ConfirmationRowLabel.SAVED, formatINR(input.currentAmount)]);
+        if (input.deadline !== undefined)
+          rows.push([ConfirmationRowLabel.DEADLINE, input.deadline ?? "(none)"]);
+        if (input.type !== undefined) rows.push([ConfirmationRowLabel.TYPE, input.type]);
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.GOALS_UPDATE],
+          rows,
+        };
       },
       summarize: (output) => `Updated goal ${(output as { name: string }).name}`,
     }),
     defineTool({
-      name: "goals.contribute",
-      description:
-        "Add money to a goal's saved amount (capped at the target). Requires confirmation. This is a bookkeeping update on the goal only — it does not move money between accounts.",
-      access: "write",
-      confirmation: "required",
-      label: "Contributing to goal",
-      invalidates: ["goals", "accounts", "analytics"],
+      name: AgentToolName.GOALS_CONTRIBUTE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.GOALS_CONTRIBUTE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.GOALS_CONTRIBUTE],
+      invalidates: INVALIDATES_GOAL_WRITES,
       schema: contributeAmountSchema.extend({
         goalId: z.string().uuid("Invalid goal ID"),
       }),
@@ -119,10 +141,10 @@ export function createGoalsTools(goalsService: GoalsService) {
         goalsService.contribute(input.goalId, ctx.userId, input.amount),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Contribute to goal",
+        title: AGENT_TOOL_TITLES[AgentToolName.GOALS_CONTRIBUTE],
         rows: [
-          ["Goal ID", input.goalId],
-          ["Amount", formatINR(input.amount)],
+          [ConfirmationRowLabel.GOAL_ID, input.goalId],
+          [ConfirmationRowLabel.AMOUNT, formatINR(input.amount)],
         ],
       }),
       summarize: (output) => {
@@ -131,23 +153,25 @@ export function createGoalsTools(goalsService: GoalsService) {
       },
     }),
     defineTool({
-      name: "goals.delete",
-      description:
-        "Permanently delete one of the user's savings goals. Requires confirmation — this is destructive and cannot be undone.",
-      access: "write",
-      confirmation: "required",
-      label: "Deleting savings goal",
-      invalidates: ["goals", "accounts", "analytics"],
+      name: AgentToolName.GOALS_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.GOALS_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.GOALS_DELETE],
+      invalidates: INVALIDATES_GOAL_WRITES,
       schema: z.object({
         goalId: z.string().uuid("Invalid goal ID"),
       }),
       execute: async (input, ctx) => goalsService.remove(input.goalId, ctx.userId),
       describe: (input) => ({
         type: "confirmation" as const,
-        title: "Delete goal",
+        title: AGENT_TOOL_TITLES[AgentToolName.GOALS_DELETE],
         rows: [
-          ["Goal ID", input.goalId],
-          ["Warning", "Permanent delete — progress tracking for this goal is lost"],
+          [ConfirmationRowLabel.GOAL_ID, input.goalId],
+          [
+            ConfirmationRowLabel.WARNING,
+            "Permanent delete — progress tracking for this goal is lost",
+          ],
         ],
       }),
       summarize: () => "Goal deleted",
