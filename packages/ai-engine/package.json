@@ -22,6 +22,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@finai/prompts": "workspace:*",
+    "@finai/shared-types": "workspace:*",
     "@yuva-devlab/ai-client": "^0.2.0",
     "zod": "^3.24.2"
   },

@@ -7,6 +7,7 @@ import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
 import { RichConfirmationCard } from "./RichConfirmationCard";
+import { AgentConfirmationStatus } from "@finai/shared-types";
 import type { AgentChatMessage } from "../api/agentTypes";
 import { extractFinancialInsight } from "../utils/financialInsight";
 import { UI_COPY } from "@/lib/ui-copy";
@@ -110,7 +111,7 @@ export function AgentRun({
         (() => {
           let firstPendingSeen = false;
           return confirmations!.map((confirmation) => {
-            const isPending = confirmation.status === "pending";
+            const isPending = confirmation.status === AgentConfirmationStatus.PENDING;
             const disabled = isPending && firstPendingSeen;
             if (isPending) firstPendingSeen = true;
             const isExecuting = executingActionId === confirmation.actionId;

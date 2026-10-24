@@ -18,6 +18,7 @@ import {
   type LlmToolDefinition,
   type OpenAiStyleToolCall,
 } from "./types";
+import { AiProvider } from "@finai/shared-types";
 
 interface OpenRouterStreamChunk {
   id?: string;
@@ -64,7 +65,7 @@ function toOpenAiTools(tools: LlmToolDefinition[]) {
 }
 
 export class OpenRouterChatModel implements ChatModel {
-  readonly provider = "openrouter";
+  readonly provider = AiProvider.OPENROUTER;
 
   constructor(private readonly config: ChatModelConfig) {}
 

@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
-import type { AgentActionService } from "../action.service";
-import type { ActionManager } from "../action-manager";
+import { defineTool } from "../../tool-factory";
+import type { AgentActionService } from "../../action.service";
+import type { ActionManager } from "../../action-manager";
+import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
 
 /**
  * Tools for managing pending (PROPOSED) agent actions through conversation.
@@ -23,11 +25,11 @@ export function createActionManagementTools(
 ) {
   return [
     defineTool({
-      name: "action.patch",
-      description:
-        "Apply a correction to the pending (unconfirmed) action. Use when the user wants to change a field (amount, date, account, category, etc.) of the action currently awaiting confirmation. Only include the fields that should change — all other fields are preserved. The action remains pending after patching; it is NOT executed. Returns an updated confirmation card. If the reference is ambiguous (e.g. 'use SBI' but the user has two SBI accounts), ask for clarification instead of patching.",
-      access: "write",
-      confirmation: "none",
+      name: AgentToolName.ACTION_PATCH,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACTION_PATCH],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACTION_PATCH],
       schema: z.object({
         // The fields to patch into the existing action input. For transactions:
         // amount, type, account, accountId, category, categoryId, toAccount,
@@ -64,11 +66,11 @@ export function createActionManagementTools(
       summarize: () => "Updated the pending action",
     }),
     defineTool({
-      name: "action.confirm",
-      description:
-        "Confirm and execute the pending (unconfirmed) action. Use when the user explicitly confirms ('confirm', 'yes', 'go ahead', 'looks good') the action currently awaiting confirmation. This executes the action and returns the result.",
-      access: "write",
-      confirmation: "none",
+      name: AgentToolName.ACTION_CONFIRM,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ACTION_CONFIRM],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ACTION_CONFIRM],
       schema: z.object({}),
       execute: async (input, ctx) => {
         // Find the pending action for this conversation

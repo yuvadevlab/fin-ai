@@ -5,6 +5,7 @@
  */
 
 import { z } from "zod";
+import { AiProvider } from "@finai/shared-types";
 
 /**
  * Zod schema validating backend runtime configuration.
@@ -43,13 +44,13 @@ export const ApiConfigSchema = z.object({
   jwtExpiry: z.string().default("7d"),
 
   /** Active AI provider */
-  aiProvider: z.enum(["ollama", "openrouter", "groq", "google-ai-studio"]).default("ollama"),
+  aiProvider: z.nativeEnum(AiProvider).default(AiProvider.OLLAMA),
 
   /** Optional role-specific AI provider override for tool-calling agent */
-  aiProviderAgent: z.enum(["ollama", "openrouter", "groq", "google-ai-studio"]).optional(),
+  aiProviderAgent: z.nativeEnum(AiProvider).optional(),
 
   /** Optional role-specific AI provider override for conversational chat */
-  aiProviderChat: z.enum(["ollama", "openrouter", "groq", "google-ai-studio"]).optional(),
+  aiProviderChat: z.nativeEnum(AiProvider).optional(),
 
   /** Ollama local AI configuration */
   ollamaBaseUrl: z.string().default("http://localhost:11434"),

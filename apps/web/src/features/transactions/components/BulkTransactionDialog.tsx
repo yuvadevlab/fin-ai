@@ -5,6 +5,7 @@ import { FormDialog, toast } from "@finai/ui";
 import { format } from "date-fns";
 import { useCreateBulkTransactions } from "../api";
 import { useInlineEntityCreation } from "../hooks";
+import { TransactionKind, TransactionType } from "@finai/shared-types";
 import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils";
 import { BulkTransactionForm, type BulkRow } from "./BulkTransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
@@ -25,7 +26,7 @@ const createEmptyRow = (
 ): BulkRow => ({
   id: id || generateRowId(),
   amount: "",
-  kind: "expense",
+  kind: TransactionKind.EXPENSE,
   category: defaultCategory,
   account: defaultAccount,
   date: todayStr,
@@ -89,7 +90,7 @@ export function BulkTransactionDialog({
       {
         id: generateRowId(),
         amount: "",
-        kind: "expense",
+        kind: TransactionKind.EXPENSE,
         category: lastRow?.category || defaultCategory,
         account: lastRow?.account || defaultAccount,
         date: lastRow?.date || todayStr,
@@ -156,14 +157,16 @@ export function BulkTransactionDialog({
     }
 
     const payload = rows.map((r) => {
-      const kindTypeMap: Record<string, "EXPENSE" | "INCOME" | "TRANSFER"> = {
-        expense: "EXPENSE",
-        income: "INCOME",
-        transfer: "TRANSFER",
+      const kindTypeMap: Record<TransactionKind, TransactionType> = {
+        [TransactionKind.EXPENSE]: TransactionType.EXPENSE,
+        [TransactionKind.INCOME]: TransactionType.INCOME,
+        [TransactionKind.TRANSFER]: TransactionType.TRANSFER,
+        [TransactionKind.INVESTMENT]: TransactionType.INVESTMENT,
+        [TransactionKind.GOAL]: TransactionType.GOAL,
       };
       return {
         amount: parseFloat(r.amount),
-        type: kindTypeMap[r.kind] || "EXPENSE",
+        type: kindTypeMap[r.kind] || TransactionType.EXPENSE,
         categoryId: r.category,
         accountId: r.account,
         toAccountId: r.toAccount || null,

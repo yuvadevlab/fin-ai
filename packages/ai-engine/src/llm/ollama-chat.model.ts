@@ -18,6 +18,7 @@ import {
   type LlmToolCall,
   type LlmToolDefinition,
 } from "./types";
+import { AiProvider } from "@finai/shared-types";
 
 interface OllamaToolCallFunction {
   name: string;
@@ -86,7 +87,7 @@ function toToolCalls(
 }
 
 export class OllamaChatModel implements ChatModel {
-  readonly provider = "ollama";
+  readonly provider = AiProvider.OLLAMA;
 
   constructor(private readonly config: ChatModelConfig) {}
 

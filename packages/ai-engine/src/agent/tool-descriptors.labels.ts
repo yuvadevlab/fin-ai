@@ -1,0 +1,83 @@
+/**
+ * @file packages/ai-engine/src/agent/tool-descriptors.labels.ts
+ * @description Centralized execution labels and confirmation titles for FinAI agent tools.
+ * @module @finai/ai-engine/agent/tool-descriptors-labels
+ */
+
+import { AgentToolName } from "@finai/shared-types";
+
+/** User-facing execution status labels streamed during agent tool execution */
+export const AGENT_TOOL_LABELS: Record<string, string> = {
+  [AgentToolName.TRANSACTIONS_CREATE]: "Recording your transaction",
+  [AgentToolName.TRANSACTIONS_BULK_CREATE]: "Recording multiple transactions",
+  [AgentToolName.TRANSACTIONS_UPDATE]: "Updating transaction",
+  [AgentToolName.TRANSACTIONS_DELETE]: "Deleting transaction",
+  [AgentToolName.TRANSACTIONS_LIST]: "Reviewing transactions",
+  [AgentToolName.TRANSACTIONS_SUMMARIZE]: "Summarizing transactions",
+  [AgentToolName.TRANSACTIONS_RECATEGORIZE_PREVIEW]: "Checking re-categorization impact",
+  [AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY]: "Re-categorizing transactions",
+  [AgentToolName.ACCOUNTS_LIST]: "Reviewing your accounts",
+  [AgentToolName.ACCOUNTS_GET]: "Fetching account details",
+  [AgentToolName.ACCOUNTS_CREATE]: "Creating financial account",
+  [AgentToolName.ACCOUNTS_RENAME]: "Renaming account",
+  [AgentToolName.ACCOUNTS_UPDATE]: "Updating account",
+  [AgentToolName.ACCOUNTS_DELETE]: "Deleting account",
+  [AgentToolName.ACCOUNTS_SET_DEFAULT]: "Setting default account",
+  [AgentToolName.BUDGETS_LIST]: "Reviewing budgets",
+  [AgentToolName.BUDGETS_CREATE]: "Creating spending budget",
+  [AgentToolName.BUDGETS_UPDATE]: "Updating budget limit",
+  [AgentToolName.BUDGETS_DELETE]: "Deleting budget",
+  [AgentToolName.BUDGETS_TRANSFER_ALLOCATION]: "Transferring budget allocation",
+  [AgentToolName.CATEGORIES_LIST]: "Reviewing categories",
+  [AgentToolName.CATEGORIES_RESOLVE]: "Resolving category",
+  [AgentToolName.CATEGORIES_CREATE]: "Creating category",
+  [AgentToolName.CATEGORIES_UPDATE]: "Updating category",
+  [AgentToolName.CATEGORIES_DELETE]: "Deleting category",
+  [AgentToolName.GOALS_LIST]: "Reviewing goals",
+  [AgentToolName.GOALS_CREATE]: "Creating savings goal",
+  [AgentToolName.GOALS_UPDATE]: "Updating goal",
+  [AgentToolName.GOALS_CONTRIBUTE]: "Recording goal contribution",
+  [AgentToolName.GOALS_DELETE]: "Deleting savings goal",
+  [AgentToolName.ANALYTICS_DASHBOARD]: "Analyzing your finances",
+  [AgentToolName.ANALYTICS_HEALTH_SCORE]: "Calculating your financial health",
+  [AgentToolName.ANALYTICS_MONTHLY_CASH_FLOW]: "Analyzing monthly cash flow",
+  [AgentToolName.ANALYTICS_RECOMMENDATIONS]: "Generating recommendations",
+  [AgentToolName.INSIGHTS_SAFE_TO_SPEND]: "Calculating safe-to-spend",
+  [AgentToolName.INVESTMENTS_LIST]: "Reviewing investments",
+  [AgentToolName.INVESTMENTS_CREATE]: "Adding investment",
+  [AgentToolName.INVESTMENTS_UPDATE_VALUE]: "Updating investment value",
+  [AgentToolName.INVESTMENTS_DELETE]: "Deleting investment",
+  [AgentToolName.PROFILE_GET]: "Loading your profile",
+  [AgentToolName.PROFILE_UPDATE]: "Updating your profile",
+  [AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT]: "Setting default account",
+  [AgentToolName.SEARCH_EVERYTHING]: "Searching your finances",
+  [AgentToolName.ACTION_PATCH]: "Updating pending action",
+  [AgentToolName.ACTION_CONFIRM]: "Executing confirmed action",
+};
+
+/** Canonical confirmation card titles presented in the interactive UI */
+export const AGENT_TOOL_TITLES: Record<string, string> = {
+  [AgentToolName.TRANSACTIONS_CREATE]: "Record transaction",
+  [AgentToolName.TRANSACTIONS_UPDATE]: "Update transaction",
+  [AgentToolName.TRANSACTIONS_DELETE]: "Delete transaction",
+  [AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY]: "Re-categorize transactions",
+  [AgentToolName.ACCOUNTS_CREATE]: "Create account",
+  [AgentToolName.ACCOUNTS_UPDATE]: "Update account",
+  [AgentToolName.ACCOUNTS_DELETE]: "Remove account",
+  [AgentToolName.BUDGETS_CREATE]: "Create budget",
+  [AgentToolName.BUDGETS_UPDATE]: "Update budget",
+  [AgentToolName.BUDGETS_DELETE]: "Delete budget",
+  [AgentToolName.BUDGETS_TRANSFER_ALLOCATION]: "Transfer budget allocation",
+  [AgentToolName.CATEGORIES_CREATE]: "Create category",
+  [AgentToolName.CATEGORIES_UPDATE]: "Update category",
+  [AgentToolName.CATEGORIES_DELETE]: "Delete category",
+  [AgentToolName.GOALS_CREATE]: "Create goal",
+  [AgentToolName.GOALS_UPDATE]: "Update goal",
+  [AgentToolName.GOALS_CONTRIBUTE]: "Contribute to goal",
+  [AgentToolName.GOALS_DELETE]: "Delete goal",
+  [AgentToolName.INVESTMENTS_CREATE]: "Add investment",
+  [AgentToolName.INVESTMENTS_UPDATE_VALUE]: "Update investment value",
+  [AgentToolName.INVESTMENTS_DELETE]: "Delete investment",
+  [AgentToolName.PROFILE_UPDATE]: "Update profile",
+  [AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT]: "Set default account",
+};

@@ -18,6 +18,7 @@ import {
   type LlmToolDefinition,
   type OpenAiStyleToolCall,
 } from "./types";
+import { AiProvider } from "@finai/shared-types";
 
 interface GroqStreamChunk {
   id?: string;
@@ -63,7 +64,7 @@ function toOpenAiTools(tools: LlmToolDefinition[]) {
 }
 
 export class GroqChatModel implements ChatModel {
-  readonly provider = "groq";
+  readonly provider = AiProvider.GROQ;
 
   constructor(private readonly config: ChatModelConfig) {}
 

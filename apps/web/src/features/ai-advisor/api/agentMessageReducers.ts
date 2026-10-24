@@ -1,8 +1,8 @@
+import { AgentChatRole, AgentConfirmationStatus } from "@finai/shared-types";
 import type {
   AgentActivity,
   AgentChatMessage,
   AgentConfirmation,
-  AgentConfirmationStatus,
   AgentResolvedMode,
   AgentRunLogEntry,
 } from "./agentTypes";
@@ -16,7 +16,7 @@ export function appendLogReducer(
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = {
     ...last,
     logs: [...(last.logs ?? []), log],
@@ -28,7 +28,7 @@ export function appendTextReducer(prev: AgentChatMessage[], content: string): Ag
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = { ...last, text: last.text + content };
   return copy;
 }
@@ -37,7 +37,7 @@ export function replaceTextReducer(prev: AgentChatMessage[], content: string): A
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = { ...last, text: content };
   return copy;
 }
@@ -49,7 +49,7 @@ export function appendActivityReducer(
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = {
     ...last,
     activities: [...(last.activities ?? []), { ...activity, startedAt: Date.now() }],
@@ -65,7 +65,7 @@ export function updateActivityReducer(
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   const activities = (last.activities ?? []).slice();
   for (let i = activities.length - 1; i >= 0; i--) {
     if (activities[i].tool === tool) {
@@ -90,7 +90,7 @@ export function appendConfirmationReducer(
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = {
     ...last,
     confirmations: [...(last.confirmations ?? []), confirmation],
@@ -138,10 +138,10 @@ export function updateConfirmationCardReducer(
     actionId,
     tool: tool ?? existing?.tool ?? "transaction.create_bulk",
     card,
-    status: existing?.status ?? "pending",
+    status: existing?.status ?? AgentConfirmationStatus.PENDING,
   };
 
-  if (lastMsg?.role === "assistant") {
+  if (lastMsg?.role === AgentChatRole.ASSISTANT) {
     return prev.map((m, idx) => {
       const rest = (m.confirmations ?? []).filter((c) => c.actionId !== actionId);
       return idx === lastIdx
@@ -193,7 +193,7 @@ export function failStreamReducer(prev: AgentChatMessage[], errorText: string): 
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   const activities = (last.activities ?? []).map((a) =>
     a.status === "running"
       ? {
@@ -217,7 +217,7 @@ export function endStreamReducer(prev: AgentChatMessage[]): AgentChatMessage[] {
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant" || !last.streaming) return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT || !last.streaming) return prev;
   copy[copy.length - 1] = { ...last, streaming: false };
   return copy;
 }
@@ -230,7 +230,7 @@ export function setModeReducer(
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
-  if (!last || last.role !== "assistant") return prev;
+  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
   copy[copy.length - 1] = { ...last, mode };
   return copy;
 }

@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AnalyticsService } from "@/modules/analytics/analytics.service";
 import { formatINR, type Recommendation } from "@finai/finance-engine";
+import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
 
 /**
  * Read tools over the existing AnalyticsService. These surface the same
@@ -11,12 +13,11 @@ import { formatINR, type Recommendation } from "@finai/finance-engine";
 export function createAnalyticsTools(analyticsService: AnalyticsService) {
   return [
     defineTool({
-      name: "analytics.dashboard",
-      description:
-        "Get the user's current financial KPIs: net worth, monthly income/expenses, net cash flow, savings rate, and last-month comparison.",
-      access: "read",
-      confirmation: "none",
-      label: "Analyzing your finances",
+      name: AgentToolName.ANALYTICS_DASHBOARD,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_DASHBOARD],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_DASHBOARD],
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getDashboard(ctx.userId),
       summarize: (output) => {
@@ -25,12 +26,11 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       },
     }),
     defineTool({
-      name: "analytics.healthScore",
-      description:
-        "Get the user's financial health score (0-100) with component breakdowns: free cash, savings rate, emergency runway, debt pressure, budget control, and goal progress.",
-      access: "read",
-      confirmation: "none",
-      label: "Calculating your financial health",
+      name: AgentToolName.ANALYTICS_HEALTH_SCORE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_HEALTH_SCORE],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_HEALTH_SCORE],
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getHealthScore(ctx.userId),
       summarize: (output) => {
@@ -39,11 +39,11 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       },
     }),
     defineTool({
-      name: "analytics.monthlyCashFlow",
-      description: "Get monthly income/expense totals over the last N months for trend analysis.",
-      access: "read",
-      confirmation: "none",
-      label: "Analyzing monthly cash flow",
+      name: AgentToolName.ANALYTICS_MONTHLY_CASH_FLOW,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_MONTHLY_CASH_FLOW],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_MONTHLY_CASH_FLOW],
       schema: z.object({
         months: z.number().int().positive().max(24).default(6),
       }),
@@ -54,12 +54,11 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       },
     }),
     defineTool({
-      name: "analytics.recommendations",
-      description:
-        "Get deterministic, prioritized financial recommendations (budget overruns, savings rate, emergency fund, goal deadlines) computed from the user's live data.",
-      access: "read",
-      confirmation: "none",
-      label: "Generating recommendations",
+      name: AgentToolName.ANALYTICS_RECOMMENDATIONS,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_RECOMMENDATIONS],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_RECOMMENDATIONS],
       schema: z.object({}),
       execute: async (_input, ctx) => analyticsService.getRecommendations(ctx.userId),
       summarize: (output) => {

@@ -118,6 +118,7 @@ export const AgentCardType = {
   INSIGHT: "insight",
   TABLE: "table",
   CONFIRMATION: "confirmation",
+  BULK_CONFIRMATION: "bulk_confirmation",
   ENTITY: "entity",
 } as const;
 export type AgentCardType = (typeof AgentCardType)[keyof typeof AgentCardType];

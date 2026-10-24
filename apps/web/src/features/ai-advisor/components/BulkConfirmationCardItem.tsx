@@ -4,33 +4,34 @@ import { Calendar, Check, CreditCard, FileText, Tag, X } from "lucide-react";
 import { cn } from "@finai/ui";
 import { usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";
+import { AgentConfirmationStatus, TransactionType } from "@finai/shared-types";
 import type { BulkTransactionItem } from "../utils/parseBulkRows";
 
 export interface BulkConfirmationCardItemProps {
   item: BulkTransactionItem;
   index: number;
   totalCount: number;
-  itemStatus: "pending" | "executed" | "rejected";
+  itemStatus: AgentConfirmationStatus;
 }
 
 const TYPE_STYLES: Record<string, { badge: string; border: string }> = {
-  INCOME: {
+  [TransactionType.INCOME]: {
     badge: "text-primary bg-primary/10 border-primary/20",
     border: "border-l-primary",
   },
-  EXPENSE: {
+  [TransactionType.EXPENSE]: {
     badge: "text-destructive bg-destructive/10 border-destructive/20",
     border: "border-l-destructive",
   },
-  TRANSFER: {
+  [TransactionType.TRANSFER]: {
     badge: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
     border: "border-l-amber-500",
   },
-  INVESTMENT: {
+  [TransactionType.INVESTMENT]: {
     badge: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
     border: "border-l-blue-500",
   },
-  GOAL: {
+  [TransactionType.GOAL]: {
     badge: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
     border: "border-l-purple-500",
   },
@@ -42,7 +43,7 @@ export function BulkConfirmationCardItem({
   totalCount,
   itemStatus,
 }: BulkConfirmationCardItemProps) {
-  const typeStyle = TYPE_STYLES[item.type.toUpperCase()] ?? TYPE_STYLES.EXPENSE;
+  const typeStyle = TYPE_STYLES[item.type.toUpperCase()] ?? TYPE_STYLES[TransactionType.EXPENSE];
   const { isPrivacyMode } = usePrivacyMode();
   const mask = (v: string) => (isPrivacyMode ? "••••••" : v);
   const maskAmount = (v: string) => (isPrivacyMode ? "₹ ••••••" : v);
@@ -53,8 +54,8 @@ export function BulkConfirmationCardItem({
       className={cn(
         "bg-card border-border/70 min-w-60 flex-1 shrink-0 snap-start rounded-xl border border-l-4 p-3.5 shadow-xs transition-all sm:min-w-67.5",
         typeStyle.border,
-        itemStatus === "rejected" && "opacity-60 grayscale-50",
-        itemStatus === "executed" && "ring-primary/30 ring-1",
+        itemStatus === AgentConfirmationStatus.REJECTED && "opacity-60 grayscale-50",
+        itemStatus === AgentConfirmationStatus.EXECUTED && "ring-primary/30 ring-1",
       )}
     >
       <div className="flex items-center justify-between gap-2">
@@ -101,9 +102,9 @@ export function BulkConfirmationCardItem({
       </div>
 
       {/* Status badge — only shown for resolved items */}
-      {itemStatus !== "pending" && (
+      {itemStatus !== AgentConfirmationStatus.PENDING && (
         <div className="border-border/40 mt-3 flex items-center border-t pt-2.5">
-          {itemStatus === "executed" ? (
+          {itemStatus === AgentConfirmationStatus.EXECUTED ? (
             <span className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
               <Check className="size-3" /> {UI_COPY.ADVISOR.CONFIRMATION_STATUS.RECORDED}
             </span>

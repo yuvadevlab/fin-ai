@@ -7,17 +7,10 @@
  * @module @finai/web/features/ai-advisor/components/AiAdvisorPage
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  PageContainer,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@finai/ui";
+import { useState } from "react";
+import { PageContainer } from "@finai/ui";
 import { ArrowDown } from "lucide-react";
+import { AgentChatRole, AgentConfirmationStatus } from "@finai/shared-types";
 import {
   ChatMessages,
   ChatLoadingSkeleton,
@@ -33,22 +26,15 @@ import {
   useChatAutoScroll,
   deriveRunState,
   type AgentConfirmation,
-  type AiConversation,
 } from "@/features/ai-advisor";
-import { APP_ROUTES } from "@/lib/routes";
 import { UI_COPY } from "@/lib/ui-copy";
+import { AdvisorMobileContextSheet } from "./AdvisorMobileContextSheet";
+import { useAdvisorThreadSync } from "../hooks/useAdvisorThreadSync";
 
-/**
- * Master interactive conversational workspace for autonomous money management.
- */
 export function AiAdvisorPage() {
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
-  const params = useParams<{ id?: string | string[] }>();
-  const router = useRouter();
-  const rawId = params?.id;
-  const routeConversationId = Array.isArray(rawId) ? rawId[0] : rawId;
   const { containerRef, contentRef, isAtBottom, handleScroll, scrollToBottom } =
     useChatAutoScroll();
 
@@ -69,63 +55,25 @@ export function AiAdvisorPage() {
   const { data: conversations } = useConversations();
   const deleteConversationMutation = useDeleteConversation();
 
-  // Navigation locks to avoid Next.js asynchronous router race conditions
-  const lastLoadedRouteIdRef = useRef<string | null>(null);
-  const isNavigatingToNewChatRef = useRef(false);
-
-  /** Initiates a brand-new conversation thread with instant URL synchronization */
-  const handleNewChat = useCallback(() => {
-    isNavigatingToNewChatRef.current = true;
-    lastLoadedRouteIdRef.current = null;
-    startNewChat();
-    setHistoryOpen(false);
-    window.history.pushState(null, "", APP_ROUTES.ADVISOR);
-    router.replace(APP_ROUTES.ADVISOR, { scroll: false });
-  }, [startNewChat, router]);
-
-  /** Switches to a past conversation thread using instant zero-latency cache retrieval */
-  const handleSelectConversation = useCallback(
-    (c: AiConversation) => {
-      setHistoryOpen(false);
-      if (c.id === conversationId) return;
-      isNavigatingToNewChatRef.current = false;
-      lastLoadedRouteIdRef.current = c.id;
-      window.history.pushState(null, "", APP_ROUTES.ADVISOR_THREAD(c.id));
-      router.replace(APP_ROUTES.ADVISOR_THREAD(c.id), { scroll: false });
-      loadConversation(c.id);
-      scrollToBottom();
-    },
-    [conversationId, router, loadConversation, scrollToBottom],
-  );
-
-  // Synchronize route parameters with active conversation, guarded against async route delays
-  useEffect(() => {
-    // 1. Guard against in-flight transition to new chat
-    if (isNavigatingToNewChatRef.current) {
-      if (!routeConversationId) isNavigatingToNewChatRef.current = false;
-      return;
-    }
-
-    // 2. Synchronize when route ID changes to a new target
-    if (routeConversationId && routeConversationId !== lastLoadedRouteIdRef.current) {
-      lastLoadedRouteIdRef.current = routeConversationId;
-      loadConversation(routeConversationId);
-    } else if (!routeConversationId && lastLoadedRouteIdRef.current) {
-      lastLoadedRouteIdRef.current = null;
-      startNewChat();
-    }
-  }, [routeConversationId, loadConversation, startNewChat]);
+  const { routeConversationId, handleNewChat, handleSelectConversation } = useAdvisorThreadSync({
+    conversationId,
+    startNewChat,
+    loadConversation,
+    scrollToBottom,
+    setHistoryOpen,
+  });
 
   const hasMessages = messages.length > 0 || !!conversationId || isLoadingConversation;
-  const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const lastAssistant = [...messages].reverse().find((m) => m.role === AgentChatRole.ASSISTANT);
   const currentActivities = lastAssistant?.activities;
   const runState = deriveRunState(currentActivities, isStreaming);
   const pendingConfirmation =
-    lastAssistant?.confirmations?.find((c: AgentConfirmation) => c.status === "pending") ?? null;
+    lastAssistant?.confirmations?.find(
+      (c: AgentConfirmation) => c.status === AgentConfirmationStatus.PENDING,
+    ) ?? null;
   const lastRunActivities =
     lastAssistant && !lastAssistant.streaming ? lastAssistant.activities : undefined;
 
-  /** Handles form submission of a user inquiry */
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const q = input.trim();
@@ -136,7 +84,6 @@ export function AiAdvisorPage() {
     await sendMessage(q);
   };
 
-  /** Handles quick-action prompt clicks from empty states or context suggestions */
   const handleQuickAction = async (message: string) => {
     if (isStreaming) return;
     setContextOpen(false);
@@ -144,7 +91,6 @@ export function AiAdvisorPage() {
     await sendMessage(message);
   };
 
-  /** Deletes an existing conversation thread and invalidates local storage cache */
   const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     removeCachedMessages(id);
@@ -162,7 +108,6 @@ export function AiAdvisorPage() {
       />
 
       <div className="flex flex-col gap-4 lg:h-[calc(100vh-11rem)] lg:flex-row">
-        {/* Primary conversational thread feed */}
         <div className="bg-card ring-border/50 relative flex min-h-[65vh] flex-1 flex-col overflow-hidden rounded-2xl shadow-sm ring-1 lg:h-full lg:min-h-0 lg:min-w-0">
           <div
             className="flex-1 overflow-y-auto px-4 py-5 sm:px-6"
@@ -170,7 +115,6 @@ export function AiAdvisorPage() {
             onScroll={handleScroll}
           >
             <div ref={contentRef}>
-              {/* Only show skeleton on cold empty initial load to prevent layout jitter */}
               {isLoadingConversation && messages.length === 0 ? (
                 <ChatLoadingSkeleton />
               ) : messages.length === 0 && !isStreaming ? (
@@ -217,7 +161,6 @@ export function AiAdvisorPage() {
           />
         </div>
 
-        {/* Docked financial snapshot context — desktop only */}
         <aside
           className="hidden lg:block lg:h-full lg:w-75 lg:min-w-0 lg:shrink-0 lg:overflow-y-auto"
           aria-label={UI_COPY.ADVISOR.CONTEXT.TITLE}
@@ -232,26 +175,16 @@ export function AiAdvisorPage() {
         </aside>
       </div>
 
-      {/* Slide-over financial context drawer — mobile and tablet */}
-      <Sheet open={contextOpen} onOpenChange={setContextOpen}>
-        <SheetContent side="right" className="w-85 overflow-y-auto sm:max-w-md">
-          <SheetHeader>
-            <SheetTitle>{UI_COPY.ADVISOR.CONTEXT.TITLE}</SheetTitle>
-            <SheetDescription>{UI_COPY.ADVISOR.CONTEXT.DESCRIPTION}</SheetDescription>
-          </SheetHeader>
-          <div className="mt-4">
-            <ContextPanel
-              onQuickAction={handleQuickAction}
-              isStreaming={isStreaming}
-              streamingLabel={runState.statusLabel}
-              pendingConfirmation={pendingConfirmation}
-              lastRunActivities={lastRunActivities}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
+      <AdvisorMobileContextSheet
+        open={contextOpen}
+        onOpenChange={setContextOpen}
+        onQuickAction={handleQuickAction}
+        isStreaming={isStreaming}
+        streamingLabel={runState.statusLabel}
+        pendingConfirmation={pendingConfirmation}
+        lastRunActivities={lastRunActivities}
+      />
 
-      {/* History drawer listing past conversation threads */}
       <HistoryDrawer
         open={historyOpen}
         onOpenChange={setHistoryOpen}

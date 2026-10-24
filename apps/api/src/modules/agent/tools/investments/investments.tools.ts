@@ -1,8 +1,22 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { InvestmentsService } from "@/modules/investments/investments.service";
 import { createInvestmentSchema, updateInvestmentValueSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import {
+  AgentCardType,
+  AgentToolName,
+  ConfirmationRowLabel,
+  ToolAccessLevel,
+  ToolConfirmationType,
+  ToolInvalidationTag,
+} from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+
+const INVALIDATES_INVESTMENT_WRITES = [
+  ToolInvalidationTag.INVESTMENTS,
+  ToolInvalidationTag.ANALYTICS,
+];
 
 /**
  * Read + write tools over the existing InvestmentsService. `updateValue`
@@ -12,12 +26,11 @@ import { formatINR } from "@finai/finance-engine";
 export function createInvestmentsTools(investmentsService: InvestmentsService) {
   return [
     defineTool({
-      name: "investments.list",
-      description:
-        "Get the user's investment portfolio with total portfolio value and per-asset allocation percentages.",
-      access: "read",
-      confirmation: "none",
-      label: "Reviewing investments",
+      name: AgentToolName.INVESTMENTS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => investmentsService.findAll(ctx.userId),
       serialize: (output) => {
@@ -51,13 +64,12 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       },
     }),
     defineTool({
-      name: "investments.create",
-      description:
-        "Add an investment holding to the user's portfolio. Requires confirmation. Fields: name, assetClass (MUTUAL_FUND | STOCK | FIXED_DEPOSIT | GOLD | EPF | PPF | REAL_ESTATE | CRYPTO | OTHER), currentValue, investedAmount.",
-      access: "write",
-      confirmation: "required",
-      label: "Adding investment",
-      invalidates: ["investments", "analytics"],
+      name: AgentToolName.INVESTMENTS_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_CREATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_CREATE],
+      invalidates: INVALIDATES_INVESTMENT_WRITES,
       schema: createInvestmentSchema,
       execute: async (input, ctx) => investmentsService.create(ctx.userId, input),
       serialize: (output) => {
@@ -75,13 +87,13 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         };
       },
       describe: (input) => ({
-        type: "confirmation" as const,
-        title: "Add investment",
+        type: AgentCardType.CONFIRMATION,
+        title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_CREATE],
         rows: [
-          ["Name", input.name],
-          ["Asset class", input.assetClass],
-          ["Current value", formatINR(input.currentValue)],
-          ["Invested amount", formatINR(input.investedAmount)],
+          [ConfirmationRowLabel.NAME, input.name],
+          [ConfirmationRowLabel.ASSET_CLASS, input.assetClass],
+          [ConfirmationRowLabel.CURRENT_VALUE, formatINR(input.currentValue)],
+          [ConfirmationRowLabel.INVESTED_AMOUNT, formatINR(input.investedAmount)],
         ],
       }),
       summarize: (output) => {
@@ -90,24 +102,23 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       },
     }),
     defineTool({
-      name: "investments.updateValue",
-      description:
-        "Update the current market value of one of the user's investment holdings. Requires confirmation.",
-      access: "write",
-      confirmation: "required",
-      label: "Updating investment value",
-      invalidates: ["investments", "analytics"],
+      name: AgentToolName.INVESTMENTS_UPDATE_VALUE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_UPDATE_VALUE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_UPDATE_VALUE],
+      invalidates: INVALIDATES_INVESTMENT_WRITES,
       schema: updateInvestmentValueSchema.extend({
         investmentId: z.string().uuid("Invalid investment ID"),
       }),
       execute: async (input, ctx) =>
         investmentsService.updateValue(input.investmentId, ctx.userId, input.currentValue),
       describe: (input) => ({
-        type: "confirmation" as const,
-        title: "Update investment value",
+        type: AgentCardType.CONFIRMATION,
+        title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_UPDATE_VALUE],
         rows: [
-          ["Investment ID", input.investmentId],
-          ["New current value", formatINR(input.currentValue)],
+          [ConfirmationRowLabel.INVESTMENT_ID, input.investmentId],
+          [ConfirmationRowLabel.NEW_CURRENT_VALUE, formatINR(input.currentValue)],
         ],
       }),
       summarize: (output) => {
@@ -116,23 +127,25 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       },
     }),
     defineTool({
-      name: "investments.delete",
-      description:
-        "Permanently remove an investment holding from the user's portfolio. Requires confirmation — this is destructive and cannot be undone.",
-      access: "write",
-      confirmation: "required",
-      label: "Deleting investment",
-      invalidates: ["investments", "analytics"],
+      name: AgentToolName.INVESTMENTS_DELETE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_DELETE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_DELETE],
+      invalidates: INVALIDATES_INVESTMENT_WRITES,
       schema: z.object({
         investmentId: z.string().uuid("Invalid investment ID"),
       }),
       execute: async (input, ctx) => investmentsService.remove(input.investmentId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
-        title: "Delete investment",
+        type: AgentCardType.CONFIRMATION,
+        title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_DELETE],
         rows: [
-          ["Investment ID", input.investmentId],
-          ["Warning", "Permanent delete — the holding is removed from the portfolio"],
+          [ConfirmationRowLabel.INVESTMENT_ID, input.investmentId],
+          [
+            ConfirmationRowLabel.WARNING,
+            "Permanent delete — the holding is removed from the portfolio",
+          ],
         ],
       }),
       summarize: () => "Investment deleted",
