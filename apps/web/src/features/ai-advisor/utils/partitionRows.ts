@@ -1,6 +1,9 @@
+import { BULK_ITEM_PREFIX } from "@finai/shared-types";
+
 /**
  * Partitions card rows into before/after effect pairs vs plain detail rows.
  * Recognized effect keys: "Before/After", "Old/New limit", "Current/New".
+ * Strips any internal sentinel keys (e.g. __bulk_count__, __item_0__) from detail rows.
  */
 export function partitionRows(cardRows: [string, string][]): {
   effectRows: [string, string][];
@@ -34,6 +37,8 @@ export function partitionRows(cardRows: [string, string][]): {
     }
   }
 
-  const detailRows = rows.filter((_, i) => !used.has(i));
+  const detailRows = rows.filter(
+    ([k], i) => !used.has(i) && !k.startsWith("__") && !k.startsWith(BULK_ITEM_PREFIX),
+  );
   return { effectRows, detailRows };
 }

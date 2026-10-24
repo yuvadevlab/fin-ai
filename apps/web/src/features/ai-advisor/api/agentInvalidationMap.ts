@@ -1,5 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS } from "@finai/shared-types";
+import { QUERY_KEYS, ToolInvalidationTag } from "@finai/shared-types";
 
 /**
  * Maps agent tool-name prefixes to the React Query cache keys that must be
@@ -9,9 +9,12 @@ const AGENT_TOOL_INVALIDATION: readonly {
   prefix: string;
   queryKeys: readonly (readonly unknown[])[];
 }[] = [
-  { prefix: "accounts.", queryKeys: [QUERY_KEYS.ACCOUNTS.ALL, QUERY_KEYS.ANALYTICS.DASHBOARD] },
   {
-    prefix: "transactions.",
+    prefix: `${ToolInvalidationTag.ACCOUNTS}.`,
+    queryKeys: [QUERY_KEYS.ACCOUNTS.ALL, QUERY_KEYS.ANALYTICS.DASHBOARD],
+  },
+  {
+    prefix: `${ToolInvalidationTag.TRANSACTIONS}.`,
     queryKeys: [
       QUERY_KEYS.TRANSACTIONS.ALL,
       QUERY_KEYS.ACCOUNTS.ALL,
@@ -20,19 +23,25 @@ const AGENT_TOOL_INVALIDATION: readonly {
     ],
   },
   {
-    prefix: "categories.",
+    prefix: `${ToolInvalidationTag.CATEGORIES}.`,
     queryKeys: [QUERY_KEYS.CATEGORIES.ALL, QUERY_KEYS.TRANSACTIONS.ALL, QUERY_KEYS.BUDGETS.ALL],
   },
-  { prefix: "budgets.", queryKeys: [QUERY_KEYS.BUDGETS.ALL, QUERY_KEYS.ANALYTICS.DASHBOARD] },
   {
-    prefix: "goals.",
+    prefix: `${ToolInvalidationTag.BUDGETS}.`,
+    queryKeys: [QUERY_KEYS.BUDGETS.ALL, QUERY_KEYS.ANALYTICS.DASHBOARD],
+  },
+  {
+    prefix: `${ToolInvalidationTag.GOALS}.`,
     queryKeys: [QUERY_KEYS.GOALS.ALL, QUERY_KEYS.ACCOUNTS.ALL, QUERY_KEYS.ANALYTICS.DASHBOARD],
   },
   {
-    prefix: "investments.",
+    prefix: `${ToolInvalidationTag.INVESTMENTS}.`,
     queryKeys: [QUERY_KEYS.INVESTMENTS.PORTFOLIO, QUERY_KEYS.ANALYTICS.DASHBOARD],
   },
-  { prefix: "profile.", queryKeys: [QUERY_KEYS.USER.PROFILE, QUERY_KEYS.ACCOUNTS.ALL] },
+  {
+    prefix: `${ToolInvalidationTag.PROFILE}.`,
+    queryKeys: [QUERY_KEYS.USER.PROFILE, QUERY_KEYS.ACCOUNTS.ALL],
+  },
 ];
 
 /** Cache keys to invalidate after a confirmed action for the given tool. */

@@ -4,6 +4,12 @@ import { Check, Loader2, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@finai/ui";
 import { usePrivacyMode } from "@/hooks";
 import type { AgentConfirmation } from "../api/agentTypes";
+import {
+  AgentCardType,
+  AgentConfirmationStatus,
+  AgentToolName,
+  ConfirmationRowLabel,
+} from "@finai/shared-types";
 import { partitionRows } from "../utils/partitionRows";
 import { getTransactionTypeAccent, STATUS_META } from "../utils/confirmationCardStyles";
 import { BulkConfirmationCarousel } from "./BulkConfirmationCarousel";
@@ -31,7 +37,14 @@ export function RichConfirmationCard({
 }: RichConfirmationCardProps) {
   const { isPrivacyMode } = usePrivacyMode();
 
-  if (confirmation.card.rows?.[0]?.[0] === "__bulk_count__") {
+  const isBulk =
+    confirmation.card.type === AgentCardType.BULK_CONFIRMATION ||
+    confirmation.tool === AgentToolName.TRANSACTIONS_BULK_CREATE ||
+    confirmation.card.rows?.some(
+      ([k]) => k === ConfirmationRowLabel.BULK_COUNT || k === "__bulk_count__",
+    );
+
+  if (isBulk) {
     return (
       <BulkConfirmationCarousel
         confirmation={confirmation}
@@ -44,7 +57,7 @@ export function RichConfirmationCard({
   }
 
   const { card, status } = confirmation;
-  const pending = status === "pending";
+  const pending = status === AgentConfirmationStatus.PENDING;
   const meta = isExecuting
     ? {
         label: UI_COPY.ADVISOR.CONFIRMATION_STATUS.EXECUTING,
@@ -97,7 +110,7 @@ export function RichConfirmationCard({
       {detailRows.length > 0 && (
         <div
           className={cn(
-            "border-border/40 divide-border/40 divide-y overflow-hidden border-t",
+            "border-border/40 divide-y overflow-hidden border-t",
             effectRows.length > 0 && "border-t-0",
           )}
         >

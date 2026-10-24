@@ -15,7 +15,8 @@ finai/
 │   ├── web/                     # Next.js 15 App Router Frontend
 │   └── api/                     # NestJS 10 REST API Backend & Ollama Agent Loop
 └── packages/
-    ├── ai-engine/               # LLM prompts, persona, prompt builders, tool definitions & guards
+    ├── prompts/                 # Centralized prompt templates, personas & prompt builders
+    ├── ai-engine/               # LLM runtime adapters, agent loop, tool descriptors & stream events
     ├── finance-engine/          # Pure mathematical calculation engine (zero DB, zero HTTP, zero I/O)
     ├── shared-types/            # Shared TypeScript DTOs, interfaces, constants, and enums
     ├── validation/              # Centralized Zod validation schemas
@@ -28,7 +29,8 @@ finai/
 
 - **Shared Constants & Types (`@finai/shared-types`)**: ANY constants, DTO shapes, Enums (`AccountType`, `TransactionType`, `GoalType`), `QUERY_KEYS`, `API_ENDPOINTS`, `SEARCH_PARAMS`, or TypeScript interfaces shared across apps or packages MUST reside in `@finai/shared-types`. **NEVER duplicate types or constants across apps or packages**.
 - **Financial Math (`@finai/finance-engine`)**: ALL financial calculation logic (Health Score, Net Worth, Cash Flow, Savings Rate, Budget Usage, Portfolio Asset Allocation, Goal Projections) MUST reside in `@finai/finance-engine`. **MUST contain zero side-effects, zero I/O, zero database access, and zero HTTP calls**.
-- **AI Prompts & Guardrails (`@finai/ai-engine`)**: ALL system personas, prompt templates, prompt builder factory functions, follow-up parsers, and domain scope rejection rules MUST reside in `@finai/ai-engine`. API services must never define inline prompt strings.
+- **AI Prompts & Templates (`@finai/prompts`)**: ALL system personas, prompt templates, and prompt builder factory functions MUST reside in `@finai/prompts`. API services must never define inline prompt strings.
+- **AI Runtime & Agent Loop (`@finai/ai-engine`)**: LLM provider adapters, agent orchestrator, tool descriptors, and stream events MUST reside in `@finai/ai-engine`.
 - **Validation Schemas (`@finai/validation`)**: ALL Zod schemas for forms and API validation MUST reside in `@finai/validation`. Never define inline Zod schemas in web components or backend route handlers.
 - **UI Design System (`@finai/ui`)**: Reusable presentation components, dialog primitives, gauges, and form fields MUST live in `@finai/ui`.
 

@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api-client";
-import { StorageKey, API_ENDPOINTS } from "@finai/shared-types";
+import { StorageKey, API_ENDPOINTS, TransactionKind } from "@finai/shared-types";
 import { BulkRow } from "@/features/transactions/components/BulkTransactionForm";
 
 export interface SelectOption {
@@ -115,9 +115,9 @@ export async function parseExcelOrCsvFile(
           if (!rawAmount || parseFloat(rawAmount) <= 0) continue;
 
           // Parse Type
-          let kind: "expense" | "income" | "transfer" = "expense";
-          if (rawType.includes("inc") || rawType.includes("credit")) kind = "income";
-          else if (rawType.includes("trans")) kind = "transfer";
+          let kind: TransactionKind = TransactionKind.EXPENSE;
+          if (rawType.includes("inc") || rawType.includes("credit")) kind = TransactionKind.INCOME;
+          else if (rawType.includes("trans")) kind = TransactionKind.TRANSFER;
 
           // Match Category ID
           const matchedCat =

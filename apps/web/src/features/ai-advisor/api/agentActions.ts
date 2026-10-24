@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib";
-import { API_ENDPOINTS, SEARCH_PARAMS } from "@finai/shared-types";
+import { AgentConfirmationStatus, API_ENDPOINTS, SEARCH_PARAMS } from "@finai/shared-types";
 
 /**
  * Response shape returned by POST `/agent/actions/:id/confirm`.
@@ -51,7 +51,7 @@ export interface AgentActionHistoryItem {
   actionId: string;
   tool: string;
   card: { type: string; title: string; rows?: [string, string][] };
-  status: "pending" | "executed" | "rejected" | "failed";
+  status: AgentConfirmationStatus;
   result?: unknown;
   createdAt?: string;
 }

@@ -19,6 +19,7 @@ import {
   type LlmToolDefinition,
   type OpenAiStyleToolCall,
 } from "./types";
+import { AiProvider } from "@finai/shared-types";
 
 interface GoogleStreamChunk {
   choices?: Array<{
@@ -62,7 +63,7 @@ function toOpenAiTools(tools: LlmToolDefinition[]) {
 }
 
 export class GoogleAiStudioChatModel implements ChatModel {
-  readonly provider = "google-ai-studio";
+  readonly provider = AiProvider.GOOGLE_AI_STUDIO;
 
   constructor(private readonly config: ChatModelConfig) {}
 

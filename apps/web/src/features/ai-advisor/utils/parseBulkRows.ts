@@ -1,3 +1,5 @@
+import { BULK_ITEM_PREFIX, ConfirmationRowLabel, TransactionType } from "@finai/shared-types";
+
 export interface BulkTransactionItem {
   index: number;
   type: string;
@@ -25,24 +27,31 @@ export function parseBulkRows(rows: [string, string][] = []): ParsedBulkData {
   let current: Partial<BulkTransactionItem> | null = null;
 
   for (const [key, value] of rows) {
-    if (key === "__bulk_count__") {
+    if (key === ConfirmationRowLabel.BULK_COUNT) {
       count = parseInt(value, 10) || 0;
-    } else if (key === "__bulk_total__") {
+    } else if (key === ConfirmationRowLabel.BULK_TOTAL) {
       total = value;
-    } else if (key.startsWith("__item_")) {
+    } else if (key.startsWith(BULK_ITEM_PREFIX)) {
       if (current && current.index !== undefined) {
         items.push(current as BulkTransactionItem);
       }
-      const idx = parseInt(key.replace("__item_", "").replace("__", ""), 10) || items.length;
-      current = { index: idx, type: "EXPENSE", amount: "₹0", date: "", account: "", category: "" };
+      const idx = parseInt(key.replace(BULK_ITEM_PREFIX, "").replace("__", ""), 10) || items.length;
+      current = {
+        index: idx,
+        type: TransactionType.EXPENSE,
+        amount: "₹0",
+        date: "",
+        account: "",
+        category: "",
+      };
     } else if (current) {
-      if (key === "Type") current.type = value;
-      else if (key === "Amount") current.amount = value;
-      else if (key === "Date") current.date = value;
-      else if (key === "Account") current.account = value;
-      else if (key === "Category") current.category = value;
-      else if (key === "To account") current.toAccount = value;
-      else if (key === "Notes") current.notes = value;
+      if (key === ConfirmationRowLabel.TYPE) current.type = value;
+      else if (key === ConfirmationRowLabel.AMOUNT) current.amount = value;
+      else if (key === ConfirmationRowLabel.DATE) current.date = value;
+      else if (key === ConfirmationRowLabel.ACCOUNT) current.account = value;
+      else if (key === ConfirmationRowLabel.CATEGORY) current.category = value;
+      else if (key === ConfirmationRowLabel.TO_ACCOUNT) current.toAccount = value;
+      else if (key === ConfirmationRowLabel.NOTES) current.notes = value;
     }
   }
 

@@ -1,4 +1,5 @@
 import type { AgentCard, AgentStreamEvent } from "@finai/ai-engine";
+import { ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
 import type { ValidationWarning } from "./tool-factory";
 
 /** Authorization + tracing context injected into every tool execution. */
@@ -15,13 +16,13 @@ export interface AgentContext {
  * Read tools only query data; write tools can create/update/delete. The
  * distinction drives audit labels and UI affordances (activity chips).
  */
-export type ToolAccess = "read" | "write";
+export type ToolAccess = ToolAccessLevel;
 
 /**
  * Write tools always use "required": the model can only PROPOSE such an
  * action; the row executes solely after the user confirms the card.
  */
-export type ConfirmationPolicy = "none" | "required";
+export type ConfirmationPolicy = ToolConfirmationType;
 
 /** Sink for SSE stream events; implemented by the controller over `res.write`. */
 export type AgentEventEmitter = (event: AgentStreamEvent) => void;

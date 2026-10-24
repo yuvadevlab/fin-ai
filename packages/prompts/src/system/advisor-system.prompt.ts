@@ -1,14 +1,7 @@
-import { FINAI_CORE_PERSONA } from "./persona";
+import { FINAI_CORE_PERSONA } from "../personas/core-persona";
 
 /**
  * System prompt template for multi-turn interactive AI Advisor chat.
- *
- * The literal `{context}` placeholder is replaced at runtime with the
- * serialized "Financial Context" (accounts, transactions, budgets, goals…)
- * built by the API service — see buildAdvisorSystemPrompt. The response
- * format contract (Executive Summary → Analysis → Guidance → Follow-ups)
- * pairs with extractFollowUpQuestions, which relies on the exact
- * "### Follow-up Suggestions:" header defined here.
  */
 export const ADVISOR_SYSTEM_PROMPT_TEMPLATE = `${FINAI_CORE_PERSONA}
 
@@ -35,9 +28,6 @@ Analyze the conversation history and the user's prompt below, and provide your e
 
 /**
  * System prompt template for single-shot page insight cards.
- *
- * The insight is rendered using MarkdownContent, so Markdown formatting
- * is allowed while keeping the response compact.
  */
 export const INSIGHT_SYSTEM_PROMPT_TEMPLATE = `${FINAI_CORE_PERSONA}
 
@@ -59,37 +49,18 @@ USER'S LIVE FINANCIAL CONTEXT:
 {context}
 \`\`\``;
 
-/**
- * Page-specific user prompts for streaming micro-insights, keyed by the
- * frontend page that renders the insight card. Each prompt asks for ONE
- * concise, page-relevant observation so the card stays a headline, not an
- * essay. Keys double as the `InsightPage` type — adding a page means adding
- * an entry here (unknown keys fall back to `dashboard` in the builder).
- */
 export const PAGE_INSIGHT_PROMPTS = {
   dashboard: `Give me ONE concise insight about my overall cash flow, savings, net worth, or balance this month. Highlight positive progress when supported by the data and mention one important area to watch. Keep it within 5 lines.`,
-
   transactions: `Give me ONE concise insight about my recent transactions. Focus on the most significant spending pattern, top category, unusually large expense, or meaningful change. Mention why it matters and one practical action if useful. Keep it within 5 lines.`,
-
   budgets: `Give me ONE concise insight about my budgets. Focus on the category most at risk, already exceeded, or showing the biggest change. Explain what matters and give one practical action to keep spending on track. Keep it within 5 lines.`,
-
   investments: `Give me ONE concise insight about my investment portfolio and diversification. Focus on the most important allocation, concentration, gain/loss, or diversification observation supported by the data. Give one focused improvement if appropriate. Keep it within 5 lines.`,
-
   goals: `Give me ONE concise insight about my financial goals and savings progress. Focus on whether my most important upcoming goal is progressing well or needs attention based on the available data. Give one practical and encouraging observation. Keep it within 5 lines.`,
-
   reports: `Give me ONE concise insight from my income, expenses, savings, and savings rate. Focus on the most significant change compared with my prior financial stats and explain what it means for me. Highlight positive progress when supported by the data. Keep it within 5 lines.`,
-
   health: `Give me ONE concise insight about your overall financial health. Focus on your biggest strength and the single most important area to improve based on your health score, savings, net worth, budget adherence, or cash flow. Keep it within 5 lines.`,
 } as const;
 
 export type InsightPage = keyof typeof PAGE_INSIGHT_PROMPTS;
 
-/**
- * System prompt for category icon emoji selection. Deliberately terse with
- * a hard "ONE emoji, nothing else" contract: the raw model output is
- * trimmed and used directly as the category icon, so any prose would leak
- * into the UI. (See the AI module's emoji service for the cleanup step.)
- */
 export const EMOJI_SUGGESTION_SYSTEM_PROMPT = `You are an AI assistant for a personal finance and budgeting application.
 
 Your task is to select the single most appropriate emoji for a financial category. The emoji should be clear, intuitive, and suitable for use as the category icon in a finance app.
@@ -102,9 +73,6 @@ Rules:
 - Avoid generic money emojis unless the category is directly related to money, income, investments, loans, or banking.
 `;
 
-/**
- * Prompt template for generating a short, 3 to 6 word summary title for a conversation.
- */
 export const TITLE_GENERATION_PROMPT_TEMPLATE = `You are a concise title generator.
 
 Summarize the following personal finance user request into a short 3 to 6 word title.

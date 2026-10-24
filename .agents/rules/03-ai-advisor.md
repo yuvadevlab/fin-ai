@@ -1,13 +1,13 @@
 # FinAI AI Engine & Agent Subsystem Rules
 
-> **Scope**: Applies to `packages/ai-engine`, `apps/api/src/modules/agent/`, `apps/api/src/modules/ai/`, and `apps/web/src/features/ai-advisor/`.
+> **Scope**: Applies to `packages/prompts`, `packages/ai-engine`, `apps/api/src/modules/agent/`, `apps/api/src/modules/ai/`, and `apps/web/src/features/ai-advisor/`.
 
 ---
 
 ## 1. Prompt Ownership & Boundaries
 
-- **Single Source of Truth (`@finai/ai-engine`)**: ALL system prompts, user prompt templates, tool plan instructions, follow-up parsers, and safety guardrails MUST live in `@finai/ai-engine`.
-- **No Inline Prompts**: API controllers and services MUST NOT define inline prompt strings. They may only assemble dynamic context (e.g. portfolio snapshots, recent history) and pass it to prompt builders from `@finai/ai-engine`.
+- **Single Source of Truth (`@finai/prompts`)**: ALL system prompts, user prompt templates, personas, and dynamic prompt builders MUST live in `@finai/prompts`.
+- **No Inline Prompts**: API controllers and services MUST NOT define inline prompt strings. They may only assemble dynamic context (e.g. portfolio snapshots, recent history) and pass it to prompt builders from `@finai/prompts`.
 
 ---
 

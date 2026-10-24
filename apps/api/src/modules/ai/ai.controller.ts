@@ -15,7 +15,7 @@ import {
   buildPageInsightUserPrompt,
   buildEmojiSuggestionUserPrompt,
   EMOJI_SUGGESTION_SYSTEM_PROMPT,
-} from "@finai/ai-engine";
+} from "@finai/prompts";
 /**
  * Legacy AI Advisor controller (read-only, chat + page insights).
  *

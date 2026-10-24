@@ -16,6 +16,7 @@
     "@finai/ai-engine": "workspace:*",
     "@finai/database": "workspace:*",
     "@finai/finance-engine": "workspace:*",
+    "@finai/prompts": "workspace:*",
     "@finai/shared-types": "workspace:*",
     "@finai/validation": "workspace:*",
     "@yuva-devlab/logger": "^1.2.0",
