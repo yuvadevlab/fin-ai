@@ -5,11 +5,13 @@ import Link from "next/link";
 import { ArrowUpRight, TrendingUp, Target, ShieldCheck } from "lucide-react";
 import { ContentCard, Progress, StatusBadge } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { APP_ROUTES } from "@/lib";
 import { useInvestments } from "@/features/investments/api/getInvestments";
 import { useBudgets } from "@/features/budgets/api/getBudgets";
 import { useGoals } from "@/features/goals/api/getGoals";
 import { calculateAggregateBudget, calculateAggregateGoals } from "@finai/finance-engine";
 import type { DashboardStats } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface DashboardSummaryStatsProps {
   stats?: DashboardStats;
@@ -54,17 +56,19 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
                 <TrendingUp className="size-4" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">Invested Portfolio</p>
+                <p className="text-foreground text-xs font-semibold">
+                  {UI_COPY.DASHBOARD.PORTFOLIO.TITLE}
+                </p>
                 <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
-                  {investmentsCount} active holdings
+                  {UI_COPY.DASHBOARD.PORTFOLIO.ACTIVE_HOLDINGS(investmentsCount)}
                 </p>
               </div>
             </div>
             <Link
-              href="/investments"
+              href={APP_ROUTES.INVESTMENTS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
-              View all <ArrowUpRight className="size-3" />
+              {UI_COPY.DASHBOARD.PORTFOLIO.VIEW_ALL} <ArrowUpRight className="size-3" />
             </Link>
           </div>
 
@@ -73,13 +77,14 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
               <PrivacyMoney value={portfolioValue} />
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              Invested: <PrivacyMoney value={totalInvested} /> · {investmentsCount} holdings
+              {UI_COPY.DASHBOARD.PORTFOLIO.INVESTED_PREFIX} <PrivacyMoney value={totalInvested} /> ·{" "}
+              {investmentsCount} {UI_COPY.DASHBOARD.PORTFOLIO.HOLDINGS}
             </p>
           </div>
         </div>
 
         <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
-          <span>Total Returns</span>
+          <span>{UI_COPY.DASHBOARD.PORTFOLIO.TOTAL_RETURNS}</span>
           <span
             className={`flex items-center gap-1 font-semibold ${
               totalReturns >= 0 ? "text-primary" : "text-destructive"
@@ -104,17 +109,19 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
                 <ShieldCheck className="size-4" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">Budget Guardrail</p>
+                <p className="text-foreground text-xs font-semibold">
+                  {UI_COPY.DASHBOARD.BUDGET.TITLE}
+                </p>
                 <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
-                  {budgetSummary.usagePercentage}% cap utilized
+                  {UI_COPY.DASHBOARD.BUDGET.CAP_UTILIZED(budgetSummary.usagePercentage)}
                 </p>
               </div>
             </div>
             <Link
-              href="/budgets"
+              href={APP_ROUTES.BUDGETS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
-              Manage <ArrowUpRight className="size-3" />
+              {UI_COPY.DASHBOARD.BUDGET.MANAGE} <ArrowUpRight className="size-3" />
             </Link>
           </div>
 
@@ -124,7 +131,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
                 <PrivacyMoney value={budgetSummary.totalSpent} />
               </p>
               <span className="text-muted-foreground text-xs">
-                of <PrivacyMoney value={budgetSummary.totalLimit} />
+                {UI_COPY.DASHBOARD.BUDGET.OF} <PrivacyMoney value={budgetSummary.totalLimit} />
               </span>
             </div>
             <Progress
@@ -135,7 +142,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
         </div>
 
         <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
-          <span>Status</span>
+          <span>{UI_COPY.DASHBOARD.BUDGET.STATUS}</span>
           <StatusBadge status={budgetSummary.status} />
         </div>
       </ContentCard>
@@ -149,17 +156,19 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
                 <Target className="size-4" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">Savings Goals</p>
+                <p className="text-foreground text-xs font-semibold">
+                  {UI_COPY.DASHBOARD.GOALS.TITLE}
+                </p>
                 <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
-                  {stats?.goalCount ?? 0} targets tracking
+                  {UI_COPY.DASHBOARD.GOALS.TARGETS_TRACKING(stats?.goalCount ?? 0)}
                 </p>
               </div>
             </div>
             <Link
-              href="/goals"
+              href={APP_ROUTES.GOALS}
               className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
             >
-              View goals <ArrowUpRight className="size-3" />
+              {UI_COPY.DASHBOARD.GOALS.VIEW_GOALS} <ArrowUpRight className="size-3" />
             </Link>
           </div>
 
@@ -169,7 +178,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
                 <PrivacyMoney value={goalsSummary.totalCurrent} />
               </p>
               <span className="text-primary text-xs font-semibold">
-                {goalsSummary.progressPercentage}% funded
+                {goalsSummary.progressPercentage}% {UI_COPY.DASHBOARD.GOALS.FUNDED}
               </span>
             </div>
             <Progress value={goalsSummary.progressPercentage} className="mt-2 h-1.5" />
@@ -177,7 +186,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
         </div>
 
         <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
-          <span>Target Total</span>
+          <span>{UI_COPY.DASHBOARD.GOALS.TARGET_TOTAL}</span>
           <span className="text-foreground font-semibold">
             <PrivacyMoney value={goalsSummary.totalTarget} />
           </span>

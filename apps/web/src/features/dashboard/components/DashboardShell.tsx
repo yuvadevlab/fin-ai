@@ -13,6 +13,7 @@ import { NotificationsMenu } from "@/components/NotificationsMenu";
 import { PrivacyToggle } from "@/components/PrivacyToggle";
 import { useSidebarState } from "@/hooks";
 import { AIInsightFloatingWidget } from "@/features/ai-advisor/components";
+import { UI_COPY } from "@/lib/ui-copy";
 
 function CustomLinkComponent({
   href,
@@ -78,7 +79,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {/* Mobile Navigation Drawer */}
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetContent side="left" className="border-border/80 w-72 border-r p-0">
-            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <SheetTitle className="sr-only">{UI_COPY.COMMON.ACTIONS.NAVIGATION_MENU}</SheetTitle>
             <Sidebar
               pathname={pathname}
               LinkComponent={CustomLinkComponent}

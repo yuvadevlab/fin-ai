@@ -20,8 +20,9 @@ import { useTransactions, useDeleteTransaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
 import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
+import { UI_COPY } from "@/lib/ui-copy";
 
-const chips = ["All", "Income", "Expenses", "Transfer", "Investments", "Goals"];
+const chips = [...UI_COPY.TRANSACTIONS.FILTER_CHIPS];
 
 export function TransactionsPage() {
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -98,13 +99,13 @@ export function TransactionsPage() {
       header={
         <>
           <PageHeader
-            title="Transactions"
-            description="All income, expenses, and transfers."
+            title={UI_COPY.TRANSACTIONS.PAGE_TITLE}
+            description={UI_COPY.TRANSACTIONS.PAGE_DESCRIPTION}
             actions={
               <TransactionDialog
                 trigger={
                   <Button size="sm" className="cursor-pointer gap-1.5">
-                    <Plus className="size-4" /> Add Transaction
+                    <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.ADD_TRANSACTION}
                   </Button>
                 }
               />
@@ -115,7 +116,7 @@ export function TransactionsPage() {
           <div className="bg-card ring-border/50 flex flex-col gap-2.5 rounded-2xl p-3 shadow-sm ring-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:p-4">
             <div className="relative w-full sm:w-auto sm:min-w-64 sm:flex-1">
               <SearchBar
-                placeholder="Search notes, categories, accounts…"
+                placeholder={UI_COPY.TRANSACTIONS.SEARCH_PLACEHOLDER}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 containerClassName="w-full"
@@ -165,11 +166,11 @@ export function TransactionsPage() {
     >
       {isLoading ? (
         <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
-          <p className="text-muted-foreground text-sm">Loading transactions…</p>
+          <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.LOADING}</p>
         </div>
       ) : transactionsList.length === 0 ? (
         <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
-          <p className="text-muted-foreground text-sm">No transactions match your filters.</p>
+          <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.EMPTY}</p>
         </div>
       ) : (
         <DataTable

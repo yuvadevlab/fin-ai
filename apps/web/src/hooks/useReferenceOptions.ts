@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS, type ReferenceOption } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
-import type { ReferenceOption } from "@finai/shared-types";
 
-export const referenceOptionsQueryKey = (category: string) =>
-  ["reference-options", category] as const;
+export const referenceOptionsQueryKey = (category: string) => QUERY_KEYS.OPTIONS.CATEGORY(category);
 
 /**
  * Fetches active reference options for a specific category from the database.
@@ -15,7 +14,7 @@ export const referenceOptionsQueryKey = (category: string) =>
 export function useReferenceOptions(category: string) {
   return useQuery<ReferenceOption[]>({
     queryKey: referenceOptionsQueryKey(category),
-    queryFn: () => apiClient.get<ReferenceOption[]>(`options/${category}`),
+    queryFn: () => apiClient.get<ReferenceOption[]>(API_ENDPOINTS.OPTIONS.CATEGORY(category)),
     staleTime: Infinity,
     select: (data) => data.filter((opt) => opt.isActive),
   });

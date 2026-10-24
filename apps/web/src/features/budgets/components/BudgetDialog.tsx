@@ -7,6 +7,7 @@ import { useCategories } from "@/features/categories/api";
 import { CategoryDialog } from "@/features/categories/components/CategoryDialog";
 import { useCreateBudget, useUpdateBudget, type Budget } from "../api";
 import { BudgetForm } from "./BudgetForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface BudgetDialogProps {
   trigger?: React.ReactNode;
@@ -113,7 +114,7 @@ export function BudgetDialog({
       } catch (err) {
         const apiErr = err as { message?: string };
         setErrors({
-          root: apiErr?.message || "An error occurred while updating the budget.",
+          root: apiErr?.message || UI_COPY.BUDGETS.FORM.UPDATE_FAILED,
         });
       }
       return;
@@ -147,7 +148,7 @@ export function BudgetDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "An error occurred while creating the budget.",
+        root: apiErr?.message || UI_COPY.BUDGETS.FORM.CREATE_FAILED,
       });
     }
   };
@@ -158,13 +159,15 @@ export function BudgetDialog({
         open={open}
         onOpenChange={setOpen}
         trigger={trigger}
-        title={isEditMode ? "Update Budget" : "Create Budget"}
+        title={isEditMode ? UI_COPY.BUDGETS.FORM.UPDATE_TITLE : UI_COPY.BUDGETS.FORM.CREATE_TITLE}
         description={
           isEditMode
-            ? `Adjust the monthly spending cap for ${budget?.category?.name || "this category"}.`
-            : "Set a monthly spending cap for a category."
+            ? UI_COPY.BUDGETS.FORM.EDIT_DESCRIPTION(budget?.category?.name ?? "this category")
+            : UI_COPY.BUDGETS.FORM.CREATE_DESCRIPTION
         }
-        submitLabel={isEditMode ? "Update Limit" : "Create Budget"}
+        submitLabel={
+          isEditMode ? UI_COPY.BUDGETS.FORM.UPDATE_LIMIT : UI_COPY.BUDGETS.FORM.CREATE_BUDGET
+        }
         loading={createBudget.isPending || updateBudget.isPending}
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}

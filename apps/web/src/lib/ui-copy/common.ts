@@ -8,6 +8,7 @@ export const COMMON_COPY = {
   ACTIONS: {
     CANCEL: "Cancel",
     SAVE: "Save Changes",
+    SAVE_SHORT: "Save",
     SUBMIT: "Submit",
     DELETE: "Delete",
     CLOSE: "Close",
@@ -28,6 +29,14 @@ export const COMMON_COPY = {
     REJECT: "Reject",
     STOP: "Stop",
     SEND: "Send",
+    NAVIGATION_MENU: "Navigation Menu",
+  },
+  PROFILE_MENU: {
+    FALLBACK_USER: "User",
+    FALLBACK_INITIAL: "U",
+    PROFILE: "Profile",
+    SETTINGS: "Settings",
+    LOG_OUT: "Log out",
   },
   STATUS: {
     ONLINE: "Online",

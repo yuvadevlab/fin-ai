@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS, SEARCH_PARAMS } from "@finai/shared-types";
+import { apiClient } from "@/lib/api-client";
 
 export interface SearchTransaction {
   id: string;
@@ -47,9 +48,11 @@ export function useSearch(query: string) {
   const enabled = debouncedQuery.trim().length >= 2;
 
   return useQuery<SearchResults>({
-    queryKey: ["search", debouncedQuery],
+    queryKey: QUERY_KEYS.SEARCH.QUERY(debouncedQuery),
     queryFn: () =>
-      apiClient.get<SearchResults>(`search?q=${encodeURIComponent(debouncedQuery.trim())}`),
+      apiClient.get<SearchResults>(
+        `${API_ENDPOINTS.SEARCH.BASE}?${SEARCH_PARAMS.QUERY}=${encodeURIComponent(debouncedQuery.trim())}`,
+      ),
     enabled,
     staleTime: 10_000,
   });

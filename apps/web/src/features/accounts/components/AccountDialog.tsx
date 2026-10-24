@@ -5,6 +5,7 @@ import { FormDialog } from "@finai/ui";
 import { createAccountSchema, updateAccountSchema } from "@finai/validation";
 import { useCreateAccount, useUpdateAccount, useAccounts, Account } from "../api";
 import { AccountForm } from "./AccountForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface AccountDialogProps {
   /** Trigger element that opens the dialog (create mode only). */
@@ -96,7 +97,7 @@ export function AccountDialog({
         setOpen?.(false);
       } catch (err) {
         const apiErr = err as { message?: string };
-        setErrors({ root: apiErr?.message || "Failed to update account." });
+        setErrors({ root: apiErr?.message || UI_COPY.ACCOUNTS.FORM.UPDATE_FAILED });
       }
       return;
     }
@@ -126,7 +127,7 @@ export function AccountDialog({
       setValues(defaultValues());
     } catch (err) {
       const apiErr = err as { message?: string };
-      setErrors({ root: apiErr?.message || "An error occurred while linking the account." });
+      setErrors({ root: apiErr?.message || UI_COPY.ACCOUNTS.FORM.LINK_FAILED });
     }
   };
 
@@ -137,13 +138,13 @@ export function AccountDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title={isEditMode ? "Edit Account" : "Link Account"}
+      title={isEditMode ? UI_COPY.ACCOUNTS.FORM.EDIT_TITLE : UI_COPY.ACCOUNTS.FORM.CREATE_TITLE}
       description={
         isEditMode
-          ? "Update the account name. Balance is adjusted via transactions."
-          : "Link a new bank account, credit card, or wallet."
+          ? UI_COPY.ACCOUNTS.FORM.EDIT_DESCRIPTION
+          : UI_COPY.ACCOUNTS.FORM.CREATE_DESCRIPTION
       }
-      submitLabel={isEditMode ? "Save Changes" : "Link Account"}
+      submitLabel={isEditMode ? UI_COPY.COMMON.ACTIONS.SAVE : UI_COPY.ACCOUNTS.LINK_ACCOUNT}
       loading={isPending}
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}

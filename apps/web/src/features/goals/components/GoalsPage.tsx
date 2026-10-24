@@ -16,6 +16,7 @@ import {
 } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
+import { UI_COPY } from "@/lib/ui-copy";
 
 import { useGoals, useDeleteGoal, type Goal } from "../api";
 import { GoalDialog } from "./GoalDialog";
@@ -63,11 +64,11 @@ export function GoalsPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Savings Goals"
-        description="Track your personal savings targets and projected completion dates."
+        title={UI_COPY.GOALS.PAGE_TITLE}
+        description={UI_COPY.GOALS.PAGE_DESCRIPTION}
         actions={
           <Button size="sm" onClick={handleOpenCreateGoal} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> New Goal
+            <Plus className="size-4" /> {UI_COPY.GOALS.NEW_GOAL}
           </Button>
         }
       />
@@ -77,13 +78,12 @@ export function GoalsPage() {
           <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
             <Target className="text-muted-foreground size-6" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">No savings goals yet</h3>
+          <h3 className="text-foreground text-base font-semibold">{UI_COPY.GOALS.EMPTY_TITLE}</h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Set targets for an Emergency Fund, vacations, or major purchases to keep your savings on
-            track.
+            {UI_COPY.GOALS.EMPTY_DESCRIPTION}
           </p>
           <Button size="sm" onClick={handleOpenCreateGoal} className="mt-5 cursor-pointer gap-1.5">
-            <Plus className="size-4" /> Create First Goal
+            <Plus className="size-4" /> {UI_COPY.GOALS.CREATE_FIRST}
           </Button>
         </div>
       ) : (
@@ -98,7 +98,7 @@ export function GoalsPage() {
                   month: "short",
                   day: "numeric",
                 })
-              : "No deadline";
+              : UI_COPY.GOALS.NO_DEADLINE;
 
             return (
               <ProgressCard
@@ -107,7 +107,9 @@ export function GoalsPage() {
                 subtitle={
                   <span className="text-muted-foreground mt-1 flex items-center gap-1.5 text-xs">
                     <Target className="size-3" />
-                    <span>Target: {formattedDeadline}</span>
+                    <span>
+                      {UI_COPY.GOALS.TARGET} {formattedDeadline}
+                    </span>
                   </span>
                 }
                 value={current}
@@ -127,7 +129,7 @@ export function GoalsPage() {
                         size="icon"
                         variant="ghost"
                         className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                        aria-label={`Actions for ${g.name}`}
+                        aria-label={UI_COPY.GOALS.ACTIONS_FOR(g.name)}
                       >
                         <MoreVertical className="size-4" />
                       </Button>
@@ -137,22 +139,22 @@ export function GoalsPage() {
                         onClick={() => handleOpenEditGoal(g)}
                         className="cursor-pointer"
                       >
-                        <Pencil className="mr-2 size-3.5" /> Edit
+                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => handleOpenDeleteGoal(g)}
                         className="text-destructive focus:text-destructive cursor-pointer"
                       >
-                        <Trash2 className="mr-2 size-3.5" /> Delete
+                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 }
                 footerLeft={
                   current >= target
-                    ? "Goal Completed!"
-                    : `${isPrivacyMode ? "₹ ••••••" : formatINR(target - current)} to go`
+                    ? UI_COPY.GOALS.COMPLETED
+                    : `${isPrivacyMode ? "₹ ••••••" : formatINR(target - current)} ${UI_COPY.GOALS.TO_GO}`
                 }
                 footerRight={
                   current >= target ? null : (
@@ -165,7 +167,7 @@ export function GoalsPage() {
                           size="sm"
                           className="hover:text-primary h-7 cursor-pointer text-xs font-semibold"
                         >
-                          <Landmark className="mr-1 size-3" /> Save
+                          <Landmark className="mr-1 size-3" /> {UI_COPY.COMMON.ACTIONS.SAVE_SHORT}
                         </Button>
                       }
                     />
@@ -184,9 +186,9 @@ export function GoalsPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Goal"
-        description={`Are you sure you want to delete the goal "${goalToDelete?.name ?? "this goal"}"? Your transactions will remain intact, but goal tracking will be removed.`}
-        confirmText="Delete Goal"
+        title={UI_COPY.GOALS.DELETE_TITLE}
+        description={UI_COPY.GOALS.DELETE_CONFIRMATION(goalToDelete?.name ?? "this goal")}
+        confirmText={UI_COPY.GOALS.DELETE_TITLE}
         destructive
         onConfirm={handleDeleteGoalConfirm}
       />

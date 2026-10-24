@@ -5,22 +5,27 @@ import { FormDialogField, toast } from "@finai/ui";
 import { useAppearance } from "@/hooks";
 import type { AppearancePrefs } from "@/providers/appearance/AppearanceProvider";
 import { useProfile, useUpdateProfile } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 const appearanceOptions: { key: keyof AppearancePrefs; label: string; options: string[] }[] = [
   {
     key: "theme",
-    label: "Theme",
-    options: ["System", "Light", "Dark"],
+    label: UI_COPY.SETTINGS.APPEARANCE.THEME,
+    options: [
+      UI_COPY.SETTINGS.APPEARANCE.SYSTEM,
+      UI_COPY.SETTINGS.APPEARANCE.LIGHT,
+      UI_COPY.SETTINGS.APPEARANCE.DARK,
+    ],
   },
   {
     key: "density",
-    label: "Density",
-    options: ["Comfortable", "Compact"],
+    label: UI_COPY.SETTINGS.APPEARANCE.DENSITY,
+    options: [UI_COPY.SETTINGS.APPEARANCE.COMFORTABLE, UI_COPY.SETTINGS.APPEARANCE.COMPACT],
   },
   {
     key: "privacyMode",
-    label: "Privacy Mode",
-    options: ["Yes", "No"],
+    label: UI_COPY.SETTINGS.APPEARANCE.PRIVACY_MODE,
+    options: [UI_COPY.SETTINGS.APPEARANCE.YES, UI_COPY.SETTINGS.APPEARANCE.NO],
   },
 ];
 
@@ -60,7 +65,9 @@ export function AppearanceSettings() {
 
   if (isLoading) {
     return (
-      <div className="text-muted-foreground py-4 text-center text-sm">Loading settings...</div>
+      <div className="text-muted-foreground py-4 text-center text-sm">
+        {UI_COPY.SETTINGS.LOADING_SETTINGS}
+      </div>
     );
   }
 
@@ -70,7 +77,9 @@ export function AppearanceSettings() {
         {appearanceOptions.map((item) => {
           let value: string;
           if (item.key === "privacyMode") {
-            value = prefs.privacyMode ? "Yes" : "No";
+            value = prefs.privacyMode
+              ? UI_COPY.SETTINGS.APPEARANCE.YES
+              : UI_COPY.SETTINGS.APPEARANCE.NO;
           } else {
             value =
               (prefs[item.key] as string) || (appearance[item.key] as string) || item.options[0];

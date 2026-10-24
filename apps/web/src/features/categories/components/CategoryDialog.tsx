@@ -5,6 +5,7 @@ import { FormDialog } from "@finai/ui";
 import { createCategorySchema } from "@finai/validation";
 import { useCreateCategory, useUpdateCategory, Category, useCategoryGroups } from "../api";
 import { CategoryForm } from "./CategoryForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface CategoryDialogProps {
   trigger?: React.ReactNode;
@@ -111,17 +112,16 @@ export function CategoryDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "An error occurred while saving the category.",
+        root: apiErr?.message || UI_COPY.CATEGORIES.SAVE_FAILED,
       });
     }
   };
 
-  const title = mode === "add" ? "Add Category" : "Edit Category";
+  const title = mode === "add" ? UI_COPY.CATEGORIES.ADD_TITLE : UI_COPY.CATEGORIES.EDIT_TITLE;
   const description =
-    mode === "add"
-      ? "Create a new custom category for your transactions and budgets."
-      : "Update custom category details.";
-  const submitLabel = mode === "add" ? "Create Category" : "Save Changes";
+    mode === "add" ? UI_COPY.CATEGORIES.ADD_DESCRIPTION : UI_COPY.CATEGORIES.EDIT_DESCRIPTION;
+  const submitLabel =
+    mode === "add" ? UI_COPY.CATEGORIES.CREATE_CATEGORY : UI_COPY.COMMON.ACTIONS.SAVE;
   const loading = createCategory.isPending || updateCategory.isPending;
 
   return (

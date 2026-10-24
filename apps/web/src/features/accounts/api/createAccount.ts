@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { CreateAccountInput } from "@finai/validation";
 import { toast } from "@finai/ui";
@@ -10,7 +11,7 @@ export function useCreateAccount() {
   return useMutation<Account, Error, CreateAccountInput>({
     mutationFn: (input) =>
       toast
-        .promise(apiClient.post<Account>("accounts", input), {
+        .promise(apiClient.post<Account>(API_ENDPOINTS.ACCOUNTS.BASE, input), {
           loading: "Linking account...",
           success: "Account linked successfully",
           error: (error: Error) => error.message || "Failed to link account",
@@ -18,7 +19,7 @@ export function useCreateAccount() {
         .unwrap(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountsQueryKey() });
-      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ANALYTICS.ALL });
     },
   });
 }

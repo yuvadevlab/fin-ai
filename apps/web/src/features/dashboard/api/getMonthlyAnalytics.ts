@@ -1,4 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS, QUERY_KEYS, SEARCH_PARAMS } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -10,12 +11,15 @@ export interface MonthlyCashFlow {
 }
 
 export const monthlyAnalyticsQueryKey = (months: number | string) =>
-  ["analytics", "monthly", months] as const;
+  QUERY_KEYS.ANALYTICS.MONTHLY(months);
 
 export function useMonthlyAnalytics(months: number | string = 6) {
   return useQuery<MonthlyCashFlow[]>({
     queryKey: monthlyAnalyticsQueryKey(months),
-    queryFn: () => apiClient.get<MonthlyCashFlow[]>(`analytics/monthly?months=${months}`),
+    queryFn: () =>
+      apiClient.get<MonthlyCashFlow[]>(
+        `${API_ENDPOINTS.ANALYTICS.MONTHLY}?${SEARCH_PARAMS.MONTHS}=${months}`,
+      ),
   });
 }
 
@@ -26,6 +30,10 @@ export async function prefetchMonthlyAnalytics(
 ) {
   await queryClient.prefetchQuery({
     queryKey: monthlyAnalyticsQueryKey(months),
-    queryFn: () => serverFetch<MonthlyCashFlow[]>(`analytics/monthly?months=${months}`, token),
+    queryFn: () =>
+      serverFetch<MonthlyCashFlow[]>(
+        `${API_ENDPOINTS.ANALYTICS.MONTHLY}?${SEARCH_PARAMS.MONTHS}=${months}`,
+        token,
+      ),
   });
 }

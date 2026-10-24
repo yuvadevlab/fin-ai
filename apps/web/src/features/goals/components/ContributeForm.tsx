@@ -1,6 +1,7 @@
 "use client";
 
 import { FormDialogField, FormField } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface ContributeFormProps {
   values: Record<string, string>;
@@ -13,8 +14,8 @@ export function ContributeForm({ values, errors, onChange }: ContributeFormProps
     {
       type: "number",
       name: "amount",
-      label: "Amount",
-      placeholder: "e.g. ₹5,000",
+      label: UI_COPY.GOALS.FORM.CONTRIBUTION_AMOUNT,
+      placeholder: UI_COPY.GOALS.FORM.CONTRIBUTION_PLACEHOLDER,
     },
   ];
 

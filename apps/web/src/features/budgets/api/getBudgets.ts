@@ -1,5 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import type { BudgetStatus } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS, type BudgetStatus } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 
@@ -20,18 +20,18 @@ export interface Budget {
   };
 }
 
-export const budgetsQueryKey = () => ["budgets"] as const;
+export const budgetsQueryKey = () => QUERY_KEYS.BUDGETS.ALL;
 
 export function useBudgets() {
   return useQuery<Budget[]>({
     queryKey: budgetsQueryKey(),
-    queryFn: () => apiClient.get<Budget[]>("budgets"),
+    queryFn: () => apiClient.get<Budget[]>(API_ENDPOINTS.BUDGETS.BASE),
   });
 }
 
 export async function prefetchBudgets(queryClient: QueryClient, token: string) {
   await queryClient.prefetchQuery({
     queryKey: budgetsQueryKey(),
-    queryFn: () => serverFetch<Budget[]>("budgets", token),
+    queryFn: () => serverFetch<Budget[]>(API_ENDPOINTS.BUDGETS.BASE, token),
   });
 }

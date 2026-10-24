@@ -2,6 +2,7 @@
 
 import { FormDialogField, FormField } from "@finai/ui";
 import { Star } from "lucide-react";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface AccountFormProps {
   values: Record<string, string>;
@@ -28,33 +29,33 @@ export function AccountForm({
     {
       type: "text",
       name: "name",
-      label: "Account Name",
-      placeholder: "e.g. HDFC Salary, SBI Savings",
+      label: UI_COPY.ACCOUNTS.FORM.NAME,
+      placeholder: UI_COPY.ACCOUNTS.FORM.NAME_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "select",
       name: "type",
-      label: "Account Type",
+      label: UI_COPY.ACCOUNTS.FORM.TYPE,
       options: [
-        { label: "Bank Account", value: "BANK" },
-        { label: "Credit Card", value: "CREDIT_CARD" },
-        { label: "Digital Wallet", value: "WALLET" },
-        { label: "Cash Wallet", value: "CASH" },
+        { label: UI_COPY.ACCOUNTS.TYPES.BANK, value: "BANK" },
+        { label: UI_COPY.ACCOUNTS.TYPES.CREDIT_CARD, value: "CREDIT_CARD" },
+        { label: UI_COPY.ACCOUNTS.TYPES.DIGITAL_WALLET, value: "WALLET" },
+        { label: UI_COPY.ACCOUNTS.TYPES.CASH_WALLET, value: "CASH" },
       ],
     },
     {
       type: "number",
       name: "balance",
-      label: "Initial Balance",
-      placeholder: "0.00",
+      label: UI_COPY.ACCOUNTS.FORM.INITIAL_BALANCE,
+      placeholder: UI_COPY.ACCOUNTS.FORM.BALANCE_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "text",
       name: "currency",
-      label: "Currency",
-      placeholder: "INR",
+      label: UI_COPY.ACCOUNTS.FORM.CURRENCY,
+      placeholder: UI_COPY.ACCOUNTS.FORM.CURRENCY_PLACEHOLDER,
       autoComplete: "off",
     },
   ];
@@ -76,10 +77,7 @@ export function AccountForm({
         />
       ))}
       {editMode && (
-        <p className="text-muted-foreground text-xs">
-          Account type, currency, and balance cannot be changed directly. Use transactions to adjust
-          the balance.
-        </p>
+        <p className="text-muted-foreground text-xs">{UI_COPY.ACCOUNTS.FORM.EDIT_RESTRICTIONS}</p>
       )}
 
       {/* Default account toggle — only shown when there are multiple accounts or in create mode */}
@@ -100,10 +98,12 @@ export function AccountForm({
           />
           <div>
             <p className="text-sm leading-none font-medium">
-              {isDefault ? "Default account" : "Set as default account"}
+              {isDefault
+                ? UI_COPY.ACCOUNTS.FORM.DEFAULT_ACCOUNT
+                : UI_COPY.ACCOUNTS.FORM.SET_DEFAULT}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              Auto-selected when logging new transactions
+              {UI_COPY.ACCOUNTS.FORM.AUTO_SELECTED}
             </p>
           </div>
         </button>

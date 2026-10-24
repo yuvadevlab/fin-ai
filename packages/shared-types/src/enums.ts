@@ -27,6 +27,18 @@ export const TransactionType = {
 } as const;
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
+/**
+ * Form-level transaction kind used on client forms and filters.
+ */
+export const TransactionKind = {
+  EXPENSE: "expense",
+  INCOME: "income",
+  TRANSFER: "transfer",
+  INVESTMENT: "investment",
+  GOAL: "goal",
+} as const;
+export type TransactionKind = (typeof TransactionKind)[keyof typeof TransactionKind];
+
 /** Budget health status — computed by comparing spending against the limit. */
 export const BudgetStatus = {
   ON_TRACK: "ON_TRACK",
@@ -121,9 +133,16 @@ export type ExecutionPhase = (typeof ExecutionPhase)[keyof typeof ExecutionPhase
 /** Browser local and session storage keys used across client applications */
 export const StorageKey = {
   TOKEN: "finai_token",
+  USER: "finai_user",
+  WORKSPACE_ID: "finai_workspace_id",
   THEME: "finai_theme",
+  APPEARANCE: "finai_appearance",
+  SIDEBAR: "finai_sidebar_collapsed",
   CHAT_CACHE_PREFIX: "finai_chat_cache_",
   ACTIVE_CONVERSATION: "finai_active_conversation_id",
+  DEVLAB_ACCESS_TOKEN: "devlab_access_token",
+  DEVLAB_AUTH_TOKEN: "devlab_auth_token",
+  DEVLAB_AUTH_USER: "devlab_auth_user",
 } as const;
 export type StorageKey = (typeof StorageKey)[keyof typeof StorageKey];
 

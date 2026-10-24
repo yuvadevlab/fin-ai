@@ -10,11 +10,9 @@ model User {
   id                   String         @id @default(uuid())
   email                String         @unique
   name                 String
-  passwordHash         String         @map("password_hash")
+  passwordHash         String?        @map("password_hash")
   avatarUrl            String?        @map("avatar_url")
   preferences          Json           @default("{}")
-  resetPasswordToken   String?        @map("reset_password_token")
-  resetPasswordExpires DateTime?      @map("reset_password_expires")
   createdAt            DateTime       @default(now()) @map("created_at")
   updatedAt            DateTime       @updatedAt @map("updated_at")
   accounts             Account[]
@@ -24,7 +22,6 @@ model User {
   goals                Goal[]
   investments          Investment[]
   notifications        Notification[]
-  sessions             Session[]
   transactions         Transaction[]
 
   @@map("users")
@@ -196,19 +193,6 @@ model Notification {
   @@map("notifications")
 }
 
-model Session {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  token     String   @unique
-  userAgent String?  @map("user_agent")
-  ipAddress String?  @map("ip_address")
-  expiresAt DateTime @map("expires_at")
-  createdAt DateTime @default(now()) @map("created_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("sessions")
-}
 
 model MenuItem {
   id        String   @id @default(uuid())

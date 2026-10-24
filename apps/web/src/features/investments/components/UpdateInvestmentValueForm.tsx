@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FormDialogField, FormField } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface UpdateInvestmentValueFormProps {
   values: Record<string, string>;
@@ -22,8 +23,8 @@ export function UpdateInvestmentValueForm({
     {
       type: "number",
       name: "currentValue",
-      label: "Current Market Value (₹)",
-      placeholder: "0.00",
+      label: UI_COPY.INVESTMENTS.FORM.CURRENT_VALUE_CURRENCY,
+      placeholder: UI_COPY.INVESTMENTS.FORM.PLACEHOLDER_AMOUNT,
       autoComplete: "off",
     },
   ];
@@ -35,7 +36,8 @@ export function UpdateInvestmentValueForm({
           <p className="text-foreground font-semibold">{investmentName}</p>
           {investedAmount !== undefined && (
             <p className="text-muted-foreground mt-0.5">
-              Invested Principal: ₹{investedAmount.toLocaleString("en-IN")}
+              {UI_COPY.INVESTMENTS.FORM.INVESTED_PRINCIPAL} ₹
+              {investedAmount.toLocaleString("en-IN")}
             </p>
           )}
         </div>

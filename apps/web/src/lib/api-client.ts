@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { StorageKey } from "@finai/shared-types";
+import { APP_ROUTES } from "./routes";
+import { DEFAULT_API_BASE_URL } from "./app-constants";
+
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-  : "http://localhost:4000/api/v1";
+  : DEFAULT_API_BASE_URL;
 
 export class ApiError extends Error {
   status: number;
@@ -26,9 +30,22 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set("Content-Type", "application/json");
   }
 
-  // Load token from localStorage
+  // Load token from localStorage or cookie using canonical storage keys
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("finai_token");
+    let token =
+      localStorage.getItem(StorageKey.TOKEN) ||
+      localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
+      localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN);
+
+    if (!token && typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|;\s*)(?:finai_token|devlab_access_token)=([^;]+)/);
+      if (match?.[1]) {
+        token = decodeURIComponent(match[1]);
+        localStorage.setItem(StorageKey.TOKEN, token);
+        localStorage.setItem(StorageKey.DEVLAB_ACCESS_TOKEN, token);
+      }
+    }
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -48,15 +65,18 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   if (!response.ok) {
-    // If unauthorized, we can redirect to login on the client
+    // If unauthorized, redirect to login on the client
     if (response.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("finai_token");
-      localStorage.removeItem("finai_user");
-      localStorage.removeItem("finai_workspace_id");
-      document.cookie = "finai_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "finai_workspace_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
-        window.location.href = "/login";
+      localStorage.removeItem(StorageKey.TOKEN);
+      localStorage.removeItem(StorageKey.USER);
+      localStorage.removeItem(StorageKey.WORKSPACE_ID);
+      document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      if (
+        window.location.pathname !== APP_ROUTES.LOGIN &&
+        window.location.pathname !== APP_ROUTES.REGISTER
+      ) {
+        window.location.href = APP_ROUTES.LOGIN;
       }
     }
     throw new ApiError(response.status, data);

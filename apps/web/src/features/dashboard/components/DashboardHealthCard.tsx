@@ -4,7 +4,9 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ChartCard, ScoreGauge, Progress, cn } from "@finai/ui";
+import { APP_ROUTES } from "@/lib";
 import { useHealthScore } from "../api/getHealthScore";
+import { UI_COPY } from "@/lib/ui-copy";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -30,13 +32,14 @@ export function DashboardHealthCard() {
 
   return (
     <ChartCard
-      title="Financial Health"
+      title={UI_COPY.DASHBOARD.HEALTH_CARD.TITLE}
       hint={
         <Link
-          href="/health"
+          href={APP_ROUTES.HEALTH}
           className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
         >
-          View all <ArrowUpRight className="size-3" aria-hidden="true" />
+          {UI_COPY.DASHBOARD.HEALTH_CARD.VIEW_ALL}{" "}
+          <ArrowUpRight className="size-3" aria-hidden="true" />
         </Link>
       }
       className="flex h-full flex-col justify-between p-5"
@@ -57,7 +60,7 @@ export function DashboardHealthCard() {
               showRating
             />
             <p className="text-muted-foreground mt-1 text-[11px]">
-              Based on your cash flow, safety net, debt & goals
+              {UI_COPY.DASHBOARD.HEALTH_CARD.DESCRIPTION}
             </p>
           </div>
 

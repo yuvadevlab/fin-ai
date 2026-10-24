@@ -5,6 +5,7 @@ import { KPIGrid, StatCard } from "@finai/ui";
 import { calculateSavingsRate, formatINR } from "@finai/finance-engine";
 import { PrivacyMoney } from "@/components";
 import type { DashboardStats } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface DashboardKpiCardsProps {
   stats?: DashboardStats;
@@ -37,12 +38,12 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
   return (
     <KPIGrid>
       <StatCard
-        label="Net Worth"
+        label={UI_COPY.DASHBOARD.KPI.NET_WORTH}
         value={<PrivacyMoney value={stats?.netWorth ?? 0} />}
-        hint="Accounts + Investments"
+        hint={UI_COPY.DASHBOARD.KPI.NET_WORTH_HINT}
       />
       <StatCard
-        label="Monthly Income"
+        label={UI_COPY.DASHBOARD.KPI.MONTHLY_INCOME}
         value={<PrivacyMoney value={stats?.monthlyIncome ?? 0} />}
         trend={
           incomeChange !== null
@@ -52,10 +53,10 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
               }
             : undefined
         }
-        hint="vs last month"
+        hint={UI_COPY.DASHBOARD.KPI.LAST_MONTH}
       />
       <StatCard
-        label="Monthly Expenses"
+        label={UI_COPY.DASHBOARD.KPI.MONTHLY_EXPENSES}
         value={<PrivacyMoney value={stats?.monthlyExpenses ?? 0} />}
         trend={
           expenseChange !== null
@@ -65,10 +66,10 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
               }
             : undefined
         }
-        hint="vs last month"
+        hint={UI_COPY.DASHBOARD.KPI.LAST_MONTH}
       />
       <StatCard
-        label="Savings Rate"
+        label={UI_COPY.DASHBOARD.KPI.SAVINGS_RATE}
         value={`${savingsRate.toFixed(1)}%`}
         trend={
           savingsRateChange !== null
@@ -80,8 +81,10 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
         }
         hint={
           stats?.netCashFlow !== undefined
-            ? `Net: ${stats.netCashFlow >= 0 ? "+" : ""}${formatINR(stats.netCashFlow)}`
-            : "vs last month"
+            ? UI_COPY.DASHBOARD.KPI.NET(
+                `${stats.netCashFlow >= 0 ? "+" : ""}${formatINR(stats.netCashFlow)}`,
+              )
+            : UI_COPY.DASHBOARD.KPI.LAST_MONTH
         }
       >
         <div className="bg-border/60 ml-auto h-1 w-16 shrink-0 overflow-hidden rounded-full">

@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { APP_ROUTES } from "@/lib";
+import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { DashboardShell } from "@/features/dashboard/components";
 import { AuthProvider } from "@/providers";
@@ -17,15 +19,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const auth = await getServerAuth();
 
   if (!auth) {
-    redirect("/login");
+    redirect(APP_ROUTES.LOGIN);
   }
 
   const queryClient = new QueryClient();
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: ["menu-items"],
-      queryFn: () => serverFetch<MenuItem[]>("menu-items", auth.token),
+      queryKey: QUERY_KEYS.MENU_ITEMS.ALL,
+      queryFn: () => serverFetch<MenuItem[]>(API_ENDPOINTS.MENU_ITEMS.BASE, auth.token),
     });
   } catch {
     // prefetch fallback

@@ -17,6 +17,7 @@ import {
 } from "@finai/ui";
 import { ProfileSettings } from "./ProfileSettings";
 import { AppearanceSettings } from "./AppearanceSettings";
+import { UI_COPY } from "@/lib/ui-copy";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
 
@@ -29,15 +30,15 @@ export function SettingsPage() {
     {
       id: "profile",
       icon: User,
-      label: "Profile",
-      desc: "Your name, email, and personal details.",
+      label: UI_COPY.SETTINGS.PROFILE,
+      desc: UI_COPY.SETTINGS.PROFILE_DESCRIPTION,
       body: <ProfileSettings />,
     },
     {
       id: "appearance",
       icon: Palette,
-      label: "Appearance",
-      desc: "Theme, density, and display preferences.",
+      label: UI_COPY.SETTINGS.APPEARANCE_LABEL,
+      desc: UI_COPY.SETTINGS.APPEARANCE_DESCRIPTION,
       body: <AppearanceSettings />,
     },
   ];
@@ -46,7 +47,10 @@ export function SettingsPage() {
 
   return (
     <PageContainer className="max-w-5xl">
-      <PageHeader title="Settings" description="Preferences for your personal account" />
+      <PageHeader
+        title={UI_COPY.SETTINGS.PAGE_TITLE}
+        description={UI_COPY.SETTINGS.PAGE_DESCRIPTION}
+      />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sections.map((s) => (
@@ -87,7 +91,7 @@ export function SettingsPage() {
                   className="w-full cursor-pointer"
                   onClick={() => setSelectedId("")}
                 >
-                  Close
+                  {UI_COPY.SETTINGS.CLOSE}
                 </Button>
               </SheetFooter>
             </>

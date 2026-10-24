@@ -13,6 +13,7 @@ import {
 } from "@finai/ui";
 import { Transaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface TransactionRowActionsProps {
   transaction: Transaction;
@@ -38,14 +39,14 @@ export function TransactionRowActions({ transaction, onDelete }: TransactionRowA
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
           <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
-            <Pencil className="mr-2 size-3.5" /> Edit
+            <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setIsDeleteOpen(true)}
             className="text-destructive focus:text-destructive cursor-pointer"
           >
-            <Trash2 className="mr-2 size-3.5" /> Delete
+            <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -61,9 +62,9 @@ export function TransactionRowActions({ transaction, onDelete }: TransactionRowA
       <ConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        title="Delete Transaction"
-        description="Are you sure you want to delete this transaction? This action cannot be undone."
-        confirmText="Delete"
+        title={UI_COPY.TRANSACTIONS.DELETE_TITLE}
+        description={UI_COPY.TRANSACTIONS.DELETE_CONFIRMATION}
+        confirmText={UI_COPY.COMMON.ACTIONS.DELETE}
         destructive
         onConfirm={() => onDelete(transaction.id)}
       />

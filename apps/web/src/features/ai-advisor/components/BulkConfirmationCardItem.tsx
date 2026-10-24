@@ -3,6 +3,7 @@
 import { Calendar, Check, CreditCard, FileText, Tag, X } from "lucide-react";
 import { cn } from "@finai/ui";
 import { usePrivacyMode } from "@/hooks";
+import { UI_COPY } from "@/lib/ui-copy";
 import type { BulkTransactionItem } from "../utils/parseBulkRows";
 
 export interface BulkConfirmationCardItemProps {
@@ -104,11 +105,11 @@ export function BulkConfirmationCardItem({
         <div className="border-border/40 mt-3 flex items-center border-t pt-2.5">
           {itemStatus === "executed" ? (
             <span className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
-              <Check className="size-3" /> Recorded
+              <Check className="size-3" /> {UI_COPY.ADVISOR.CONFIRMATION_STATUS.RECORDED}
             </span>
           ) : (
             <span className="border-border/60 bg-muted/40 text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
-              <X className="size-3" /> Cancelled
+              <X className="size-3" /> {UI_COPY.ADVISOR.CONFIRMATION_STATUS.CANCELLED}
             </span>
           )}
         </div>

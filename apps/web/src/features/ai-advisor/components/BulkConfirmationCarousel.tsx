@@ -9,6 +9,7 @@ import type { AgentConfirmation } from "../api/agentTypes";
 import { parseBulkRows, type BulkTransactionItem } from "../utils/parseBulkRows";
 import { BulkConfirmationCardItem } from "./BulkConfirmationCardItem";
 import { useCarouselScroll } from "./useCarouselScroll";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface BulkConfirmationCarouselProps {
   confirmation: AgentConfirmation;
@@ -117,7 +118,7 @@ export function BulkConfirmationCarousel({
                 className="size-7"
                 disabled={!scrollState.canScrollLeft}
                 onClick={handlePrev}
-                aria-label="Previous"
+                aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.PREVIOUS}
               >
                 <ChevronLeft className="size-4" />
               </Button>
@@ -130,7 +131,7 @@ export function BulkConfirmationCarousel({
                 className="size-7"
                 disabled={!scrollState.canScrollRight}
                 onClick={handleNext}
-                aria-label="Next"
+                aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.NEXT}
               >
                 <ChevronRight className="size-4" />
               </Button>
@@ -189,7 +190,7 @@ export function BulkConfirmationCarousel({
         className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pt-3.5 pb-1"
         tabIndex={0}
         role="region"
-        aria-label="Transaction cards carousel"
+        aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.A11Y_LABEL}
       >
         {items.map((tx: BulkTransactionItem, idx: number) => (
           <BulkConfirmationCardItem

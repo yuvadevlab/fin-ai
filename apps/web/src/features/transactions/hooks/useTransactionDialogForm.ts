@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { clientTransactionSchema } from "@finai/validation";
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType, TransactionKind } from "@finai/shared-types";
 import { useCreateTransaction, useUpdateTransaction } from "../api";
 
 export interface TransactionInitialValues {
@@ -71,7 +71,8 @@ export function useTransactionDialogForm({
     return {
       amount: initialValues?.amount !== undefined ? String(initialValues.amount) : "",
       kind:
-        initialValues?.kind ?? (initialValues?.type ? initialValues.type.toLowerCase() : "expense"),
+        initialValues?.kind ??
+        (initialValues?.type ? initialValues.type.toLowerCase() : TransactionKind.EXPENSE),
       category:
         (initialValues?.category && typeof initialValues.category === "object"
           ? initialValues.category.id
@@ -146,9 +147,11 @@ export function useTransactionDialogForm({
       type: result.data.kind.toUpperCase() as TransactionType,
       categoryId: result.data.category,
       accountId: result.data.account,
-      toAccountId: result.data.kind === "transfer" ? result.data.toAccount || null : null,
-      investmentId: result.data.kind === "investment" ? result.data.investmentId || null : null,
-      goalId: result.data.kind === "goal" ? result.data.goalId || null : null,
+      toAccountId:
+        result.data.kind === TransactionKind.TRANSFER ? result.data.toAccount || null : null,
+      investmentId:
+        result.data.kind === TransactionKind.INVESTMENT ? result.data.investmentId || null : null,
+      goalId: result.data.kind === TransactionKind.GOAL ? result.data.goalId || null : null,
       date: result.data.date,
       notes: result.data.notes || "",
     };

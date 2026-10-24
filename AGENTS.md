@@ -46,3 +46,11 @@ All AI agents must inspect and adhere to the relevant topic rulebooks:
    - Run typechecks (`pnpm --filter @finai/api typecheck` and `pnpm --filter @finai/web typecheck`).
    - Run production build (`pnpm build` / `turbo build`).
    - Ensure all files adhere strictly to their respective layer and line-count limits.
+7. **Next.js Page & Layout Invariant (Pure SSR Wrappers)**:
+   - All `page.tsx` and `layout.tsx` files across Next.js apps MUST remain Server Components (`SSR`).
+   - NEVER mark `page.tsx` or `layout.tsx` with `"use client"`.
+   - Pages and layouts act strictly as server wrappers (handling metadata, SSR prefetching, server fetching, and rendering client view components).
+   - All interactive client logic, state, and browser APIs must reside in dedicated client components under `src/features/<feature>/components/`.
+   - All authentication routes must be grouped under `app/(auth)/...`.
+
+8. **Feature-Scoped TanStack Query Hook Encapsulation**: Direct inline calls to `useQuery`, `useMutation`, or raw `apiClient`/`fetch` calls inside UI components are strictly forbidden. All server state queries, mutations, query keys, and SSR prefetch helpers must be encapsulated in dedicated files under `features/<feature>/api/` (e.g., `getAccounts.ts`, `createAccount.ts`). Each hook module must export: canonical `<resource>QueryKey()`, custom hook `use<Resource>()` or `use<Action>()`, and optional `prefetch<Resource>()`. Components must exclusively consume these exported custom hooks.

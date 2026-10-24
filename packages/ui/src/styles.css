@@ -1,10 +1,15 @@
+@import "tailwindcss";
+@import "tw-animate-css";
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
+@source "../**";
+@source "../node_modules/@yuva-devlab/ui";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   --color-ring-offset-background: var(--background);
   --color-income: var(--income);
   --color-expense: var(--expense);
@@ -16,10 +21,84 @@
     border-color: var(--color-border);
   }
 
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
+}
+
+/* ── Theme-init transition suppressor ──────────────────────────────────────── */
+.finai-no-transition * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ── Layout Design Tokens ─────────────────────────────────────────────────── */
+:root {
+  --page-padding-x: 1rem;
+  --page-padding-y: 1.25rem;
+  --page-max-width: 96rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-padding-x: 1.5rem;
+    --page-padding-y: 1.5rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --page-padding-x: 2.5rem;
+    --page-padding-y: 2rem;
+    --page-max-width: 120rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --page-padding-x: 3.5rem;
+    --page-max-width: 160rem;
+  }
+}
+
+/* ── Density ─────────────────────────────────────────────────────────────── */
+body.density-compact .p-5 {
+  padding: 0.75rem;
+}
+
+body.density-compact .p-4 {
+  padding: 0.6rem;
+}
+
+body.density-compact .p-3 {
+  padding: 0.5rem;
+}
+
+body.density-compact .gap-4 {
+  gap: 0.6rem;
+}
+
+body.density-compact .space-y-4 > * + * {
+  margin-top: 0.6rem;
+}
+
+body.density-compact .space-y-6 > * + * {
+  margin-top: 0.9rem;
+}
+
+/* ── Privacy Mode — pre-hydration CSS mask ────────────────────────────────── */
+html[data-privacy="on"] [data-privacy-sensitive] {
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
 }

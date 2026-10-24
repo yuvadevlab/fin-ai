@@ -1,5 +1,6 @@
+export { AppProviders, type AppProvidersProps } from "./AppProviders";
 export { QueryProvider } from "./query/QueryProvider";
-export { AuthProvider } from "./auth/AuthProvider";
+export { AuthProvider, type AuthProviderProps } from "./auth/AuthProvider";
 export { useAuth, AuthContext, type AuthContextValue, type AuthUser } from "./auth/auth-context";
 export {
   AppearanceProvider,

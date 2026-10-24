@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { StorageKey } from "@finai/shared-types";
 
-const STORAGE_KEY = "finai_sidebar_collapsed";
+const STORAGE_KEY = StorageKey.SIDEBAR;
 
 export function useSidebarState() {
   const [isCollapsed, setIsCollapsedState] = useState<boolean>(() => {

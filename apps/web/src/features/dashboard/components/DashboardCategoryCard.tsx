@@ -5,7 +5,9 @@ import Link from "next/link";
 import { ArrowUpRight, PieChart as PieIcon } from "lucide-react";
 import { ChartCard, CategoryPie, CHART_COLORS } from "@finai/ui";
 import { PrivacyMoney } from "@/components";
+import { APP_ROUTES } from "@/lib";
 import type { CategoryBreakdownItem } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface DashboardCategoryCardProps {
   categoryBreakdown: CategoryBreakdownItem[];
@@ -55,11 +57,11 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
 
   return (
     <ChartCard
-      title="Category Allocation"
+      title={UI_COPY.DASHBOARD.CATEGORY_ALLOCATION}
       className="flex h-full flex-col justify-between"
       hint={
         <Link
-          href="/categories"
+          href={APP_ROUTES.CATEGORIES}
           className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
         >
           View all <ArrowUpRight className="size-3" aria-hidden="true" />
@@ -98,9 +100,9 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
           <div className="bg-secondary/60 mb-3 flex size-12 items-center justify-center rounded-full">
             <PieIcon className="text-muted-foreground/60 size-6" aria-hidden="true" />
           </div>
-          <p className="text-xs font-medium">No expenses logged this month</p>
+          <p className="text-xs font-medium">{UI_COPY.DASHBOARD.CATEGORY_CARD.EMPTY_TITLE}</p>
           <p className="text-muted-foreground/70 mt-0.5 text-[11px]">
-            Add transactions to see category distribution
+            {UI_COPY.DASHBOARD.CATEGORY_CARD.EMPTY_DESCRIPTION}
           </p>
         </div>
       )}

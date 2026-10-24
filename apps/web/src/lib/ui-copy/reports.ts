@@ -1,0 +1,17 @@
+export const REPORTS_COPY = {
+  DESCRIPTION: "Auto-generated summary of your finances with AI commentary.",
+  EXPORT_PDF: "Export PDF",
+  EXPORT_CSV: "Export CSV",
+  PDF_STARTED: "PDF export started — check downloads",
+  CSV_READY: "CSV export ready — check downloads",
+  TOTAL_INCOME: "Total Income",
+  TOTAL_EXPENSES: "Total Expenses",
+  NET_SAVED: "Net Saved",
+  ACTIVE_GOALS: "Active Goals",
+  SAVINGS_RATE: "savings rate",
+  ACCOUNTS_LINKED: (count: number): string => `${count} accounts linked`,
+  CASH_FLOW: "Cash Flow",
+  TOP_CATEGORIES: "Top Spending Categories",
+  EXPENSE_SPLIT: "Expense Split",
+  REPORT_TITLE: (month: string): string => `Monthly Report · ${month}`,
+} as const;
