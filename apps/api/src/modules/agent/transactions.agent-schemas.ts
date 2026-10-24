@@ -22,6 +22,7 @@ import { parseAgentDateExpression } from "./date-expression";
  */
 
 export const agentTransactionRefFields = {
+  type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT", "GOAL"]).default("EXPENSE"),
   account: z.string().min(1, "Account name is required").max(100).optional(),
   accountId: z.string().uuid("Invalid account ID").optional(),
   category: z.string().min(1, "Category name is required").max(100).optional(),
@@ -33,7 +34,7 @@ export const agentTransactionRefFields = {
 };
 
 const agentTransactionBase = createTransactionSchema
-  .omit({ accountId: true, toAccountId: true, categoryId: true, date: true })
+  .omit({ accountId: true, toAccountId: true, categoryId: true, date: true, type: true })
   .extend(agentTransactionRefFields);
 
 const DATE_ERROR_MESSAGE =
