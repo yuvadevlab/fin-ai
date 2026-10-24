@@ -235,6 +235,9 @@ importers:
       '@finai/finance-engine':
         specifier: workspace:*
         version: link:../../packages/finance-engine
+      '@finai/prompts':
+        specifier: workspace:*
+        version: link:../../packages/prompts
       '@finai/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -480,6 +483,9 @@ importers:
 
   packages/ai-engine:
     dependencies:
+      '@finai/prompts':
+        specifier: workspace:*
+        version: link:../prompts
       '@finai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -552,6 +558,22 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@22.20.1)(jsdom@26.1.0(supports-color@8.1.1))(vite@8.1.4(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(yaml@2.9.0))
+
+  packages/prompts:
+    dependencies:
+      '@finai/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.20.1
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.16.1)(jiti@2.7.0)(postcss@8.5.19)(supports-color@8.1.1)(typescript@5.9.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
 
   packages/shared-types:
     devDependencies:

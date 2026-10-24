@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { SearchService } from "@/modules/search/search.service";
 import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";

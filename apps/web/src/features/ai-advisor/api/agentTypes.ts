@@ -1,5 +1,20 @@
 import type { AgentCard } from "@finai/ai-engine";
 import type { AiProviderRole } from "@finai/shared-types";
+import {
+  AgentActivityKind,
+  AgentActivityStatus,
+  AgentChatRole,
+  AgentConfirmationStatus,
+  AgentRunLogLevel,
+} from "@finai/shared-types";
+
+export {
+  AgentActivityKind,
+  AgentActivityStatus,
+  AgentChatRole,
+  AgentConfirmationStatus,
+  AgentRunLogLevel,
+};
 
 /**
  * Runtime the server selected/forced for a single run, streamed via the SSE
@@ -11,29 +26,12 @@ export type AgentResolvedMode = AiProviderRole;
 
 /**
  * Snapshot of an agent tool call's execution state, surfaced as an inline
- * chip in the chat. The `summary` is a short human-readable note (e.g.
- * "Retrieved 3 accounts") produced by the server when the tool finishes.
- * `startedAt` and `completedAt` are client-side timestamps (ms) used to
- * display step duration and total run time. `detail` is an optional longer
- * description shown in the expanded activity log (user-safe, never chain-of-thought).
- *
- * `kind` distinguishes the three real sources of activity:
- *   - "tool"     — a registry tool call (`tool_call`/`tool_result` events).
- *   - "phase"    — a server lifecycle phase (`phase` events): context loading
- *                  and LLM inference turns.
- *   - "approval" — the run is blocked waiting for the user to confirm/reject
- *                  a proposed action (`confirmation_required`).
- *
- * `status` follows the real lifecycle: items are appended as "running" the
- * moment their start event arrives and flip to a terminal state only when the
- * corresponding completion event streams. "pending" exists for future
- * planners that announce steps before starting them — the current runtime
- * never fabricates pending items.
+ * chip in the chat.
  */
 export interface AgentActivity {
   tool: string;
-  status: "pending" | "running" | "success" | "error";
-  kind?: "tool" | "phase" | "approval";
+  status: AgentActivityStatus;
+  kind?: AgentActivityKind;
   summary?: string;
   detail?: string;
   /** Event-time label override (from the centralized activity mapper). */
@@ -41,12 +39,6 @@ export interface AgentActivity {
   startedAt?: number;
   completedAt?: number;
 }
-
-/**
- * Lifecycle status of an agent-proposed write action. `pending` means the
- * user has not yet confirmed or rejected; the other states are terminal.
- */
-export type AgentConfirmationStatus = "pending" | "executed" | "rejected" | "failed";
 
 /**
  * A write action the agent has proposed and is awaiting (or has resolved)
@@ -64,20 +56,17 @@ export interface AgentRunLogEntry {
   id: string;
   timestamp: number;
   elapsedMs: number;
-  level: "SYS" | "CTX" | "LLM" | "TOOL" | "STREAM" | "ACTION" | "DONE" | "ERR";
+  level: AgentRunLogLevel;
   message: string;
   detail?: string;
 }
 
 /**
  * A single message in the agent chat. User messages carry only `role` and
- * `text`. Assistant messages may carry a `streaming` flag (true while the
- * server is still sending tokens), accumulated `activities` (tool call
- * steps), `confirmations` (write-action cards), `logs` (real-time high-speed
- * processing logs), and an `error` message when the run failed.
+ * `text`.
  */
 export interface AgentChatMessage {
-  role: "user" | "assistant";
+  role: AgentChatRole;
   text: string;
   streaming?: boolean;
   /** Runtime that answered this turn ("agent" vs "chat") — set from SSE `mode`. */

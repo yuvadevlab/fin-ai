@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { BudgetsService } from "@/modules/budgets/budgets.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import {
@@ -15,16 +15,19 @@ import {
 } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
+  BudgetStatus,
   ConfirmationRowLabel,
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { resolveCategoryRef, splitRef } from "../entity-reference";
+import { resolveCategoryRef, splitRef } from "../../entity-reference";
 import { resolveBudgetMatch } from "./budgets.resolve";
 import { createBudgetTransferTool } from "./budgets.transfer.tool";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 export function createBudgetsTools(
   budgetsService: BudgetsService,
@@ -66,8 +69,8 @@ export function createBudgetsTools(
         const { budgets } = output as {
           budgets: { status: string }[];
         };
-        const over = budgets.filter((b) => b.status === "OVER").length;
-        return `Retrieved ${budgets.length} budget(s)${over > 0 ? ` — ${over} over limit` : ""}`;
+        const over = budgets.filter((b) => b.status === BudgetStatus.OVER).length;
+        return TOOL_MESSAGES.BUDGETS.LISTED(budgets.length, over);
       },
     }),
     defineTool({
@@ -115,7 +118,7 @@ export function createBudgetsTools(
           [ConfirmationRowLabel.START_DATE, input.startDate ?? "Current month"],
         ];
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_CREATE],
           rows,
         };
@@ -145,7 +148,7 @@ export function createBudgetsTools(
       execute: async (input, ctx) =>
         budgetsService.update(input.budgetId!, ctx.userId, { limit: input.limit }),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_UPDATE],
         rows: [
           [ConfirmationRowLabel.CATEGORY, input.category ?? input.budgetId ?? "Budget"],
@@ -173,7 +176,7 @@ export function createBudgetsTools(
       },
       execute: async (input, ctx) => budgetsService.remove(input.budgetId!, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_DELETE],
         rows: [
           [ConfirmationRowLabel.CATEGORY, input.category ?? input.budgetId ?? "Budget"],

@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { GoalsService } from "@/modules/goals/goals.service";
 import { createGoalSchema, updateGoalSchema, contributeAmountSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -85,7 +86,7 @@ export function createGoalsTools(goalsService: GoalsService) {
         if (input.deadline) rows.push([ConfirmationRowLabel.DEADLINE, input.deadline]);
         if (input.type) rows.push([ConfirmationRowLabel.TYPE, input.type]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.GOALS_CREATE],
           rows,
         };
@@ -120,7 +121,7 @@ export function createGoalsTools(goalsService: GoalsService) {
           rows.push([ConfirmationRowLabel.DEADLINE, input.deadline ?? "(none)"]);
         if (input.type !== undefined) rows.push([ConfirmationRowLabel.TYPE, input.type]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.GOALS_UPDATE],
           rows,
         };
@@ -140,7 +141,7 @@ export function createGoalsTools(goalsService: GoalsService) {
       execute: async (input, ctx) =>
         goalsService.contribute(input.goalId, ctx.userId, input.amount),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.GOALS_CONTRIBUTE],
         rows: [
           [ConfirmationRowLabel.GOAL_ID, input.goalId],
@@ -164,7 +165,7 @@ export function createGoalsTools(goalsService: GoalsService) {
       }),
       execute: async (input, ctx) => goalsService.remove(input.goalId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.GOALS_DELETE],
         rows: [
           [ConfirmationRowLabel.GOAL_ID, input.goalId],

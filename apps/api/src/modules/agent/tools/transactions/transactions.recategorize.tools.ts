@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { TransactionFilterInput } from "@finai/validation";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -12,7 +13,8 @@ import {
   TransactionType,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { resolveCategoryRef, splitRef } from "../entity-reference";
+import { resolveCategoryRef, splitRef } from "../../entity-reference";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const flexibleDateSchema = z
   .string()
@@ -98,7 +100,7 @@ export function createTransactionsRecategorizeTools(
       },
       summarize: (output) => {
         const result = output as { matched: number };
-        return `Would re-categorize ${result.matched} transaction(s) (dry-run)`;
+        return TOOL_MESSAGES.TRANSACTIONS.RECATEGORIZE_PREVIEW(result.matched);
       },
     }),
     defineTool({
@@ -137,14 +139,14 @@ export function createTransactionsRecategorizeTools(
         if (input.filter.dateFrom) rows.push([ConfirmationRowLabel.FROM, input.filter.dateFrom]);
         if (input.filter.dateTo) rows.push([ConfirmationRowLabel.TO, input.filter.dateTo]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY],
           rows,
         };
       },
       summarize: (output) => {
         const result = output as { updated: number };
-        return `Re-categorized ${result.updated} transaction(s)`;
+        return TOOL_MESSAGES.TRANSACTIONS.RECATEGORIZE_APPLY(result.updated);
       },
     }),
   ];

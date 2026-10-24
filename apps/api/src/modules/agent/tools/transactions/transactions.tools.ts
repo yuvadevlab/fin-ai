@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { TransactionFilterInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
@@ -10,6 +10,7 @@ import {
   TransactionType,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const flexibleDateSchema = z
   .string()
@@ -84,7 +85,7 @@ export function createTransactionsTools(transactionsService: TransactionsService
       },
       summarize: (output) => {
         const { total } = output as { total: number };
-        return `Found ${total} transaction(s)`;
+        return TOOL_MESSAGES.TRANSACTIONS.LISTED(total);
       },
     }),
     defineTool({

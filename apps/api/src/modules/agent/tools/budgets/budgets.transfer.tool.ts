@@ -5,10 +5,11 @@
  */
 
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { BudgetsService } from "@/modules/budgets/budgets.service";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -38,7 +39,7 @@ export function createBudgetTransferTool(budgetsService: BudgetsService) {
         input.amount,
       ),
     describe: (input) => ({
-      type: "confirmation" as const,
+      type: AgentCardType.CONFIRMATION,
       title: AGENT_TOOL_TITLES[AgentToolName.BUDGETS_TRANSFER_ALLOCATION],
       rows: [
         [ConfirmationRowLabel.FROM_BUDGET_ID, input.fromBudgetId],

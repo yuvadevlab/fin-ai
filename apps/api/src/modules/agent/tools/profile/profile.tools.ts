@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { UsersService } from "@/modules/auth/users.service";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { User } from "@finai/shared-types";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -12,6 +13,7 @@ import {
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { updateProfileSchema } from "@finai/validation";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const INVALIDATES_PROFILE_WRITES = [ToolInvalidationTag.USER_PROFILE, ToolInvalidationTag.ACCOUNTS];
 
@@ -42,7 +44,7 @@ export function createProfileTools(usersService: UsersService, accountsService: 
       },
       summarize: (output) => {
         const user = output as User;
-        return `Profile for ${user.name} (${user.email})`;
+        return TOOL_MESSAGES.PROFILE.READ(user.name, user.email);
       },
     }),
     defineTool({
@@ -61,14 +63,14 @@ export function createProfileTools(usersService: UsersService, accountsService: 
         if (input.preferences !== undefined)
           rows.push([ConfirmationRowLabel.PREFERENCES, JSON.stringify(input.preferences)]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.PROFILE_UPDATE],
           rows,
         };
       },
       summarize: (output) => {
         const user = output as User;
-        return `Profile updated for ${user.name}`;
+        return TOOL_MESSAGES.PROFILE.UPDATED(user.name);
       },
     }),
     defineTool({
@@ -83,11 +85,11 @@ export function createProfileTools(usersService: UsersService, accountsService: 
       }),
       execute: async (input, ctx) => accountsService.setDefault(input.accountId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.PROFILE_SET_DEFAULT_ACCOUNT],
         rows: [[ConfirmationRowLabel.ACCOUNT_ID, input.accountId]],
       }),
-      summarize: () => "Default account updated",
+      summarize: () => TOOL_MESSAGES.PROFILE.DEFAULT_ACCOUNT_UPDATED,
     }),
   ];
 }

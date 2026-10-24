@@ -11,6 +11,7 @@ import {
   Button,
 } from "@finai/ui";
 import { TransactionFilterInput } from "@finai/validation";
+import { TransactionType } from "@finai/shared-types";
 import { format } from "date-fns";
 import { useCategories } from "@/features/categories/api";
 import { useAccounts } from "@/features/accounts/api";
@@ -45,11 +46,11 @@ export function TransactionsPage() {
       sortOrder: "desc",
     };
     if (search) filter.search = search;
-    if (selectedFilter === "Income") filter.type = "INCOME";
-    if (selectedFilter === "Expenses") filter.type = "EXPENSE";
-    if (selectedFilter === "Transfer") filter.type = "TRANSFER";
-    if (selectedFilter === "Investments") filter.type = "INVESTMENT";
-    if (selectedFilter === "Goals") filter.type = "GOAL";
+    if (selectedFilter === "Income") filter.type = TransactionType.INCOME;
+    if (selectedFilter === "Expenses") filter.type = TransactionType.EXPENSE;
+    if (selectedFilter === "Transfer") filter.type = TransactionType.TRANSFER;
+    if (selectedFilter === "Investments") filter.type = TransactionType.INVESTMENT;
+    if (selectedFilter === "Goals") filter.type = TransactionType.GOAL;
     if (categoryId !== "all") filter.category = categoryId;
     if (accountId !== "all") filter.account = accountId;
     if (dateRange.startDate) filter.dateFrom = format(dateRange.startDate, "yyyy-MM-dd");

@@ -1,23 +1,23 @@
-import type { AgentConfirmation } from "../api/agentTypes";
-import { ConfirmationRowLabel, TransactionType } from "@finai/shared-types";
+import {
+  AgentConfirmationStatus,
+  ConfirmationRowLabel,
+  TransactionType,
+} from "@finai/shared-types";
 
-export const STATUS_META: Record<
-  AgentConfirmation["status"],
-  { label: string; className: string }
-> = {
-  pending: {
+export const STATUS_META: Record<AgentConfirmationStatus, { label: string; className: string }> = {
+  [AgentConfirmationStatus.PENDING]: {
     label: "Awaiting your approval",
     className: "text-primary bg-primary/10 border-primary/20",
   },
-  executed: {
+  [AgentConfirmationStatus.EXECUTED]: {
     label: "Confirmed & executed",
     className: "text-primary bg-primary/10 border-primary/20",
   },
-  rejected: {
+  [AgentConfirmationStatus.REJECTED]: {
     label: "Rejected",
     className: "text-muted-foreground bg-muted/40 border-border/60",
   },
-  failed: {
+  [AgentConfirmationStatus.FAILED]: {
     label: "Failed to execute",
     className: "text-destructive bg-destructive/10 border-destructive/20",
   },

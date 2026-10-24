@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import type { UpdateTransactionInput } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -13,16 +14,17 @@ import {
   ToolInvalidationTag,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { agentUpdateTransactionSchema } from "../transactions.agent-schemas";
+import { agentUpdateTransactionSchema } from "../../transactions.agent-schemas";
 import {
   checkTransactionRefs,
   resolveAccountRef,
   resolveCategoryRef,
   splitRef,
   type TransactionRefInput,
-} from "../entity-reference";
-import { resolveAgentTransactionDate } from "../date-expression";
+} from "../../entity-reference";
+import { resolveAgentTransactionDate } from "../../date-expression";
 import { createTransactionsRecategorizeTools } from "./transactions.recategorize.tools";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const INVALIDATES_TRANSACTION_WRITES = [
   ToolInvalidationTag.TRANSACTIONS,
@@ -155,12 +157,15 @@ export function createTransactionsWriteTools(
           rows.push([ConfirmationRowLabel.TO_ACCOUNT_ID, input.toAccountId ?? "(clear)"]);
         if (input.notes !== undefined) rows.push([ConfirmationRowLabel.NOTES, input.notes ?? ""]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_UPDATE],
           rows,
         };
       },
-      summarize: () => "Transaction updated",
+      summarize: (output) => {
+        const tx = output as { id: string };
+        return TOOL_MESSAGES.TRANSACTIONS.UPDATED(tx.id);
+      },
     }),
     defineTool({
       name: AgentToolName.TRANSACTIONS_DELETE,
@@ -174,14 +179,14 @@ export function createTransactionsWriteTools(
       }),
       execute: async (input, ctx) => transactionsService.remove(input.transactionId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_DELETE],
         rows: [
           [ConfirmationRowLabel.TRANSACTION_ID, input.transactionId],
           [ConfirmationRowLabel.WARNING, "Permanent delete — the balance impact will be reverted"],
         ],
       }),
-      summarize: () => "Transaction deleted",
+      summarize: () => TOOL_MESSAGES.TRANSACTIONS.DELETED(),
     }),
   ];
 }

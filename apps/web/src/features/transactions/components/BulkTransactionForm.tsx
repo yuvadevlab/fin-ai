@@ -4,13 +4,14 @@ import React, { useRef } from "react";
 import { Plus, Sparkles, Upload, Download } from "lucide-react";
 import { formatINR } from "@finai/finance-engine";
 import { Button } from "@finai/ui";
+import { TransactionKind } from "@finai/shared-types";
 import { BulkTransactionRow } from "./BulkTransactionRow";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export interface BulkRow {
   id: string;
   amount: string;
-  kind: "expense" | "income" | "transfer";
+  kind: TransactionKind;
   category: string;
   account: string;
   toAccount?: string;

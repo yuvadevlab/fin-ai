@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AnalyticsService } from "@/modules/analytics/analytics.service";
 import { formatINR } from "@finai/finance-engine";
 import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";

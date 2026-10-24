@@ -5,12 +5,13 @@
  */
 
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   BULK_ITEM_PREFIX,
   ConfirmationRowLabel,
@@ -19,10 +20,11 @@ import {
   ToolInvalidationTag,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
-import { agentCreateTransactionSchema } from "../transactions.agent-schemas";
-import { checkTransactionRefs, resolveTransactionRefs } from "../entity-reference";
-import { resolveAgentTransactionDate } from "../date-expression";
+import { agentCreateTransactionSchema } from "../../transactions.agent-schemas";
+import { checkTransactionRefs, resolveTransactionRefs } from "../../entity-reference";
+import { resolveAgentTransactionDate } from "../../date-expression";
 import { dateLabel } from "./transactions.date-label";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 export function createTransactionBulkCreateTool(
   transactionsService: TransactionsService,
@@ -92,7 +94,7 @@ export function createTransactionBulkCreateTool(
       return { count: created.length, ids: created.map((t) => t.id) };
     },
     describe: (input) => ({
-      type: "confirmation" as const,
+      type: AgentCardType.BULK_CONFIRMATION,
       title: `Record ${input.transactions.length} transactions`,
       rows: [
         [ConfirmationRowLabel.BULK_COUNT, String(input.transactions.length)],
@@ -122,7 +124,7 @@ export function createTransactionBulkCreateTool(
     }),
     summarize: (output) => {
       const created = output as unknown[];
-      return `Recorded ${created.length} transaction(s)`;
+      return TOOL_MESSAGES.TRANSACTIONS.BULK_CREATED(created.length);
     },
   });
 }

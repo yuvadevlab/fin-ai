@@ -4,12 +4,13 @@
  * @module @finai/api/agent/tools/transactions-create
  */
 
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -17,10 +18,11 @@ import {
   ToolInvalidationTag,
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { agentCreateTransactionSchema } from "../transactions.agent-schemas";
-import { checkTransactionRefs, resolveTransactionRefs } from "../entity-reference";
-import { resolveAgentTransactionDate } from "../date-expression";
+import { agentCreateTransactionSchema } from "../../transactions.agent-schemas";
+import { checkTransactionRefs, resolveTransactionRefs } from "../../entity-reference";
+import { resolveAgentTransactionDate } from "../../date-expression";
 import { dateLabel } from "./transactions.date-label";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 export function createTransactionCreateTool(
   transactionsService: TransactionsService,
@@ -113,14 +115,14 @@ export function createTransactionCreateTool(
       }
       if (input.notes) rows.push([ConfirmationRowLabel.NOTES, input.notes]);
       return {
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_CREATE],
         rows,
       };
     },
     summarize: (output) => {
       const tx = output as { amount: number; type: string };
-      return `Recorded ${tx.type.toLowerCase()} of ${formatINR(tx.amount)}`;
+      return TOOL_MESSAGES.TRANSACTIONS.CREATED(tx.type.toLowerCase(), formatINR(tx.amount));
     },
   });
 }

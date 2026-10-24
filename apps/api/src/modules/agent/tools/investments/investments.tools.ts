@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { InvestmentsService } from "@/modules/investments/investments.service";
 import { createInvestmentSchema, updateInvestmentValueSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -86,7 +87,7 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
         };
       },
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_CREATE],
         rows: [
           [ConfirmationRowLabel.NAME, input.name],
@@ -113,7 +114,7 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       execute: async (input, ctx) =>
         investmentsService.updateValue(input.investmentId, ctx.userId, input.currentValue),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_UPDATE_VALUE],
         rows: [
           [ConfirmationRowLabel.INVESTMENT_ID, input.investmentId],
@@ -137,7 +138,7 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       }),
       execute: async (input, ctx) => investmentsService.remove(input.investmentId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_DELETE],
         rows: [
           [ConfirmationRowLabel.INVESTMENT_ID, input.investmentId],

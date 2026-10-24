@@ -4,8 +4,8 @@
  * @module @finai/api/agent/tools/transactions-date-label
  */
 
-import { resolveAgentTransactionDate } from "../date-expression";
-import { serverTodayISO } from "../date.utils";
+import { resolveAgentTransactionDate } from "../../date-expression";
+import { serverTodayISO } from "../../date.utils";
 
 /**
  * Format the card-safe date label: resolved YYYY-MM-DD, plus the user's

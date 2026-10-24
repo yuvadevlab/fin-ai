@@ -5,6 +5,7 @@ import { Check, ChevronLeft, ChevronRight, Layers, Loader2, X } from "lucide-rea
 import { Button, cn } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
+import { AgentConfirmationStatus } from "@finai/shared-types";
 import type { AgentConfirmation } from "../api/agentTypes";
 import { parseBulkRows, type BulkTransactionItem } from "../utils/parseBulkRows";
 import { BulkConfirmationCardItem } from "./BulkConfirmationCardItem";
@@ -29,26 +30,28 @@ export function BulkConfirmationCarousel({
   const { card, status, actionId, tool } = confirmation;
   const { total, items } = parseBulkRows(card.rows ?? []);
 
-  const [itemStatuses, setItemStatuses] = useState<
-    Record<number, "pending" | "executed" | "rejected">
-  >({});
+  const [itemStatuses, setItemStatuses] = useState<Record<number, AgentConfirmationStatus>>({});
 
   const { scrollRef, scrollState, updateScrollState, handlePrev, handleNext } = useCarouselScroll(
     items.length,
   );
 
-  const getItemStatus = (idx: number): "pending" | "executed" | "rejected" => {
-    if (status === "executed") return "executed";
-    if (status === "rejected") return "rejected";
-    return itemStatuses[idx] ?? "pending";
+  const getItemStatus = (idx: number): AgentConfirmationStatus => {
+    if (status === AgentConfirmationStatus.EXECUTED) return AgentConfirmationStatus.EXECUTED;
+    if (status === AgentConfirmationStatus.REJECTED) return AgentConfirmationStatus.REJECTED;
+    return itemStatuses[idx] ?? AgentConfirmationStatus.PENDING;
   };
 
   const pendingItems = items
     .map((it, i) => ({ it, i }))
-    .filter(({ i }) => getItemStatus(i) === "pending");
+    .filter(({ i }) => getItemStatus(i) === AgentConfirmationStatus.PENDING);
   const pendingCount = pendingItems.length;
-  const executedCount = items.filter((_, i) => getItemStatus(i) === "executed").length;
-  const rejectedCount = items.filter((_, i) => getItemStatus(i) === "rejected").length;
+  const executedCount = items.filter(
+    (_, i) => getItemStatus(i) === AgentConfirmationStatus.EXECUTED,
+  ).length;
+  const rejectedCount = items.filter(
+    (_, i) => getItemStatus(i) === AgentConfirmationStatus.REJECTED,
+  ).length;
   const isAllResolved = pendingCount === 0;
 
   const pendingSum = pendingItems.reduce(
@@ -65,7 +68,8 @@ export function BulkConfirmationCarousel({
     setItemStatuses((prev) => {
       const next = { ...prev };
       items.forEach((_, i) => {
-        if (next[i] !== "rejected") next[i] = "executed";
+        if (next[i] !== AgentConfirmationStatus.REJECTED)
+          next[i] = AgentConfirmationStatus.EXECUTED;
       });
       return next;
     });
@@ -77,7 +81,8 @@ export function BulkConfirmationCarousel({
     setItemStatuses((prev) => {
       const next = { ...prev };
       items.forEach((_, i) => {
-        if (next[i] !== "executed") next[i] = "rejected";
+        if (next[i] !== AgentConfirmationStatus.EXECUTED)
+          next[i] = AgentConfirmationStatus.REJECTED;
       });
       return next;
     });

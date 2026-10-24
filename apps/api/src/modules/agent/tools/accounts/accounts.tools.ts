@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { Account } from "@finai/shared-types";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -12,6 +13,7 @@ import {
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { createAccountSchema, updateAccountSchema } from "@finai/validation";
 import { formatINR } from "@finai/finance-engine";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 /**
  * Read + write tools over the existing AccountsService.
@@ -36,7 +38,7 @@ export function createAccountsTools(accountsService: AccountsService) {
       },
       summarize: (output) => {
         const { accounts } = output as { accounts: Account[] };
-        return `Retrieved ${accounts.length} account(s)`;
+        return TOOL_MESSAGES.ACCOUNTS.LISTED(accounts.length);
       },
     }),
     defineTool({
@@ -82,12 +84,15 @@ export function createAccountsTools(accountsService: AccountsService) {
         ];
         if (input.isDefault) rows.push([ConfirmationRowLabel.SET_AS_DEFAULT, "Yes"]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_CREATE],
           rows,
         };
       },
-      summarize: (output) => `Created account ${(output as Account).name}`,
+      summarize: (output) => {
+        const acc = output as Account;
+        return TOOL_MESSAGES.ACCOUNTS.CREATED(acc.name, acc.type);
+      },
     }),
     defineTool({
       name: AgentToolName.ACCOUNTS_RENAME,
@@ -133,7 +138,7 @@ export function createAccountsTools(accountsService: AccountsService) {
           rows.push([ConfirmationRowLabel.BALANCE, formatINR(input.balance)]);
         if (input.isDefault === true) rows.push([ConfirmationRowLabel.SET_AS_DEFAULT, "Yes"]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_UPDATE],
           rows,
         };
@@ -152,7 +157,7 @@ export function createAccountsTools(accountsService: AccountsService) {
       }),
       execute: async (input, ctx) => accountsService.remove(input.accountId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.ACCOUNTS_DELETE],
         rows: [
           [ConfirmationRowLabel.ACCOUNT_ID, input.accountId],

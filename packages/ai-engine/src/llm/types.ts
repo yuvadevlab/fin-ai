@@ -6,8 +6,9 @@
  * and Google AI Studio.
  */
 
-/** Chat roles understood by the LLM layer. "tool" carries a tool result back to the model. */
-export type LlmRole = "system" | "user" | "assistant" | "tool";
+import { LlmRole, LlmStreamEventType } from "@finai/shared-types";
+
+export { LlmRole, LlmStreamEventType };
 
 /** One entry in the tool manifest advertised to the model (function calling). */
 export interface LlmToolDefinition {
@@ -42,10 +43,10 @@ export interface LlmToolCall {
  * usage and done terminate the stream.
  */
 export type LlmStreamEvent =
-  | { type: "text-delta"; text: string }
-  | { type: "tool_call"; toolCall: LlmToolCall }
-  | { type: "usage"; tokensIn: number; tokensOut: number }
-  | { type: "done" };
+  | { type: typeof LlmStreamEventType.TEXT_DELTA; text: string }
+  | { type: typeof LlmStreamEventType.TOOL_CALL; toolCall: LlmToolCall }
+  | { type: typeof LlmStreamEventType.USAGE; tokensIn: number; tokensOut: number }
+  | { type: typeof LlmStreamEventType.DONE };
 
 /** A full (non-streaming) chat request. */
 export interface LlmChatRequest {

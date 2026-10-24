@@ -2,6 +2,7 @@
 
 import { Check, Circle, Loader2, X } from "lucide-react";
 import { cn } from "@finai/ui";
+import { AgentActivityStatus } from "@finai/shared-types";
 import type { AgentActivity } from "../api/agentTypes";
 import { activityLabel, formatDuration } from "../utils/deriveRunState";
 
@@ -14,11 +15,11 @@ interface ActivityStepRowProps {
 }
 
 /** Icon per real activity state: ✓ completed · ◌ running · ○ pending · ✕ failed. */
-function StatusIcon({ status }: { status: AgentActivity["status"] }) {
-  if (status === "success") {
+function StatusIcon({ status }: { status: AgentActivityStatus }) {
+  if (status === AgentActivityStatus.SUCCESS) {
     return <Check className="text-muted-foreground size-3.5" aria-hidden="true" />;
   }
-  if (status === "running") {
+  if (status === AgentActivityStatus.RUNNING) {
     return (
       <Loader2
         className="text-primary motion-safe:size-3.5 motion-safe:animate-spin"
@@ -26,7 +27,7 @@ function StatusIcon({ status }: { status: AgentActivity["status"] }) {
       />
     );
   }
-  if (status === "error") {
+  if (status === AgentActivityStatus.ERROR) {
     return <X className="text-destructive size-3.5" aria-hidden="true" />;
   }
   return <Circle className="text-muted-foreground/50 size-3" aria-hidden="true" />;
@@ -61,16 +62,16 @@ export function ActivityStepRow({
         <span
           className={cn(
             "block truncate text-[13px] leading-5",
-            activity.status === "running" && "text-foreground font-medium",
-            activity.status === "success" && "text-muted-foreground",
-            activity.status === "error" && "text-destructive font-medium",
-            activity.status === "pending" && "text-muted-foreground/70",
+            activity.status === AgentActivityStatus.RUNNING && "text-foreground font-medium",
+            activity.status === AgentActivityStatus.SUCCESS && "text-muted-foreground",
+            activity.status === AgentActivityStatus.ERROR && "text-destructive font-medium",
+            activity.status === AgentActivityStatus.PENDING && "text-muted-foreground/70",
           )}
         >
           {activityLabel(activity)}
-          {activity.status === "running" ? "…" : ""}
+          {activity.status === AgentActivityStatus.RUNNING ? "…" : ""}
         </span>
-        {expanded && detail && activity.status !== "running" && (
+        {expanded && detail && activity.status !== AgentActivityStatus.RUNNING && (
           <span className="text-muted-foreground/80 mt-0.5 block text-xs leading-4">{detail}</span>
         )}
       </span>

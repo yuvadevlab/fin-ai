@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { defineTool } from "../tool-factory";
+import { defineTool } from "../../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { Category } from "@finai/shared-types";
 import {
+  AgentCardType,
   AgentToolName,
   ConfirmationRowLabel,
   ToolAccessLevel,
@@ -11,7 +12,8 @@ import {
 } from "@finai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { createCategorySchema, updateCategorySchema } from "@finai/validation";
-import { scoreEntityMatch } from "../entity-reference";
+import { scoreEntityMatch } from "../../entity-reference";
+import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const INVALIDATES_CATEGORY_WRITES = [
   ToolInvalidationTag.CATEGORIES,
@@ -89,12 +91,12 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         if (input.group) rows.push([ConfirmationRowLabel.GROUP, input.group]);
         if (input.icon) rows.push([ConfirmationRowLabel.ICON, input.icon]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_CREATE],
           rows,
         };
       },
-      summarize: (output) => `Created category ${(output as Category).name}`,
+      summarize: (output) => TOOL_MESSAGES.CATEGORIES.CREATED((output as Category).name),
     }),
     defineTool({
       name: AgentToolName.CATEGORIES_UPDATE,
@@ -117,7 +119,7 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         if (input.icon !== undefined)
           rows.push([ConfirmationRowLabel.ICON, input.icon ?? "(none)"]);
         return {
-          type: "confirmation" as const,
+          type: AgentCardType.CONFIRMATION,
           title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_UPDATE],
           rows,
         };
@@ -136,7 +138,7 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       }),
       execute: async (input, ctx) => categoriesService.deleteCategory(input.categoryId, ctx.userId),
       describe: (input) => ({
-        type: "confirmation" as const,
+        type: AgentCardType.CONFIRMATION,
         title: AGENT_TOOL_TITLES[AgentToolName.CATEGORIES_DELETE],
         rows: [
           [ConfirmationRowLabel.CATEGORY_ID, input.categoryId],

@@ -7,7 +7,7 @@
 import { BadRequestException } from "@nestjs/common";
 import type { BudgetsService } from "@/modules/budgets/budgets.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
-import { resolveCategoryRef, splitRef } from "../entity-reference";
+import { resolveCategoryRef, splitRef } from "../../entity-reference";
 
 export async function resolveBudgetMatch(
   budgetsService: BudgetsService,

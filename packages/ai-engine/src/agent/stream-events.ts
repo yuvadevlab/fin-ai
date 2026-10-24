@@ -8,9 +8,11 @@
  * A write action inserts confirmation_required instead of executing, and the
  * confirm/reject endpoints reply with action_result.
  */
+import { AgentCardType, AgentMode } from "@finai/shared-types";
+
 export interface AgentCard {
   /** Card kind — drives which UI component renders it. */
-  type: "insight" | "table" | "confirmation" | "entity";
+  type: AgentCardType;
   title: string;
   /** Key–value rows for table/insight cards. */
   rows?: [string, string][];
@@ -33,7 +35,7 @@ export type AgentStreamEvent =
    * which runtime answered: "agent" (tool-enabled loop — can propose actions)
    * or "chat" (tool-free advisor fast-path — conversational only).
    */
-  | { type: "mode"; mode: "agent" | "chat" }
+  | { type: "mode"; mode: AgentMode }
   /**
    * One streamed chunk (DELTA) of the assistant's visible answer text.
    * Clients must APPEND this to the current assistant message:
