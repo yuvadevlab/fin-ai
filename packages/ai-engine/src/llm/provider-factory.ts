@@ -160,12 +160,16 @@ export function createChatModel(
         model,
         new OpenAIAdapter({ apiKey: apiKey ?? "", baseUrl }),
       );
-    case "groq":
+    case "groq": {
+      const normalizedBaseUrl = baseUrl.replace(/\/+$/, "").endsWith("/openai/v1")
+        ? baseUrl.replace(/\/+$/, "")
+        : `${baseUrl.replace(/\/+$/, "")}/openai/v1`;
       return new DevLabChatModel(
         provider,
         model,
-        new GroqAdapter({ apiKey: apiKey ?? "", baseUrl }),
+        new GroqAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl }),
       );
+    }
     case "google-ai-studio":
       return new DevLabChatModel(
         provider,

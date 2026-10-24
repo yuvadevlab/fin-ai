@@ -4,6 +4,8 @@ import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
 import { formatINR } from "@finai/finance-engine";
+import { AgentToolName } from "@finai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
 import { agentCreateTransactionSchema } from "../transactions.agent-schemas";
 import { checkTransactionRefs, resolveTransactionRefs } from "../entity-reference";
 import { resolveAgentTransactionDate } from "../date-expression";
@@ -41,12 +43,11 @@ export function createTransactionRecordTools(
 ) {
   return [
     defineTool({
-      name: "transactions.create",
-      description:
-        "Record a new transaction for the user. Requires confirmation. Fields: amount (positive number), optional type (INCOME | EXPENSE | TRANSFER | INVESTMENT, defaults to EXPENSE), account (HDFC account name or accountId), category (e.g. 'groceries' resolving to 'Groceries & Supermarket', or categoryId), optional toAccount (required for TRANSFER), optional notes (max 500 chars). Date: if the user names a date (e.g. 'yesterday', '2 days back', 'aug 15', 'tomorrow', 'last week'), extract that phrase verbatim into dateExpression and also set date to the best-matching YYYY-MM-DD; if the user gives NO date, OMIT date and dateExpression entirely (the server records today). Category and account are resolved to the user's real records server-side — never invent IDs. Account balances update automatically.",
+      name: AgentToolName.TRANSACTIONS_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_CREATE],
       access: "write",
       confirmation: "required",
-      label: "Recording your transaction",
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_CREATE],
       invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: agentCreateTransactionSchema,
       validate: async (input, ctx) => {
@@ -122,7 +123,11 @@ export function createTransactionRecordTools(
           rows.push(["To account", input.toAccount ?? input.toAccountId ?? ""]);
         }
         if (input.notes) rows.push(["Notes", input.notes]);
-        return { type: "confirmation" as const, title: "Record transaction", rows };
+        return {
+          type: "confirmation" as const,
+          title: AGENT_TOOL_TITLES[AgentToolName.TRANSACTIONS_CREATE],
+          rows,
+        };
       },
       summarize: (output) => {
         const tx = output as { amount: number; type: string };
@@ -130,12 +135,11 @@ export function createTransactionRecordTools(
       },
     }),
     defineTool({
-      name: "transactions.bulkCreate",
-      description:
-        "Record multiple transactions in one atomic batch (max 25). Requires confirmation. Each item uses the same fields as transactions.create (account/category accept names or IDs; if the user names a date, pass it verbatim in dateExpression; OMIT date/dateExpression when no date is given so the server records today). Use for import-style requests like 'add these three expenses'.",
+      name: AgentToolName.TRANSACTIONS_BULK_CREATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_BULK_CREATE],
       access: "write",
       confirmation: "required",
-      label: "Recording multiple transactions",
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_BULK_CREATE],
       invalidates: ["transactions", "accounts", "analytics", "budgets"],
       schema: z.object({
         transactions: z

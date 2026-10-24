@@ -480,6 +480,9 @@ importers:
 
   packages/ai-engine:
     dependencies:
+      '@finai/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
       '@yuva-devlab/ai-client':
         specifier: ^0.2.0
         version: 0.2.0

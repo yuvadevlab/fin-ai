@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTransactionSchema } from "@finai/validation";
+import { TransactionType } from "@finai/shared-types";
 import { serverTodayISO } from "./date.utils";
 import { parseAgentDateExpression } from "./date-expression";
 
@@ -22,7 +23,15 @@ import { parseAgentDateExpression } from "./date-expression";
  */
 
 export const agentTransactionRefFields = {
-  type: z.enum(["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT", "GOAL"]).default("EXPENSE"),
+  type: z
+    .enum([
+      TransactionType.INCOME,
+      TransactionType.EXPENSE,
+      TransactionType.TRANSFER,
+      TransactionType.INVESTMENT,
+      TransactionType.GOAL,
+    ])
+    .default(TransactionType.EXPENSE),
   account: z.string().min(1, "Account name is required").max(100).optional(),
   accountId: z.string().uuid("Invalid account ID").optional(),
   category: z.string().min(1, "Category name is required").max(100).optional(),
@@ -68,7 +77,10 @@ export const agentCreateTransactionSchema = agentTransactionBase
   .refine(validDateInput, dateError)
   .refine((v) => v.category !== undefined || v.categoryId !== undefined, categoryError)
   .refine(
-    (v) => v.type !== "TRANSFER" || v.toAccount !== undefined || v.toAccountId !== undefined,
+    (v) =>
+      v.type !== TransactionType.TRANSFER ||
+      v.toAccount !== undefined ||
+      v.toAccountId !== undefined,
     transferError,
   );
 
