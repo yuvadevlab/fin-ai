@@ -69,7 +69,7 @@ Response: { "status": "ok", "timestamp": "2026-07-20T10:00:00Z" }
 
 | Variable          | Required | Description                                                   |
 | :---------------- | :------- | :------------------------------------------------------------ |
-| `PORT`            | Yes      | HTTP listening port (Default: `4000`)                         |
+| `PORT`            | Yes      | HTTP listening port (Default: `4001`)                         |
 | `DATABASE_URL`    | Yes      | PostgreSQL connection string                                  |
 | `JWT_SECRET`      | Yes      | Secret key for signing JWT tokens                             |
 | `JWT_EXPIRY`      | No       | Token expiration window (Default: `7d`)                       |
