@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { FormDialogField } from "@finai/ui";
 import { TransactionKind } from "@finai/shared-types";
 import { BulkRow } from "./BulkTransactionForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface BulkTransactionRowProps {
   row: BulkRow;
@@ -20,9 +21,9 @@ export interface BulkTransactionRowProps {
 }
 
 const TYPE_OPTIONS = [
-  { label: "Expense", value: TransactionKind.EXPENSE },
-  { label: "Income", value: TransactionKind.INCOME },
-  { label: "Transfer", value: TransactionKind.TRANSFER },
+  { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.EXPENSE, value: TransactionKind.EXPENSE },
+  { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.INCOME, value: TransactionKind.INCOME },
+  { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.TRANSFER, value: TransactionKind.TRANSFER },
 ];
 
 export function BulkTransactionRow({
@@ -51,7 +52,8 @@ export function BulkTransactionRow({
             type="button"
             onClick={() => onRemoveRow(row.id)}
             className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer rounded-lg p-1.5 transition-colors"
-            title="Remove this entry"
+            title={UI_COPY.TRANSACTIONS.IMPORT.REMOVE_ENTRY}
+            aria-label={UI_COPY.TRANSACTIONS.IMPORT.REMOVE_ENTRY}
           >
             <Trash2 className="size-icon-sm" />
           </button>
@@ -64,8 +66,8 @@ export function BulkTransactionRow({
           field={{
             type: "number",
             name: "amount",
-            label: "Amount (₹) *",
-            placeholder: "0.00",
+            label: UI_COPY.TRANSACTIONS.IMPORT.AMOUNT_LABEL,
+            placeholder: UI_COPY.TRANSACTIONS.IMPORT.AMOUNT_PLACEHOLDER,
           }}
           value={row.amount}
           error={errors[`${row.id}_amount`]}
@@ -79,7 +81,7 @@ export function BulkTransactionRow({
           field={{
             type: "select",
             name: "kind",
-            label: "Type *",
+            label: UI_COPY.TRANSACTIONS.IMPORT.TYPE_LABEL,
             options: TYPE_OPTIONS,
           }}
           value={row.kind}
@@ -90,7 +92,7 @@ export function BulkTransactionRow({
           field={{
             type: "date",
             name: "date",
-            label: "Date *",
+            label: UI_COPY.TRANSACTIONS.IMPORT.DATE_LABEL,
           }}
           value={row.date}
           error={errors[`${row.id}_date`]}
@@ -104,12 +106,12 @@ export function BulkTransactionRow({
           field={{
             type: "select",
             name: "category",
-            label: "Category *",
+            label: UI_COPY.TRANSACTIONS.IMPORT.CATEGORY_REQUIRED,
             options: categories,
             searchable: true,
-            searchPlaceholder: "Search category...",
+            searchPlaceholder: UI_COPY.TRANSACTIONS.IMPORT.CATEGORY_SEARCH,
             onAddNew: (query) => onAddCategory?.(query, row.id),
-            addNewLabel: "+ Create Category",
+            addNewLabel: UI_COPY.TRANSACTIONS.IMPORT.CREATE_CATEGORY,
           }}
           value={row.category}
           error={errors[`${row.id}_category`]}
@@ -119,12 +121,14 @@ export function BulkTransactionRow({
           field={{
             type: "select",
             name: "account",
-            label: isTransfer ? "From Account *" : "Account *",
+            label: isTransfer
+              ? UI_COPY.TRANSACTIONS.IMPORT.FROM_ACCOUNT_REQUIRED
+              : UI_COPY.TRANSACTIONS.IMPORT.ACCOUNT_REQUIRED,
             options: accounts,
             searchable: true,
-            searchPlaceholder: "Search account...",
+            searchPlaceholder: UI_COPY.TRANSACTIONS.IMPORT.SEARCH_ACCOUNT,
             onAddNew: (query) => onAddAccount?.(query, row.id),
-            addNewLabel: "+ Link Account",
+            addNewLabel: UI_COPY.TRANSACTIONS.IMPORT.LINK_ACCOUNT,
           }}
           value={row.account}
           error={errors[`${row.id}_account`]}
@@ -139,12 +143,12 @@ export function BulkTransactionRow({
             field={{
               type: "select",
               name: "toAccount",
-              label: "To Account *",
+              label: UI_COPY.TRANSACTIONS.IMPORT.TO_ACCOUNT_REQUIRED,
               options: accounts,
               searchable: true,
-              searchPlaceholder: "Search destination...",
+              searchPlaceholder: UI_COPY.TRANSACTIONS.IMPORT.SEARCH_DESTINATION,
               onAddNew: (query) => onAddAccount?.(query, row.id),
-              addNewLabel: "+ Link Account",
+              addNewLabel: UI_COPY.TRANSACTIONS.IMPORT.LINK_ACCOUNT,
             }}
             value={row.toAccount ?? ""}
             error={errors[`${row.id}_toAccount`]}
@@ -158,8 +162,8 @@ export function BulkTransactionRow({
         field={{
           type: "text",
           name: "notes",
-          label: "Notes",
-          placeholder: "e.g. Grocery, Lunch, Uber...",
+          label: UI_COPY.TRANSACTIONS.IMPORT.NOTES,
+          placeholder: UI_COPY.TRANSACTIONS.IMPORT.NOTES_PLACEHOLDER,
         }}
         value={row.notes}
         error={errors[`${row.id}_notes`]}

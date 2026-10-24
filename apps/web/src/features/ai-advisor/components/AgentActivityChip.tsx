@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { cn } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 import type { AgentActivity } from "../api";
 
 /**
@@ -20,7 +21,7 @@ export function AgentActivityChip({ activity }: { activity: AgentActivity }) {
 
   return (
     <span
-      title={activity.summary ?? `${activity.tool} finished`}
+      title={activity.summary ?? UI_COPY.ADVISOR.ACTIVITY_CHIP.FINISHED(activity.tool)}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
         activity.status === "running" && "bg-primary/10 text-primary border-primary/20",

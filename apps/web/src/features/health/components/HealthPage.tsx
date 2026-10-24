@@ -18,6 +18,7 @@ import {
 } from "@finai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
 import { HealthGuideDialog } from "./HealthGuideDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 function scoreColor(v: number) {
   if (v >= 80) return "text-primary";
@@ -59,8 +60,8 @@ export function HealthPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Financial Health"
-        description="Understand what is working, what is limiting you, and the next move that improves your financial life."
+        title={UI_COPY.HEALTH.PAGE_TITLE}
+        description={UI_COPY.HEALTH.PAGE_DESCRIPTION_LONG}
         actions={
           <TooltipProvider>
             <Tooltip>
@@ -69,13 +70,13 @@ export function HealthPage() {
                   variant="outline"
                   size="icon"
                   className={cn("size-10")}
-                  aria-label="Learn how your financial health score is calculated"
+                  aria-label={UI_COPY.HEALTH.GUIDE_A11Y}
                   onClick={() => setGuideOpen(true)}
                 >
                   <Info aria-hidden="true" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>How this score works</TooltipContent>
+              <TooltipContent>{UI_COPY.HEALTH.SCORE_TOOLTIP}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         }
@@ -91,22 +92,23 @@ export function HealthPage() {
             showRating
           />
           <p className="text-foreground mt-4 max-w-sm text-sm font-medium">
-            {healthData?.summary ?? "Analyzing your financial foundations..."}
+            {healthData?.summary ?? UI_COPY.HEALTH.ANALYZING}
           </p>
         </ContentCard>
 
         <div className="grid gap-4 lg:col-span-2 lg:h-full lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
           <ContentCard className="border-primary/20 bg-primary/5 p-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
             <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-              Next best action
+              {UI_COPY.HEALTH.NEXT_ACTION}
             </p>
             <p className="text-foreground mt-2 text-lg font-bold">
-              {healthData?.nextBestAction ??
-                "Add a few transactions to receive a personalized action."}
+              {healthData?.nextBestAction ?? UI_COPY.HEALTH.DEFAULT_ACTION}
             </p>
             {riskMetric && (
               <div className="border-primary/20 mt-4 flex items-center justify-between border-t pt-3 text-xs">
-                <span className="text-muted-foreground">Priority area: {riskMetric.label}</span>
+                <span className="text-muted-foreground">
+                  {UI_COPY.HEALTH.PRIORITY_AREA(riskMetric.label)}
+                </span>
                 <span className="text-foreground font-bold">{riskMetric.score}/100</span>
               </div>
             )}
@@ -115,7 +117,7 @@ export function HealthPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:h-full">
             <ContentCard className="p-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
               <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                What is helping
+                {UI_COPY.HEALTH.WHAT_IS_HELPING}
               </p>
               <p className="text-foreground mt-2 text-sm">{healthData?.topStrength ?? "—"}</p>
               {strongestMetric && (
@@ -164,10 +166,8 @@ export function HealthPage() {
 
       <section className="mt-6 space-y-4">
         <div>
-          <h2 className="text-foreground text-lg font-bold">Your financial foundations</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Each metric has a target and a practical next step.
-          </p>
+          <h2 className="text-foreground text-lg font-bold">{UI_COPY.HEALTH.PAGE_TITLE}</h2>
+          <p className="text-muted-foreground mt-1 text-sm">{UI_COPY.HEALTH.PAGE_DESCRIPTION}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -196,8 +196,12 @@ export function HealthPage() {
                   </div>
                   <Progress value={m.score} className="mt-3 h-1.5" />
                   <div className="text-muted-foreground mt-3 flex justify-between text-xs">
-                    <span>Now: {formatMetricValue(m.current, m.unit)}</span>
-                    <span>Target: {formatMetricValue(m.target, m.unit)}</span>
+                    <span>
+                      {UI_COPY.HEALTH.NOW} {formatMetricValue(m.current, m.unit)}
+                    </span>
+                    <span>
+                      {UI_COPY.HEALTH.TARGET} {formatMetricValue(m.target, m.unit)}
+                    </span>
                   </div>
                   <p className="text-foreground bg-muted/40 mt-3 rounded-lg p-3 text-xs font-medium">
                     Next: {m.nextAction}

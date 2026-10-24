@@ -16,6 +16,7 @@ import type { AgentActivity, AgentRunLogEntry } from "../api/agentTypes";
 import { deriveRunState, formatDuration, standbyLabel } from "../utils/deriveRunState";
 import { ActivityStepRow } from "./ActivityStepRow";
 import { LiveRunConsole } from "./LiveRunConsole";
+import { UI_COPY } from "@/lib/ui-copy";
 
 const COLLAPSED_ROWS = 3;
 
@@ -54,19 +55,21 @@ export function ActivityTimeline({
   const currentKey = state.currentTool;
 
   const headerTitle = expanded
-    ? "FinAI activity & execution log"
+    ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.HEADER_TITLE
     : isStreaming
       ? latestLog
         ? latestLog.message
-        : "FinAI is thinking…"
+        : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.THINKING
       : hasError
-        ? "Finished with some issues"
-        : "Analyzed your finances";
+        ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.ISSUES
+        : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.ANALYZED;
 
   const summaryMeta =
     !expanded && !isStreaming
       ? [
-          state.totalCount > 0 ? `${state.totalCount} steps` : null,
+          state.totalCount > 0
+            ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.STEP_COUNT(state.totalCount)
+            : null,
           state.durationMs != null && state.durationMs > 0
             ? formatDuration(state.durationMs)
             : null,
@@ -114,7 +117,9 @@ export function ActivityTimeline({
           />
         )}
         <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-medium">
-          {expanded ? "Hide details" : "Show details"}
+          {expanded
+            ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.HIDE_DETAILS
+            : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.SHOW_DETAILS}
           <ChevronDown
             className={cn("motion-safe size-3 transition-transform", expanded && "rotate-180")}
             aria-hidden="true"
@@ -137,7 +142,9 @@ export function ActivityTimeline({
               )}
             >
               <ListTree className="size-3" />
-              <span>Steps ({activities.length})</span>
+              <span>
+                {UI_COPY.ADVISOR.ACTIVITY_TIMELINE.ACTIVITY_STEP_COUNT(activities.length)}
+              </span>
             </button>
             <button
               type="button"
@@ -150,13 +157,15 @@ export function ActivityTimeline({
               )}
             >
               <Terminal className="size-3" />
-              <span>Live Console</span>
+              <span>{UI_COPY.ADVISOR.ACTIVITY_TIMELINE.LIVE_CONSOLE}</span>
               {logs.length > 0 && <span className="text-[10px] opacity-75">({logs.length})</span>}
               {isStreaming && <span className="bg-primary size-1.5 animate-ping rounded-full" />}
             </button>
           </div>
           <span className="text-muted-foreground text-[11px]">
-            {isStreaming ? "Live stream active" : "Execution complete"}
+            {isStreaming
+              ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.STREAM_ACTIVE
+              : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.COMPLETE}
           </span>
         </div>
       )}
@@ -171,7 +180,7 @@ export function ActivityTimeline({
           ) : (
             <ul
               id="agent-activity-steps"
-              aria-label="Agent execution steps"
+              aria-label={UI_COPY.ADVISOR.ACTIVITY_TIMELINE.EXECUTION_STEPS}
               className="border-border/60 border-t px-3.5 py-1.5"
             >
               {visible.map((activity, index) => (

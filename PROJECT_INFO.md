@@ -42,10 +42,10 @@ In FinAI:
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                       FINAI SYSTEM ARCHITECTURE                                        │
 └────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-                    [Next.js 15 Web Dashboard (:3000)]
+                    [Next.js 15 Web Dashboard (:3001)]
                                      │  (React Query / REST / SSE)
                                      ▼
-                    [NestJS 11 Backend API (:4000)]
+                    [NestJS 11 Backend API (:4001)]
                                      │  (JWT Auth, Rate Limiter, Fastify Engine)
      ┌───────────────────────────────┼───────────────────────────────┐
      ▼                               ▼                               ▼
@@ -61,7 +61,7 @@ In FinAI:
 
 ### 2.1 Application Layer Breakdown
 
-#### 1. Web Dashboard (`apps/web` — Port `3000`)
+#### 1. Web Dashboard (`apps/web` — Port `3001`)
 
 - **Technology Stack**: Next.js 15 (App Router), React 19, Tailwind CSS v4, React Query v5, `@finai/ui`, `@yuva-devlab/tokens`.
 - **Purpose**: High-performance, responsive wealth management web application.
@@ -103,15 +103,15 @@ In FinAI:
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Client as FinAI Web (:3000)
-    participant API as FinAI API (:4000)
-    participant DP as DevLab Portal (:3015)
+    participant Client as FinAI Web (:3001)
+    participant API as FinAI API (:4001)
+    participant DP as DevLab Portal (:4000)
     participant Engine as @finai/finance-engine
-    participant DL as DevLab Logs (:3020)
+    participant DL as DevLab Logs (:4003)
     participant IA as IncidentAI (:8085)
 
     Client->>API: POST /api/v1/advisory/chat (Prompt: "Can I afford a $1,200/mo car?")
-    API->>DP: 1. Verify User Tier & Feature Access (:3015)
+    API->>DP: 1. Verify User Tier & Feature Access (:4000)
     DP-->>API: Active Subscription (Tier: PRO)
     API->>API: 2. Fetch User Financial Snapshot from PostgreSQL
     API->>Engine: 3. Compute Runway & Cash Flow Impact (Pure Math)
@@ -179,7 +179,7 @@ pnpm install
 pnpm db:generate
 pnpm db:migrate
 
-# 4. Start Web (:3000) and API (:4000) in development mode
+# 4. Start Web (:3001) and API (:4001) in development mode
 pnpm dev
 
 # 5. Run full typechecks
@@ -188,15 +188,15 @@ pnpm typecheck
 
 ### 5.3 Complete Environment Variables Reference
 
-| Variable                 |  Type  |         Default          | Required | Description                                                                           |
-| :----------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
-| `PORT`                   | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
-| `DATABASE_URL`           | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
-| `REDIS_URL`              | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
-| `NEXT_PUBLIC_API_URL`    | String | `http://localhost:4000`  |   Yes    | Base URL consumed by the Next.js frontend.                                            |
-| `DEVLAB_PORTAL_URL`      | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription and key checks.                                |
-| `DEVLAB_LOGS_URL`        | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
-| `INCIDENTAI_WEBHOOK_URL` | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
+| Variable                            |  Type  |         Default          | Required | Description                                                                           |
+| :---------------------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
+| `PORT`                              | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
+| `DATABASE_URL`                      | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
+| `REDIS_URL`                         | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
+| `DEVLAB_PORTAL_API_URL`             | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription, OIDC, and JWKS verification.                  |
+| `NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL` | String | `http://localhost:3005`  |   Yes    | DevLab Portal Web UI URL for browser SSO login and redirects.                         |
+| `DEVLAB_LOGS_URL`                   | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
+| `INCIDENTAI_WEBHOOK_URL`            | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
 
 ### 5.4 Testing Financial Math in the Pure Engine
 

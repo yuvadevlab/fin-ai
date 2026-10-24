@@ -6,6 +6,7 @@ import { Button } from "@finai/ui";
 import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useSuggestEmoji } from "../api";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface CategoryFormProps {
   values: Record<string, string>;
@@ -18,13 +19,7 @@ export function CategoryForm({
   values,
   errors,
   onChange,
-  groupOptions = [
-    { label: "Income", value: "Income" },
-    { label: "Fixed Expenses", value: "Fixed Expenses" },
-    { label: "Variable Expenses", value: "Variable Expenses" },
-    { label: "Savings & Investments", value: "Savings & Investments" },
-    { label: "Transfer", value: "Transfer" },
-  ],
+  groupOptions = [...UI_COPY.CATEGORIES.GROUP_OPTIONS],
 }: CategoryFormProps) {
   const [isSuggesting, setIsSuggesting] = useState(false);
   const { mutateAsync: suggestEmojiAsync } = useSuggestEmoji();
@@ -32,7 +27,7 @@ export function CategoryForm({
   const handleAiSuggest = async () => {
     const categoryName = values["name"];
     if (!categoryName) {
-      toast.error("Please enter a category name first");
+      toast.error(UI_COPY.CATEGORIES.NAME_REQUIRED);
       return;
     }
 
@@ -40,9 +35,9 @@ export function CategoryForm({
     try {
       const data = await toast
         .promise(suggestEmojiAsync(categoryName), {
-          loading: "Asking AI for an emoji suggestion...",
-          success: "Emoji suggested!",
-          error: (error: Error) => error.message || "Failed to suggest emoji. Please try again.",
+          loading: UI_COPY.CATEGORIES.EMOJI_LOADING,
+          success: UI_COPY.CATEGORIES.EMOJI_SUCCESS,
+          error: (error: Error) => error.message || UI_COPY.CATEGORIES.EMOJI_ERROR,
         })
         .unwrap();
       onChange("icon", data.emoji);
@@ -57,14 +52,14 @@ export function CategoryForm({
     {
       type: "text",
       name: "name",
-      label: "Category Name",
-      placeholder: "e.g. Subscriptions, Pet Care, Taxes",
+      label: UI_COPY.CATEGORIES.NAME_LABEL,
+      placeholder: UI_COPY.CATEGORIES.NAME_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "select",
       name: "group",
-      label: "Category Group",
+      label: UI_COPY.CATEGORIES.GROUP_LABEL,
       options: groupOptions,
     },
   ];
@@ -84,7 +79,7 @@ export function CategoryForm({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label className="text-md leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Icon
+            {UI_COPY.CATEGORIES.ICON_LABEL}
           </Label>
           <Button
             variant="ghost"

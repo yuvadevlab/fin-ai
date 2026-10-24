@@ -2,6 +2,7 @@
 
 import { FormDialogField, FormField } from "@finai/ui";
 import { useReferenceOptions } from "@/hooks/useReferenceOptions";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface InvestmentFormProps {
   values: Record<string, string>;
@@ -11,15 +12,15 @@ export interface InvestmentFormProps {
 
 /** Fallback asset class options shown while DB options are loading. */
 const FALLBACK_ASSET_CLASS_OPTIONS = [
-  { label: "Mutual Fund", value: "MUTUAL_FUND" },
-  { label: "Stock Equities", value: "STOCK" },
-  { label: "Fixed Deposit", value: "FIXED_DEPOSIT" },
-  { label: "Gold", value: "GOLD" },
-  { label: "EPF Retirement Fund", value: "EPF" },
-  { label: "PPF Savings Fund", value: "PPF" },
-  { label: "Real Estate", value: "REAL_ESTATE" },
-  { label: "Crypto Currency", value: "CRYPTO" },
-  { label: "Other Asset", value: "OTHER" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.MUTUAL_FUND, value: "MUTUAL_FUND" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.STOCK, value: "STOCK" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.FIXED_DEPOSIT, value: "FIXED_DEPOSIT" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.GOLD, value: "GOLD" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.EPF, value: "EPF" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.PPF, value: "PPF" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.REAL_ESTATE, value: "REAL_ESTATE" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.CRYPTO, value: "CRYPTO" },
+  { label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASSES.OTHER, value: "OTHER" },
 ];
 
 export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps) {
@@ -34,28 +35,28 @@ export function InvestmentForm({ values, errors, onChange }: InvestmentFormProps
     {
       type: "text",
       name: "name",
-      label: "Investment Name",
-      placeholder: "e.g. Nifty 50 Mutual Fund",
+      label: UI_COPY.INVESTMENTS.FORM.NAME,
+      placeholder: UI_COPY.INVESTMENTS.FORM.NAME_PLACEHOLDER,
       autoComplete: "off",
     },
     {
       type: "select",
       name: "assetClass",
-      label: "Asset Class",
+      label: UI_COPY.INVESTMENTS.FORM.ASSET_CLASS,
       options: assetOptions,
     },
     {
       type: "number",
       name: "investedAmount",
-      label: "Invested Amount",
-      placeholder: "0.00",
+      label: UI_COPY.INVESTMENTS.FORM.INVESTED_AMOUNT,
+      placeholder: UI_COPY.INVESTMENTS.FORM.PLACEHOLDER_AMOUNT,
       autoComplete: "off",
     },
     {
       type: "number",
       name: "currentValue",
-      label: "Current Market Value",
-      placeholder: "0.00",
+      label: UI_COPY.INVESTMENTS.FORM.CURRENT_VALUE,
+      placeholder: UI_COPY.INVESTMENTS.FORM.PLACEHOLDER_AMOUNT,
       autoComplete: "off",
     },
   ];

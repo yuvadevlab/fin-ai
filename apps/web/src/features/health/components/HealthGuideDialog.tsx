@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@finai/ui";
 import { HEALTH_GUIDE } from "../constants/healthGuide";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface HealthGuideDialogProps {
   open: boolean;
@@ -22,11 +23,8 @@ export function HealthGuideDialog({ open, onOpenChange }: HealthGuideDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="xl">
         <DialogHeader>
-          <DialogTitle>How your financial health score works</DialogTitle>
-          <DialogDescription>
-            Your score is a guide to your financial resilience, not a judgement. We compare your
-            habits with practical targets and point to the next improvement.
-          </DialogDescription>
+          <DialogTitle>{UI_COPY.HEALTH.GUIDE_TITLE}</DialogTitle>
+          <DialogDescription>{UI_COPY.HEALTH.GUIDE_DESCRIPTION}</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="space-y-3">
@@ -40,20 +38,19 @@ export function HealthGuideDialog({ open, onOpenChange }: HealthGuideDialogProps
               </div>
               <p className="text-muted-foreground mt-1.5 text-xs leading-5">{item.explanation}</p>
               <p className="text-muted-foreground border-border mt-2.5 border-t pt-2 text-xs leading-5">
-                <span className="text-foreground font-semibold">What counts:</span> {item.counts}
+                <span className="text-foreground font-semibold">{UI_COPY.HEALTH.WHAT_COUNTS}</span>{" "}
+                {item.counts}
               </p>
               <p className="text-foreground bg-muted/40 mt-2.5 rounded-md p-2.5 text-xs">
-                <span className="font-semibold">Improve it:</span> {item.improvement}
+                <span className="font-semibold">{UI_COPY.HEALTH.IMPROVE_IT}</span>{" "}
+                {item.improvement}
               </p>
             </div>
           ))}
         </DialogBody>
 
         <DialogFooter className="justify-start">
-          <p className="text-muted-foreground text-xs leading-5">
-            A very low emergency fund, high debt pressure, or negative monthly cash flow can limit
-            the overall score even when another metric is strong. This keeps serious risks visible.
-          </p>
+          <p className="text-muted-foreground text-xs leading-5">{UI_COPY.HEALTH.GUIDE_FOOTER}</p>
         </DialogFooter>
       </DialogContent>
     </Dialog>

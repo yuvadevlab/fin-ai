@@ -1,0 +1,33 @@
+export const BUDGETS_COPY = {
+  PAGE_TITLE: "Budgets",
+  PAGE_DESCRIPTION: "Monthly caps by category. AI flags categories at risk of overspend.",
+  DELETE_TITLE: "Delete Budget",
+  NEW_BUDGET: "New Budget",
+  EMPTY_TITLE: "No budgets set yet",
+  EMPTY_DESCRIPTION:
+    "Set monthly spending caps on categories like Groceries, Dining Out, or Entertainment to keep your expenses on track.",
+  CREATE_FIRST: "Create First Budget",
+  ACTIONS_FOR: (name: string): string => `Actions for ${name} budget`,
+  OVER_LIMIT: "over limit",
+  FULLY_SPENT_MASKED: "Fully spent · ₹ ••••••",
+  FULLY_SPENT_REMAINING: "Fully spent · ₹0 left",
+  REMAINING_THIS_MONTH: "remaining this month",
+  DELETE_CONFIRMATION: (name: string): string =>
+    `Are you sure you want to remove the budget for "${name}"? Your transactions will remain intact, but budget tracking for this category will stop.`,
+  FORM: {
+    CATEGORY: "Category",
+    SEARCH_CATEGORY: "Search category...",
+    ADD_CATEGORY: "+ Add Category",
+    LIMIT: "Monthly Budget Limit (₹)",
+    LIMIT_PLACEHOLDER: "e.g. 15000",
+    UPDATE_FAILED: "An error occurred while updating the budget.",
+    CREATE_FAILED: "An error occurred while creating the budget.",
+    UPDATE_TITLE: "Update Budget",
+    CREATE_TITLE: "Create Budget",
+    UPDATE_DESCRIPTION: "Update the monthly spending limit for this category.",
+    EDIT_DESCRIPTION: (name: string): string => `Adjust the monthly spending cap for ${name}.`,
+    CREATE_DESCRIPTION: "Set a monthly spending cap for a category.",
+    UPDATE_LIMIT: "Update Limit",
+    CREATE_BUDGET: "Create Budget",
+  },
+} as const;

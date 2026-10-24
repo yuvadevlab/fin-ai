@@ -9,6 +9,7 @@ import { FinancialInsight } from "./FinancialInsight";
 import { RichConfirmationCard } from "./RichConfirmationCard";
 import type { AgentChatMessage } from "../api/agentTypes";
 import { extractFinancialInsight } from "../utils/financialInsight";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface AgentRunProps {
   message: AgentChatMessage;
@@ -92,11 +93,12 @@ export function AgentRun({
           <div className="flex items-start gap-2.5">
             <AlertTriangle className="text-destructive mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="text-destructive text-sm font-semibold">Something went wrong</p>
+              <p className="text-destructive text-sm font-semibold">
+                {UI_COPY.ADVISOR.ERROR_TITLE}
+              </p>
               <p className="text-destructive/90 mt-0.5 text-xs leading-relaxed">{error}</p>
               <p className="text-muted-foreground mt-1.5 text-xs">
-                Your data is unchanged. Check your connection and try again, or rephrase your
-                request.
+                {UI_COPY.ADVISOR.ERROR_DESCRIPTION}
               </p>
             </div>
           </div>

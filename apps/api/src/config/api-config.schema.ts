@@ -12,16 +12,21 @@ import { z } from "zod";
  */
 export const ApiConfigSchema = z.object({
   /** HTTP server port */
-  port: z.coerce.number().int().positive().default(4000),
+  port: z.coerce.number().int().positive().default(4001),
 
   /**
    * Single canonical web URL for frontend access and CORS origins.
    * Can be a single origin or comma-separated origins.
    */
-  webUrl: z.string().default("http://localhost:3000"),
+  webUrl: z.string().default("http://localhost:3001"),
 
   /**
-   * DevLab Gateway base URL for OIDC discovery and JWKS public key verification.
+   * DevLab Portal API base URL for OIDC discovery and JWKS public key verification.
+   */
+  portalApiUrl: z.string().default("http://localhost:4000"),
+
+  /**
+   * @deprecated Use portalApiUrl instead.
    */
   gatewayUrl: z.string().default("http://localhost:3015"),
 

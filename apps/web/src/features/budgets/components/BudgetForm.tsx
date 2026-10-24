@@ -1,6 +1,7 @@
 "use client";
 
 import { FormDialogField, FormField } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface BudgetFormProps {
   values: Record<string, string>;
@@ -23,19 +24,19 @@ export function BudgetForm({
     {
       type: "select",
       name: "categoryId",
-      label: "Category",
+      label: UI_COPY.BUDGETS.FORM.CATEGORY,
       options: categories,
       searchable: true,
       disabled: isEditMode,
-      searchPlaceholder: "Search category...",
+      searchPlaceholder: UI_COPY.BUDGETS.FORM.SEARCH_CATEGORY,
       onAddNew: isEditMode ? undefined : onAddCategory,
-      addNewLabel: "+ Add Category",
+      addNewLabel: UI_COPY.BUDGETS.FORM.ADD_CATEGORY,
     },
     {
       type: "number",
       name: "limit",
-      label: "Monthly Budget Limit (₹)",
-      placeholder: "e.g. 15000",
+      label: UI_COPY.BUDGETS.FORM.LIMIT,
+      placeholder: UI_COPY.BUDGETS.FORM.LIMIT_PLACEHOLDER,
       autoComplete: "off",
     },
   ];

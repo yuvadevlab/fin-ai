@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button, ConfirmDialog } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface DeleteTransactionButtonProps {
   transactionId: string;
@@ -18,7 +19,7 @@ export function DeleteTransactionButton({ transactionId, onDelete }: DeleteTrans
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Delete transaction"
+        aria-label={UI_COPY.TRANSACTIONS.DELETE_BUTTON_ARIA}
         className="text-muted-foreground hover:text-destructive size-7 cursor-pointer sm:size-8"
         onClick={() => setIsConfirmOpen(true)}
       >
@@ -27,9 +28,9 @@ export function DeleteTransactionButton({ transactionId, onDelete }: DeleteTrans
       <ConfirmDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="Delete Transaction"
-        description="Are you sure you want to delete this transaction? This action cannot be undone."
-        confirmText="Delete"
+        title={UI_COPY.TRANSACTIONS.DELETE_TITLE}
+        description={UI_COPY.TRANSACTIONS.DELETE_CONFIRMATION}
+        confirmText={UI_COPY.COMMON.ACTIONS.DELETE}
         destructive
         onConfirm={() => onDelete(transactionId)}
       />

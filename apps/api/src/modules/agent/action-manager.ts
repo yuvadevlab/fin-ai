@@ -184,7 +184,8 @@ export class ActionManager {
     }
 
     // Resolve entity UUIDs to names (reuse the existing enricher).
-    const { enrichCardWithEntityNames } = await import("./card-enricher.js");
+    const cardEnricherPath = "./card-enricher";
+    const { enrichCardWithEntityNames } = await import(cardEnricherPath);
     return enrichCardWithEntityNames(
       this.prisma,
       card,

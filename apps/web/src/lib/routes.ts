@@ -5,7 +5,8 @@
  * @module @finai/web/lib/routes
  */
 
-import { API_ENDPOINTS } from "@finai/shared-types";
+import { API_ENDPOINTS, DEVLAB_CONFIG } from "@finai/shared-types";
+import { DEVLAB_PORTAL_WEB_URL, APP_ID } from "./app-constants";
 
 /** Client-side Next.js route paths */
 export const APP_ROUTES = {
@@ -27,6 +28,20 @@ export const APP_ROUTES = {
   HEALTH: "/health",
   ANALYTICS: "/analytics",
   SETTINGS: "/settings",
+} as const;
+
+/** DevLab Central Portal SSO route builders and canonical destinations */
+export const DEVLAB_PORTAL_ROUTES = {
+  LOGIN: (redirectUrl?: string) => {
+    const base = `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.LOGIN}?app=${encodeURIComponent(APP_ID)}`;
+    return redirectUrl ? `${base}&redirect=${encodeURIComponent(redirectUrl)}` : base;
+  },
+  REGISTER: () =>
+    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.REGISTER}?app=${encodeURIComponent(APP_ID)}`,
+  FORGOT_PASSWORD: () =>
+    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.FORGOT_PASSWORD}?app=${encodeURIComponent(APP_ID)}`,
+  RESET_PASSWORD: () =>
+    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.RESET_PASSWORD}?app=${encodeURIComponent(APP_ID)}`,
 } as const;
 
 /** Backend API route paths consumed by apiClient and fetch */

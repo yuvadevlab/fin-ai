@@ -6,6 +6,7 @@ import { GoalType } from "@finai/shared-types";
 import { createGoalSchema, updateGoalSchema } from "@finai/validation";
 import { useCreateGoal, useUpdateGoal, type Goal } from "../api";
 import { GoalForm } from "./GoalForm";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface GoalDialogProps {
   trigger?: React.ReactNode;
@@ -119,7 +120,7 @@ export function GoalDialog({
       } catch (err) {
         const apiErr = err as { message?: string };
         setErrors({
-          root: apiErr?.message || "An error occurred while updating the goal.",
+          root: apiErr?.message || UI_COPY.GOALS.UPDATE_FAILED,
         });
       }
       return;
@@ -144,7 +145,7 @@ export function GoalDialog({
     } catch (err) {
       const apiErr = err as { message?: string };
       setErrors({
-        root: apiErr?.message || "An error occurred while creating the goal.",
+        root: apiErr?.message || UI_COPY.GOALS.CREATE_FAILED,
       });
     }
   };
@@ -154,13 +155,9 @@ export function GoalDialog({
       open={open}
       onOpenChange={setOpen}
       trigger={trigger}
-      title={isEditMode ? "Edit Goal" : "Create Goal"}
-      description={
-        isEditMode
-          ? "Update your savings target, current progress, or deadline."
-          : "Define a savings target and tracking deadline."
-      }
-      submitLabel={isEditMode ? "Save Changes" : "Create Goal"}
+      title={isEditMode ? UI_COPY.GOALS.EDIT_TITLE : UI_COPY.GOALS.CREATE_TITLE}
+      description={isEditMode ? UI_COPY.GOALS.EDIT_DESCRIPTION : UI_COPY.GOALS.CREATE_DESCRIPTION}
+      submitLabel={isEditMode ? UI_COPY.COMMON.ACTIONS.SAVE : UI_COPY.GOALS.CREATE_TITLE}
       loading={isEditMode ? updateGoal.isPending : createGoal.isPending}
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}

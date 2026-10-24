@@ -2,6 +2,7 @@
 
 import { TransactionKind } from "@finai/shared-types";
 import { FormDialogField, FormField } from "@finai/ui";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface TransactionFormProps {
   values: Record<string, string>;
@@ -33,55 +34,58 @@ export function TransactionForm({
   const amountField: FormField = {
     type: "number",
     name: "amount",
-    label: "Amount",
-    placeholder: "0.00",
+    label: UI_COPY.TRANSACTIONS.FORM.AMOUNT,
+    placeholder: UI_COPY.TRANSACTIONS.FORM.AMOUNT_PLACEHOLDER,
     autoComplete: "off",
   };
 
   const kindField: FormField = {
     type: "select",
     name: "kind",
-    label: "Type",
+    label: UI_COPY.TRANSACTIONS.FORM.TYPE,
     options: [
-      { label: "Expense", value: TransactionKind.EXPENSE },
-      { label: "Income", value: TransactionKind.INCOME },
-      { label: "Transfer", value: TransactionKind.TRANSFER },
-      { label: "Investment", value: TransactionKind.INVESTMENT },
-      { label: "Goal", value: TransactionKind.GOAL },
+      { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.EXPENSE, value: TransactionKind.EXPENSE },
+      { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.INCOME, value: TransactionKind.INCOME },
+      { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.TRANSFER, value: TransactionKind.TRANSFER },
+      {
+        label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.INVESTMENT,
+        value: TransactionKind.INVESTMENT,
+      },
+      { label: UI_COPY.TRANSACTIONS.FORM.KIND_OPTIONS.GOAL, value: TransactionKind.GOAL },
     ],
   };
 
   const investmentField: FormField = {
     type: "select",
     name: "investmentId",
-    label: "Investment",
+    label: UI_COPY.TRANSACTIONS.FORM.INVESTMENT,
     options: investments,
     searchable: true,
-    searchPlaceholder: "Search investment...",
+    searchPlaceholder: UI_COPY.TRANSACTIONS.FORM.SEARCH_INVESTMENT,
     onAddNew: onAddInvestment,
-    addNewLabel: "+ Add Investment",
+    addNewLabel: UI_COPY.TRANSACTIONS.FORM.ADD_INVESTMENT,
   };
 
   const goalField: FormField = {
     type: "select",
     name: "goalId",
-    label: "Savings Goal",
+    label: UI_COPY.TRANSACTIONS.FORM.SAVINGS_GOAL,
     options: goals,
     searchable: true,
-    searchPlaceholder: "Search savings goal...",
+    searchPlaceholder: UI_COPY.TRANSACTIONS.FORM.SEARCH_GOAL,
     onAddNew: onAddGoal,
-    addNewLabel: "+ Add Goal",
+    addNewLabel: UI_COPY.TRANSACTIONS.FORM.ADD_GOAL,
   };
 
   const categoryField: FormField = {
     type: "select",
     name: "category",
-    label: "Category",
+    label: UI_COPY.TRANSACTIONS.FORM.CATEGORY,
     options: categories,
     searchable: true,
-    searchPlaceholder: "Search category...",
+    searchPlaceholder: UI_COPY.TRANSACTIONS.FORM.SEARCH_CATEGORY,
     onAddNew: onAddCategory,
-    addNewLabel: "+ Add Category",
+    addNewLabel: UI_COPY.TRANSACTIONS.FORM.ADD_CATEGORY,
   };
 
   const accountField: FormField = {
@@ -89,39 +93,39 @@ export function TransactionForm({
     name: "account",
     label:
       values.kind === TransactionKind.TRANSFER
-        ? "From Account"
+        ? UI_COPY.TRANSACTIONS.FORM.FROM_ACCOUNT
         : values.kind === TransactionKind.INVESTMENT || values.kind === TransactionKind.GOAL
-          ? "Pay From Account"
-          : "Account",
+          ? UI_COPY.TRANSACTIONS.FORM.PAY_FROM_ACCOUNT
+          : UI_COPY.TRANSACTIONS.FORM.ACCOUNT,
     options: accounts,
     searchable: true,
-    searchPlaceholder: "Search account...",
+    searchPlaceholder: UI_COPY.TRANSACTIONS.FORM.SEARCH_ACCOUNT,
     onAddNew: onAddAccount,
-    addNewLabel: "+ Link Account",
+    addNewLabel: UI_COPY.TRANSACTIONS.FORM.LINK_ACCOUNT,
   };
 
   const toAccountField: FormField = {
     type: "select",
     name: "toAccount",
-    label: "To Account",
+    label: UI_COPY.TRANSACTIONS.FORM.TO_ACCOUNT,
     options: accounts,
     searchable: true,
-    searchPlaceholder: "Search destination account...",
+    searchPlaceholder: UI_COPY.TRANSACTIONS.FORM.SEARCH_DESTINATION_ACCOUNT,
     onAddNew: onAddAccount,
-    addNewLabel: "+ Link Account",
+    addNewLabel: UI_COPY.TRANSACTIONS.FORM.LINK_ACCOUNT,
   };
 
   const dateField: FormField = {
     type: "date",
     name: "date",
-    label: "Date",
+    label: UI_COPY.TRANSACTIONS.FORM.DATE,
   };
 
   const notesField: FormField = {
     type: "textarea",
     name: "notes",
-    label: "Notes",
-    placeholder: "Optional notes...",
+    label: UI_COPY.TRANSACTIONS.FORM.NOTES,
+    placeholder: UI_COPY.TRANSACTIONS.FORM.NOTES_PLACEHOLDER,
     autoComplete: "off",
     rows: 2,
   };

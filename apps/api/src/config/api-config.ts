@@ -62,22 +62,22 @@ export function loadApiConfig(): ApiConfig {
   dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
   dotenv.config({ path: path.resolve(process.cwd(), ".env"), override: true });
 
-  const rawWebUrl = process.env.WEB_URL || "http://localhost:3000";
+  const rawWebUrl = process.env.WEB_URL || "http://localhost:3001";
   const parsedCorsOrigins = rawWebUrl
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  // Fallback to localhost:3000 if no valid origins were parsed
-  const corsOrigins = parsedCorsOrigins.length > 0 ? parsedCorsOrigins : ["http://localhost:3000"];
+  // Fallback to localhost:3001 if no valid origins were parsed
+  const corsOrigins = parsedCorsOrigins.length > 0 ? parsedCorsOrigins : ["http://localhost:3001"];
   // The first origin in the list is always canonical for frontend links/resets
-  const frontendBaseUrl = corsOrigins[0] || "http://localhost:3000";
+  const frontendBaseUrl = corsOrigins[0] || "http://localhost:3001";
 
   const parsed = ApiConfigSchema.parse({
     port: process.env.PORT,
     webUrl: rawWebUrl,
-    gatewayUrl:
-      process.env.GATEWAY_URL || process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:3015",
+    portalApiUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000",
+    gatewayUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000",
     nodeEnv: process.env.NODE_ENV,
     databaseUrl: process.env.DATABASE_URL,
     jwtSecret: process.env.JWT_SECRET,

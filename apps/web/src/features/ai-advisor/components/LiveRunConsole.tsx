@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Terminal } from "lucide-react";
 import { Button, cn } from "@finai/ui";
 import type { AgentRunLogEntry } from "../api/agentTypes";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface LiveRunConsoleProps {
   logs?: AgentRunLogEntry[];
@@ -61,18 +62,18 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
         <div className="flex items-center gap-2">
           <Terminal className="size-3.5 text-zinc-400" />
           <span className="font-semibold tracking-wider text-zinc-400 uppercase">
-            Live Agent Log
+            {UI_COPY.ADVISOR.LIVE_CONSOLE.TITLE}
           </span>
           {isStreaming && (
             <span className="text-primary flex items-center gap-1">
               <span className="bg-primary size-1.5 animate-pulse rounded-full" />
-              <span>running</span>
+              <span>{UI_COPY.ADVISOR.LIVE_CONSOLE.RUNNING}</span>
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-zinc-500">
-            {logs.length} event{logs.length === 1 ? "" : "s"}
+            {UI_COPY.ADVISOR.LIVE_CONSOLE.EVENT_COUNT(logs.length)}
           </span>
           {logs.length > 0 && (
             <Button
@@ -80,7 +81,7 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
               size="icon"
               className="size-6 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
               onClick={handleCopy}
-              title="Copy terminal logs"
+              title={UI_COPY.ADVISOR.LIVE_CONSOLE.COPY_TOOLTIP}
             >
               {copied ? <Check className="text-primary size-3" /> : <Copy className="size-3" />}
             </Button>
@@ -92,11 +93,11 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
       <div
         ref={scrollRef}
         tabIndex={0}
-        aria-label="Agent live logs stream"
+        aria-label={UI_COPY.ADVISOR.LIVE_CONSOLE.STREAM_LABEL}
         className="max-h-56 min-h-24 scrollbar-thin scrollbar-thumb-zinc-800 space-y-1 overflow-y-auto p-2.5 select-text focus-visible:outline-none"
       >
         {logs.length === 0 ? (
-          <p className="py-2 text-zinc-600 italic">No execution events recorded yet.</p>
+          <p className="py-2 text-zinc-600 italic">{UI_COPY.ADVISOR.LIVE_CONSOLE.EMPTY}</p>
         ) : (
           logs.map((log) => {
             const badge = LEVEL_BADGES[log.level] ?? LEVEL_BADGES.SYS;
@@ -129,7 +130,7 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
         {isStreaming && (
           <div className="flex animate-pulse items-center gap-2 px-1 text-[11px] text-zinc-500">
             <span className="bg-primary inline-block size-1.5 rounded-full" />
-            <span>Processing next event…</span>
+            <span>{UI_COPY.ADVISOR.LIVE_CONSOLE.PROCESSING}</span>
           </div>
         )}
       </div>

@@ -84,3 +84,19 @@ export const API_ENDPOINTS = {
 } as const;
 
 export type ApiEndpointsCatalog = typeof API_ENDPOINTS;
+
+/**
+ * DevLab Central Portal SSO route paths and default application identifier.
+ * Single source of truth for SSO query parameters and auth redirection routes.
+ */
+export const DEVLAB_CONFIG = {
+  APP_ID: "finai",
+  PATHS: {
+    LOGIN: "/login",
+    REGISTER: "/register",
+    FORGOT_PASSWORD: "/forgot-password",
+    RESET_PASSWORD: "/reset-password",
+  },
+} as const;
+
+export type DevLabConfigCatalog = typeof DEVLAB_CONFIG;

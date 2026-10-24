@@ -1,22 +1,10 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import { AppProviders } from "@/providers";
 import { appearanceScript } from "@/lib/appearance-script";
 import { APP_ID } from "@/lib/app-constants";
+import { getServerAuth } from "@/lib/server-auth";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
@@ -39,15 +27,11 @@ export const metadata: Metadata = {
  * Root SSR Server Layout for FinAI.
  * Wraps page tree in appearance script and the unified AppProviders component.
  */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const auth = await getServerAuth();
+
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
-      data-brand={APP_ID}
-      data-theme={APP_ID}
-      suppressHydrationWarning
-    >
+    <html lang="en" data-brand={APP_ID} data-theme={APP_ID} suppressHydrationWarning>
       <head>
         {/*
          * Blocking script — must live in <head> so it runs synchronously
@@ -68,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
 
-        <AppProviders>{children}</AppProviders>
+        <AppProviders initialToken={auth?.token}>{children}</AppProviders>
       </body>
     </html>
   );

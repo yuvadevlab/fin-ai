@@ -30,12 +30,22 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set("Content-Type", "application/json");
   }
 
-  // Load token from localStorage using canonical storage keys
+  // Load token from localStorage or cookie using canonical storage keys
   if (typeof window !== "undefined") {
-    const token =
+    let token =
       localStorage.getItem(StorageKey.TOKEN) ||
       localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
       localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN);
+
+    if (!token && typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|;\s*)(?:finai_token|devlab_access_token)=([^;]+)/);
+      if (match?.[1]) {
+        token = decodeURIComponent(match[1]);
+        localStorage.setItem(StorageKey.TOKEN, token);
+        localStorage.setItem(StorageKey.DEVLAB_ACCESS_TOKEN, token);
+      }
+    }
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
