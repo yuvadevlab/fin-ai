@@ -72,7 +72,7 @@ In FinAI:
   - **Two-Phase Action Confirmation Modals**: Standardized modal pattern (`<Feature>Modal.tsx` + `<Feature>Form.tsx`) displaying a side-by-side "Before vs After" impact preview prior to persisting budget modifications or manual transactions.
   - **Conversational Financial Advisory Drawer**: Floating sliding drawer providing real-time streaming advice, scenario modeling, and contextual action chips.
 
-#### 2. Backend API Gateway (`apps/api` — Port `4000`)
+#### 2. Backend API Gateway (`apps/api` — Port `4001`)
 
 - **Technology Stack**: NestJS 11, Fastify HTTP adapter, Prisma ORM, PostgreSQL 16.
 - **Purpose**: Secure enterprise backend handling authentication, banking ledger management, and financial advisory orchestration.
@@ -118,7 +118,7 @@ sequenceDiagram
     Engine-->>API: Result: Debt-to-Income jumps from 18% to 34%, Runway drops 1.8 mos
     API->>API: 4. Synthesize AI Guidance with Verified Math
     API-->>Client: Stream AI Recommendation + Action Preview Card
-    API->>DL: 5. Stream Audit Log & Token Telemetry (:3020)
+    API->>DL: 5. Stream Audit Log & Token Telemetry (:4003)
 
     alt Ingestion Failure or Math Invariant Violation
         API->>IA: 6. Dispatch Webhook Alert to IncidentAI (:8085)
@@ -128,13 +128,13 @@ sequenceDiagram
 
 ### 3.1 Inter-Repository Integration Matrix
 
-| Ecosystem Member    | Direction | Protocol & Transport   | Exact Payload Contract & Endpoint                       | Purpose & Operational Behavior                                                                                      |
-| :------------------ | :-------: | :--------------------- | :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------ |
-| **`devlab-portal`** |  Inbound  | HTTP REST & Redis JWKS | `GET http://localhost:3015/api/v1/subscriptions/verify` | Validates user subscription tiers, feature flags, and API quotas before allowing advanced advisory modeling.        |
-| **`devlab-logs`**   | Outbound  | HTTP/2 POST            | `POST http://localhost:3020/api/v1/logs/ingest`         | Streams structured audit logs, user advisory session events, and backend latency metrics for centralized telemetry. |
-| **`incidentai`**    | Outbound  | HTTP POST Webhook      | `POST http://localhost:8085/api/v1/incidents/webhook`   | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.     |
-| **`devlab-guard`**  |  Inbound  | CLI Git Pre-commit     | `uv run devlab-guard scan --path .`                     | Enforces the 250-line rule, verifies that all enums are strictly used, and guarantees zero inline regexes.          |
-| **`devlab-shared`** |  Static   | npm Package Imports    | Direct package import                                   | Imports `@yuva-devlab/ui`, `@yuva-devlab/tokens`, `@yuva-devlab/resilience`, and `@yuva-devlab/logger`.             |
+| Ecosystem Member    | Direction | Protocol & Transport | Exact Payload Contract & Endpoint                                 | Purpose & Operational Behavior                                                                                             |
+| :------------------ | :-------: | :------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| **`devlab-portal`** |  Inbound  | HTTP & OIDC JWKS     | `GET http://localhost:4000/.well-known/jwks.json` (Prod: `:4010`) | Validates user session tokens and verifies OIDC cryptographic keypair; redirects unauthenticated users to `:3000`/`:3010`. |
+| **`devlab-logs`**   | Outbound  | HTTP POST            | `POST http://localhost:4003/logs` (Prod: `:4013`)                 | Streams structured audit logs, user advisory session events, and backend latency metrics for centralized telemetry.        |
+| **`incidentai`**    | Outbound  | HTTP POST Webhook    | `POST http://localhost:8085/api/v1/incidents/webhook`             | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.            |
+| **`devlab-guard`**  |  Inbound  | CLI Git Pre-commit   | `uv run devlab-guard scan --path .`                               | Enforces the 250-line rule, verifies that all enums are strictly used, and guarantees zero inline regexes.                 |
+| **`devlab-shared`** |  Static   | npm Package Imports  | Direct package import                                             | Imports `@yuva-devlab/ui`, `@yuva-devlab/tokens`, `@yuva-devlab/resilience`, and `@yuva-devlab/logger`.                    |
 
 ---
 
@@ -190,12 +190,12 @@ pnpm typecheck
 
 | Variable                            |  Type  |         Default          | Required | Description                                                                           |
 | :---------------------------------- | :----: | :----------------------: | :------: | :------------------------------------------------------------------------------------ |
-| `PORT`                              | Number |          `4000`          |   Yes    | NestJS API listening port.                                                            |
+| `PORT`                              | Number |          `4001`          |   Yes    | NestJS API listening port (dev: `4001`, prod: `4011`).                                |
 | `DATABASE_URL`                      | String |            —             |   Yes    | PostgreSQL connection string (`postgresql://postgres:postgres@localhost:5432/finai`). |
 | `REDIS_URL`                         | String | `redis://localhost:6379` |   Yes    | Redis URL for caching and rate limiting.                                              |
-| `DEVLAB_PORTAL_API_URL`             | String | `http://localhost:3015`  |   Yes    | DevLab Portal API URL for subscription, OIDC, and JWKS verification.                  |
-| `NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL` | String | `http://localhost:3005`  |   Yes    | DevLab Portal Web UI URL for browser SSO login and redirects.                         |
-| `DEVLAB_LOGS_URL`                   | String | `http://localhost:3020`  |   Yes    | DevLab Logs ingestion endpoint.                                                       |
+| `DEVLAB_PORTAL_API_URL`             | String | `http://localhost:4000`  |   Yes    | DevLab Portal API URL for OIDC and JWKS verification (prod: `:4010`).                 |
+| `NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL` | String | `http://localhost:3000`  |   Yes    | DevLab Portal Web UI URL for browser SSO login and redirects (prod: `:3010`).         |
+| `DEVLAB_LOGS_URL`                   | String | `http://localhost:4003`  |   Yes    | DevLab Logs ingestion endpoint (prod: `:4013`).                                       |
 | `INCIDENTAI_WEBHOOK_URL`            | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
 
 ### 5.4 Testing Financial Math in the Pure Engine
