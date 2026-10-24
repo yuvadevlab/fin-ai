@@ -9,12 +9,12 @@ import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { randomUUID } from "crypto";
 import {
-  buildAgentSystemPrompt,
   buildToolPlanInstructions,
   LlmConnectionError,
   type LlmChatRequest,
   type LlmMessage,
 } from "@finai/ai-engine";
+import { buildAgentSystemPrompt } from "@finai/prompts";
 import type { AgentChatInput } from "@finai/validation";
 import { AccountsService } from "@/modules/accounts/accounts.service";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";

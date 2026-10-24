@@ -1,6 +1,3 @@
-export * from "./persona";
-export * from "./prompts.config";
-export * from "./prompt-builder";
 export * from "./extract-follow-ups";
 
 // ─── LLM runtime ────────────────────────────────────────────────────────────
@@ -13,7 +10,6 @@ export * from "./llm/provider-factory";
 export * from "./llm/json-planning";
 
 export * from "./agent/stream-events";
-export * from "./agent/agent-prompt";
 export * from "./agent/agent-messages";
 export * from "./agent/intent-router";
 export * from "./agent/tool-descriptors.constants";

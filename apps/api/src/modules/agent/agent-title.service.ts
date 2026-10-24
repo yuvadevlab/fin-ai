@@ -6,7 +6,7 @@
 
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { buildTitleGenerationPrompt, sanitizeConversationTitle } from "@finai/ai-engine";
+import { buildTitleGenerationPrompt, sanitizeConversationTitle } from "@finai/prompts";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { AgentStreamEventType } from "@finai/shared-types";
 import { AgentModelFactory } from "./runners";

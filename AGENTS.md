@@ -26,7 +26,7 @@ All AI agents must inspect and adhere to the relevant topic rulebooks:
    - Application route paths (`APP_ROUTES`, `API_ROUTES`) MUST live in `@/lib/routes.ts`. Never hardcode raw URLs.
    - User-facing text in the web app MUST live in `@/lib/ui-copy/` dictionaries. Zero hardcoded UI copy strings.
    - Financial mathematics MUST live in `@finai/finance-engine` as pure functions with zero DB, HTTP, or side-effects.
-   - LLM prompts, personas, and templates MUST live in `@finai/ai-engine`.
+   - LLM prompts, personas, and templates MUST live in `@finai/prompts` (LLM runtime models, agent loop, and stream parsing live in `@finai/ai-engine`).
    - Zod validation schemas MUST live in `@finai/validation`. Never create inline Zod schemas in web or API.
 2. **Standardized Backend Logging (`.info`, `.warn`, `.error` ONLY)**:
    - Use ONLY `.info`, `.warn`, and `.error` log levels across `apps/api` and packages.
