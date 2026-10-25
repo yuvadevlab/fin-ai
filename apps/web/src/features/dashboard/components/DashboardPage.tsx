@@ -29,6 +29,8 @@ import { DashboardHealthCard } from "./DashboardHealthCard";
 import { UI_COPY } from "@/lib/ui-copy";
 import { DashboardSummaryStats } from "./DashboardSummaryStats";
 import { TrendCalculationDialog, type TrendGuideType } from "./TrendCalculationDialog";
+import { WorkspaceInvitationCard } from "@/features/workspaces/components";
+import { useWorkspace } from "@/providers";
 
 export function DashboardPage() {
   const [cashFlowRange, setCashFlowRange] = useState<string>("6");
@@ -36,6 +38,7 @@ export function DashboardPage() {
   const { data: stats } = useDashboardStats();
   const { data: rawMonthlyCashFlow } = useMonthlyAnalytics(cashFlowRange);
   const { data: rawCategoryBreakdown } = useCategoryBreakdown();
+  const { isReadOnly } = useWorkspace();
 
   // Guard against non-array API responses during hydration
   const monthlyCashFlow = useMemo(
@@ -68,16 +71,21 @@ export function DashboardPage() {
         title={UI_COPY.DASHBOARD.PAGE.TITLE}
         description={UI_COPY.DASHBOARD.PAGE.DESCRIPTION}
         actions={
-          <TransactionDialog
-            trigger={
-              <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
-                <Plus className="size-4" aria-hidden="true" />{" "}
-                {UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
-              </Button>
-            }
-          />
+          isReadOnly ? undefined : (
+            <TransactionDialog
+              trigger={
+                <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
+                  <Plus className="size-4" aria-hidden="true" />{" "}
+                  {UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
+                </Button>
+              }
+            />
+          )
         }
       />
+
+      {/* Pending Workspace Invitations Card */}
+      <WorkspaceInvitationCard />
 
       {/* KPI Cards: Net Worth, Income, Expenses, Savings Rate */}
       <DashboardKpiCards stats={stats} />

@@ -14,7 +14,9 @@ import { type Response } from "express";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { TransactionsService } from "./services";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { WorkspaceGuard } from "@/common/guards/workspace.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { CurrentWorkspace } from "@/common/decorators/current-workspace.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Logger } from "@yuva-devlab/logger";
 import {
@@ -30,18 +32,24 @@ import {
 
 @ApiTags("Transactions")
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 @Controller("transactions")
 export class TransactionsController {
   private readonly logger = new Logger(TransactionsController.name);
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Get()
-  @ApiOperation({ summary: "List all transactions for the current user" })
-  findAll(@CurrentUser("id") userId: string, @Query() query: TransactionFilterInput) {
-    this.logger.info(`[findAll] Listing transactions for user ${userId.slice(0, 8)}`);
+  @ApiOperation({ summary: "List all transactions for the current workspace" })
+  findAll(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Query() query: TransactionFilterInput,
+  ) {
+    this.logger.info(
+      `[findAll] Listing transactions for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
+    );
     const filter = transactionFilterSchema.parse(query);
-    return this.transactionsService.findAll(userId, filter);
+    return this.transactionsService.findAll(userId, filter, workspaceId);
   }
 
   @Get("template")
@@ -67,43 +75,50 @@ export class TransactionsController {
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single transaction" })
-  findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  findOne(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.transactionsService.findOne(id, userId);
+    return this.transactionsService.findOne(id, userId, workspaceId);
   }
 
   @Post("bulk")
   @ApiOperation({ summary: "Create multiple transactions in a single bulk batch" })
   createBulk(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(new ZodValidationPipe(createBulkTransactionsSchema))
     body: CreateBulkTransactionsInput,
   ) {
     this.logger.info(
       `[createBulk] Bulk creating ${(body as unknown as unknown[]).length ?? "?"} transaction(s) for user ${userId.slice(0, 8)}`,
     );
-    return this.transactionsService.createBulk(userId, body);
+    return this.transactionsService.createBulk(userId, body, workspaceId);
   }
 
   @Post()
   @ApiOperation({ summary: "Create a transaction" })
   create(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(new ZodValidationPipe(createTransactionSchema))
     body: CreateTransactionInput,
   ) {
     this.logger.info(
-      `[create] Creating ${body.type} transaction amount: ${body.amount} (user: ${userId.slice(0, 8)})`,
+      `[create] Creating ${body.type} transaction amount: ${body.amount} (workspace: ${workspaceId.slice(0, 8)})`,
     );
-    return this.transactionsService.create(userId, body);
+    return this.transactionsService.create(userId, body, workspaceId);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Update a transaction" })
   update(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateTransactionSchema))
     body: UpdateTransactionInput,
@@ -111,15 +126,19 @@ export class TransactionsController {
     this.logger.info(
       `[update] Updating transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.transactionsService.update(id, userId, body);
+    return this.transactionsService.update(id, userId, body, workspaceId);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a transaction" })
-  remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  remove(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(
       `[remove] Deleting transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.transactionsService.remove(id, userId);
+    return this.transactionsService.remove(id, userId, workspaceId);
   }
 }

@@ -83,6 +83,8 @@ export const NotificationType = {
   GOAL_MILESTONE: "GOAL_MILESTONE",
   AI_INSIGHT: "AI_INSIGHT",
   SYSTEM: "SYSTEM",
+  WORKSPACE_INVITATION: "WORKSPACE_INVITATION",
+  WORKSPACE_UPDATE: "WORKSPACE_UPDATE",
 } as const;
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 

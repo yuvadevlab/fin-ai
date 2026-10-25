@@ -1,9 +1,10 @@
-import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";
-import { TransactionType } from "@finai/database";
+import { Prisma, TransactionType } from "@finai/database";
+import { transferBudgetAllocation } from "./budgets-transfer.util";
 
 /**
  * Budget management service.
@@ -26,10 +27,16 @@ export class BudgetsService {
    * (from startDate to now) and computes an at-a-glance status (under/on/over
    * budget) using the pure `calculateBudgetStatus` helper from finance-engine.
    */
-  async findAll(userId: string) {
-    this.logger.info(`[findAll] Listing all budgets for user ${userId.slice(0, 8)}`);
+  async findAll(userId: string, workspaceId?: string) {
+    this.logger.info(`[findAll] Listing budgets for user ${userId.slice(0, 8)}`);
+    const where: Prisma.BudgetWhereInput = workspaceId
+      ? {
+          OR: [{ workspaceId }, { workspaceId: null, userId }],
+        }
+      : { userId };
+
     const budgets = await this.prisma.client.budget.findMany({
-      where: { userId },
+      where,
       include: { category: true },
       orderBy: { category: { name: "asc" } },
     });
@@ -40,25 +47,24 @@ export class BudgetsService {
 
     const enriched = await Promise.all(
       budgets.map(async (budget) => {
-        // Budgets reset monthly. A budget active in the current month aggregates all
-        // expense transactions within the current month cycle.
         if (budget.startDate && budget.startDate > endOfMonth) {
           return { ...budget, spent: 0, status: calculateBudgetStatus(0, budget.limit) };
         }
 
+        const txWhere: Prisma.TransactionWhereInput = {
+          categoryId: budget.categoryId,
+          type: TransactionType.EXPENSE,
+          date: { gte: startOfMonth, lte: endOfMonth },
+          ...(workspaceId
+            ? {
+                OR: [{ workspaceId }, { workspaceId: null, userId }],
+              }
+            : { userId }),
+        };
+
         const agg = await this.prisma.client.transaction.aggregate({
-          where: {
-            userId,
-            categoryId: budget.categoryId,
-            type: TransactionType.EXPENSE,
-            date: {
-              gte: startOfMonth,
-              lte: endOfMonth,
-            },
-          },
-          _sum: {
-            amount: true,
-          },
+          where: txWhere,
+          _sum: { amount: true },
         });
 
         const spent = agg._sum.amount ?? 0;
@@ -67,19 +73,26 @@ export class BudgetsService {
       }),
     );
 
-    this.logger.info(
-      `Found ${enriched.length} budget(s) for user ${userId.slice(0, 8)}, total spent: ${enriched.reduce((s, b) => s + b.spent, 0)}`,
-    );
+    this.logger.info(`Found ${enriched.length} budget(s) for user ${userId.slice(0, 8)}`);
     return enriched;
   }
 
-  /** Finds a single budget by ID, scoped to the user. Throws if not found. */
-  async findOne(id: string, userId: string) {
+  /** Finds a single budget by ID, scoped to the user or workspace. Throws if not found. */
+  async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[findOne] Looking up budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const where: Prisma.BudgetWhereInput = {
+      id,
+      ...(workspaceId
+        ? {
+            OR: [{ workspaceId }, { workspaceId: null, userId }],
+          }
+        : { userId }),
+    };
+
     const budget = await this.prisma.client.budget.findFirst({
-      where: { id, userId },
+      where,
       include: { category: true },
     });
     if (!budget) {
@@ -92,13 +105,14 @@ export class BudgetsService {
   }
 
   /** Creates a new budget for a user. The startDate defaults to now if omitted. */
-  async create(userId: string, input: CreateBudgetInput) {
+  async create(userId: string, input: CreateBudgetInput, workspaceId?: string) {
     this.logger.info(
-      `[create] Creating budget for category ${input.categoryId.slice(0, 8)}, limit: ${input.limit} for user ${userId.slice(0, 8)}`,
+      `[create] Creating budget for category ${input.categoryId.slice(0, 8)}, limit: ${input.limit}`,
     );
     const budget = await this.prisma.client.budget.create({
       data: {
         userId,
+        ...(workspaceId && { workspaceId }),
         categoryId: input.categoryId,
         limit: input.limit,
         startDate: input.startDate
@@ -107,9 +121,7 @@ export class BudgetsService {
       },
       include: { category: true },
     });
-    this.logger.info(
-      `[create] Budget created: ${budget.id.slice(0, 8)} — ${budget.category?.name} limit ${budget.limit} for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[create] Budget created: ${budget.id.slice(0, 8)}`);
     return budget;
   }
 
@@ -118,8 +130,8 @@ export class BudgetsService {
    * category and startDate are immutable after creation (the update schema
    * enforces this at the validation layer).
    */
-  async update(id: string, userId: string, input: UpdateBudgetInput) {
-    await this.findOne(id, userId);
+  async update(id: string, userId: string, input: UpdateBudgetInput, workspaceId?: string) {
+    await this.findOne(id, userId, workspaceId);
     this.logger.info(`[update] Updating budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     const updated = await this.prisma.client.budget.update({
       where: { id },
@@ -128,18 +140,14 @@ export class BudgetsService {
       },
       include: { category: true },
     });
-    this.logger.info(
-      `[update] Budget ${id.slice(0, 8)} updated — new limit: ${updated.limit} (user: ${userId.slice(0, 8)})`,
-    );
     return updated;
   }
 
   /** Deletes a budget. The budget must belong to the user (enforced by findOne). */
-  async remove(id: string, userId: string) {
-    await this.findOne(id, userId);
+  async remove(id: string, userId: string, workspaceId?: string) {
+    await this.findOne(id, userId, workspaceId);
     this.logger.info(`[remove] Deleting budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     await this.prisma.client.budget.delete({ where: { id } });
-    this.logger.info(`[remove] Budget ${id.slice(0, 8)} deleted (user: ${userId.slice(0, 8)})`);
     return { deleted: true };
   }
 
@@ -154,57 +162,6 @@ export class BudgetsService {
     toBudgetId: string,
     amount: number,
   ) {
-    this.logger.info(
-      `[transferAllocation] Transferring ${amount} from ${fromBudgetId.slice(0, 8)} to ${toBudgetId.slice(0, 8)} for user ${userId.slice(0, 8)}`,
-    );
-    if (fromBudgetId === toBudgetId) {
-      this.logger.warn(
-        `[transferAllocation] Source and target budgets are the same: ${fromBudgetId.slice(0, 8)}`,
-      );
-      throw new BadRequestException("Source and target budgets must be different");
-    }
-    if (amount <= 0) {
-      this.logger.warn(`[transferAllocation] Invalid transfer amount: ${amount}`);
-      throw new BadRequestException("Transfer amount must be positive");
-    }
-
-    return this.prisma.client.$transaction(async (tx) => {
-      const [fromBudget, toBudget] = await Promise.all([
-        tx.budget.findFirst({ where: { id: fromBudgetId, userId } }),
-        tx.budget.findFirst({ where: { id: toBudgetId, userId } }),
-      ]);
-      if (!fromBudget) {
-        this.logger.warn(
-          `[transferAllocation] Source budget ${fromBudgetId.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
-        );
-        throw new NotFoundException(`Budget ${fromBudgetId} not found`);
-      }
-      if (!toBudget) {
-        this.logger.warn(
-          `[transferAllocation] Target budget ${toBudgetId.slice(0, 8)} not found for user ${userId.slice(0, 8)}`,
-        );
-        throw new NotFoundException(`Budget ${toBudgetId} not found`);
-      }
-      if (fromBudget.limit - amount < 0) {
-        this.logger.warn(
-          `[transferAllocation] Insufficient funds in source budget ${fromBudgetId.slice(0, 8)}: limit ${fromBudget.limit}, transfer ${amount}`,
-        );
-        throw new BadRequestException("Transfer amount exceeds the source budget limit");
-      }
-
-      await tx.budget.update({
-        where: { id: fromBudget.id },
-        data: { limit: { decrement: amount } },
-      });
-      const result = await tx.budget.update({
-        where: { id: toBudget.id },
-        data: { limit: { increment: amount } },
-        include: { category: true },
-      });
-      this.logger.info(
-        `[transferAllocation] Transferred ${amount} from ${fromBudgetId.slice(0, 8)} to ${toBudgetId.slice(0, 8)} — new source limit: ${fromBudget.limit - amount}, new target limit: ${result.limit} (user: ${userId.slice(0, 8)})`,
-      );
-      return result;
-    });
+    return transferBudgetAllocation(this.prisma, userId, fromBudgetId, toBudgetId, amount);
   }
 }

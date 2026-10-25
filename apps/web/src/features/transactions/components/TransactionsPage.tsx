@@ -22,10 +22,12 @@ import { TransactionDialog } from "./TransactionDialog";
 import { getTransactionColumns } from "./TransactionColumns";
 import { TransactionFiltersPopover } from "./TransactionFiltersPopover";
 import { UI_COPY } from "@/lib/ui-copy";
+import { useWorkspace } from "@/providers";
 
 const chips = [...UI_COPY.TRANSACTIONS.FILTER_CHIPS];
 
 export function TransactionsPage() {
+  const { isReadOnly } = useWorkspace();
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
@@ -88,9 +90,10 @@ export function TransactionsPage() {
 
   const handleDelete = useCallback(
     (id: string) => {
+      if (isReadOnly) return;
       deleteTransaction.mutate(id);
     },
-    [deleteTransaction],
+    [deleteTransaction, isReadOnly],
   );
 
   const columns = useMemo(() => getTransactionColumns(handleDelete), [handleDelete]);
@@ -103,15 +106,23 @@ export function TransactionsPage() {
             title={UI_COPY.TRANSACTIONS.PAGE_TITLE}
             description={UI_COPY.TRANSACTIONS.PAGE_DESCRIPTION}
             actions={
-              <TransactionDialog
-                trigger={
-                  <Button size="sm" className="cursor-pointer gap-1.5">
-                    <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.ADD_TRANSACTION}
-                  </Button>
-                }
-              />
+              isReadOnly ? undefined : (
+                <TransactionDialog
+                  trigger={
+                    <Button size="sm" className="cursor-pointer gap-1.5">
+                      <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.ADD_TRANSACTION}
+                    </Button>
+                  }
+                />
+              )
             }
           />
+
+          {isReadOnly && (
+            <div className="border-warning/30 bg-warning/10 text-warning-foreground rounded-xl border p-3 text-xs font-medium">
+              {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
+            </div>
+          )}
 
           {/* Filter toolbar */}
           <div className="bg-card ring-border/50 flex flex-col gap-2.5 rounded-2xl p-3 shadow-sm ring-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:p-4">

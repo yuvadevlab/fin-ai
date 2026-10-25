@@ -96,12 +96,12 @@ export function TopBar({
               placeholder={searchPlaceholder}
               aria-label={searchPlaceholder}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              className="bg-secondary focus-visible:ring-primary/40 focus:bg-background w-72 rounded-lg border-0 text-sm transition-colors focus-visible:ring-1"
+              className="bg-secondary focus-visible:ring-primary/40 w-72 rounded-lg border-0 text-sm transition-colors focus-visible:ring-1"
             />
           </div>
         )}
         {actions}
-        {notificationsMenu && (
+        {notificationsMenu ?? (
           <Button
             variant="ghost"
             size="icon"

@@ -8,3 +8,9 @@ export {
   type AppearanceContextValue,
 } from "./appearance/AppearanceProvider";
 export { AppearanceSync } from "./appearance/AppearanceSync";
+export { WorkspaceProvider, type WorkspaceProviderProps } from "./workspace/WorkspaceProvider";
+export {
+  useWorkspace,
+  WorkspaceContext,
+  type WorkspaceContextValue,
+} from "./workspace/workspace-context";

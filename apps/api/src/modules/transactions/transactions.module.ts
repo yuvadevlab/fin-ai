@@ -7,11 +7,13 @@ import {
   TransactionsSummaryService,
   TransactionsExportService,
 } from "./services";
+import { TransactionsBulkService } from "./services/transactions-bulk.service";
 
 @Module({
   controllers: [TransactionsController],
   providers: [
     TransactionsRepository,
+    TransactionsBulkService,
     TransactionsMutationService,
     TransactionsSummaryService,
     TransactionsExportService,

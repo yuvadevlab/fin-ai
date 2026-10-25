@@ -82,3 +82,14 @@ export {
 } from "./schemas/contribute.schema";
 
 export { agentChatSchema, type AgentChatInput } from "./schemas/agent.schema";
+
+export {
+  createWorkspaceSchema,
+  updateWorkspaceSchema,
+  inviteWorkspaceMemberSchema,
+  updateWorkspaceMemberRoleSchema,
+  type CreateWorkspaceInput,
+  type UpdateWorkspaceInput,
+  type InviteWorkspaceMemberInput,
+  type UpdateWorkspaceMemberRoleInput,
+} from "./schemas/workspace.schema";

@@ -81,6 +81,27 @@ export const API_ENDPOINTS = {
   SEARCH: {
     BASE: "search",
   },
+  WORKSPACES: {
+    BASE: "workspaces",
+    DETAIL: (id: string) => `workspaces/${id}`,
+    MEMBERS: (id: string) => `workspaces/${id}/members`,
+    MEMBER: (workspaceId: string, memberId: string) =>
+      `workspaces/${workspaceId}/members/${memberId}`,
+    LEAVE: (id: string) => `workspaces/${id}/leave`,
+    INVITATIONS: (id: string) => `workspaces/${id}/invitations`,
+    INVITATION: (workspaceId: string, inviteId: string) =>
+      `workspaces/${workspaceId}/invitations/${inviteId}`,
+    MY_INVITATIONS: "workspaces/invitations/me",
+    ACCEPT_INVITATION: (id: string) => `workspaces/invitations/${id}/accept`,
+    REJECT_INVITATION: (id: string) => `workspaces/invitations/${id}/reject`,
+  },
+  NOTIFICATIONS: {
+    BASE: "notifications",
+    DETAIL: (id: string) => `notifications/${id}`,
+    READ: (id: string) => `notifications/${id}/read`,
+    READ_ALL: "notifications/read-all",
+    UNREAD_COUNT: "notifications/unread-count",
+  },
 } as const;
 
 export type ApiEndpointsCatalog = typeof API_ENDPOINTS;
