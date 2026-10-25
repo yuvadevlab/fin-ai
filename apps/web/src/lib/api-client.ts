@@ -70,12 +70,16 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   if (!response.ok) {
-    // If unauthorized, redirect to login on the client
+    // If unauthorized, purge all session tokens and cookies, then redirect to login
     if (response.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem(StorageKey.TOKEN);
       localStorage.removeItem(StorageKey.USER);
+      localStorage.removeItem(StorageKey.DEVLAB_ACCESS_TOKEN);
+      localStorage.removeItem(StorageKey.DEVLAB_AUTH_TOKEN);
+      localStorage.removeItem(StorageKey.DEVLAB_AUTH_USER);
       localStorage.removeItem(StorageKey.WORKSPACE_ID);
       document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       if (
         window.location.pathname !== APP_ROUTES.LOGIN &&
