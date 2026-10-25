@@ -19,6 +19,7 @@ import { REPORTS_COPY } from "./reports";
 import { SEARCH_COPY } from "./search";
 import { SETTINGS_COPY } from "./settings";
 import { TRANSACTIONS_COPY } from "./transactions";
+import { WORKSPACES_COPY } from "./workspaces";
 
 export * from "./common";
 export * from "./advisor";
@@ -34,6 +35,7 @@ export * from "./reports";
 export * from "./search";
 export * from "./settings";
 export * from "./transactions";
+export * from "./workspaces";
 
 /**
  * Universal, type-safe dictionary of user-facing UI text strings,
@@ -54,6 +56,7 @@ export const UI_COPY = {
   SEARCH: SEARCH_COPY,
   SETTINGS: SETTINGS_COPY,
   TRANSACTIONS: TRANSACTIONS_COPY,
+  WORKSPACES: WORKSPACES_COPY,
 } as const;
 
 export type UiCopyCatalog = typeof UI_COPY;

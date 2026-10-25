@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { WorkspaceGuard } from "@/common/guards/workspace.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { CurrentWorkspace } from "@/common/decorators/current-workspace.decorator";
 import { CategoriesService } from "./categories.service";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Logger } from "@yuva-devlab/logger";
@@ -14,7 +16,7 @@ import {
 
 @ApiTags("Categories")
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 @Controller("categories")
 export class CategoriesController {
   private readonly logger = new Logger(CategoriesController.name);
@@ -29,8 +31,10 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: "Get all categories for current user" })
-  getCategories(@CurrentUser("id") userId: string) {
-    this.logger.info(`[getCategories] Listing categories for user ${userId.slice(0, 8)}`);
+  getCategories(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+    this.logger.info(
+      `[getCategories] Listing categories for user ${userId.slice(0, 8)} (workspace: ${workspaceId.slice(0, 8)})`,
+    );
     return this.categoriesService.getCategories(userId);
   }
 
@@ -38,10 +42,11 @@ export class CategoriesController {
   @ApiOperation({ summary: "Create a custom category" })
   createCategory(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(new ZodValidationPipe(createCategorySchema)) body: CreateCategoryInput,
   ) {
     this.logger.info(
-      `[createCategory] Creating category "${body.name}" for user ${userId.slice(0, 8)}`,
+      `[createCategory] Creating category "${body.name}" for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
     );
     return this.categoriesService.createCategory(userId, body);
   }
@@ -50,6 +55,7 @@ export class CategoriesController {
   @ApiOperation({ summary: "Update a custom category" })
   updateCategory(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateCategorySchema)) body: UpdateCategoryInput,
   ) {
@@ -61,7 +67,11 @@ export class CategoriesController {
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a custom category" })
-  deleteCategory(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  deleteCategory(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(
       `[deleteCategory] Deleting category ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );

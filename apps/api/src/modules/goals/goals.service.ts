@@ -3,7 +3,7 @@ import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateGoalInput, UpdateGoalInput } from "@finai/validation";
 import { calculateGoalProgress } from "@finai/finance-engine";
-import { GoalType } from "@finai/database";
+import { GoalType, Prisma } from "@finai/database";
 
 /**
  * Savings goals service.
@@ -23,10 +23,16 @@ export class GoalsService {
    * Progress is always between 0 and 100 (capped — exceeding the target
    * doesn't report >100%).
    */
-  async findAll(userId: string) {
+  async findAll(userId: string, workspaceId?: string) {
     this.logger.info(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
+    const where: Prisma.GoalWhereInput = workspaceId
+      ? {
+          OR: [{ workspaceId }, { workspaceId: null, userId }],
+        }
+      : { userId };
+
     const goals = await this.prisma.client.goal.findMany({
-      where: { userId },
+      where,
       orderBy: { createdAt: "desc" },
     });
 
@@ -37,12 +43,19 @@ export class GoalsService {
     }));
   }
 
-  /** Finds a single goal by ID, scoped to the user. Throws if not found. */
-  async findOne(id: string, userId: string) {
+  /** Finds a single goal by ID, scoped to the user or workspace. Throws if not found. */
+  async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(`[findOne] Looking up goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    const goal = await this.prisma.client.goal.findFirst({
-      where: { id, userId },
-    });
+    const where: Prisma.GoalWhereInput = {
+      id,
+      ...(workspaceId
+        ? {
+            OR: [{ workspaceId }, { workspaceId: null, userId }],
+          }
+        : { userId }),
+    };
+
+    const goal = await this.prisma.client.goal.findFirst({ where });
     if (!goal) {
       this.logger.warn(`[findOne] Goal ${id.slice(0, 8)} not found for user ${userId.slice(0, 8)}`);
       throw new NotFoundException(`Goal ${id} not found`);
@@ -51,13 +64,14 @@ export class GoalsService {
   }
 
   /** Creates a new savings goal. currentAmount defaults to 0 if omitted. */
-  async create(userId: string, input: CreateGoalInput) {
+  async create(userId: string, input: CreateGoalInput, workspaceId?: string) {
     this.logger.info(
       `[create] Creating goal "${input.name}" target: ${input.targetAmount} for user ${userId.slice(0, 8)}`,
     );
     const goal = await this.prisma.client.goal.create({
       data: {
         userId,
+        ...(workspaceId && { workspaceId }),
         name: input.name,
         targetAmount: input.targetAmount,
         currentAmount: input.currentAmount ?? 0,
@@ -72,9 +86,9 @@ export class GoalsService {
   }
 
   /** Updates one or more mutable fields of a goal. Only provided fields are changed. */
-  async update(id: string, userId: string, input: UpdateGoalInput) {
+  async update(id: string, userId: string, input: UpdateGoalInput, workspaceId?: string) {
     this.logger.info(`[update] Updating goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    await this.findOne(id, userId);
+    await this.findOne(id, userId, workspaceId);
     const updated = await this.prisma.client.goal.update({
       where: { id },
       data: {
@@ -100,11 +114,11 @@ export class GoalsService {
    * you can't over-contribute and end up with a currentAmount > targetAmount.
    * This keeps the progress calculation clean (always ≤ 100%).
    */
-  async contribute(id: string, userId: string, amount: number) {
+  async contribute(id: string, userId: string, amount: number, workspaceId?: string) {
     this.logger.info(
       `[contribute] Contributing ${amount} to goal ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
     );
-    const goal = await this.findOne(id, userId);
+    const goal = await this.findOne(id, userId, workspaceId);
     const newAmount = Math.min(goal.currentAmount + amount, goal.targetAmount);
     if (goal.currentAmount + amount > goal.targetAmount) {
       this.logger.warn(
@@ -122,9 +136,9 @@ export class GoalsService {
   }
 
   /** Deletes a goal. The goal must belong to the user (enforced by findOne). */
-  async remove(id: string, userId: string) {
+  async remove(id: string, userId: string, workspaceId?: string) {
     this.logger.info(`[remove] Deleting goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    await this.findOne(id, userId);
+    await this.findOne(id, userId, workspaceId);
     await this.prisma.client.goal.delete({ where: { id } });
     this.logger.info(`Deleted goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     return { deleted: true };

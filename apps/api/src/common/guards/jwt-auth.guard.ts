@@ -1,6 +1,7 @@
 import { Injectable, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Logger } from "@yuva-devlab/logger";
+import { invalidateJwksCache } from "@/modules/auth/jwks.util";
 
 /**
  * JWT-based authentication guard.
@@ -30,6 +31,9 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
       this.logger.warn(
         `[JwtAuthGuard] Unauthorized ${req?.method ?? "?"} ${req?.url ?? "?"}: ${detail}`,
       );
+      if (detail === "invalid signature") {
+        invalidateJwksCache();
+      }
       throw err instanceof Error ? err : new UnauthorizedException(detail);
     }
     return user as TUser;

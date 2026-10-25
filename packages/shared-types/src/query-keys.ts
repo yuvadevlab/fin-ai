@@ -70,6 +70,16 @@ export const QUERY_KEYS = {
     ALL: ["search"] as const,
     QUERY: (q: string) => ["search", q] as const,
   },
+  WORKSPACES: {
+    ALL: ["workspaces"] as const,
+    DETAIL: (id: string) => ["workspaces", id] as const,
+    MEMBERS: (id: string) => ["workspaces", id, "members"] as const,
+    INVITATIONS: ["workspaces", "invitations", "me"] as const,
+  },
+  NOTIFICATIONS: {
+    ALL: ["notifications"] as const,
+    UNREAD_COUNT: ["notifications", "unread-count"] as const,
+  },
 } as const;
 
 export type QueryKeysCatalog = typeof QUERY_KEYS;

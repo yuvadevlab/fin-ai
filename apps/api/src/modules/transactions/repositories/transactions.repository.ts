@@ -11,8 +11,16 @@ export class TransactionsRepository {
   constructor(private prisma: PrismaService) {}
 
   /** Build the shared Prisma `where` clause from filter inputs. */
-  private buildWhere(userId: string, filter: TransactionFilterInput): Prisma.TransactionWhereInput {
-    const where: Prisma.TransactionWhereInput = { userId };
+  private buildWhere(
+    userId: string,
+    filter: TransactionFilterInput,
+    workspaceId?: string,
+  ): Prisma.TransactionWhereInput {
+    const where: Prisma.TransactionWhereInput = workspaceId
+      ? {
+          OR: [{ workspaceId }, { workspaceId: null, userId }],
+        }
+      : { userId };
     if (filter.search) where.notes = { contains: filter.search, mode: "insensitive" };
     if (filter.category) where.categoryId = filter.category;
     if (filter.account) where.accountId = filter.account;
@@ -27,11 +35,11 @@ export class TransactionsRepository {
   }
 
   /** Returns paginated transactions with full relations. */
-  async findAll(userId: string, filter: TransactionFilterInput) {
+  async findAll(userId: string, filter: TransactionFilterInput, workspaceId?: string) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
-    const where = this.buildWhere(userId, filter);
+    const where = this.buildWhere(userId, filter, workspaceId);
     const page = filter.page ?? 1;
     const limit = filter.pageSize ?? 50;
     const [items, total] = await Promise.all([
@@ -53,13 +61,21 @@ export class TransactionsRepository {
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  /** Fetches a single transaction by ID scoped to the user. */
-  async findOne(id: string, userId: string) {
+  /** Fetches a single transaction by ID scoped to the user or workspace. */
+  async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const where: Prisma.TransactionWhereInput = {
+      id,
+      ...(workspaceId
+        ? {
+            OR: [{ workspaceId }, { workspaceId: null, userId }],
+          }
+        : { userId }),
+    };
     const tx = await this.prisma.client.transaction.findFirst({
-      where: { id, userId },
+      where,
       include: { category: true, account: true, toAccount: true, investment: true, goal: true },
     });
     if (!tx) {

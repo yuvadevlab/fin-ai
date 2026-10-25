@@ -2,7 +2,7 @@
 
 import React, { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { User, Palette, type LucideIcon } from "lucide-react";
+import { User, Palette, Users, type LucideIcon } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -17,6 +17,7 @@ import {
 } from "@finai/ui";
 import { ProfileSettings } from "./ProfileSettings";
 import { AppearanceSettings } from "./AppearanceSettings";
+import { WorkspaceSettings } from "@/features/workspaces/components";
 import { UI_COPY } from "@/lib/ui-copy";
 
 type Section = { id: string; icon: LucideIcon; label: string; desc: string; body: ReactNode };
@@ -24,9 +25,16 @@ type Section = { id: string; icon: LucideIcon; label: string; desc: string; body
 export function SettingsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const sectionQuery = searchParams.get("section");
+  const sectionQuery = searchParams.get("section") || searchParams.get("tab");
 
   const sections: Section[] = [
+    {
+      id: "workspaces",
+      icon: Users,
+      label: UI_COPY.WORKSPACES.TITLE,
+      desc: UI_COPY.WORKSPACES.CREATE_DESCRIPTION,
+      body: <WorkspaceSettings />,
+    },
     {
       id: "profile",
       icon: User,

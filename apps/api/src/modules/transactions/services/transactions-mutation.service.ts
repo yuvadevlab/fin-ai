@@ -4,6 +4,7 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { TransactionType } from "@finai/database";
 import type { CreateTransactionInput, UpdateTransactionInput } from "@finai/validation";
 import { TransactionsRepository } from "../repositories";
+import { TransactionsBulkService } from "./transactions-bulk.service";
 
 /**
  * Handles atomic create, update, delete, and bulk import of transactions.
@@ -17,9 +18,10 @@ export class TransactionsMutationService {
   constructor(
     private prisma: PrismaService,
     private repo: TransactionsRepository,
+    private bulkService: TransactionsBulkService,
   ) {}
 
-  async create(userId: string, input: CreateTransactionInput) {
+  async create(userId: string, input: CreateTransactionInput, workspaceId?: string) {
     this.logger.info(
       `[create] Creating ${input.type} transaction amount: ${input.amount} (user: ${userId.slice(0, 8)})`,
     );
@@ -35,6 +37,7 @@ export class TransactionsMutationService {
       const transaction = await tx.transaction.create({
         data: {
           userId,
+          ...(workspaceId && { workspaceId }),
           accountId: input.accountId,
           toAccountId: input.toAccountId,
           categoryId: input.categoryId,
@@ -72,64 +75,11 @@ export class TransactionsMutationService {
     });
   }
 
-  async createBulk(userId: string, inputs: CreateTransactionInput[]) {
-    this.logger.info(
-      `[createBulk] Bulk importing ${inputs.length} transaction(s) for user ${userId.slice(0, 8)}`,
-    );
-    for (const input of inputs) {
-      await this.repo.assertOwnedRefs(userId, {
-        accountId: input.accountId,
-        toAccountId: input.toAccountId,
-        categoryId: input.categoryId,
-        investmentId: input.investmentId,
-        goalId: input.goalId,
-      });
-    }
-
-    return this.prisma.client.$transaction(async (tx) => {
-      const created = [];
-      for (const input of inputs) {
-        const transaction = await tx.transaction.create({
-          data: {
-            userId,
-            accountId: input.accountId,
-            toAccountId: input.toAccountId,
-            categoryId: input.categoryId,
-            investmentId: input.type === TransactionType.INVESTMENT ? input.investmentId : null,
-            goalId: input.type === TransactionType.GOAL ? input.goalId : null,
-            amount: input.amount,
-            date: new Date(input.date),
-            notes: input.notes,
-            type: input.type as TransactionType,
-          },
-          include: {
-            category: true,
-            account: true,
-            toAccount: true,
-            investment: true,
-            goal: true,
-          },
-        });
-        await this.repo.applyImpact(
-          tx,
-          transaction.type,
-          transaction.amount,
-          transaction.accountId,
-          transaction.toAccountId,
-          transaction.investmentId,
-          transaction.goalId,
-          1,
-        );
-        created.push(transaction);
-      }
-      this.logger.info(
-        `Bulk created ${created.length} transactions for user ${userId.slice(0, 8)}`,
-      );
-      return created;
-    });
+  async createBulk(userId: string, inputs: CreateTransactionInput[], workspaceId?: string) {
+    return this.bulkService.createBulk(userId, inputs, workspaceId);
   }
 
-  async update(id: string, userId: string, input: UpdateTransactionInput) {
+  async update(id: string, userId: string, input: UpdateTransactionInput, workspaceId?: string) {
     await this.repo.assertOwnedRefs(userId, {
       accountId: input.accountId,
       toAccountId: input.toAccountId,
@@ -139,7 +89,7 @@ export class TransactionsMutationService {
     });
 
     return this.prisma.client.$transaction(async (tx) => {
-      const oldTx = await tx.transaction.findFirst({ where: { id, userId } });
+      const oldTx = await this.repo.findOne(id, userId, workspaceId);
       if (!oldTx) throw new NotFoundException(`Transaction ${id} not found`);
 
       // Revert old impact
@@ -213,12 +163,12 @@ export class TransactionsMutationService {
     });
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, userId: string, workspaceId?: string) {
     return this.prisma.client.$transaction(async (tx) => {
-      const oldTx = await tx.transaction.findFirst({ where: { id, userId } });
+      const oldTx = await this.repo.findOne(id, userId, workspaceId);
       if (!oldTx) throw new NotFoundException(`Transaction ${id} not found`);
 
-      // Revert old impact before deleting
+      // Revert impact
       await this.repo.applyImpact(
         tx,
         oldTx.type,
@@ -231,10 +181,8 @@ export class TransactionsMutationService {
       );
 
       await tx.transaction.delete({ where: { id } });
-      this.logger.info(
-        `Deleted transaction ${id.slice(0, 8)} [${oldTx.type}] ${oldTx.amount} for user ${userId.slice(0, 8)}`,
-      );
-      return { deleted: true };
+      this.logger.info(`Deleted transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+      return { success: true };
     });
   }
 }

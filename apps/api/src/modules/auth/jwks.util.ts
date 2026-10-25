@@ -23,8 +23,8 @@ const logger = new Logger("JwksUtil");
 /** Cache map storing resolved PEM strings keyed by key identifier (kid) */
 const keyCache = new Map<string, CachedKey>();
 
-/** Cache TTL for fetched public keys: 10 minutes */
-const CACHE_TTL_MS = 10 * 60 * 1000;
+/** Cache TTL for fetched public keys: 1 minute (allows fast recovery from key rotations) */
+const CACHE_TTL_MS = 60 * 1000;
 
 /**
  * Shape of an RFC 7517 JSON Web Key returned by the DevLab Gateway.
@@ -128,4 +128,19 @@ export async function getDevLabPublicKey(
 
     throw err;
   }
+}
+
+/**
+ * Invalidates cached JWKS keys, allowing subsequent requests to fetch fresh keys
+ * immediately upon token verification failures or key rotation events.
+ *
+ * @param kid - Optional key ID to remove, or omit to clear the entire key cache
+ */
+export function invalidateJwksCache(kid?: string): void {
+  if (kid) {
+    keyCache.delete(kid);
+  } else {
+    keyCache.clear();
+  }
+  logger.info(`[invalidateJwksCache] Cleared JWKS cache${kid ? ` for kid: ${kid}` : ""}`);
 }

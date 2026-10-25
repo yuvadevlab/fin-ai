@@ -15,6 +15,8 @@ import { SearchModule } from "./modules/search/search.module";
 import { MenuItemsModule } from "./modules/menu-items/menu-items.module";
 import { AgentModule } from "./modules/agent/agent.module";
 import { OptionsModule } from "./modules/options/options.module";
+import { WorkspacesModule } from "./modules/workspaces/workspaces.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 
 import { AppController } from "./app.controller";
 
@@ -23,7 +25,7 @@ import { AppController } from "./app.controller";
  *
  * Wires together all infrastructure (ConfigModule, PrismaModule, ThrottlerModule)
  * and feature modules (Auth, Accounts, Transactions, Budgets, Goals, Investments,
- * Analytics, AI, Categories, Search, MenuItems, Agent).
+ * Analytics, AI, Categories, Search, MenuItems, Agent, Workspaces, Notifications).
  *
  * Rate-limiting uses two buckets:
  * - "default": 60 req/min (applied selectively via @Throttle on SSE/agent endpoints)
@@ -66,6 +68,8 @@ import { AppController } from "./app.controller";
     MenuItemsModule,
     AgentModule,
     OptionsModule,
+    WorkspacesModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

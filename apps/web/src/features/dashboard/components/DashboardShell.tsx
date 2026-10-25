@@ -6,13 +6,14 @@ import { usePathname } from "next/navigation";
 import { AppShell, Sidebar, TopBar, Sheet, SheetContent, SheetTitle } from "@finai/ui";
 import { TransactionDialog } from "@/features/transactions/components";
 import { SearchDropdown } from "@/features/search/components/SearchDropdown";
-import { AppearanceSync } from "@/providers";
+import { AppearanceSync, useWorkspace } from "@/providers";
 import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
 import { PrivacyToggle } from "@/components/PrivacyToggle";
 import { useSidebarState } from "@/hooks";
 import { AIInsightFloatingWidget } from "@/features/ai-advisor/components";
+import { WorkspaceSwitcher } from "@/features/workspaces/components";
 import { UI_COPY } from "@/lib/ui-copy";
 
 function CustomLinkComponent({
@@ -42,6 +43,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const { isCollapsed, toggleCollapse } = useSidebarState();
+  const { isReadOnly } = useWorkspace();
 
   // Close mobile drawer on route transition during render
   if (prevPathname !== pathname) {
@@ -63,13 +65,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         onMenuClick={() => setIsMobileMenuOpen(true)}
         onToggleSidebar={toggleCollapse}
         isSidebarCollapsed={isCollapsed}
-        notificationsMenu={FEATURE_FLAGS.NOTIFICATIONS ? <NotificationsMenu /> : null}
+        workspaceMenu={<WorkspaceSwitcher />}
+        notificationsMenu={<NotificationsMenu />}
         profileMenu={<ProfileMenu />}
-        onAddTransactionClick={() => setIsDialogOpen(true)}
+        onAddTransactionClick={isReadOnly ? undefined : () => setIsDialogOpen(true)}
         onSearchChange={FEATURE_FLAGS.SEARCH ? (val) => setSearchQuery(val) : undefined}
       />
     ),
-    [isCollapsed, toggleCollapse],
+    [isCollapsed, toggleCollapse, isReadOnly],
   );
 
   return (

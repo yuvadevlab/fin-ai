@@ -31,46 +31,46 @@ export class TransactionsService {
     private export_: TransactionsExportService,
   ) {}
 
-  findAll(userId: string, filter: TransactionFilterInput) {
+  findAll(userId: string, filter: TransactionFilterInput, workspaceId?: string) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
-    return this.repo.findAll(userId, filter);
+    return this.repo.findAll(userId, filter, workspaceId);
   }
 
-  findOne(id: string, userId: string) {
+  findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.repo.findOne(id, userId);
+    return this.repo.findOne(id, userId, workspaceId);
   }
 
-  create(userId: string, input: CreateTransactionInput) {
+  create(userId: string, input: CreateTransactionInput, workspaceId?: string) {
     this.logger.info(
       `[create] Creating ${input.type} transaction amount: ${input.amount} (user: ${userId.slice(0, 8)})`,
     );
-    return this.mutation.create(userId, input);
+    return this.mutation.create(userId, input, workspaceId);
   }
 
-  createBulk(userId: string, inputs: CreateTransactionInput[]) {
+  createBulk(userId: string, inputs: CreateTransactionInput[], workspaceId?: string) {
     this.logger.info(
       `[createBulk] Bulk creating ${inputs.length} transaction(s) for user ${userId.slice(0, 8)}`,
     );
-    return this.mutation.createBulk(userId, inputs);
+    return this.mutation.createBulk(userId, inputs, workspaceId);
   }
 
-  update(id: string, userId: string, input: UpdateTransactionInput) {
+  update(id: string, userId: string, input: UpdateTransactionInput, workspaceId?: string) {
     this.logger.info(
       `[update] Updating transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.mutation.update(id, userId, input);
+    return this.mutation.update(id, userId, input, workspaceId);
   }
 
-  remove(id: string, userId: string) {
+  remove(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[remove] Deleting transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.mutation.remove(id, userId);
+    return this.mutation.remove(id, userId, workspaceId);
   }
 
   recategorize(
