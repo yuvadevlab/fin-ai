@@ -87,7 +87,7 @@ describe("resolveAgentTransactionDate", () => {
   });
 
   it("throws a user-friendly error for unparseable expressions", () => {
-    expect(() => resolveAgentTransactionDate({ dateExpression: "asdf qwer" }, TODAY)).toThrowError(
+    expect(() => resolveAgentTransactionDate({ dateExpression: "asdf qwer" }, TODAY)).toThrow(
       /couldn't interpret the date/,
     );
   });

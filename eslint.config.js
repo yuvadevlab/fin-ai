@@ -73,6 +73,10 @@ export default tseslint.config(
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2022,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: rootDir,
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -84,6 +88,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      "@typescript-eslint/no-deprecated": "warn",
       "no-restricted-imports": [
         "error",
         {
