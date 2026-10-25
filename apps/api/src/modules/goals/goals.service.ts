@@ -5,12 +5,24 @@ import { CreateGoalInput, UpdateGoalInput } from "@finai/validation";
 import { calculateGoalProgress } from "@finai/finance-engine";
 import { GoalType, Prisma } from "@finai/database";
 
+/**
+ * Savings goals service.
+ *
+ * Goals represent a user's savings targets (emergency fund, vacation, etc.).
+ * Each goal tracks a current amount and a target amount. The progress
+ * percentage is computed by the pure `calculateGoalProgress` helper.
+ */
 @Injectable()
 export class GoalsService {
   private readonly logger = new Logger(GoalsService.name);
 
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Lists all goals for a user with their progress percentage computed.
+   * Progress is always between 0 and 100 (capped — exceeding the target
+   * doesn't report >100%).
+   */
   async findAll(userId: string, workspaceId?: string) {
     this.logger.info(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
     const where: Prisma.GoalWhereInput = workspaceId
@@ -31,6 +43,7 @@ export class GoalsService {
     }));
   }
 
+  /** Finds a single goal by ID, scoped to the user or workspace. Throws if not found. */
   async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(`[findOne] Looking up goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     const where: Prisma.GoalWhereInput = {
@@ -50,6 +63,7 @@ export class GoalsService {
     return goal;
   }
 
+  /** Creates a new savings goal. currentAmount defaults to 0 if omitted. */
   async create(userId: string, input: CreateGoalInput, workspaceId?: string) {
     this.logger.info(
       `[create] Creating goal "${input.name}" target: ${input.targetAmount} for user ${userId.slice(0, 8)}`,
@@ -71,6 +85,7 @@ export class GoalsService {
     return goal;
   }
 
+  /** Updates one or more mutable fields of a goal. Only provided fields are changed. */
   async update(id: string, userId: string, input: UpdateGoalInput, workspaceId?: string) {
     this.logger.info(`[update] Updating goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     await this.findOne(id, userId, workspaceId);
@@ -94,6 +109,11 @@ export class GoalsService {
     return updated;
   }
 
+  /**
+   * Adds a contribution to a goal. The contribution is capped at the target —
+   * you can't over-contribute and end up with a currentAmount > targetAmount.
+   * This keeps the progress calculation clean (always ≤ 100%).
+   */
   async contribute(id: string, userId: string, amount: number, workspaceId?: string) {
     this.logger.info(
       `[contribute] Contributing ${amount} to goal ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
@@ -115,6 +135,7 @@ export class GoalsService {
     return updated;
   }
 
+  /** Deletes a goal. The goal must belong to the user (enforced by findOne). */
   async remove(id: string, userId: string, workspaceId?: string) {
     this.logger.info(`[remove] Deleting goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
     await this.findOne(id, userId, workspaceId);

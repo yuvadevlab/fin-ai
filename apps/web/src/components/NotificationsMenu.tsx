@@ -3,6 +3,7 @@
 import React from "react";
 import { Bell, Check, Users, Sparkles, AlertCircle, CheckCheck } from "lucide-react";
 import { Button, Badge, Popover, PopoverTrigger, PopoverContent } from "@finai/ui";
+import { NotificationType, InvitationAction } from "@finai/shared-types";
 import { UI_COPY } from "@/lib";
 import {
   useNotifications,
@@ -26,12 +27,12 @@ export function NotificationsMenu() {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case "WORKSPACE_INVITATION":
+      case NotificationType.WORKSPACE_INVITATION:
         return <Users className="text-primary size-4" />;
-      case "AI_INSIGHT":
-        return <Sparkles className="size-4 text-amber-500" />;
-      case "BUDGET_WARNING":
-      case "BUDGET_EXCEEDED":
+      case NotificationType.AI_INSIGHT:
+        return <Sparkles className="text-warning size-4" />;
+      case NotificationType.BUDGET_WARNING:
+      case NotificationType.BUDGET_EXCEEDED:
         return <AlertCircle className="text-destructive size-4" />;
       default:
         return <Bell className="text-muted-foreground size-4" />;
@@ -113,7 +114,10 @@ export function NotificationsMenu() {
                   variant="outline"
                   disabled={respondMutation.isPending}
                   onClick={() =>
-                    respondMutation.mutate({ invitationId: invite.id, action: "reject" })
+                    respondMutation.mutate({
+                      invitationId: invite.id,
+                      action: InvitationAction.REJECT,
+                    })
                   }
                   className="h-7 px-2.5 text-xs"
                 >
@@ -123,7 +127,10 @@ export function NotificationsMenu() {
                   size="sm"
                   disabled={respondMutation.isPending}
                   onClick={() =>
-                    respondMutation.mutate({ invitationId: invite.id, action: "accept" })
+                    respondMutation.mutate({
+                      invitationId: invite.id,
+                      action: InvitationAction.ACCEPT,
+                    })
                   }
                   className="h-7 px-2.5 text-xs"
                 >

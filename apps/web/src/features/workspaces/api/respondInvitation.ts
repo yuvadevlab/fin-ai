@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS, InvitationAction } from "@finai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "@finai/ui";
+import { UI_COPY } from "@/lib";
 import { myInvitationsQueryKey } from "./getMyInvitations";
 import { workspacesQueryKey } from "./getWorkspaces";
 
 interface RespondInvitationVariables {
   invitationId: string;
-  action: "accept" | "reject";
+  action: InvitationAction;
 }
 
 export function useRespondInvitation() {
@@ -16,16 +17,20 @@ export function useRespondInvitation() {
   return useMutation<{ success: boolean; workspaceId?: string }, Error, RespondInvitationVariables>(
     {
       mutationFn: ({ invitationId, action }) => {
-        const endpoint =
-          action === "accept"
-            ? API_ENDPOINTS.WORKSPACES.ACCEPT_INVITATION(invitationId)
-            : API_ENDPOINTS.WORKSPACES.REJECT_INVITATION(invitationId);
+        const isAccept = action === InvitationAction.ACCEPT;
+        const endpoint = isAccept
+          ? API_ENDPOINTS.WORKSPACES.ACCEPT_INVITATION(invitationId)
+          : API_ENDPOINTS.WORKSPACES.REJECT_INVITATION(invitationId);
 
         return toast
           .promise(apiClient.post<{ success: boolean; workspaceId?: string }>(endpoint), {
-            loading: action === "accept" ? "Joining workspace..." : "Declining invitation...",
-            success: action === "accept" ? "Joined workspace successfully!" : "Invitation declined",
-            error: (error: Error) => error.message || "Failed to process invitation",
+            loading: isAccept
+              ? UI_COPY.WORKSPACES.JOINING_WORKSPACE
+              : UI_COPY.WORKSPACES.DECLINING_INVITATION,
+            success: isAccept
+              ? UI_COPY.WORKSPACES.JOINED_SUCCESS
+              : UI_COPY.WORKSPACES.DECLINED_SUCCESS,
+            error: (error: Error) => error.message || UI_COPY.WORKSPACES.RESPOND_ERROR,
           })
           .unwrap();
       },

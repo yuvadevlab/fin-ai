@@ -35,4 +35,9 @@ export const WORKSPACES_COPY = {
   NO_MEMBERS: "No members in this workspace yet.",
   NO_PENDING_INVITATIONS: "No pending invitations.",
   MANAGE_SETTINGS: "Manage Workspace",
+  JOINING_WORKSPACE: "Joining workspace...",
+  DECLINING_INVITATION: "Declining invitation...",
+  JOINED_SUCCESS: "Joined workspace successfully!",
+  DECLINED_SUCCESS: "Invitation declined",
+  RESPOND_ERROR: "Failed to process invitation",
 } as const;

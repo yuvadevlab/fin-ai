@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
+import { WorkspaceRole } from "@finai/shared-types";
 import { inviteWorkspaceMemberSchema } from "@finai/validation";
 import { UI_COPY } from "@/lib";
 import { useInviteMember } from "../api";
@@ -27,7 +28,7 @@ export function InviteMemberDialog({
 
   const [values, setValues] = useState<Record<string, string>>({
     email: "",
-    role: "MEMBER",
+    role: WorkspaceRole.MEMBER,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -67,7 +68,7 @@ export function InviteMemberDialog({
         input: parseResult.data,
       });
       setOpen(false);
-      setValues({ email: "", role: "MEMBER" });
+      setValues({ email: "", role: WorkspaceRole.MEMBER });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Failed to invite member";
       setErrors({ root: errorMsg });

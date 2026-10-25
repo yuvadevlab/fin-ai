@@ -119,7 +119,7 @@ export function TransactionsPage() {
           />
 
           {isReadOnly && (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs font-medium text-amber-700">
+            <div className="border-warning/30 bg-warning/10 text-warning-foreground rounded-xl border p-3 text-xs font-medium">
               {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
             </div>
           )}

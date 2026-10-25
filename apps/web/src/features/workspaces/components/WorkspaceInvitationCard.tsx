@@ -5,7 +5,7 @@ import { Users, Check, X, Mail } from "lucide-react";
 import { Button, Card, CardContent, Badge } from "@finai/ui";
 import { UI_COPY } from "@/lib";
 import { useMyInvitations, useRespondInvitation } from "../api";
-import { WorkspaceRole } from "@finai/shared-types";
+import { WorkspaceRole, InvitationAction } from "@finai/shared-types";
 
 interface WorkspaceInvitationCardProps {
   className?: string;
@@ -79,7 +79,7 @@ export function WorkspaceInvitationCard({
                   onClick={() =>
                     respondMutation.mutate({
                       invitationId: invite.id,
-                      action: "reject",
+                      action: InvitationAction.REJECT,
                     })
                   }
                   className="gap-1.5 text-xs"
@@ -93,7 +93,7 @@ export function WorkspaceInvitationCard({
                   onClick={() =>
                     respondMutation.mutate({
                       invitationId: invite.id,
-                      action: "accept",
+                      action: InvitationAction.ACCEPT,
                     })
                   }
                   className="gap-1.5 text-xs"

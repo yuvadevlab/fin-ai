@@ -6,12 +6,27 @@ import { calculateBudgetStatus } from "@finai/finance-engine";
 import { Prisma, TransactionType } from "@finai/database";
 import { transferBudgetAllocation } from "./budgets-transfer.util";
 
+/**
+ * Budget management service.
+ *
+ * Budgets are category-scoped spending limits. Each budget tracks spending
+ * against its category from a configurable start date (defaults to the 1st of
+ * the current month). Spending is aggregated from EXPENSE transactions only —
+ * income transactions do not count against a budget.
+ */
 @Injectable()
 export class BudgetsService {
   private readonly logger = new Logger(BudgetsService.name);
 
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Lists all budgets for a user with their current spending and status.
+   *
+   * For each budget, sums up all EXPENSE transactions in the budget's period
+   * (from startDate to now) and computes an at-a-glance status (under/on/over
+   * budget) using the pure `calculateBudgetStatus` helper from finance-engine.
+   */
   async findAll(userId: string, workspaceId?: string) {
     this.logger.info(`[findAll] Listing budgets for user ${userId.slice(0, 8)}`);
     const where: Prisma.BudgetWhereInput = workspaceId
@@ -62,6 +77,7 @@ export class BudgetsService {
     return enriched;
   }
 
+  /** Finds a single budget by ID, scoped to the user or workspace. Throws if not found. */
   async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[findOne] Looking up budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
@@ -88,6 +104,7 @@ export class BudgetsService {
     return budget;
   }
 
+  /** Creates a new budget for a user. The startDate defaults to now if omitted. */
   async create(userId: string, input: CreateBudgetInput, workspaceId?: string) {
     this.logger.info(
       `[create] Creating budget for category ${input.categoryId.slice(0, 8)}, limit: ${input.limit}`,
@@ -108,6 +125,11 @@ export class BudgetsService {
     return budget;
   }
 
+  /**
+   * Updates a budget. Currently only the spending limit can be changed —
+   * category and startDate are immutable after creation (the update schema
+   * enforces this at the validation layer).
+   */
   async update(id: string, userId: string, input: UpdateBudgetInput, workspaceId?: string) {
     await this.findOne(id, userId, workspaceId);
     this.logger.info(`[update] Updating budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
@@ -121,6 +143,7 @@ export class BudgetsService {
     return updated;
   }
 
+  /** Deletes a budget. The budget must belong to the user (enforced by findOne). */
   async remove(id: string, userId: string, workspaceId?: string) {
     await this.findOne(id, userId, workspaceId);
     this.logger.info(`[remove] Deleting budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
@@ -128,6 +151,11 @@ export class BudgetsService {
     return { deleted: true };
   }
 
+  /**
+   * Composite: move part of one budget's limit to another budget atomically.
+   * Both budgets must belong to the user; the source limit cannot drop below
+   * zero. Returns the updated target budget.
+   */
   async transferAllocation(
     userId: string,
     fromBudgetId: string,

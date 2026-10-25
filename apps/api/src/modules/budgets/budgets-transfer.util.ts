@@ -4,6 +4,11 @@ import { Logger } from "@yuva-devlab/logger";
 
 const logger = new Logger("BudgetsTransferHelper");
 
+/**
+ * Composite: move part of one budget's limit to another budget atomically.
+ * Both budgets must belong to the user; the source limit cannot drop below
+ * zero. Returns the updated target budget.
+ */
 export async function transferBudgetAllocation(
   prisma: PrismaService,
   userId: string,

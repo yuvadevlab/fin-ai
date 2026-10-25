@@ -695,6 +695,9 @@ importers:
 
   packages/validation:
     dependencies:
+      '@finai/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
       zod:
         specifier: ^3.24.2
         version: 3.25.76

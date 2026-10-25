@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FormDialogField, FormField } from "@finai/ui";
+import { WorkspaceRole } from "@finai/shared-types";
 import { UI_COPY } from "@/lib";
 
 export interface InviteMemberFormProps {
@@ -24,8 +25,8 @@ export function InviteMemberForm({ values, errors, onChange }: InviteMemberFormP
       name: "role",
       label: UI_COPY.WORKSPACES.ROLE_LABEL,
       options: [
-        { label: UI_COPY.WORKSPACES.ROLE_MEMBER, value: "MEMBER" },
-        { label: UI_COPY.WORKSPACES.ROLE_ADMIN, value: "ADMIN" },
+        { label: UI_COPY.WORKSPACES.ROLE_MEMBER, value: WorkspaceRole.MEMBER },
+        { label: UI_COPY.WORKSPACES.ROLE_ADMIN, value: WorkspaceRole.ADMIN },
       ],
     },
   ];

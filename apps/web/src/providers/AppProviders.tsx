@@ -5,7 +5,7 @@ import { Toaster } from "@finai/ui";
 import { QueryProvider } from "./query/QueryProvider";
 import { AuthProvider } from "./auth/AuthProvider";
 import { AppearanceProvider } from "./appearance/AppearanceProvider";
-import { WorkspaceProvider } from "./workspace-provider";
+import { WorkspaceProvider } from "./workspace/WorkspaceProvider";
 
 export interface AppProvidersProps {
   /**

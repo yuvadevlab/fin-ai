@@ -5,12 +5,33 @@ import { type CreateAccountInput, type UpdateAccountInput } from "@finai/validat
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { getDefaultAccountId, setDefaultAccountId } from "./accounts-preferences.util";
 
+/**
+ * Service for managing user accounts (bank accounts, credit cards, wallets).
+ *
+ * Accounts are the source of funds for transactions. Each user can have
+ * multiple accounts, with one optionally marked as the default. Account
+ * deletion is soft — the record is deactivated (`isActive: false`) rather
+ * than hard-deleted, so historical transactions remain intact.
+ *
+ * All methods require `userId` and enforce ownership via Prisma `where` clauses.
+ */
 @Injectable()
 export class AccountsService {
   private readonly logger = new Logger(AccountsService.name);
 
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Returns all active accounts for the user, each annotated with `isDefault`.
+   *
+   * The "resolved default" logic:
+   * 1. If the user has an explicit default preference AND that account still
+   *    exists → use it.
+   * 2. If the user has exactly one account → auto-default it (first-run UX).
+   * 3. Otherwise → no default (user must pick explicitly).
+   *
+   * Runs the account fetch and default-preference read in parallel.
+   */
   async findAll(userId: string, workspaceId?: string) {
     this.logger.info(
       `[findAll] Listing accounts for user ${userId.slice(0, 8)} (workspace: ${workspaceId ? workspaceId.slice(0, 8) : "default"})`,
@@ -47,6 +68,11 @@ export class AccountsService {
     return enriched;
   }
 
+  /**
+   * Fetches a single account by ID, scoped to the user or workspace.
+   * Throws `NotFoundException` if the account doesn't exist or belongs to
+   * another user.
+   */
   async findOne(id: string, userId: string, workspaceId?: string) {
     this.logger.info(
       `[findOne] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
@@ -71,6 +97,14 @@ export class AccountsService {
     return account;
   }
 
+  /**
+   * Creates a new account for the user.
+   *
+   * Auto-default logic:
+   * - If `input.isDefault` is explicitly true → set as default.
+   * - Otherwise, if this is the user's FIRST active account → auto-set as
+   *   default (so the user doesn't have to manually pick one on first run).
+   */
   async create(userId: string, input: CreateAccountInput, workspaceId?: string) {
     const account = await this.prisma.client.account.create({
       data: {
@@ -100,6 +134,12 @@ export class AccountsService {
     return account;
   }
 
+  /**
+   * Updates an account's name and/or balance.
+   *
+   * If `isDefault: true` is passed, the default-account preference is also
+   * updated. Only the fields present in `input` are written (partial update).
+   */
   async update(id: string, userId: string, input: UpdateAccountInput, workspaceId?: string) {
     await this.findOne(id, userId, workspaceId);
     if (input.isDefault === true) {
@@ -116,6 +156,10 @@ export class AccountsService {
     return updated;
   }
 
+  /**
+   * Marks an account as the user's default account.
+   * Persists the preference via `setDefaultAccountId`.
+   */
   async setDefault(id: string, userId: string, workspaceId?: string) {
     await this.findOne(id, userId, workspaceId);
     await setDefaultAccountId(this.prisma, userId, id);
@@ -123,6 +167,13 @@ export class AccountsService {
     return { success: true };
   }
 
+  /**
+   * Soft-deletes an account by setting `isActive: false`.
+   *
+   * The record is preserved so historical transactions still reference a
+   * valid account. If the deleted account was the default, the default
+   * preference is cleared so it doesn't point to a deactivated account.
+   */
   async remove(id: string, userId: string, workspaceId?: string) {
     await this.findOne(id, userId, workspaceId);
     const defaultId = await getDefaultAccountId(this.prisma, userId);

@@ -24,3 +24,9 @@ export const InvitationStatus = {
   CANCELLED: "CANCELLED",
 } as const;
 export type InvitationStatus = (typeof InvitationStatus)[keyof typeof InvitationStatus];
+
+export const InvitationAction = {
+  ACCEPT: "accept",
+  REJECT: "reject",
+} as const;
+export type InvitationAction = (typeof InvitationAction)[keyof typeof InvitationAction];

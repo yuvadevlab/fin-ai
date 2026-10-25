@@ -5,6 +5,13 @@ import { Logger } from "@yuva-devlab/logger";
 
 const logger = new Logger("AccountPreferencesHelper");
 
+/**
+ * Reads the user's stored preference for a default account.
+ *
+ * The default account is persisted as JSON on the `User.preferences`
+ * column (not a dedicated column), so we deserialize it here.
+ * Returns `null` when no preference is set or the user has no preferences.
+ */
 export async function getDefaultAccountId(
   prisma: PrismaService,
   userId: string,
@@ -18,6 +25,15 @@ export async function getDefaultAccountId(
   return prefs.defaultAccountId ?? null;
 }
 
+/**
+ * Persists (or clears) the user's default-account preference.
+ *
+ * Writes back the entire `preferences` JSON blob after mutating the
+ * `defaultAccountId` field. Pass `null` to clear the default.
+ *
+ * Note: this does NOT validate that `accountId` belongs to the user —
+ * callers must ensure ownership before calling.
+ */
 export async function setDefaultAccountId(
   prisma: PrismaService,
   userId: string,

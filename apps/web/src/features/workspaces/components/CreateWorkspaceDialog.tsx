@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FormDialog } from "@finai/ui";
+import { WorkspaceType } from "@finai/shared-types";
 import { createWorkspaceSchema } from "@finai/validation";
 import { UI_COPY } from "@/lib";
 import { useCreateWorkspace } from "../api";
@@ -22,7 +23,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
-    type: "FAMILY",
+    type: WorkspaceType.FAMILY,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -44,7 +45,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
     setErrors({});
     const parseResult = createWorkspaceSchema.safeParse({
       name: values.name,
-      type: "FAMILY",
+      type: WorkspaceType.FAMILY,
     });
 
     if (!parseResult.success) {
@@ -61,7 +62,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
       const newWs = await createMutation.mutateAsync(parseResult.data);
       switchWorkspace(newWs.id);
       setOpen(false);
-      setValues({ name: "", type: "FAMILY" });
+      setValues({ name: "", type: WorkspaceType.FAMILY });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Failed to create workspace";
       setErrors({ root: errorMsg });
