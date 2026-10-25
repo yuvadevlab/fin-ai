@@ -8,13 +8,7 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { randomUUID } from "crypto";
-import {
-  buildToolPlanInstructions,
-  LlmConnectionError,
-  type LlmChatRequest,
-  type LlmMessage,
-} from "@finai/ai-engine";
-import { buildAgentSystemPrompt } from "@finai/prompts";
+import { LlmConnectionError } from "@finai/ai-engine";
 import type { AgentChatInput } from "@finai/validation";
 import { AccountsService } from "@/modules/accounts/accounts.service";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";
@@ -25,28 +19,18 @@ import { BudgetsService } from "@/modules/budgets/budgets.service";
 import { GoalsService } from "@/modules/goals/goals.service";
 import { InvestmentsService } from "@/modules/investments/investments.service";
 import { UsersService } from "@/modules/auth/users.service";
-import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { ToolRegistry } from "./tool-registry";
 import { AgentActionService } from "./action.service";
 import { ActionManager } from "./action-manager";
-import { EntityMemoryService } from "./entity-memory";
-import { serverTodayISO } from "./date.utils";
 import { AgentOrchestratorService } from "./runners";
 import { buildAgentTools } from "./tool-factory";
-import { buildPendingActionSection } from "./utils";
-import {
-  AgentStreamEventType,
-  AgentMode,
-  ExecutionPhase,
-  PhaseStatus,
-  MessageRole,
-} from "@finai/shared-types";
+import { AgentStreamEventType, AgentMode, ExecutionPhase, PhaseStatus } from "@finai/shared-types";
 import { AgentTitleService } from "./agent-title.service";
-import type { AgentEventEmitter } from "./agent.types";
+import { AgentRequestBuilderService } from "./services/agent-request-builder.service";
+import type { AgentEventEmitter, AgentWorkspaceContext } from "./agent.types";
 
-/** Maximum number of previous messages to assemble into the conversation context window */
-const HISTORY_WINDOW = 12;
+export type { AgentWorkspaceContext };
 
 /**
  * Orchestrator facade for autonomous conversational money assistance.
@@ -59,12 +43,11 @@ export class AgentService {
   constructor(
     private readonly registry: ToolRegistry,
     private readonly conversationService: ConversationService,
-    private readonly contextBuilder: ContextBuilderService,
-    private readonly actionService: AgentActionService,
-    private readonly actionManager: ActionManager,
-    private readonly entityMemory: EntityMemoryService,
+    private readonly requestBuilder: AgentRequestBuilderService,
     private readonly orchestrator: AgentOrchestratorService,
     private readonly titleService: AgentTitleService,
+    actionService: AgentActionService,
+    actionManager: ActionManager,
     accountsService: AccountsService,
     analyticsService: AnalyticsService,
     searchService: SearchService,
@@ -92,63 +75,19 @@ export class AgentService {
   }
 
   /**
-   * Assembles the multi-turn LLM request including system instructions, memory, and history.
-   *
-   * @param userId - Unique identifier of the authenticated user.
-   * @param conversationId - The active conversation thread UUID.
-   * @returns The assembled LLM chat payload, pending action metadata, and tool configuration.
-   */
-  private async buildChatRequest(
-    userId: string,
-    conversationId: string,
-  ): Promise<{
-    request: LlmChatRequest;
-    pendingAction: Awaited<ReturnType<ActionManager["getPendingAction"]>>;
-    needsTools: boolean;
-  }> {
-    this.logger.info(`[buildChatRequest] Building context for convo ${conversationId.slice(0, 8)}`);
-
-    // 1. Fetch recent chronological messages and pending human-in-the-loop actions
-    const recent = await this.conversationService.getRecentMessages(conversationId, HISTORY_WINDOW);
-    const pendingAction = await this.actionManager.getPendingAction(conversationId, userId);
-
-    // 2. Map stored database messages to LLM chat turn messages
-    const history: LlmMessage[] = recent.reverse().map((m) => ({
-      role: m.role === MessageRole.ASSISTANT ? ("assistant" as const) : ("user" as const),
-      content: m.content,
-    }));
-
-    // 3. Assemble financial snapshot, memory, and system instructions
-    const snapshot = await this.contextBuilder.buildFinanceContext(userId);
-    const entityMemoryData = await this.entityMemory.load(conversationId);
-    const systemPrompt = buildAgentSystemPrompt({
-      portfolioSnapshot: snapshot,
-      toolPlanInstructions: buildToolPlanInstructions(this.registry.list().map((t) => t.name)),
-      currentDate: serverTodayISO(),
-      entityMemory: this.entityMemory.buildPromptSection(entityMemoryData),
-      pendingAction: pendingAction
-        ? buildPendingActionSection(pendingAction.id, pendingAction.tool, pendingAction.input)
-        : "",
-    });
-
-    return {
-      request: {
-        messages: [{ role: "system", content: systemPrompt }, ...history],
-        tools: this.registry.toLlmDefinitions(),
-      },
-      pendingAction,
-      needsTools: true,
-    };
-  }
-
-  /**
    * Executes an autonomous conversational turn using the ReAct agent framework.
    *
    * @param input - Client input containing question and optional conversation ID.
    * @param userId - Authenticated user UUID.
    * @param emit - SSE callback emitting streaming tokens, tool states, and approval cards.
+   * @param wsContext - Active workspace context if running in a shared workspace.
    */
-  async chat(input: AgentChatInput, userId: string, emit: AgentEventEmitter): Promise<void> {
+  async chat(
+    input: AgentChatInput,
+    userId: string,
+    emit: AgentEventEmitter,
+    wsContext?: AgentWorkspaceContext,
+  ): Promise<void> {
     const runId = randomUUID();
     emit({ type: AgentStreamEventType.RUN, runId });
 
@@ -197,9 +136,10 @@ export class AgentService {
         phase: ExecutionPhase.LOADING_CONTEXT,
         status: PhaseStatus.START,
       });
-      const { request, pendingAction, needsTools } = await this.buildChatRequest(
+      const { request, pendingAction, needsTools } = await this.requestBuilder.build(
         userId,
         conversationId,
+        wsContext,
       );
       emit({
         type: AgentStreamEventType.PHASE,
@@ -220,6 +160,9 @@ export class AgentService {
         hasPendingAction: Boolean(pendingAction),
         emit,
         role: needsTools ? AgentMode.AGENT : AgentMode.CHAT,
+        workspaceId: wsContext?.workspaceId,
+        memberUserIds: wsContext?.memberUserIds,
+        isWorkspaceReadOnly: wsContext?.isReadOnly,
       });
     } catch (error) {
       this.logger.error(

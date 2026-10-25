@@ -13,6 +13,7 @@ export interface StreamAgentChatParams {
   question: string;
   conversationId: string | null;
   token: string | null;
+  workspaceId?: string | null;
   signal: AbortSignal;
   port: AgentEventPort;
 }
@@ -24,15 +25,19 @@ export async function streamAgentChat({
   question,
   conversationId,
   token,
+  workspaceId,
   signal,
   port,
 }: StreamAgentChatParams): Promise<void> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (workspaceId) headers["x-workspace-id"] = workspaceId;
+
   const res = await fetch(`${API_BASE_URL}/${API_ROUTES.AGENT_CHAT}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    headers,
     body: JSON.stringify({ question, conversationId: conversationId ?? undefined }),
     signal,
   });

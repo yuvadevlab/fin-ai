@@ -75,11 +75,22 @@ export class WorkspaceGuard implements CanActivate {
 
     // RBAC: Reject mutations on shared workspaces (view-only mode)
     const method = request.method ? request.method.toUpperCase() : "GET";
-    if (isReadOnly && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
+    const path = (request.path || request.originalUrl || "") as string;
+    const isChatStream = path.includes("/agent/chat");
+    const isRejectAction = path.includes("/agent/actions/") && path.includes("/reject");
+
+    if (
+      isReadOnly &&
+      !isChatStream &&
+      !isRejectAction &&
+      ["POST", "PATCH", "PUT", "DELETE"].includes(method)
+    ) {
       this.logger.warn(
         `[canActivate] Write ${method} rejected on shared workspace ${workspace.id.slice(0, 8)} by user ${user.id.slice(0, 8)}`,
       );
-      throw new ForbiddenException("Shared workspaces are view-only. Modifications are disabled.");
+      throw new ForbiddenException(
+        "Shared workspaces are view-only. Adding, editing, or deleting records is disabled.",
+      );
     }
 
     return true;

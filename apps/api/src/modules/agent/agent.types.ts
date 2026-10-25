@@ -2,6 +2,12 @@ import type { AgentCard, AgentStreamEvent } from "@finai/ai-engine";
 import { ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
 import type { ValidationWarning } from "./tool-factory";
 
+export interface AgentWorkspaceContext {
+  workspaceId?: string;
+  memberUserIds?: string[];
+  isReadOnly?: boolean;
+}
+
 /** Authorization + tracing context injected into every tool execution. */
 export interface AgentContext {
   /** Authenticated user — every service query is scoped to this id. */
@@ -10,6 +16,12 @@ export interface AgentContext {
   conversationId: string;
   /** Unique id for this agent run (correlates SSE events and audit rows). */
   runId: string;
+  /** Active workspace UUID if provided */
+  workspaceId?: string;
+  /** Resolved member user IDs when in a shared workspace */
+  memberUserIds?: string[];
+  /** Whether the active workspace is strictly view-only */
+  isWorkspaceReadOnly?: boolean;
 }
 
 /**

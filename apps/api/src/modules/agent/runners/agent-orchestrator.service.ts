@@ -27,6 +27,9 @@ export interface AgentRunParams {
   hasPendingAction: boolean;
   emit: AgentEventEmitter;
   role?: AiProviderRole;
+  workspaceId?: string;
+  memberUserIds?: string[];
+  isWorkspaceReadOnly?: boolean;
 }
 
 /**
@@ -56,6 +59,9 @@ export class AgentOrchestratorService {
     hasPendingAction,
     emit,
     role,
+    workspaceId,
+    memberUserIds,
+    isWorkspaceReadOnly,
   }: AgentRunParams): Promise<void> {
     const model = this.modelFactory.create(role ?? "agent");
     this.logger.info(
@@ -119,7 +125,7 @@ export class AgentOrchestratorService {
         );
         const result = await this.toolDispatcher.dispatch(
           call,
-          { userId, conversationId, runId },
+          { userId, conversationId, runId, workspaceId, memberUserIds, isWorkspaceReadOnly },
           emit,
         );
         this.logger.info(

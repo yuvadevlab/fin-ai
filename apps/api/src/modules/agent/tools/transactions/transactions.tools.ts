@@ -55,7 +55,7 @@ export function createTransactionsTools(transactionsService: TransactionsService
           pageSize: input.pageSize,
           sortOrder: "desc",
         };
-        return transactionsService.findAll(ctx.userId, filter);
+        return transactionsService.findAll(ctx.userId, filter, ctx.workspaceId, ctx.memberUserIds);
       },
       serialize: (output) => {
         const { items, total } = output as {
@@ -112,12 +112,17 @@ export function createTransactionsTools(transactionsService: TransactionsService
           59,
           999,
         ).toISOString();
-        return transactionsService.summarize(ctx.userId, {
-          dateFrom: input.dateFrom ?? startOfMonth,
-          dateTo: input.dateTo ?? endOfMonth,
-          groupBy: input.groupBy,
-          ...(input.type && { type: input.type }),
-        });
+        return transactionsService.summarize(
+          ctx.userId,
+          {
+            dateFrom: input.dateFrom ?? startOfMonth,
+            dateTo: input.dateTo ?? endOfMonth,
+            groupBy: input.groupBy,
+            ...(input.type && { type: input.type }),
+          },
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
       },
       summarize: (output) => {
         const groups = output as { key: string; total: number }[];

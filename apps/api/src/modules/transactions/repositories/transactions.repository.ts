@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { Prisma, TransactionType } from "@finai/database";
 import type { TransactionFilterInput } from "@finai/validation";
-import { getTransactionImpact } from "../utils";
+import { assertOwnedReferences, applyTransactionImpact, type OwnedReferenceRefs } from "../utils";
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 @Injectable()
@@ -122,79 +122,41 @@ export class TransactionsRepository {
   }
 
   /** Summarizes transaction amounts grouped by type. */
-  async groupByType(userId: string, dateFrom: Date, dateTo: Date, type?: TransactionType) {
+  async groupByType(
+    userId: string,
+    dateFrom: Date,
+    dateTo: Date,
+    type?: TransactionType,
+    memberUserIds?: string[],
+  ) {
+    const userScope = memberUserIds && memberUserIds.length > 0 ? { in: memberUserIds } : userId;
     return this.prisma.client.transaction.groupBy({
       by: ["type"],
-      where: { userId, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
+      where: { userId: userScope, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
       _sum: { amount: true },
     });
   }
 
   /** Summarizes transaction amounts grouped by categoryId. */
-  async groupByCategory(userId: string, dateFrom: Date, dateTo: Date, type?: TransactionType) {
+  async groupByCategory(
+    userId: string,
+    dateFrom: Date,
+    dateTo: Date,
+    type?: TransactionType,
+    memberUserIds?: string[],
+  ) {
+    const userScope = memberUserIds && memberUserIds.length > 0 ? { in: memberUserIds } : userId;
     return this.prisma.client.transaction.groupBy({
       by: ["categoryId"],
-      where: { userId, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
+      where: { userId: userScope, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
       _sum: { amount: true },
       orderBy: { _sum: { amount: "desc" } },
     });
   }
 
   /** Validates that referenced entities exist and are owned by the user. */
-  async assertOwnedRefs(
-    userId: string,
-    refs: {
-      accountId?: string | null;
-      toAccountId?: string | null;
-      categoryId?: string | null;
-      investmentId?: string | null;
-      goalId?: string | null;
-    },
-  ) {
-    const missing: string[] = [];
-    if (refs.accountId) {
-      const a = await this.prisma.client.account.findFirst({
-        where: { id: refs.accountId, userId, isActive: true },
-        select: { id: true },
-      });
-      if (!a) missing.push(`account ${refs.accountId}`);
-    }
-    if (refs.toAccountId) {
-      const a = await this.prisma.client.account.findFirst({
-        where: { id: refs.toAccountId, userId, isActive: true },
-        select: { id: true },
-      });
-      if (!a) missing.push(`destination account ${refs.toAccountId}`);
-    }
-    if (refs.categoryId) {
-      const c = await this.prisma.client.category.findFirst({
-        where: { id: refs.categoryId, userId },
-        select: { id: true },
-      });
-      if (!c) missing.push(`category ${refs.categoryId}`);
-    }
-    if (refs.investmentId) {
-      const i = await this.prisma.client.investment.findFirst({
-        where: { id: refs.investmentId, userId },
-        select: { id: true },
-      });
-      if (!i) missing.push(`investment ${refs.investmentId}`);
-    }
-    if (refs.goalId) {
-      const g = await this.prisma.client.goal.findFirst({
-        where: { id: refs.goalId, userId },
-        select: { id: true },
-      });
-      if (!g) missing.push(`goal ${refs.goalId}`);
-    }
-    if (missing.length > 0) {
-      this.logger.warn(
-        `[assertOwnedRefs] Invalid refs for user ${userId.slice(0, 8)}: ${missing.join(", ")}`,
-      );
-      throw new BadRequestException(
-        `Cannot record transaction: ${missing.join(", ")} not found for this user`,
-      );
-    }
+  async assertOwnedRefs(userId: string, refs: OwnedReferenceRefs) {
+    await assertOwnedReferences(this.prisma.client, userId, refs);
     this.logger.info(`[assertOwnedRefs] All refs valid for user ${userId.slice(0, 8)}`);
   }
 
@@ -207,36 +169,14 @@ export class TransactionsRepository {
     toAccountId?: string | null,
     investmentId?: string | null,
     goalId?: string | null,
-    multiplier: number = 1,
+    multiplier = 1,
   ) {
-    const { accountChange, toAccountChange } = getTransactionImpact(type, amount);
-
-    if (accountId && accountChange !== 0) {
-      await txClient.account.update({
-        where: { id: accountId },
-        data: { balance: { increment: accountChange * multiplier } },
-      });
-    }
-    if (toAccountId && toAccountChange !== 0) {
-      await txClient.account.update({
-        where: { id: toAccountId },
-        data: { balance: { increment: toAccountChange * multiplier } },
-      });
-    }
-    if (type === TransactionType.INVESTMENT && investmentId) {
-      await txClient.investment.update({
-        where: { id: investmentId },
-        data: {
-          investedAmount: { increment: amount * multiplier },
-          currentValue: { increment: amount * multiplier },
-        },
-      });
-    }
-    if (type === TransactionType.GOAL && goalId) {
-      await txClient.goal.update({
-        where: { id: goalId },
-        data: { currentAmount: { increment: amount * multiplier } },
-      });
-    }
+    await applyTransactionImpact(
+      txClient,
+      type,
+      amount,
+      { accountId, toAccountId, investmentId, goalId },
+      multiplier,
+    );
   }
 }

@@ -36,3 +36,12 @@ export async function resolveWorkspaceMemberIds(
     return fallback;
   }
 }
+
+/**
+ * Returns a Prisma-compatible user filter.
+ * When multiple member IDs exist, returns `{ in: memberUserIds }`.
+ * Otherwise returns the single `userId`.
+ */
+export function resolveUserScope(userId: string, memberUserIds?: string[]) {
+  return memberUserIds && memberUserIds.length > 0 ? { in: memberUserIds } : userId;
+}
