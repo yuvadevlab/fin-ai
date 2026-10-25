@@ -4,3 +4,4 @@ export * from "./financialInsight";
 export * from "./confirmationCardStyles";
 export * from "./partitionRows";
 export * from "./parseBulkRows";
+export * from "./confirmationDisplay";

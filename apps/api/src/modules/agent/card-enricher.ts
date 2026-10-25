@@ -46,7 +46,12 @@ export async function enrichCardWithEntityNames(
   card: AgentCard,
   userId: string,
 ): Promise<AgentCard> {
-  if (card.type !== "confirmation" || !card.rows || card.rows.length === 0) return card;
+  if (
+    (card.type !== "confirmation" && card.type !== "bulk_confirmation") ||
+    !card.rows ||
+    card.rows.length === 0
+  )
+    return card;
 
   const idsByKind = new Map<EntityKind, string[]>();
   const rowRefs: { index: number; kind: EntityKind; id: string }[] = [];

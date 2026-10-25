@@ -13,6 +13,7 @@ import {
   type AgentActivity,
   type AgentConfirmation,
   activityLabel,
+  getCompactActionRows,
   FinancialSnapshot,
   QuickActions,
 } from "@/features/ai-advisor";
@@ -51,8 +52,8 @@ export function ContextPanel({
     .filter((a) => a.status === "success" && a.summary)
     .slice(-4);
 
-  // Compact action context: tool title + the first card rows
-  const actionRows = (pendingConfirmation?.card.rows ?? []).slice(0, 3);
+  // Compact action context: sanitized and formatted action rows (no sentinels)
+  const actionRows = getCompactActionRows(pendingConfirmation);
   const showReview = reviewed.length > 0 && !isStreaming;
 
   return (
@@ -109,7 +110,7 @@ export function ContextPanel({
       {showReview && (
         <section aria-label={UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}>
           <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}</SectionTitle>
-          <ul className="bg-card border-border/60 divide-border/40 space-y-1.5 rounded-xl border px-3 py-2.5 shadow-sm">
+          <ul className="bg-card border-border/60 space-y-1.5 rounded-xl border px-3 py-2.5 shadow-sm">
             {reviewed.map((a, i) => (
               <li key={`${a.tool}-${i}`} className="flex flex-col gap-0.5">
                 <span className="text-foreground text-xs font-medium">{activityLabel(a)}</span>
