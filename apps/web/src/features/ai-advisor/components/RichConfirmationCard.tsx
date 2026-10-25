@@ -11,6 +11,7 @@ import {
   ConfirmationRowLabel,
 } from "@finai/shared-types";
 import { partitionRows } from "../utils/partitionRows";
+import { formatConfirmationLabel } from "../utils/confirmationDisplay";
 import { getTransactionTypeAccent, STATUS_META } from "../utils/confirmationCardStyles";
 import { BulkConfirmationCarousel } from "./BulkConfirmationCarousel";
 import { ConfirmationEffectPreview } from "./ConfirmationEffectPreview";
@@ -121,7 +122,9 @@ export function RichConfirmationCard({
                 key={key}
                 className="bg-foreground/2 flex items-center justify-between gap-3 px-3 py-1.5"
               >
-                <span className="text-muted-foreground text-xs">{key}</span>
+                <span className="text-muted-foreground text-xs">
+                  {formatConfirmationLabel(key)}
+                </span>
                 {isTypeKey && typeAccent ? (
                   <span
                     className={cn(

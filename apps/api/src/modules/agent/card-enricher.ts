@@ -1,5 +1,6 @@
 import type { AgentCard } from "@finai/ai-engine";
 import { formatINR } from "@finai/finance-engine";
+import { AgentCardType } from "@finai/shared-types";
 import type { PrismaService } from "@/modules/prisma/prisma.service";
 
 /**
@@ -46,7 +47,12 @@ export async function enrichCardWithEntityNames(
   card: AgentCard,
   userId: string,
 ): Promise<AgentCard> {
-  if (card.type !== "confirmation" || !card.rows || card.rows.length === 0) return card;
+  if (
+    (card.type !== AgentCardType.CONFIRMATION && card.type !== AgentCardType.BULK_CONFIRMATION) ||
+    !card.rows ||
+    card.rows.length === 0
+  )
+    return card;
 
   const idsByKind = new Map<EntityKind, string[]>();
   const rowRefs: { index: number; kind: EntityKind; id: string }[] = [];
