@@ -94,7 +94,7 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
             required={field.required}
             onValueChange={(val) => onChange?.(field.name, val)}
           >
-            <SelectTrigger id={field.id || field.name} className="h-9 w-full">
+            <SelectTrigger id={field.id || field.name}>
               <SelectValue placeholder={field.placeholder ?? "Select an option"} />
             </SelectTrigger>
 
