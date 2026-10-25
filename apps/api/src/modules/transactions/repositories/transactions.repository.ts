@@ -4,21 +4,24 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { Prisma, TransactionType } from "@finai/database";
 import type { TransactionFilterInput } from "@finai/validation";
 import { getTransactionImpact } from "../utils";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 @Injectable()
 export class TransactionsRepository {
   private readonly logger = new Logger(TransactionsRepository.name);
   constructor(private prisma: PrismaService) {}
 
-  /** Build the shared Prisma `where` clause from filter inputs. */
+  /** Build the shared Prisma `where` clause from filter inputs and workspace members. */
   private buildWhere(
     userId: string,
     filter: TransactionFilterInput,
     workspaceId?: string,
+    memberUserIds?: string[],
   ): Prisma.TransactionWhereInput {
+    const targetUserIds = memberUserIds && memberUserIds.length > 0 ? memberUserIds : [userId];
     const where: Prisma.TransactionWhereInput = workspaceId
       ? {
-          OR: [{ workspaceId }, { workspaceId: null, userId }],
+          OR: [{ workspaceId }, { userId: { in: targetUserIds } }],
         }
       : { userId };
     if (filter.search) where.notes = { contains: filter.search, mode: "insensitive" };
@@ -34,12 +37,19 @@ export class TransactionsRepository {
     return where;
   }
 
-  /** Returns paginated transactions with full relations. */
-  async findAll(userId: string, filter: TransactionFilterInput, workspaceId?: string) {
+  /** Returns paginated transactions with full relations for all members of the workspace. */
+  async findAll(
+    userId: string,
+    filter: TransactionFilterInput,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
-    const where = this.buildWhere(userId, filter, workspaceId);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
+    const where = this.buildWhere(userId, filter, workspaceId, resolvedMemberIds);
     const page = filter.page ?? 1;
     const limit = filter.pageSize ?? 50;
     const [items, total] = await Promise.all([
@@ -51,6 +61,7 @@ export class TransactionsRepository {
           toAccount: { select: { id: true, name: true, type: true } },
           investment: { select: { id: true, name: true, assetClass: true } },
           goal: { select: { id: true, name: true, targetAmount: true } },
+          user: { select: { id: true, name: true, email: true, avatarUrl: true } },
         },
         orderBy: [{ date: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
@@ -62,21 +73,30 @@ export class TransactionsRepository {
   }
 
   /** Fetches a single transaction by ID scoped to the user or workspace. */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.TransactionWhereInput = {
       id,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };
     const tx = await this.prisma.client.transaction.findFirst({
       where,
-      include: { category: true, account: true, toAccount: true, investment: true, goal: true },
+      include: {
+        category: true,
+        account: true,
+        toAccount: true,
+        investment: true,
+        goal: true,
+        user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+      },
     });
     if (!tx) {
       this.logger.warn(

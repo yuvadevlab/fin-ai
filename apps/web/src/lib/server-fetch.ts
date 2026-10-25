@@ -13,14 +13,24 @@ const SERVER_API_BASE = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
   : DEFAULT_API_BASE_URL;
 
-export async function serverFetch<T>(endpoint: string, token: string): Promise<T> {
+export async function serverFetch<T>(
+  endpoint: string,
+  token: string,
+  workspaceId?: string,
+): Promise<T> {
   const url = `${SERVER_API_BASE}/${endpoint.replace(/^\//, "")}`;
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (workspaceId) {
+    headers["X-Workspace-Id"] = workspaceId;
+  }
+
   const res = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     // Opt out of Next.js data cache for SSR prefetching – always fresh
     cache: "no-store",
   });

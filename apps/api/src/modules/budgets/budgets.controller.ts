@@ -26,11 +26,15 @@ export class BudgetsController {
   @ApiOperation({
     summary: "List all budgets for the current workspace (with spending data)",
   })
-  findAll(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+  findAll(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+  ) {
     this.logger.info(
       `[findAll] Listing budgets for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
     );
-    return this.budgetsService.findAll(userId, workspaceId);
+    return this.budgetsService.findAll(userId, workspaceId, memberUserIds);
   }
 
   @Get(":id")
@@ -38,10 +42,11 @@ export class BudgetsController {
   findOne(
     @CurrentUser("id") userId: string,
     @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
     @Param("id") id: string,
   ) {
     this.logger.info(`[findOne] Fetching budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    return this.budgetsService.findOne(id, userId, workspaceId);
+    return this.budgetsService.findOne(id, userId, workspaceId, memberUserIds);
   }
 
   @Post()

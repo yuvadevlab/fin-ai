@@ -6,7 +6,7 @@ import { WorkspaceRole, WorkspaceType } from "@finai/shared-types";
  */
 export const createWorkspaceSchema = z.object({
   name: z.string().min(2, "Workspace name must be at least 2 characters").max(50),
-  type: z.nativeEnum(WorkspaceType).default(WorkspaceType.FAMILY),
+  type: z.nativeEnum(WorkspaceType).default(WorkspaceType.SHARED),
 });
 
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;

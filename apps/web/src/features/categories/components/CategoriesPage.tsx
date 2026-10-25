@@ -16,8 +16,11 @@ import {
 import { Category, useCategories, useDeleteCategory } from "../api";
 import { CategoryDialog } from "./CategoryDialog";
 import { UI_COPY } from "@/lib/ui-copy";
+import { useWorkspace } from "@/providers";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 
 export function CategoriesPage() {
+  const { isReadOnly } = useWorkspace();
   const { data: categories = [], isLoading } = useCategories();
   const deleteCategory = useDeleteCategory();
 
@@ -92,11 +95,15 @@ export function CategoriesPage() {
         title={UI_COPY.CATEGORIES.PAGE_TITLE}
         description={UI_COPY.CATEGORIES.PAGE_DESCRIPTION}
         actions={
-          <Button size="sm" onClick={handleOpenAddCategory} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.CATEGORIES.ADD}
-          </Button>
+          isReadOnly ? undefined : (
+            <Button size="sm" onClick={handleOpenAddCategory} className="cursor-pointer gap-1.5">
+              <Plus className="size-4" /> {UI_COPY.CATEGORIES.ADD}
+            </Button>
+          )
         }
       />
+
+      {isReadOnly && <ReadOnlyWorkspaceBanner className="mt-4" />}
 
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
@@ -133,33 +140,35 @@ export function CategoriesPage() {
                         </div>
                       </div>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                            aria-label={UI_COPY.CATEGORIES.ACTIONS_FOR(cat.name)}
-                          >
-                            <MoreVertical className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-36">
-                          <DropdownMenuItem
-                            onClick={() => handleOpenEditCategory(cat)}
-                            className="cursor-pointer"
-                          >
-                            <Pencil className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.EDIT}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleOpenDeleteCategory(cat)}
-                            className="text-destructive focus:text-destructive cursor-pointer"
-                          >
-                            <Trash2 className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.DELETE}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {!isReadOnly && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                              aria-label={UI_COPY.CATEGORIES.ACTIONS_FOR(cat.name)}
+                            >
+                              <MoreVertical className="size-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-36">
+                            <DropdownMenuItem
+                              onClick={() => handleOpenEditCategory(cat)}
+                              className="cursor-pointer"
+                            >
+                              <Pencil className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.EDIT}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleOpenDeleteCategory(cat)}
+                              className="text-destructive cursor-pointer"
+                            >
+                              <Trash2 className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.DELETE}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                   ))}
                 </div>

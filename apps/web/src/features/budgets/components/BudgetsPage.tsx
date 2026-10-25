@@ -23,11 +23,14 @@ import {
 } from "@finai/finance-engine";
 import { BudgetStatus } from "@finai/shared-types";
 import { usePrivacyMode } from "@/hooks";
+import { useWorkspace } from "@/providers";
 import { useBudgets, useDeleteBudget, type Budget } from "../api";
 import { BudgetDialog } from "./BudgetDialog";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export function BudgetsPage() {
+  const { isReadOnly } = useWorkspace();
   const { isPrivacyMode } = usePrivacyMode();
   const { data: rawBudgets } = useBudgets();
   // Guard against non-array during hydration
@@ -72,11 +75,15 @@ export function BudgetsPage() {
         title={UI_COPY.BUDGETS.PAGE_TITLE}
         description={UI_COPY.BUDGETS.PAGE_DESCRIPTION}
         actions={
-          <Button size="sm" onClick={handleOpenCreateBudget} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.BUDGETS.NEW_BUDGET}
-          </Button>
+          isReadOnly ? undefined : (
+            <Button size="sm" onClick={handleOpenCreateBudget} className="cursor-pointer gap-1.5">
+              <Plus className="size-4" /> {UI_COPY.BUDGETS.NEW_BUDGET}
+            </Button>
+          )
         }
       />
+
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {budgets.length === 0 ? (
         <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
@@ -87,13 +94,15 @@ export function BudgetsPage() {
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             {UI_COPY.BUDGETS.EMPTY_DESCRIPTION}
           </p>
-          <Button
-            size="sm"
-            onClick={handleOpenCreateBudget}
-            className="mt-5 cursor-pointer gap-1.5"
-          >
-            <Plus className="size-4" /> {UI_COPY.BUDGETS.CREATE_FIRST}
-          </Button>
+          {!isReadOnly && (
+            <Button
+              size="sm"
+              onClick={handleOpenCreateBudget}
+              className="mt-5 cursor-pointer gap-1.5"
+            >
+              <Plus className="size-4" /> {UI_COPY.BUDGETS.CREATE_FIRST}
+            </Button>
+          )}
         </div>
       ) : (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -134,33 +143,35 @@ export function BudgetsPage() {
                 progressColorClass={progressColorClass}
                 statusBadge={<StatusBadge status={status} />}
                 actions={
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                        aria-label={UI_COPY.BUDGETS.ACTIONS_FOR(name)}
-                      >
-                        <MoreVertical className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-36">
-                      <DropdownMenuItem
-                        onClick={() => handleOpenEditBudget(b)}
-                        className="cursor-pointer"
-                      >
-                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleOpenDeleteBudget(b)}
-                        className="text-destructive focus:text-destructive cursor-pointer"
-                      >
-                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  isReadOnly ? undefined : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                          aria-label={UI_COPY.BUDGETS.ACTIONS_FOR(name)}
+                        >
+                          <MoreVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-36">
+                        <DropdownMenuItem
+                          onClick={() => handleOpenEditBudget(b)}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleOpenDeleteBudget(b)}
+                          className="text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )
                 }
                 footerLeft={footerText}
               />

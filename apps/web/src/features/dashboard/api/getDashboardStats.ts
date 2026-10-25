@@ -24,9 +24,14 @@ export function useDashboardStats() {
   });
 }
 
-export async function prefetchDashboardStats(queryClient: QueryClient, token: string) {
+export async function prefetchDashboardStats(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: dashboardStatsQueryKey(),
-    queryFn: () => serverFetch<DashboardStats>(API_ENDPOINTS.ANALYTICS.DASHBOARD, token),
+    queryFn: () =>
+      serverFetch<DashboardStats>(API_ENDPOINTS.ANALYTICS.DASHBOARD, token, workspaceId),
   });
 }

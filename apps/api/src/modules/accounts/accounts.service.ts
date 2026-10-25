@@ -5,6 +5,8 @@ import { type CreateAccountInput, type UpdateAccountInput } from "@finai/validat
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { getDefaultAccountId, setDefaultAccountId } from "./accounts-preferences.util";
 
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
+
 /**
  * Service for managing user accounts (bank accounts, credit cards, wallets).
  *
@@ -32,16 +34,18 @@ export class AccountsService {
    *
    * Runs the account fetch and default-preference read in parallel.
    */
-  async findAll(userId: string, workspaceId?: string) {
+  async findAll(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findAll] Listing accounts for user ${userId.slice(0, 8)} (workspace: ${workspaceId ? workspaceId.slice(0, 8) : "default"})`,
     );
 
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.AccountWhereInput = {
       isActive: true,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };
@@ -49,6 +53,7 @@ export class AccountsService {
     const [accounts, defaultAccountId] = await Promise.all([
       this.prisma.client.account.findMany({
         where,
+        include: { user: { select: { id: true, name: true, email: true, avatarUrl: true } } },
         orderBy: { name: "asc" },
       }),
       getDefaultAccountId(this.prisma, userId),
@@ -73,16 +78,18 @@ export class AccountsService {
    * Throws `NotFoundException` if the account doesn't exist or belongs to
    * another user.
    */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Looking up account ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.AccountWhereInput = {
       id,
       isActive: true,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };

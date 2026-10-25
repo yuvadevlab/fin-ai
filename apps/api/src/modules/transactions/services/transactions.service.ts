@@ -31,18 +31,23 @@ export class TransactionsService {
     private export_: TransactionsExportService,
   ) {}
 
-  findAll(userId: string, filter: TransactionFilterInput, workspaceId?: string) {
+  findAll(
+    userId: string,
+    filter: TransactionFilterInput,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
-    return this.repo.findAll(userId, filter, workspaceId);
+    return this.repo.findAll(userId, filter, workspaceId, memberUserIds);
   }
 
-  findOne(id: string, userId: string, workspaceId?: string) {
+  findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.repo.findOne(id, userId, workspaceId);
+    return this.repo.findOne(id, userId, workspaceId, memberUserIds);
   }
 
   create(userId: string, input: CreateTransactionInput, workspaceId?: string) {

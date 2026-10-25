@@ -14,12 +14,13 @@ import {
   cn,
   Button,
 } from "@finai/ui";
-import { PrivacyMoney } from "@/components";
+import { PrivacyMoney, ReadOnlyWorkspaceBanner } from "@/components";
 
 import { useInvestments, Investment } from "../api";
 import { InvestmentDialog } from "./InvestmentDialog";
 import { UpdateInvestmentValueDialog } from "./UpdateInvestmentValueDialog";
 import { UI_COPY } from "@/lib/ui-copy";
+import { useWorkspace } from "@/providers";
 
 const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
   MUTUAL_FUND: UI_COPY.INVESTMENTS.ASSET_CLASS_DISPLAY.MUTUAL_FUND,
@@ -34,6 +35,7 @@ const ASSET_CLASS_LABELS: Record<Investment["assetClass"], string> = {
 };
 
 export function InvestmentsPage() {
+  const { isReadOnly } = useWorkspace();
   const { data: rawInvestments } = useInvestments();
   // Guard against non-array during hydration
   const investments: Investment[] = useMemo(
@@ -73,8 +75,8 @@ export function InvestmentsPage() {
     return Object.entries(grouped).map(([name, value]) => ({ name, value }));
   }, [investments]);
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       {
         header: UI_COPY.INVESTMENTS.ASSET,
         accessor: (a: Investment) => (
@@ -134,9 +136,9 @@ export function InvestmentsPage() {
         ),
         className: "text-right whitespace-nowrap",
       },
-    ],
-    [],
-  );
+    ];
+    return isReadOnly ? cols.filter((c) => c.header !== UI_COPY.INVESTMENTS.ACTIONS) : cols;
+  }, [isReadOnly]);
 
   return (
     <PageContainer>
@@ -144,15 +146,19 @@ export function InvestmentsPage() {
         title={UI_COPY.INVESTMENTS.PAGE_TITLE}
         description={UI_COPY.INVESTMENTS.PAGE_DESCRIPTION}
         actions={
-          <InvestmentDialog
-            trigger={
-              <Button size="sm" className="cursor-pointer gap-1.5">
-                <Plus className="size-4" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
-              </Button>
-            }
-          />
+          isReadOnly ? undefined : (
+            <InvestmentDialog
+              trigger={
+                <Button size="sm" className="cursor-pointer gap-1.5">
+                  <Plus className="size-4" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
+                </Button>
+              }
+            />
+          )
         }
       />
+
+      {isReadOnly && <ReadOnlyWorkspaceBanner className="mb-4" />}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard

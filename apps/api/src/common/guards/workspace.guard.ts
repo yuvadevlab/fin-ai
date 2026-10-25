@@ -26,6 +26,7 @@ export class WorkspaceGuard implements CanActivate {
     const requestedWorkspaceId = request.headers["x-workspace-id"] as string | undefined;
 
     let workspace: { id: string; type: WorkspaceType; role: WorkspaceRole };
+    let memberUserIds: string[];
 
     if (!requestedWorkspaceId) {
       const personal = await this.workspacesService.getOrCreatePersonalWorkspace(
@@ -37,6 +38,7 @@ export class WorkspaceGuard implements CanActivate {
         type: personal.type,
         role: WorkspaceRole.OWNER,
       };
+      memberUserIds = [user.id];
     } else {
       try {
         const resolved = await this.workspacesService.getWorkspace(requestedWorkspaceId, user.id);
@@ -45,6 +47,13 @@ export class WorkspaceGuard implements CanActivate {
           type: resolved.type,
           role: resolved.role,
         };
+        const membersList = (resolved as { members?: Array<{ userId: string }> }).members;
+        memberUserIds =
+          resolved.type === WorkspaceType.SHARED
+            ? Array.from(
+                new Set([resolved.ownerId, ...(membersList?.map((m) => m.userId) ?? []), user.id]),
+              )
+            : [user.id];
       } catch {
         this.logger.warn(
           `[canActivate] User ${user.id.slice(0, 8)} unauthorized for workspace ${requestedWorkspaceId.slice(0, 8)}`,
@@ -53,21 +62,24 @@ export class WorkspaceGuard implements CanActivate {
       }
     }
 
-    const isReadOnly =
-      workspace.type === WorkspaceType.FAMILY && workspace.role === WorkspaceRole.MEMBER;
+    const isReadOnly = workspace.type === WorkspaceType.SHARED;
 
     request.workspaceId = workspace.id;
     request.workspaceRole = workspace.role;
-    request.workspace = workspace;
+    request.workspaceMemberIds = memberUserIds;
+    request.workspace = {
+      ...workspace,
+      memberUserIds,
+    };
     request.isWorkspaceReadOnly = isReadOnly;
 
-    // RBAC: Reject mutations from read-only members on shared workspaces
+    // RBAC: Reject mutations on shared workspaces (view-only mode)
     const method = request.method ? request.method.toUpperCase() : "GET";
     if (isReadOnly && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
       this.logger.warn(
-        `[canActivate] Read-only member ${user.id.slice(0, 8)} attempted write ${method} on workspace ${workspace.id.slice(0, 8)}`,
+        `[canActivate] Write ${method} rejected on shared workspace ${workspace.id.slice(0, 8)} by user ${user.id.slice(0, 8)}`,
       );
-      throw new ForbiddenException("Members have read-only access to this shared workspace.");
+      throw new ForbiddenException("Shared workspaces are view-only. Modifications are disabled.");
     }
 
     return true;

@@ -5,6 +5,7 @@ import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
 import { calculateBudgetStatus } from "@finai/finance-engine";
 import { Prisma, TransactionType } from "@finai/database";
 import { transferBudgetAllocation } from "./budgets-transfer.util";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 /**
  * Budget management service.
@@ -27,11 +28,13 @@ export class BudgetsService {
    * (from startDate to now) and computes an at-a-glance status (under/on/over
    * budget) using the pure `calculateBudgetStatus` helper from finance-engine.
    */
-  async findAll(userId: string, workspaceId?: string) {
+  async findAll(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[findAll] Listing budgets for user ${userId.slice(0, 8)}`);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.BudgetWhereInput = workspaceId
       ? {
-          OR: [{ workspaceId }, { workspaceId: null, userId }],
+          OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
         }
       : { userId };
 
@@ -57,7 +60,7 @@ export class BudgetsService {
           date: { gte: startOfMonth, lte: endOfMonth },
           ...(workspaceId
             ? {
-                OR: [{ workspaceId }, { workspaceId: null, userId }],
+                OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
               }
             : { userId }),
         };
@@ -78,15 +81,17 @@ export class BudgetsService {
   }
 
   /** Finds a single budget by ID, scoped to the user or workspace. Throws if not found. */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Looking up budget ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.BudgetWhereInput = {
       id,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };

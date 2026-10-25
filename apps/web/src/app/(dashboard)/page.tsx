@@ -15,13 +15,13 @@ export default async function Page() {
 
   if (auth) {
     await Promise.allSettled([
-      prefetchDashboardStats(queryClient, auth.token),
-      prefetchMonthlyAnalytics(queryClient, auth.token),
-      prefetchCategoryBreakdown(queryClient, auth.token),
-      prefetchHealthScore(queryClient, auth.token),
-      prefetchBudgets(queryClient, auth.token),
-      prefetchGoals(queryClient, auth.token),
-      prefetchInvestments(queryClient, auth.token),
+      prefetchDashboardStats(queryClient, auth.token, auth.workspaceId),
+      prefetchMonthlyAnalytics(queryClient, auth.token, 6, auth.workspaceId),
+      prefetchCategoryBreakdown(queryClient, auth.token, auth.workspaceId),
+      prefetchHealthScore(queryClient, auth.token, auth.workspaceId),
+      prefetchBudgets(queryClient, auth.token, auth.workspaceId),
+      prefetchGoals(queryClient, auth.token, auth.workspaceId),
+      prefetchInvestments(queryClient, auth.token, auth.workspaceId),
     ]);
   }
 

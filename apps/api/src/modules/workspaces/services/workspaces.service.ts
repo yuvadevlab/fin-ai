@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { WorkspacesRepository } from "../repositories/workspaces.repository";
-import { WorkspaceRole, WorkspaceType } from "@finai/database";
+import { Workspace, WorkspaceRole, WorkspaceType } from "@finai/database";
 import { CreateWorkspaceInput, UpdateWorkspaceInput } from "@finai/validation";
 import { Logger } from "@yuva-devlab/logger";
 
@@ -15,19 +15,35 @@ export class WorkspacesService {
 
   constructor(private readonly workspacesRepo: WorkspacesRepository) {}
 
-  async getOrCreatePersonalWorkspace(userId: string, userName?: string) {
-    this.logger.info(
-      `[getOrCreatePersonalWorkspace] Resolving personal workspace for user ${userId.slice(0, 8)}`,
-    );
+  private readonly inFlightPersonalProvisioning = new Map<string, Promise<Workspace>>();
+
+  async getOrCreatePersonalWorkspace(userId: string, userName?: string): Promise<Workspace> {
     const existing = await this.workspacesRepo.findPersonalWorkspace(userId);
     if (existing) {
       return existing;
     }
 
-    this.logger.info(
-      `[getOrCreatePersonalWorkspace] Auto-provisioning personal workspace for user ${userId.slice(0, 8)}`,
-    );
-    return this.workspacesRepo.createPersonalWorkspace(userId, userName);
+    const inFlight = this.inFlightPersonalProvisioning.get(userId);
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const task = (async () => {
+      try {
+        const doubleCheck = await this.workspacesRepo.findPersonalWorkspace(userId);
+        if (doubleCheck) return doubleCheck;
+
+        this.logger.info(
+          `[getOrCreatePersonalWorkspace] Auto-provisioning personal workspace for user ${userId.slice(0, 8)}`,
+        );
+        return await this.workspacesRepo.createPersonalWorkspace(userId, userName);
+      } finally {
+        this.inFlightPersonalProvisioning.delete(userId);
+      }
+    })();
+
+    this.inFlightPersonalProvisioning.set(userId, task);
+    return task;
   }
 
   async getUserWorkspaces(userId: string, userName?: string) {
@@ -65,7 +81,7 @@ export class WorkspacesService {
     );
     return this.workspacesRepo.createWorkspace(userId, {
       name: input.name,
-      type: WorkspaceType.FAMILY,
+      type: WorkspaceType.SHARED,
     });
   }
 

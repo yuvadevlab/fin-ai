@@ -63,6 +63,31 @@ describe("WorkspacesService", () => {
       expect(result).toEqual(createdWorkspace);
       expect(repoMock.createPersonalWorkspace).toHaveBeenCalledWith("user-1", "Yuva");
     });
+
+    it("should deduplicate concurrent calls and invoke createPersonalWorkspace only once", async () => {
+      repoMock.findPersonalWorkspace!.mockResolvedValue(null);
+      const createdWorkspace = {
+        id: "ws-new",
+        name: "Personal Workspace",
+        type: WorkspaceType.PERSONAL,
+        ownerId: "user-concurrent",
+      };
+      // Simulate delay in creation
+      repoMock.createPersonalWorkspace!.mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve(createdWorkspace), 50)),
+      );
+
+      const [res1, res2, res3] = await Promise.all([
+        service.getOrCreatePersonalWorkspace("user-concurrent"),
+        service.getOrCreatePersonalWorkspace("user-concurrent"),
+        service.getOrCreatePersonalWorkspace("user-concurrent"),
+      ]);
+
+      expect(res1).toEqual(createdWorkspace);
+      expect(res2).toEqual(createdWorkspace);
+      expect(res3).toEqual(createdWorkspace);
+      expect(repoMock.createPersonalWorkspace).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("deleteWorkspace", () => {

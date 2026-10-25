@@ -26,25 +26,35 @@ export class WorkspacesRepository {
 
   async createPersonalWorkspace(userId: string, userName?: string): Promise<Workspace> {
     const defaultName = userName ? `${userName}'s Workspace` : "Personal Workspace";
-    return this.prisma.client.$transaction(async (tx) => {
-      const workspace = await tx.workspace.create({
-        data: {
-          name: defaultName,
-          type: WorkspaceType.PERSONAL,
-          ownerId: userId,
-        },
-      });
+    try {
+      return await this.prisma.client.$transaction(async (tx) => {
+        const workspace = await tx.workspace.create({
+          data: { name: defaultName, type: WorkspaceType.PERSONAL, ownerId: userId },
+        });
 
-      await tx.workspaceMember.create({
-        data: {
-          workspaceId: workspace.id,
-          userId,
-          role: WorkspaceRole.OWNER,
-        },
-      });
+        await tx.workspaceMember.create({
+          data: { workspaceId: workspace.id, userId, role: WorkspaceRole.OWNER },
+        });
 
-      return workspace;
-    });
+        // Backfill legacy records missing workspace_id to this personal workspace
+        const wId = { workspaceId: workspace.id };
+        const orphan = { userId, workspaceId: null };
+        await Promise.all([
+          tx.account.updateMany({ where: orphan, data: wId }),
+          tx.transaction.updateMany({ where: orphan, data: wId }),
+          tx.category.updateMany({ where: orphan, data: wId }),
+          tx.budget.updateMany({ where: orphan, data: wId }),
+          tx.goal.updateMany({ where: orphan, data: wId }),
+          tx.investment.updateMany({ where: orphan, data: wId }),
+        ]);
+
+        return workspace;
+      });
+    } catch {
+      const existing = await this.findPersonalWorkspace(userId);
+      if (existing) return existing;
+      throw new Error(`Failed to provision personal workspace for user ${userId}`);
+    }
   }
 
   async findUserWorkspaces(userId: string) {
@@ -61,11 +71,20 @@ export class WorkspacesRepository {
       orderBy: { createdAt: "asc" },
     });
 
-    return memberships.map((m) => ({
+    const userWorkspaces = memberships.map((m) => ({
       ...m.workspace,
       role: m.role,
       memberCount: m.workspace._count.members,
     }));
+
+    const seenPersonal = new Set<string>();
+    return userWorkspaces.filter((w) => {
+      if (w.type === WorkspaceType.PERSONAL) {
+        if (seenPersonal.size > 0) return false;
+        seenPersonal.add(w.id);
+      }
+      return true;
+    });
   }
 
   async findById(workspaceId: string) {
@@ -92,7 +111,7 @@ export class WorkspacesRepository {
       const workspace = await tx.workspace.create({
         data: {
           name: data.name,
-          type: data.type ?? WorkspaceType.FAMILY,
+          type: data.type ?? WorkspaceType.SHARED,
           ownerId,
         },
       });
@@ -125,23 +144,18 @@ export class WorkspacesRepository {
   findMember(workspaceId: string, userId: string) {
     return this.membersRepo.findMember(workspaceId, userId);
   }
-
   findMemberById(memberId: string) {
     return this.membersRepo.findMemberById(memberId);
   }
-
   listMembers(workspaceId: string) {
     return this.membersRepo.listMembers(workspaceId);
   }
-
   updateMemberRole(workspaceId: string, userId: string, role: WorkspaceRole) {
     return this.membersRepo.updateMemberRole(workspaceId, userId, role);
   }
-
   removeMember(workspaceId: string, userId: string) {
     return this.membersRepo.removeMember(workspaceId, userId);
   }
-
   addMember(workspaceId: string, userId: string, role: WorkspaceRole) {
     return this.membersRepo.addMember(workspaceId, userId, role);
   }
@@ -149,19 +163,15 @@ export class WorkspacesRepository {
   findInvitationById(id: string) {
     return this.invitationsRepo.findInvitationById(id);
   }
-
   findPendingInvitation(workspaceId: string, inviteeId: string) {
     return this.invitationsRepo.findPendingInvitation(workspaceId, inviteeId);
   }
-
   listInvitationsForWorkspace(workspaceId: string) {
     return this.invitationsRepo.listInvitationsForWorkspace(workspaceId);
   }
-
   listPendingInvitationsForUser(userId: string) {
     return this.invitationsRepo.listPendingInvitationsForUser(userId);
   }
-
   createInvitation(data: {
     workspaceId: string;
     inviterId: string;
@@ -171,7 +181,6 @@ export class WorkspacesRepository {
   }) {
     return this.invitationsRepo.createInvitation(data);
   }
-
   updateInvitationStatus(id: string, status: InvitationStatus) {
     return this.invitationsRepo.updateInvitationStatus(id, status);
   }

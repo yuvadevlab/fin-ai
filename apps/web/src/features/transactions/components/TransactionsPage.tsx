@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { useCategories } from "@/features/categories/api";
 import { useAccounts } from "@/features/accounts/api";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 
 import { useTransactions, useDeleteTransaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
@@ -96,7 +97,10 @@ export function TransactionsPage() {
     [deleteTransaction, isReadOnly],
   );
 
-  const columns = useMemo(() => getTransactionColumns(handleDelete), [handleDelete]);
+  const columns = useMemo(
+    () => getTransactionColumns(handleDelete, isReadOnly),
+    [handleDelete, isReadOnly],
+  );
 
   return (
     <TablePageContainer
@@ -118,11 +122,7 @@ export function TransactionsPage() {
             }
           />
 
-          {isReadOnly && (
-            <div className="border-warning/30 bg-warning/10 text-warning-foreground rounded-xl border p-3 text-xs font-medium">
-              {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
-            </div>
-          )}
+          {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
           {/* Filter toolbar */}
           <div className="bg-card ring-border/50 flex flex-col gap-2.5 rounded-2xl p-3 shadow-sm ring-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:p-4">

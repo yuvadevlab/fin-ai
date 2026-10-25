@@ -4,3 +4,7 @@ export { PrivacyToggle } from "./PrivacyToggle";
 export { DateRangeFilter } from "./DateRangeFilter";
 export { NotificationsMenu } from "./NotificationsMenu";
 export { ProfileMenu } from "./ProfileMenu";
+export {
+  ReadOnlyWorkspaceBanner,
+  type ReadOnlyWorkspaceBannerProps,
+} from "./ReadOnlyWorkspaceBanner";

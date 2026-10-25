@@ -10,6 +10,12 @@ export interface Account {
   balance: number;
   currency: string;
   isDefault?: boolean;
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export const accountsQueryKey = () => QUERY_KEYS.ACCOUNTS.ALL;
@@ -21,9 +27,13 @@ export function useAccounts() {
   });
 }
 
-export async function prefetchAccounts(queryClient: QueryClient, token: string) {
+export async function prefetchAccounts(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: accountsQueryKey(),
-    queryFn: () => serverFetch<Account[]>(API_ENDPOINTS.ACCOUNTS.BASE, token),
+    queryFn: () => serverFetch<Account[]>(API_ENDPOINTS.ACCOUNTS.BASE, token, workspaceId),
   });
 }

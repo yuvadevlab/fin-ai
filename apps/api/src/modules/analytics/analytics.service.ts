@@ -15,44 +15,44 @@ export class AnalyticsService {
     private trends: SpendingTrendsService,
   ) {}
 
-  getDashboard(userId: string) {
+  getDashboard(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getDashboard] Computing dashboard for user ${userId.slice(0, 8)}`);
-    return this.dashboard.getDashboard(userId);
+    return this.dashboard.getDashboard(userId, workspaceId, memberUserIds);
   }
 
-  getMonthlyAnalytics(userId: string, months = 6) {
+  getMonthlyAnalytics(userId: string, months = 6, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[getMonthlyAnalytics] Computing ${months}-month analytics for user ${userId.slice(0, 8)}`,
     );
-    return this.dashboard.getMonthlyAnalytics(userId, months);
+    return this.dashboard.getMonthlyAnalytics(userId, months, workspaceId, memberUserIds);
   }
 
-  getSavingsTrend(userId: string, months = 6) {
+  getSavingsTrend(userId: string, months = 6, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[getSavingsTrend] Computing ${months}-month savings trend for user ${userId.slice(0, 8)}`,
     );
-    return this.dashboard.getSavingsTrend(userId, months);
+    return this.dashboard.getSavingsTrend(userId, months, workspaceId, memberUserIds);
   }
 
-  getCategoryBreakdown(userId: string) {
+  getCategoryBreakdown(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
-    return this.trends.getCategoryBreakdown(userId);
+    return this.trends.getCategoryBreakdown(userId, workspaceId, memberUserIds);
   }
 
-  getHealthScore(userId: string) {
+  getHealthScore(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
-    return this.trends.getHealthScore(userId);
+    return this.trends.getHealthScore(userId, workspaceId, memberUserIds);
   }
 
-  getRecommendations(userId: string) {
+  getRecommendations(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[getRecommendations] Generating recommendations for user ${userId.slice(0, 8)}`,
     );
-    return this.trends.getRecommendations(userId);
+    return this.trends.getRecommendations(userId, workspaceId, memberUserIds);
   }
 
-  getSafeToSpend(userId: string) {
+  getSafeToSpend(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getSafeToSpend] Computing safe-to-spend for user ${userId.slice(0, 8)}`);
-    return this.trends.getSafeToSpend(userId);
+    return this.trends.getSafeToSpend(userId, workspaceId, memberUserIds);
   }
 }
