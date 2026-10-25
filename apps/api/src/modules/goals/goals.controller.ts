@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { WorkspaceGuard } from "@/common/guards/workspace.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { CurrentWorkspace } from "@/common/decorators/current-workspace.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { GoalsService } from "@/modules/goals/goals.service";
 import { Logger } from "@yuva-devlab/logger";
@@ -16,66 +18,79 @@ import {
 
 @ApiTags("Goals")
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 @Controller("goals")
 export class GoalsController {
   private readonly logger = new Logger(GoalsController.name);
   constructor(private readonly goalsService: GoalsService) {}
 
   @Get()
-  @ApiOperation({ summary: "List all goals for the current user" })
-  findAll(@CurrentUser("id") userId: string) {
-    this.logger.info(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
-    return this.goalsService.findAll(userId);
+  @ApiOperation({ summary: "List all goals for the current workspace" })
+  findAll(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+    this.logger.info(
+      `[findAll] Listing goals for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
+    );
+    return this.goalsService.findAll(userId, workspaceId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single goal" })
-  findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  findOne(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(`[findOne] Fetching goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    return this.goalsService.findOne(id, userId);
+    return this.goalsService.findOne(id, userId, workspaceId);
   }
 
   @Post()
   @ApiOperation({ summary: "Create a goal" })
   create(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(new ZodValidationPipe(createGoalSchema)) body: CreateGoalInput,
   ) {
     this.logger.info(
-      `[create] Creating goal "${body.name}" target: ${body.targetAmount} (user: ${userId.slice(0, 8)})`,
+      `[create] Creating goal "${body.name}" target: ${body.targetAmount} (workspace: ${workspaceId.slice(0, 8)})`,
     );
-    return this.goalsService.create(userId, body);
+    return this.goalsService.create(userId, body, workspaceId);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Update a goal" })
   update(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateGoalSchema)) body: UpdateGoalInput,
   ) {
     this.logger.info(`[update] Updating goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    return this.goalsService.update(id, userId, body);
+    return this.goalsService.update(id, userId, body, workspaceId);
   }
 
   @Post(":id/contribute")
   @ApiOperation({ summary: "Add money to a goal" })
   contribute(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(contributeAmountSchema)) body: ContributeAmountInput,
   ) {
     this.logger.info(
       `[contribute] Contributing ${body.amount} to goal ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
     );
-    return this.goalsService.contribute(id, userId, body.amount);
+    return this.goalsService.contribute(id, userId, body.amount, workspaceId);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a goal" })
-  remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  remove(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(`[remove] Deleting goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    return this.goalsService.remove(id, userId);
+    return this.goalsService.remove(id, userId, workspaceId);
   }
 }

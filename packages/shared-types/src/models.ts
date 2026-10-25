@@ -27,6 +27,7 @@ export interface User {
 export interface Account {
   id: string;
   userId: string;
+  workspaceId?: string;
   name: string;
   type: AccountType;
   balance: number;
@@ -41,6 +42,7 @@ export interface Account {
 export interface Transaction {
   id: string;
   userId: string;
+  workspaceId?: string;
   accountId: string;
   toAccountId?: string | null;
   categoryId: string;
@@ -68,6 +70,7 @@ export interface CategoryGroup {
 export interface Category {
   id: string;
   userId: string;
+  workspaceId?: string;
   name: string;
   group: string;
   groupId?: string | null;
@@ -78,6 +81,7 @@ export interface Category {
 export interface Budget {
   id: string;
   userId: string;
+  workspaceId?: string;
   categoryId: string;
   limit: number;
   spent: number;
@@ -88,6 +92,7 @@ export interface Budget {
 export interface Goal {
   id: string;
   userId: string;
+  workspaceId?: string;
   name: string;
   targetAmount: number;
   currentAmount: number;
@@ -101,6 +106,7 @@ export interface Goal {
 export interface Investment {
   id: string;
   userId: string;
+  workspaceId?: string;
   name: string;
   assetClass: AssetClass;
   currentValue: number;

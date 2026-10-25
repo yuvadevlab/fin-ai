@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@n
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { InvestmentsService } from "./investments.service";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { WorkspaceGuard } from "@/common/guards/workspace.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { CurrentWorkspace } from "@/common/decorators/current-workspace.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Logger } from "@yuva-devlab/logger";
 import {
@@ -14,7 +16,7 @@ import {
 
 @ApiTags("Investments")
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 @Controller("investments")
 export class InvestmentsController {
   private readonly logger = new Logger(InvestmentsController.name);
@@ -22,54 +24,66 @@ export class InvestmentsController {
 
   @Get()
   @ApiOperation({
-    summary: "Get portfolio with total value and asset allocation",
+    summary: "Get portfolio with total value and asset allocation for current workspace",
   })
-  findAll(@CurrentUser("id") userId: string) {
-    this.logger.info(`[findAll] Fetching portfolio for user ${userId.slice(0, 8)}`);
-    return this.investmentsService.findAll(userId);
+  findAll(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+    this.logger.info(
+      `[findAll] Fetching portfolio for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
+    );
+    return this.investmentsService.findAll(userId, workspaceId);
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Get a single investment" })
-  findOne(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  findOne(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(
       `[findOne] Fetching investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.investmentsService.findOne(id, userId);
+    return this.investmentsService.findOne(id, userId, workspaceId);
   }
 
   @Post()
   @ApiOperation({ summary: "Add an investment" })
   create(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(new ZodValidationPipe(createInvestmentSchema))
     body: CreateInvestmentInput,
   ) {
     this.logger.info(
-      `[create] Adding investment "${body.name}" [${body.assetClass}] (user: ${userId.slice(0, 8)})`,
+      `[create] Adding investment "${body.name}" [${body.assetClass}] (workspace: ${workspaceId.slice(0, 8)})`,
     );
-    return this.investmentsService.create(userId, body);
+    return this.investmentsService.create(userId, body, workspaceId);
   }
 
   @Patch(":id/value")
   @ApiOperation({ summary: "Update the current market value of an investment" })
   updateValue(
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body(new ZodValidationPipe(updateInvestmentValueSchema)) body: UpdateInvestmentValueInput,
   ) {
     this.logger.info(
       `[updateValue] Updating investment ${id.slice(0, 8)} to ${body.currentValue} (user: ${userId.slice(0, 8)})`,
     );
-    return this.investmentsService.updateValue(id, userId, body.currentValue);
+    return this.investmentsService.updateValue(id, userId, body.currentValue, workspaceId);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Remove an investment" })
-  remove(@CurrentUser("id") userId: string, @Param("id") id: string) {
+  remove(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+  ) {
     this.logger.info(
       `[remove] Removing investment ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
     );
-    return this.investmentsService.remove(id, userId);
+    return this.investmentsService.remove(id, userId, workspaceId);
   }
 }

@@ -7,14 +7,14 @@ datasource db {
 }
 
 model User {
-  id                   String         @id @default(uuid())
-  email                String         @unique
+  id                   String                @id @default(uuid())
+  email                String                @unique
   name                 String
-  passwordHash         String?        @map("password_hash")
-  avatarUrl            String?        @map("avatar_url")
-  preferences          Json           @default("{}")
-  createdAt            DateTime       @default(now()) @map("created_at")
-  updatedAt            DateTime       @updatedAt @map("updated_at")
+  passwordHash         String?               @map("password_hash")
+  avatarUrl            String?               @map("avatar_url")
+  preferences          Json                  @default("{}")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
   accounts             Account[]
   budgets              Budget[]
   categories           Category[]
@@ -23,6 +23,10 @@ model User {
   investments          Investment[]
   notifications        Notification[]
   transactions         Transaction[]
+  workspacesOwned      Workspace[]           @relation("WorkspaceOwner")
+  workspaceMemberships WorkspaceMember[]     @relation("UserMemberships")
+  invitationsSent      WorkspaceInvitation[] @relation("WorkspaceInviter")
+  invitationsReceived  WorkspaceInvitation[] @relation("WorkspaceInvitee")
 
   @@map("users")
 }
@@ -30,6 +34,7 @@ model User {
 model Account {
   id                String        @id @default(uuid())
   userId            String        @map("user_id")
+  workspaceId       String?       @map("workspace_id")
   name              String
   type              AccountType
   balance           Float         @default(0.0)
@@ -38,16 +43,19 @@ model Account {
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
   user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace         Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   transactions      Transaction[] @relation("SourceAccount")
   transfersReceived Transaction[] @relation("DestinationAccount")
 
   @@index([userId])
+  @@index([workspaceId])
   @@map("accounts")
 }
 
 model Transaction {
   id           String          @id @default(uuid())
   userId       String          @map("user_id")
+  workspaceId  String?         @map("workspace_id")
   accountId    String          @map("account_id")
   toAccountId  String?         @map("to_account_id")
   categoryId   String          @map("category_id")
@@ -65,8 +73,10 @@ model Transaction {
   investment   Investment?     @relation(fields: [investmentId], references: [id], onDelete: SetNull)
   goal         Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace    Workspace?      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([workspaceId])
   @@index([accountId])
   @@index([toAccountId])
   @@index([categoryId])
@@ -88,6 +98,7 @@ model CategoryGroup {
 model Category {
   id            String         @id @default(uuid())
   userId        String         @map("user_id")
+  workspaceId   String?        @map("workspace_id")
   name          String
   group         String         @default("Variable Expenses")
   groupId       String?        @map("group_id")
@@ -96,30 +107,36 @@ model Category {
   budgets       Budget[]
   categoryGroup CategoryGroup? @relation(fields: [groupId], references: [id])
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   transactions  Transaction[]
 
   @@unique([userId, name])
   @@index([userId])
+  @@index([workspaceId])
   @@map("categories")
 }
 
 model Budget {
-  id         String   @id @default(uuid())
-  userId     String   @map("user_id")
-  categoryId String   @map("category_id")
-  limit      Float
-  startDate  DateTime @default(now()) @map("start_date")
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  workspaceId String?    @map("workspace_id")
+  categoryId  String     @map("category_id")
+  limit       Float
+  startDate   DateTime   @default(now()) @map("start_date")
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, categoryId])
   @@index([userId])
+  @@index([workspaceId])
   @@map("budgets")
 }
 
 model Goal {
   id            String        @id @default(uuid())
   userId        String        @map("user_id")
+  workspaceId   String?       @map("workspace_id")
   name          String
   targetAmount  Float         @map("target_amount")
   currentAmount Float         @default(0.0) @map("current_amount")
@@ -129,14 +146,17 @@ model Goal {
   updatedAt     DateTime      @updatedAt @map("updated_at")
   transactions  Transaction[]
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([workspaceId])
   @@map("goals")
 }
 
 model Investment {
   id             String        @id @default(uuid())
   userId         String        @map("user_id")
+  workspaceId    String?       @map("workspace_id")
   name           String
   assetClass     AssetClass    @map("asset_class")
   currentValue   Float         @map("current_value")
@@ -145,8 +165,10 @@ model Investment {
   updatedAt      DateTime      @updatedAt @map("updated_at")
   transactions   Transaction[]
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace      Workspace?    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([workspaceId])
   @@map("investments")
 }
 
@@ -186,6 +208,7 @@ model Notification {
   title     String
   body      String
   read      Boolean          @default(false)
+  data      Json?
   createdAt DateTime         @default(now()) @map("created_at")
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -193,6 +216,64 @@ model Notification {
   @@map("notifications")
 }
 
+model Workspace {
+  id        String        @id @default(uuid())
+  name      String
+  type      WorkspaceType @default(PERSONAL)
+  ownerId   String        @map("owner_id")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  owner        User                  @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members      WorkspaceMember[]
+  invitations  WorkspaceInvitation[]
+  accounts     Account[]
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+  goals        Goal[]
+  investments  Investment[]
+
+  @@index([ownerId])
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  userId      String        @map("user_id")
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation("UserMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId])
+  @@map("workspace_members")
+}
+
+model WorkspaceInvitation {
+  id          String           @id @default(uuid())
+  workspaceId String           @map("workspace_id")
+  inviterId   String           @map("inviter_id")
+  inviteeId   String           @map("invitee_id")
+  email       String
+  role        WorkspaceRole    @default(MEMBER)
+  status      InvitationStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inviter   User      @relation("WorkspaceInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee   User      @relation("WorkspaceInvitee", fields: [inviteeId], references: [id], onDelete: Cascade)
+
+  @@index([inviteeId, status])
+  @@index([workspaceId])
+  @@map("workspace_invitations")
+}
 
 model MenuItem {
   id        String   @id @default(uuid())
@@ -324,4 +405,24 @@ enum NotificationType {
   GOAL_MILESTONE
   AI_INSIGHT
   SYSTEM
+  WORKSPACE_INVITATION
+  WORKSPACE_UPDATE
+}
+
+enum WorkspaceType {
+  PERSONAL
+  FAMILY
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }

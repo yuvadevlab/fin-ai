@@ -5,6 +5,7 @@ import { Toaster } from "@finai/ui";
 import { QueryProvider } from "./query/QueryProvider";
 import { AuthProvider } from "./auth/AuthProvider";
 import { AppearanceProvider } from "./appearance/AppearanceProvider";
+import { WorkspaceProvider } from "./workspace-provider";
 
 export interface AppProvidersProps {
   /**
@@ -19,17 +20,19 @@ export interface AppProvidersProps {
 
 /**
  * Unified application client providers wrapper.
- * Encapsulates TanStack Query, DevLab Auth, Appearance (theme/density/privacy),
+ * Encapsulates TanStack Query, DevLab Auth, Workspaces, Appearance (theme/density/privacy),
  * and toast notification providers into a single client-boundary tree.
  */
 export function AppProviders({ initialToken, children }: AppProvidersProps) {
   return (
     <QueryProvider>
       <AuthProvider initialToken={initialToken}>
-        <AppearanceProvider>
-          {children}
-          <Toaster />
-        </AppearanceProvider>
+        <WorkspaceProvider>
+          <AppearanceProvider>
+            {children}
+            <Toaster />
+          </AppearanceProvider>
+        </WorkspaceProvider>
       </AuthProvider>
     </QueryProvider>
   );

@@ -49,6 +49,11 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+
+    const activeWorkspaceId = localStorage.getItem(StorageKey.WORKSPACE_ID);
+    if (activeWorkspaceId && !headers.has("X-Workspace-Id")) {
+      headers.set("X-Workspace-Id", activeWorkspaceId);
+    }
   }
 
   const response = await fetch(url, {
