@@ -83,6 +83,8 @@ export class TransactionsSummaryService {
   async summarize(
     userId: string,
     filter: TransactionSummarizeFilter,
+    workspaceId?: string,
+    memberUserIds?: string[],
   ): Promise<TransactionSummaryItem[]> {
     this.logger.info(
       `[summarize] Summarizing by ${filter.groupBy} from ${filter.dateFrom} to ${filter.dateTo} (user: ${userId.slice(0, 8)})`,
@@ -91,14 +93,26 @@ export class TransactionsSummaryService {
     const dateTo = new Date(filter.dateTo);
 
     if (filter.groupBy === "type") {
-      const grouped = await this.repo.groupByType(userId, dateFrom, dateTo, filter.type);
+      const grouped = await this.repo.groupByType(
+        userId,
+        dateFrom,
+        dateTo,
+        filter.type,
+        memberUserIds,
+      );
       this.logger.info(
         `[summarize] Grouped by type: ${grouped.length} group(s) for user ${userId.slice(0, 8)}`,
       );
       return grouped.map((g) => ({ key: g.type, total: g._sum.amount ?? 0 }));
     }
 
-    const grouped = await this.repo.groupByCategory(userId, dateFrom, dateTo, filter.type);
+    const grouped = await this.repo.groupByCategory(
+      userId,
+      dateFrom,
+      dateTo,
+      filter.type,
+      memberUserIds,
+    );
     const categoryIds = grouped.map((g) => g.categoryId).filter((id): id is string => id !== null);
 
     const categories = await this.prisma.client.category.findMany({

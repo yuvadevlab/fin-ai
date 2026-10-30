@@ -14,9 +14,13 @@ export function useHealthScore() {
   });
 }
 
-export async function prefetchHealthScore(queryClient: QueryClient, token: string) {
+export async function prefetchHealthScore(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: healthScoreQueryKey(),
-    queryFn: () => serverFetch<HealthScoreData>(API_ENDPOINTS.ANALYTICS.HEALTH, token),
+    queryFn: () => serverFetch<HealthScoreData>(API_ENDPOINTS.ANALYTICS.HEALTH, token, workspaceId),
   });
 }

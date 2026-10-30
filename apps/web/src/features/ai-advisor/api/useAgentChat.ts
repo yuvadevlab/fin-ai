@@ -77,6 +77,8 @@ export function useAgentChat(options?: UseAgentChatOptions) {
       setIsStreaming(true);
 
       const token = typeof window !== "undefined" ? localStorage.getItem(StorageKey.TOKEN) : null;
+      const activeWorkspaceId =
+        typeof window !== "undefined" ? localStorage.getItem(StorageKey.WORKSPACE_ID) : null;
       abortRef.current = new AbortController();
 
       const port: AgentEventPort = {
@@ -99,6 +101,7 @@ export function useAgentChat(options?: UseAgentChatOptions) {
           question,
           conversationId: conversationId ?? null,
           token,
+          workspaceId: activeWorkspaceId,
           signal: abortRef.current.signal,
           port,
         });

@@ -9,6 +9,7 @@ import { EntityMemoryService } from "../entity-memory";
 import { extractEntitiesFromInput, extractEntitiesFromOutput } from "../entity-extractor";
 import { handleSpecialAction } from "./special-action.handler";
 import type { AgentContext, AgentEventEmitter } from "../agent.types";
+import { ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
 
 /**
  * Validates and executes a single tool call surfaced by the model.
@@ -76,7 +77,27 @@ export class AgentToolDispatcher {
         extractEntitiesFromInput(call.name, parsed as Record<string, unknown>),
       );
 
-      if (tool.confirmation === "required") {
+      if (
+        ctx.isWorkspaceReadOnly &&
+        (tool.access === ToolAccessLevel.WRITE ||
+          tool.confirmation === ToolConfirmationType.REQUIRED)
+      ) {
+        const readOnlyMsg =
+          "Shared workspaces are view-only. Adding, editing, or deleting records is disabled.";
+        this.logger.warn(
+          `[dispatch] Blocked write tool "${call.name}" in view-only workspace (runId: ${ctx.runId.slice(0, 8)})`,
+        );
+        emit({
+          type: "tool_result",
+          tool: call.name,
+          ok: false,
+          summary: readOnlyMsg,
+          label: tool.label,
+        });
+        return { ok: false, error: readOnlyMsg };
+      }
+
+      if (tool.confirmation === ToolConfirmationType.REQUIRED) {
         const warnings: { field: string; message: string }[] = tool.validate
           ? await tool.validate(parsed, { userId: ctx.userId }).catch(() => [])
           : [];

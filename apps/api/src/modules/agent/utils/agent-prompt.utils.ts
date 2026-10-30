@@ -25,3 +25,13 @@ export function buildPendingActionSection(actionId: string, tool: string, input:
     "IMPORTANT: A conversational edit (action.patch) must NOT execute the action. Only action.confirm or the user clicking the confirm button executes it.",
   ].join("\n");
 }
+
+/**
+ * System prompt instructions when running in a shared (view-only) workspace.
+ */
+export const SHARED_WORKSPACE_AGENT_NOTICE = [
+  "## WORKSPACE MODE: SHARED (VIEW-ONLY)",
+  "- You are operating in a shared family/team workspace. You have full access to analyze, summarize, compare, and provide financial insights on all shared data across all workspace members.",
+  "- All records in this workspace are strictly view-only. You must NEVER execute or propose any create, update, or delete actions.",
+  '- If the user asks you to add, edit, or delete any transactions, budgets, goals, accounts, or records, refuse and state: "Shared workspaces are view-only. Adding, editing, or deleting records is disabled."',
+].join("\n");

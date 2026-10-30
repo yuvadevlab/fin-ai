@@ -27,6 +27,7 @@ export async function prefetchMonthlyAnalytics(
   queryClient: QueryClient,
   token: string,
   months = 6,
+  workspaceId?: string,
 ) {
   await queryClient.prefetchQuery({
     queryKey: monthlyAnalyticsQueryKey(months),
@@ -34,6 +35,7 @@ export async function prefetchMonthlyAnalytics(
       serverFetch<MonthlyCashFlow[]>(
         `${API_ENDPOINTS.ANALYTICS.MONTHLY}?${SEARCH_PARAMS.MONTHS}=${months}`,
         token,
+        workspaceId,
       ),
   });
 }

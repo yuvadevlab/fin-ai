@@ -67,7 +67,7 @@ export function SettingsPage() {
             type="button"
             onClick={() => setSelectedId(s.id)}
             className={cn(
-              "group bg-card ring-border/50 hover:ring-primary/20 focus-visible:ring-ring flex cursor-pointer items-start gap-4 rounded-2xl p-5 text-left shadow-sm ring-1 transition outline-none hover:shadow-md",
+              "group bg-card ring-border/50 hover:ring-primary/20 flex cursor-pointer items-start gap-4 rounded-2xl p-5 text-left shadow-sm ring-1 transition outline-none hover:shadow-md",
             )}
           >
             <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
@@ -85,7 +85,7 @@ export function SettingsPage() {
       </section>
 
       <Sheet open={!!active} onOpenChange={(open) => !open && setSelectedId("")}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
           {active ? (
             <>
               <SheetHeader>

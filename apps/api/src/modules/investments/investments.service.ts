@@ -4,6 +4,7 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateInvestmentInput } from "@finai/validation";
 import { calculateAssetAllocation, calculatePortfolioValue } from "@finai/finance-engine";
 import { AssetClass, Prisma } from "@finai/database";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 /**
  * Investment portfolio service.
@@ -23,11 +24,13 @@ export class InvestmentsService {
    * The allocation is computed across all investments by asset class, so the
    * user can see how their portfolio is distributed.
    */
-  async findAll(userId: string, workspaceId?: string) {
+  async findAll(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[findAll] Listing investments for user ${userId.slice(0, 8)}`);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.InvestmentWhereInput = workspaceId
       ? {
-          OR: [{ workspaceId }, { workspaceId: null, userId }],
+          OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
         }
       : { userId };
 
@@ -46,15 +49,17 @@ export class InvestmentsService {
   }
 
   /** Finds a single investment by ID, scoped to the user or workspace. Throws if not found. */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Looking up investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.InvestmentWhereInput = {
       id,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };

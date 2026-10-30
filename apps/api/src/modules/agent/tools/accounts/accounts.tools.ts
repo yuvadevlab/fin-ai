@@ -33,7 +33,11 @@ export function createAccountsTools(accountsService: AccountsService) {
       label: AGENT_TOOL_LABELS[AgentToolName.ACCOUNTS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
-        const accounts = await accountsService.findAll(ctx.userId);
+        const accounts = await accountsService.findAll(
+          ctx.userId,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
         return { accounts };
       },
       summarize: (output) => {
@@ -50,7 +54,8 @@ export function createAccountsTools(accountsService: AccountsService) {
       schema: z.object({
         accountId: z.string().uuid("Invalid account ID"),
       }),
-      execute: async (input, ctx) => accountsService.findOne(input.accountId, ctx.userId),
+      execute: async (input, ctx) =>
+        accountsService.findOne(input.accountId, ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       summarize: (output) => {
         const account = output as Account;
         return `Account ${account.name} (${account.type}) balance ${formatINR(account.balance)}`;

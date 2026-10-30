@@ -4,6 +4,7 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { CreateGoalInput, UpdateGoalInput } from "@finai/validation";
 import { calculateGoalProgress } from "@finai/finance-engine";
 import { GoalType, Prisma } from "@finai/database";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 /**
  * Savings goals service.
@@ -23,11 +24,13 @@ export class GoalsService {
    * Progress is always between 0 and 100 (capped — exceeding the target
    * doesn't report >100%).
    */
-  async findAll(userId: string, workspaceId?: string) {
+  async findAll(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[findAll] Listing goals for user ${userId.slice(0, 8)}`);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.GoalWhereInput = workspaceId
       ? {
-          OR: [{ workspaceId }, { workspaceId: null, userId }],
+          OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
         }
       : { userId };
 
@@ -44,13 +47,15 @@ export class GoalsService {
   }
 
   /** Finds a single goal by ID, scoped to the user or workspace. Throws if not found. */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[findOne] Looking up goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.GoalWhereInput = {
       id,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };

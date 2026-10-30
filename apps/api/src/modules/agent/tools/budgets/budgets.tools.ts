@@ -42,7 +42,11 @@ export function createBudgetsTools(
       label: AGENT_TOOL_LABELS[AgentToolName.BUDGETS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
-        const budgets = await budgetsService.findAll(ctx.userId);
+        const budgets = await budgetsService.findAll(
+          ctx.userId,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
         return { budgets };
       },
       serialize: (output) => {

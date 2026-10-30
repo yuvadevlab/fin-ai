@@ -19,6 +19,7 @@ import { EntityMemoryService } from "./entity-memory";
 import { AgentModelFactory, AgentOrchestratorService, AgentTurnRunner } from "./runners";
 import { AgentToolDispatcher } from "./dispatchers";
 import { AgentTitleService } from "./agent-title.service";
+import { AgentRequestBuilderService } from "./services/agent-request-builder.service";
 
 /**
  * AgentModule wires the full agent stack: HTTP transport (controller), the
@@ -43,6 +44,7 @@ import { AgentTitleService } from "./agent-title.service";
     AgentService,
     AgentActionService,
     AgentTitleService,
+    AgentRequestBuilderService,
     ActionManager,
     AuditService,
     ToolRegistry,

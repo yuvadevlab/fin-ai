@@ -3,6 +3,9 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@finai/shared-types";
+import { toast } from "@finai/ui";
+import { useWorkspace } from "@/providers";
+import { UI_COPY } from "@/lib/ui-copy";
 import { confirmAgentAction, rejectAgentAction } from "./agentActions";
 import { invalidateForAgentTool } from "./agentInvalidationMap";
 import type { AgentActivity, AgentConfirmationStatus } from "./agentTypes";
@@ -24,10 +27,15 @@ export function useAgentActionRunner({
   resolveApprovalActivity,
 }: ActionRunnerDeps) {
   const queryClient = useQueryClient();
+  const { isReadOnly } = useWorkspace();
   const [executingActionId, setExecutingActionId] = useState<string | null>(null);
 
   const confirmAction = useCallback(
     async (actionId: string, tool: string, itemIndex?: number) => {
+      if (isReadOnly) {
+        toast.error(UI_COPY.WORKSPACES.READ_ONLY_BANNER);
+        return;
+      }
       const lockKey = itemIndex !== undefined ? `${actionId}:${itemIndex}` : actionId;
       if (executingActionId) return;
       setExecutingActionId(lockKey);
@@ -50,7 +58,7 @@ export function useAgentActionRunner({
         setExecutingActionId(null);
       }
     },
-    [executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
+    [isReadOnly, executingActionId, queryClient, updateConfirmationStatus, resolveApprovalActivity],
   );
 
   const rejectAction = useCallback(

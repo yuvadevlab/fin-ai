@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { StorageKey, WorkspaceRole, WorkspaceType, QUERY_KEYS } from "@finai/shared-types";
+import { StorageKey, WorkspaceType, QUERY_KEYS } from "@finai/shared-types";
 import { useWorkspaces } from "@/features/workspaces/api";
 import { WorkspaceContext } from "./workspace-context";
 
@@ -11,6 +12,7 @@ export interface WorkspaceProviderProps {
 }
 
 export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: workspaces = [], isLoading } = useWorkspaces();
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(() => {
@@ -41,9 +43,7 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
   }, [activeWorkspaceId]);
 
   const userRole = activeWorkspace?.role ?? null;
-  const isReadOnly = Boolean(
-    activeWorkspace?.type === WorkspaceType.FAMILY && userRole === WorkspaceRole.MEMBER,
-  );
+  const isReadOnly = Boolean(activeWorkspace?.type === WorkspaceType.SHARED);
 
   const switchWorkspace = useCallback(
     (workspaceId: string) => {
@@ -54,15 +54,17 @@ export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
       }
 
       // Refresh all financial and dashboard queries for the newly selected workspace
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BUDGETS.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.GOALS.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVESTMENTS.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORIES.ALL });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ANALYTICS.ALL });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BUDGETS.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.GOALS.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVESTMENTS.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORIES.ALL, refetchType: "all" });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ANALYTICS.ALL, refetchType: "all" });
+      queryClient.refetchQueries({ type: "active" });
+      router.refresh();
     },
-    [queryClient],
+    [queryClient, router],
   );
 
   const value = useMemo(

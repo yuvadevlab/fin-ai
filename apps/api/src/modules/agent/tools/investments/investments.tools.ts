@@ -32,7 +32,8 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_LIST],
       schema: z.object({}),
-      execute: async (_input, ctx) => investmentsService.findAll(ctx.userId),
+      execute: async (_input, ctx) =>
+        investmentsService.findAll(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       serialize: (output) => {
         const { investments, totalValue } = output as {
           investments: {

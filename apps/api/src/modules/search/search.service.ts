@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
+import { resolveUserScope } from "@/common/utils/workspace.util";
 
 /**
  * Flattened search results across all user-facing entities.
@@ -38,7 +39,12 @@ export class SearchService {
   private readonly logger = new Logger(SearchService.name);
   constructor(private prisma: PrismaService) {}
 
-  async search(userId: string, q: string): Promise<SearchResults> {
+  async search(
+    userId: string,
+    q: string,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ): Promise<SearchResults> {
     this.logger.info(
       `[search] Searching for user ${userId.slice(0, 8)}, query: "${q?.slice(0, 50)}"`,
     );
@@ -48,12 +54,13 @@ export class SearchService {
     }
 
     const query = q.trim();
+    const userScope = resolveUserScope(userId, memberUserIds);
 
     const [transactions, accounts, goals] = await Promise.all([
       // Search transactions by notes, category name, or account name
       this.prisma.client.transaction.findMany({
         where: {
-          userId,
+          userId: userScope,
           OR: [
             { notes: { contains: query, mode: "insensitive" } },
             { category: { name: { contains: query, mode: "insensitive" } } },
@@ -71,7 +78,7 @@ export class SearchService {
       // Search accounts by name
       this.prisma.client.account.findMany({
         where: {
-          userId,
+          userId: userScope,
           isActive: true,
           name: { contains: query, mode: "insensitive" },
         },
@@ -82,7 +89,7 @@ export class SearchService {
       // Search goals by name
       this.prisma.client.goal.findMany({
         where: {
-          userId,
+          userId: userScope,
           name: { contains: query, mode: "insensitive" },
         },
         select: { id: true, name: true, targetAmount: true, currentAmount: true },

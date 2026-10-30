@@ -3,6 +3,7 @@
 import { Check, Loader2, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@finai/ui";
 import { usePrivacyMode } from "@/hooks";
+import { useWorkspace } from "@/providers";
 import type { AgentConfirmation } from "../api/agentTypes";
 import {
   AgentCardType,
@@ -37,6 +38,7 @@ export function RichConfirmationCard({
   isExecuting = false,
 }: RichConfirmationCardProps) {
   const { isPrivacyMode } = usePrivacyMode();
+  const { isReadOnly } = useWorkspace();
 
   const isBulk =
     confirmation.card.type === AgentCardType.BULK_CONFIRMATION ||
@@ -148,19 +150,24 @@ export function RichConfirmationCard({
       {/* Actions — only while pending */}
       {pending && (
         <div className="flex flex-col gap-1.5 px-3.5 py-2.5">
-          {disabled && (
+          {isReadOnly ? (
+            <p className="text-destructive text-[11px] font-medium">
+              {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
+            </p>
+          ) : disabled ? (
             <p className="text-muted-foreground text-[11px] font-medium">
               Confirm the previous action first — this action depends on it.
             </p>
+          ) : (
+            <p className="text-muted-foreground text-[11px] font-medium">
+              This action has NOT happened yet — confirm to execute.
+            </p>
           )}
-          <p className="text-muted-foreground text-[11px] font-medium">
-            This action has NOT happened yet — confirm to execute.
-          </p>
           <div className="flex gap-2">
             <Button
               size="sm"
               className="cursor-pointer gap-1.5"
-              disabled={disabled || isExecuting}
+              disabled={disabled || isExecuting || isReadOnly}
               onClick={() => onConfirm(confirmation.actionId, confirmation.tool)}
             >
               {isExecuting ? (

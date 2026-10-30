@@ -35,7 +35,7 @@ export function createGoalsTools(goalsService: GoalsService) {
       label: AGENT_TOOL_LABELS[AgentToolName.GOALS_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
-        const goals = await goalsService.findAll(ctx.userId);
+        const goals = await goalsService.findAll(ctx.userId, ctx.workspaceId, ctx.memberUserIds);
         return { goals };
       },
       serialize: (output) => {

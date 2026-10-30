@@ -6,8 +6,10 @@ import {
 } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
+import { Prisma } from "@finai/database";
 import { type CreateCategoryInput, type UpdateCategoryInput } from "@finai/validation";
 import { CategorySeedService } from "./category-seed.service";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 /**
  * Category management service.
@@ -45,10 +47,18 @@ export class CategoriesService {
    * Returns all categories for a user. Auto-seeds default categories on first
    * access (when the user has zero categories).
    */
-  async getCategories(userId: string) {
+  async getCategories(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getCategories] Fetching categories for user ${userId.slice(0, 8)}`);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
+    const where: Prisma.CategoryWhereInput = workspaceId
+      ? {
+          OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
+        }
+      : { userId };
+
     let categories = await this.prisma.client.category.findMany({
-      where: { userId },
+      where,
       include: { categoryGroup: { select: { id: true, name: true, order: true } } },
       orderBy: { name: "asc" },
     });
@@ -57,7 +67,7 @@ export class CategoriesService {
     if (categories.length === 0) {
       await this.seedService.seedUserDefaultCategories(userId);
       categories = await this.prisma.client.category.findMany({
-        where: { userId },
+        where,
         include: { categoryGroup: { select: { id: true, name: true, order: true } } },
         orderBy: { name: "asc" },
       });

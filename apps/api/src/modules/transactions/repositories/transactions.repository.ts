@@ -1,24 +1,27 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { Prisma, TransactionType } from "@finai/database";
 import type { TransactionFilterInput } from "@finai/validation";
-import { getTransactionImpact } from "../utils";
+import { assertOwnedReferences, applyTransactionImpact, type OwnedReferenceRefs } from "../utils";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 @Injectable()
 export class TransactionsRepository {
   private readonly logger = new Logger(TransactionsRepository.name);
   constructor(private prisma: PrismaService) {}
 
-  /** Build the shared Prisma `where` clause from filter inputs. */
+  /** Build the shared Prisma `where` clause from filter inputs and workspace members. */
   private buildWhere(
     userId: string,
     filter: TransactionFilterInput,
     workspaceId?: string,
+    memberUserIds?: string[],
   ): Prisma.TransactionWhereInput {
+    const targetUserIds = memberUserIds && memberUserIds.length > 0 ? memberUserIds : [userId];
     const where: Prisma.TransactionWhereInput = workspaceId
       ? {
-          OR: [{ workspaceId }, { workspaceId: null, userId }],
+          OR: [{ workspaceId }, { userId: { in: targetUserIds } }],
         }
       : { userId };
     if (filter.search) where.notes = { contains: filter.search, mode: "insensitive" };
@@ -34,12 +37,19 @@ export class TransactionsRepository {
     return where;
   }
 
-  /** Returns paginated transactions with full relations. */
-  async findAll(userId: string, filter: TransactionFilterInput, workspaceId?: string) {
+  /** Returns paginated transactions with full relations for all members of the workspace. */
+  async findAll(
+    userId: string,
+    filter: TransactionFilterInput,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)}, page: ${filter.page ?? 1}`,
     );
-    const where = this.buildWhere(userId, filter, workspaceId);
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
+    const where = this.buildWhere(userId, filter, workspaceId, resolvedMemberIds);
     const page = filter.page ?? 1;
     const limit = filter.pageSize ?? 50;
     const [items, total] = await Promise.all([
@@ -51,6 +61,7 @@ export class TransactionsRepository {
           toAccount: { select: { id: true, name: true, type: true } },
           investment: { select: { id: true, name: true, assetClass: true } },
           goal: { select: { id: true, name: true, targetAmount: true } },
+          user: { select: { id: true, name: true, email: true, avatarUrl: true } },
         },
         orderBy: [{ date: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
@@ -62,21 +73,30 @@ export class TransactionsRepository {
   }
 
   /** Fetches a single transaction by ID scoped to the user or workspace. */
-  async findOne(id: string, userId: string, workspaceId?: string) {
+  async findOne(id: string, userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
+    const resolvedMemberIds =
+      memberUserIds ?? (await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId));
     const where: Prisma.TransactionWhereInput = {
       id,
       ...(workspaceId
         ? {
-            OR: [{ workspaceId }, { workspaceId: null, userId }],
+            OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }],
           }
         : { userId }),
     };
     const tx = await this.prisma.client.transaction.findFirst({
       where,
-      include: { category: true, account: true, toAccount: true, investment: true, goal: true },
+      include: {
+        category: true,
+        account: true,
+        toAccount: true,
+        investment: true,
+        goal: true,
+        user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+      },
     });
     if (!tx) {
       this.logger.warn(
@@ -102,79 +122,41 @@ export class TransactionsRepository {
   }
 
   /** Summarizes transaction amounts grouped by type. */
-  async groupByType(userId: string, dateFrom: Date, dateTo: Date, type?: TransactionType) {
+  async groupByType(
+    userId: string,
+    dateFrom: Date,
+    dateTo: Date,
+    type?: TransactionType,
+    memberUserIds?: string[],
+  ) {
+    const userScope = memberUserIds && memberUserIds.length > 0 ? { in: memberUserIds } : userId;
     return this.prisma.client.transaction.groupBy({
       by: ["type"],
-      where: { userId, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
+      where: { userId: userScope, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
       _sum: { amount: true },
     });
   }
 
   /** Summarizes transaction amounts grouped by categoryId. */
-  async groupByCategory(userId: string, dateFrom: Date, dateTo: Date, type?: TransactionType) {
+  async groupByCategory(
+    userId: string,
+    dateFrom: Date,
+    dateTo: Date,
+    type?: TransactionType,
+    memberUserIds?: string[],
+  ) {
+    const userScope = memberUserIds && memberUserIds.length > 0 ? { in: memberUserIds } : userId;
     return this.prisma.client.transaction.groupBy({
       by: ["categoryId"],
-      where: { userId, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
+      where: { userId: userScope, date: { gte: dateFrom, lte: dateTo }, ...(type && { type }) },
       _sum: { amount: true },
       orderBy: { _sum: { amount: "desc" } },
     });
   }
 
   /** Validates that referenced entities exist and are owned by the user. */
-  async assertOwnedRefs(
-    userId: string,
-    refs: {
-      accountId?: string | null;
-      toAccountId?: string | null;
-      categoryId?: string | null;
-      investmentId?: string | null;
-      goalId?: string | null;
-    },
-  ) {
-    const missing: string[] = [];
-    if (refs.accountId) {
-      const a = await this.prisma.client.account.findFirst({
-        where: { id: refs.accountId, userId, isActive: true },
-        select: { id: true },
-      });
-      if (!a) missing.push(`account ${refs.accountId}`);
-    }
-    if (refs.toAccountId) {
-      const a = await this.prisma.client.account.findFirst({
-        where: { id: refs.toAccountId, userId, isActive: true },
-        select: { id: true },
-      });
-      if (!a) missing.push(`destination account ${refs.toAccountId}`);
-    }
-    if (refs.categoryId) {
-      const c = await this.prisma.client.category.findFirst({
-        where: { id: refs.categoryId, userId },
-        select: { id: true },
-      });
-      if (!c) missing.push(`category ${refs.categoryId}`);
-    }
-    if (refs.investmentId) {
-      const i = await this.prisma.client.investment.findFirst({
-        where: { id: refs.investmentId, userId },
-        select: { id: true },
-      });
-      if (!i) missing.push(`investment ${refs.investmentId}`);
-    }
-    if (refs.goalId) {
-      const g = await this.prisma.client.goal.findFirst({
-        where: { id: refs.goalId, userId },
-        select: { id: true },
-      });
-      if (!g) missing.push(`goal ${refs.goalId}`);
-    }
-    if (missing.length > 0) {
-      this.logger.warn(
-        `[assertOwnedRefs] Invalid refs for user ${userId.slice(0, 8)}: ${missing.join(", ")}`,
-      );
-      throw new BadRequestException(
-        `Cannot record transaction: ${missing.join(", ")} not found for this user`,
-      );
-    }
+  async assertOwnedRefs(userId: string, refs: OwnedReferenceRefs) {
+    await assertOwnedReferences(this.prisma.client, userId, refs);
     this.logger.info(`[assertOwnedRefs] All refs valid for user ${userId.slice(0, 8)}`);
   }
 
@@ -187,36 +169,14 @@ export class TransactionsRepository {
     toAccountId?: string | null,
     investmentId?: string | null,
     goalId?: string | null,
-    multiplier: number = 1,
+    multiplier = 1,
   ) {
-    const { accountChange, toAccountChange } = getTransactionImpact(type, amount);
-
-    if (accountId && accountChange !== 0) {
-      await txClient.account.update({
-        where: { id: accountId },
-        data: { balance: { increment: accountChange * multiplier } },
-      });
-    }
-    if (toAccountId && toAccountChange !== 0) {
-      await txClient.account.update({
-        where: { id: toAccountId },
-        data: { balance: { increment: toAccountChange * multiplier } },
-      });
-    }
-    if (type === TransactionType.INVESTMENT && investmentId) {
-      await txClient.investment.update({
-        where: { id: investmentId },
-        data: {
-          investedAmount: { increment: amount * multiplier },
-          currentValue: { increment: amount * multiplier },
-        },
-      });
-    }
-    if (type === TransactionType.GOAL && goalId) {
-      await txClient.goal.update({
-        where: { id: goalId },
-        data: { currentAmount: { increment: amount * multiplier } },
-      });
-    }
+    await applyTransactionImpact(
+      txClient,
+      type,
+      amount,
+      { accountId, toAccountId, investmentId, goalId },
+      multiplier,
+    );
   }
 }

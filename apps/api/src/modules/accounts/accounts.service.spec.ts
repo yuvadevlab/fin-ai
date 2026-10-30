@@ -52,6 +52,7 @@ describe("AccountsService", () => {
 
       expect(prismaMock.client.account.findMany).toHaveBeenCalledWith({
         where: { userId: "user1", isActive: true },
+        include: { user: { select: { id: true, name: true, email: true, avatarUrl: true } } },
         orderBy: { name: "asc" },
       });
       expect(result).toEqual([

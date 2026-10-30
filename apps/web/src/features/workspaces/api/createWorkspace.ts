@@ -13,7 +13,7 @@ export function useCreateWorkspace() {
       toast
         .promise(apiClient.post<Workspace>(API_ENDPOINTS.WORKSPACES.BASE, input), {
           loading: "Creating workspace...",
-          success: "Family workspace created successfully",
+          success: "Workspace created successfully",
           error: (error: Error) => error.message || "Failed to create workspace",
         })
         .unwrap(),

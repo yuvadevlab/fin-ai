@@ -411,7 +411,7 @@ enum NotificationType {
 
 enum WorkspaceType {
   PERSONAL
-  FAMILY
+  SHARED
 }
 
 enum WorkspaceRole {

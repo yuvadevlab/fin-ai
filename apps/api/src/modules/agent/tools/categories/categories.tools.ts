@@ -38,7 +38,11 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_LIST],
       schema: z.object({}),
       execute: async (_input, ctx) => {
-        const categories = await categoriesService.getCategories(ctx.userId);
+        const categories = await categoriesService.getCategories(
+          ctx.userId,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
         return { categories };
       },
       summarize: (output) => {
@@ -56,7 +60,11 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
         name: z.string().min(1, "Category name is required").max(100),
       }),
       execute: async (input, ctx) => {
-        const categories = await categoriesService.getCategories(ctx.userId);
+        const categories = await categoriesService.getCategories(
+          ctx.userId,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
         const query = input.name.trim();
         const matches = categories
           .map((c) => ({ category: c, score: scoreEntityMatch(c.name, query) }))
