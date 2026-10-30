@@ -32,7 +32,7 @@ export const FEATURE_FLAGS = {
   AI_ADVISOR: process.env.NEXT_PUBLIC_FEATURE_AI_ADVISOR !== "false",
   AI_INSIGHT: process.env.NEXT_PUBLIC_FEATURE_AI_INSIGHT === "true",
   BUDGETS: process.env.NEXT_PUBLIC_FEATURE_BUDGETS !== "false",
-  FAMILY: process.env.NEXT_PUBLIC_FEATURE_FAMILY !== "false",
+  SHARED_WORKSPACE: process.env.NEXT_PUBLIC_FEATURE_SHARED_WORKSPACE !== "false",
   GOALS: process.env.NEXT_PUBLIC_FEATURE_GOALS !== "false",
   HEALTH: process.env.NEXT_PUBLIC_FEATURE_HEALTH !== "false",
   INVESTMENTS: process.env.NEXT_PUBLIC_FEATURE_INVESTMENTS !== "false",

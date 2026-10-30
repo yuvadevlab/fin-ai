@@ -26,11 +26,15 @@ export class InvestmentsController {
   @ApiOperation({
     summary: "Get portfolio with total value and asset allocation for current workspace",
   })
-  findAll(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+  findAll(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+  ) {
     this.logger.info(
       `[findAll] Fetching portfolio for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
     );
-    return this.investmentsService.findAll(userId, workspaceId);
+    return this.investmentsService.findAll(userId, workspaceId, memberUserIds);
   }
 
   @Get(":id")
@@ -38,12 +42,13 @@ export class InvestmentsController {
   findOne(
     @CurrentUser("id") userId: string,
     @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
     @Param("id") id: string,
   ) {
     this.logger.info(
       `[findOne] Fetching investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.investmentsService.findOne(id, userId, workspaceId);
+    return this.investmentsService.findOne(id, userId, workspaceId, memberUserIds);
   }
 
   @Post()

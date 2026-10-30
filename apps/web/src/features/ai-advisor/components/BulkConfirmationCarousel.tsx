@@ -5,6 +5,7 @@ import { Check, ChevronLeft, ChevronRight, Layers, Loader2, X } from "lucide-rea
 import { Button, cn } from "@finai/ui";
 import { formatINR } from "@finai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
+import { useWorkspace } from "@/providers";
 import { AgentConfirmationStatus } from "@finai/shared-types";
 import type { AgentConfirmation } from "../api/agentTypes";
 import { parseBulkRows, type BulkTransactionItem } from "../utils/parseBulkRows";
@@ -60,10 +61,11 @@ export function BulkConfirmationCarousel({
   );
   const displayTotal = pendingCount === items.length ? total : formatINR(pendingSum);
   const { isPrivacyMode } = usePrivacyMode();
+  const { isReadOnly } = useWorkspace();
   const maskedTotal = isPrivacyMode ? "₹ ••••••" : displayTotal;
 
   const handleConfirmAll = async () => {
-    if (disabled || isExecuting) return;
+    if (disabled || isExecuting || isReadOnly) return;
     await onConfirm(actionId, tool);
     setItemStatuses((prev) => {
       const next = { ...prev };
@@ -148,7 +150,7 @@ export function BulkConfirmationCarousel({
               <Button
                 size="sm"
                 className="h-8 cursor-pointer gap-1.5 px-3 text-xs"
-                disabled={disabled || isExecuting}
+                disabled={disabled || isExecuting || isReadOnly}
                 onClick={handleConfirmAll}
               >
                 {isExecuting ? (
@@ -210,8 +212,15 @@ export function BulkConfirmationCarousel({
 
       {/* Footer hint */}
       {!isAllResolved && (
-        <p className="text-muted-foreground mt-2 text-[11px] font-medium">
-          Confirm or cancel individual cards above, or record all remaining items in one click.
+        <p
+          className={cn(
+            "mt-2 text-[11px] font-medium",
+            isReadOnly ? "text-destructive" : "text-muted-foreground",
+          )}
+        >
+          {isReadOnly
+            ? UI_COPY.WORKSPACES.READ_ONLY_BANNER
+            : "Confirm or cancel individual cards above, or record all remaining items in one click."}
         </p>
       )}
     </div>

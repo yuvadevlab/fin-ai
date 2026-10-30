@@ -43,13 +43,14 @@ export class TransactionsController {
   findAll(
     @CurrentUser("id") userId: string,
     @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
     @Query() query: TransactionFilterInput,
   ) {
     this.logger.info(
       `[findAll] Listing transactions for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
     );
     const filter = transactionFilterSchema.parse(query);
-    return this.transactionsService.findAll(userId, filter, workspaceId);
+    return this.transactionsService.findAll(userId, filter, workspaceId, memberUserIds);
   }
 
   @Get("template")
@@ -78,12 +79,13 @@ export class TransactionsController {
   findOne(
     @CurrentUser("id") userId: string,
     @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
     @Param("id") id: string,
   ) {
     this.logger.info(
       `[findOne] Fetching transaction ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
     );
-    return this.transactionsService.findOne(id, userId, workspaceId);
+    return this.transactionsService.findOne(id, userId, workspaceId, memberUserIds);
   }
 
   @Post("bulk")

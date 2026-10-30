@@ -23,6 +23,12 @@ export interface Investment {
   value?: number;
   createdAt: string;
   updatedAt: string;
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export interface InvestmentsResponse {
@@ -39,9 +45,14 @@ export function useInvestments() {
   });
 }
 
-export async function prefetchInvestments(queryClient: QueryClient, token: string) {
+export async function prefetchInvestments(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: investmentsQueryKey(),
-    queryFn: () => serverFetch<InvestmentsResponse>(API_ENDPOINTS.INVESTMENTS.BASE, token),
+    queryFn: () =>
+      serverFetch<InvestmentsResponse>(API_ENDPOINTS.INVESTMENTS.BASE, token, workspaceId),
   });
 }

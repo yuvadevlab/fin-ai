@@ -26,11 +26,15 @@ export class GoalsController {
 
   @Get()
   @ApiOperation({ summary: "List all goals for the current workspace" })
-  findAll(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+  findAll(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+  ) {
     this.logger.info(
       `[findAll] Listing goals for user ${userId.slice(0, 8)} in workspace ${workspaceId.slice(0, 8)}`,
     );
-    return this.goalsService.findAll(userId, workspaceId);
+    return this.goalsService.findAll(userId, workspaceId, memberUserIds);
   }
 
   @Get(":id")
@@ -38,10 +42,11 @@ export class GoalsController {
   findOne(
     @CurrentUser("id") userId: string,
     @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
     @Param("id") id: string,
   ) {
     this.logger.info(`[findOne] Fetching goal ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
-    return this.goalsService.findOne(id, userId, workspaceId);
+    return this.goalsService.findOne(id, userId, workspaceId, memberUserIds);
   }
 
   @Post()

@@ -21,6 +21,9 @@ export const CurrentWorkspace = createParamDecorator(
     if (property === "isReadOnly") {
       return request.isWorkspaceReadOnly ?? false;
     }
+    if (property === "memberUserIds" || property === "members") {
+      return request.workspaceMemberIds ?? (request.user?.id ? [request.user.id] : []);
+    }
     return workspace?.[property];
   },
 );

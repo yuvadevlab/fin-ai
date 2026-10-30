@@ -19,7 +19,8 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_DASHBOARD],
       schema: z.object({}),
-      execute: async (_input, ctx) => analyticsService.getDashboard(ctx.userId),
+      execute: async (_input, ctx) =>
+        analyticsService.getDashboard(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       summarize: (output) => {
         const kpis = output as { netWorth: number; monthlyIncome: number; monthlyExpenses: number };
         return `Net worth ${formatINR(kpis.netWorth)}, income ${formatINR(kpis.monthlyIncome)}, expenses ${formatINR(kpis.monthlyExpenses)}`;
@@ -32,7 +33,8 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_HEALTH_SCORE],
       schema: z.object({}),
-      execute: async (_input, ctx) => analyticsService.getHealthScore(ctx.userId),
+      execute: async (_input, ctx) =>
+        analyticsService.getHealthScore(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       summarize: (output) => {
         const health = output as { score: number; rating: string };
         return `Financial health score: ${health.score}/100 (${health.rating})`;
@@ -47,7 +49,13 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       schema: z.object({
         months: z.number().int().positive().max(24).default(6),
       }),
-      execute: async (input, ctx) => analyticsService.getMonthlyAnalytics(ctx.userId, input.months),
+      execute: async (input, ctx) =>
+        analyticsService.getMonthlyAnalytics(
+          ctx.userId,
+          input.months,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        ),
       summarize: (output) => {
         const points = output as { month: string; income: number; expense: number }[];
         return `Cash flow for ${points.length} month(s)`;
@@ -60,7 +68,8 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_RECOMMENDATIONS],
       schema: z.object({}),
-      execute: async (_input, ctx) => analyticsService.getRecommendations(ctx.userId),
+      execute: async (_input, ctx) =>
+        analyticsService.getRecommendations(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       summarize: (output) => {
         const { recommendations } = output as { recommendations: Recommendation[] };
         return `Generated ${recommendations.length} recommendation(s)`;

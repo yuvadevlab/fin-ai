@@ -12,19 +12,20 @@ export class DashboardStatsService {
   private readonly logger = new Logger(DashboardStatsService.name);
   constructor(private repo: AnalyticsRepository) {}
 
-  async getDashboard(userId: string) {
+  async getDashboard(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getDashboard] Computing dashboard KPIs for user ${userId.slice(0, 8)}`);
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
     const [accounts, allTxns, lastMonthTxns, goals, investments] = await Promise.all([
-      this.repo.getAccountBalances(userId),
-      this.repo.getTransactionsInRange(userId, startOfMonth),
-      this.repo.getTransactionsInRange(userId, startOfLastMonth, endOfLastMonth),
-      this.repo.getGoalCount(userId),
-      this.repo.getInvestmentValues(userId),
+      this.repo.getAccountBalances(userIds),
+      this.repo.getTransactionsInRange(userIds, startOfMonth),
+      this.repo.getTransactionsInRange(userIds, startOfLastMonth, endOfLastMonth),
+      this.repo.getGoalCount(userIds),
+      this.repo.getInvestmentValues(userIds),
     ]);
 
     const toEngineFormat = (txns: { amount: number; date: Date; type: string }[]) =>
@@ -43,7 +44,7 @@ export class DashboardStatsService {
     const savingsRate = calculateSavingsRate(thisMonth.income, thisMonth.expense);
 
     this.logger.info(
-      `[getDashboard] Dashboard computed for user ${userId.slice(0, 8)}: netWorth=${netWorth}, income=${thisMonth.income}, expenses=${thisMonth.expense}, savingsRate=${savingsRate}`,
+      `[getDashboard] Dashboard computed: netWorth=${netWorth}, income=${thisMonth.income}, expenses=${thisMonth.expense}, savingsRate=${savingsRate}`,
     );
     return {
       netWorth,
@@ -58,12 +59,18 @@ export class DashboardStatsService {
     };
   }
 
-  async getMonthlyAnalytics(userId: string, months = 6) {
+  async getMonthlyAnalytics(
+    userId: string,
+    months = 6,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ) {
     this.logger.info(
       `[getMonthlyAnalytics] Computing ${months}-month cash flow for user ${userId.slice(0, 8)}`,
     );
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const txns = await this.repo.getTransactionsInRange(
-      userId,
+      userIds,
       new Date(new Date().getFullYear(), new Date().getMonth() - (months - 1), 1),
     );
     const normalized = txns.map((t) => ({
@@ -74,11 +81,16 @@ export class DashboardStatsService {
     return calculateCashFlow(normalized, months);
   }
 
-  async getSavingsTrend(userId: string, months = 6) {
+  async getSavingsTrend(
+    userId: string,
+    months = 6,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ) {
     this.logger.info(
       `[getSavingsTrend] Computing ${months}-month savings trend for user ${userId.slice(0, 8)}`,
     );
-    const cashFlow = await this.getMonthlyAnalytics(userId, months);
+    const cashFlow = await this.getMonthlyAnalytics(userId, months, workspaceId, memberUserIds);
     return cashFlow.map((m) => ({ month: m.month, value: Math.max(0, m.income - m.expense) }));
   }
 }

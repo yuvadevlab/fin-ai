@@ -20,16 +20,17 @@ export class SpendingTrendsService {
   private readonly logger = new Logger(SpendingTrendsService.name);
   constructor(private repo: AnalyticsRepository) {}
 
-  async getCategoryBreakdown(userId: string) {
+  async getCategoryBreakdown(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getCategoryBreakdown] Computing breakdown for user ${userId.slice(0, 8)}`);
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const result = await this.repo.getCategoryExpenseGrouped(userId, startOfMonth);
+    const result = await this.repo.getCategoryExpenseGrouped(userIds, startOfMonth);
     const categoryIds = result.map((r) => r.categoryId).filter((id): id is string => id !== null);
     const categories = await this.repo.getCategoriesByIds(categoryIds);
     const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c]));
     this.logger.info(
-      `[getCategoryBreakdown] Breakdown computed: ${result.length} categorie(s) for user ${userId.slice(0, 8)}`,
+      `[getCategoryBreakdown] Breakdown computed: ${result.length} categorie(s) for ${userIds.length} user(s)`,
     );
     return result.map((r) => ({
       categoryId: r.categoryId,
@@ -38,17 +39,18 @@ export class SpendingTrendsService {
     }));
   }
 
-  async getHealthScore(userId: string) {
+  async getHealthScore(userId: string, workspaceId?: string, memberUserIds?: string[]) {
     this.logger.info(`[getHealthScore] Computing health score for user ${userId.slice(0, 8)}`);
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const [accounts, investments, budgetsWithSpend, txns, goals] = await Promise.all([
-      this.repo.getAccountBalances(userId),
-      this.repo.getInvestmentsWithAssetClass(userId),
-      this.repo.getBudgetsWithSpend(userId, startOfMonth),
-      this.repo.getTransactionsInRange(userId, startOfMonth),
-      this.repo.getGoals(userId),
+      this.repo.getAccountBalances(userIds),
+      this.repo.getInvestmentsWithAssetClass(userIds),
+      this.repo.getBudgetsWithSpend(userIds, startOfMonth),
+      this.repo.getTransactionsInRange(userIds, startOfMonth),
+      this.repo.getGoals(userIds),
     ]);
 
     const normalized = txns.map((t) => ({
@@ -102,15 +104,16 @@ export class SpendingTrendsService {
     });
   }
 
-  async getRecommendations(userId: string) {
+  async getRecommendations(userId: string, workspaceId?: string, memberUserIds?: string[]) {
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const [txns, budgetCategories, goals, investments] = await Promise.all([
-      this.repo.getTransactionsInRange(userId, startOfMonth),
-      this.repo.getBudgetsWithCategorySpend(userId, startOfMonth),
-      this.repo.getGoalsForRecommendations(userId),
-      this.repo.getInvestmentsForAllocation(userId),
+      this.repo.getTransactionsInRange(userIds, startOfMonth),
+      this.repo.getBudgetsWithCategorySpend(userIds, startOfMonth),
+      this.repo.getGoalsForRecommendations(userIds),
+      this.repo.getInvestmentsForAllocation(userIds),
     ]);
 
     const normalized = txns.map((t) => ({
@@ -151,10 +154,11 @@ export class SpendingTrendsService {
     return { recommendations, generatedAt: new Date().toISOString() };
   }
 
-  async getSafeToSpend(userId: string) {
+  async getSafeToSpend(userId: string, workspaceId?: string, memberUserIds?: string[]) {
+    const userIds = await this.repo.resolveTargetIds(userId, workspaceId, memberUserIds);
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
     const [accounts, monthTxns, budgets, goals] = await this.repo.getSafeToSpendData(
-      userId,
+      userIds,
       startOfMonth,
     );
 

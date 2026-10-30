@@ -18,11 +18,14 @@ import { formatINR } from "@finai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";
 
+import { useWorkspace } from "@/providers";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 import { useGoals, useDeleteGoal, type Goal } from "../api";
 import { GoalDialog } from "./GoalDialog";
 import { ContributeDialog } from "./ContributeDialog";
 
 export function GoalsPage() {
+  const { isReadOnly } = useWorkspace();
   const { isPrivacyMode } = usePrivacyMode();
   const { data: rawGoals } = useGoals();
   // Guard against non-array during hydration
@@ -67,11 +70,15 @@ export function GoalsPage() {
         title={UI_COPY.GOALS.PAGE_TITLE}
         description={UI_COPY.GOALS.PAGE_DESCRIPTION}
         actions={
-          <Button size="sm" onClick={handleOpenCreateGoal} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.GOALS.NEW_GOAL}
-          </Button>
+          isReadOnly ? undefined : (
+            <Button size="sm" onClick={handleOpenCreateGoal} className="cursor-pointer gap-1.5">
+              <Plus className="size-4" /> {UI_COPY.GOALS.NEW_GOAL}
+            </Button>
+          )
         }
       />
+
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {goals.length === 0 ? (
         <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
@@ -82,9 +89,15 @@ export function GoalsPage() {
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             {UI_COPY.GOALS.EMPTY_DESCRIPTION}
           </p>
-          <Button size="sm" onClick={handleOpenCreateGoal} className="mt-5 cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.GOALS.CREATE_FIRST}
-          </Button>
+          {!isReadOnly && (
+            <Button
+              size="sm"
+              onClick={handleOpenCreateGoal}
+              className="mt-5 cursor-pointer gap-1.5"
+            >
+              <Plus className="size-4" /> {UI_COPY.GOALS.CREATE_FIRST}
+            </Button>
+          )}
         </div>
       ) : (
         <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -123,33 +136,35 @@ export function GoalsPage() {
                   </span>
                 }
                 actions={
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                        aria-label={UI_COPY.GOALS.ACTIONS_FOR(g.name)}
-                      >
-                        <MoreVertical className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-36">
-                      <DropdownMenuItem
-                        onClick={() => handleOpenEditGoal(g)}
-                        className="cursor-pointer"
-                      >
-                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleOpenDeleteGoal(g)}
-                        className="text-destructive focus:text-destructive cursor-pointer"
-                      >
-                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  isReadOnly ? undefined : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                          aria-label={UI_COPY.GOALS.ACTIONS_FOR(g.name)}
+                        >
+                          <MoreVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-36">
+                        <DropdownMenuItem
+                          onClick={() => handleOpenEditGoal(g)}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleOpenDeleteGoal(g)}
+                          className="text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )
                 }
                 footerLeft={
                   current >= target
@@ -157,7 +172,7 @@ export function GoalsPage() {
                     : `${isPrivacyMode ? "₹ ••••••" : formatINR(target - current)} ${UI_COPY.GOALS.TO_GO}`
                 }
                 footerRight={
-                  current >= target ? null : (
+                  isReadOnly || current >= target ? null : (
                     <ContributeDialog
                       goalId={g.id}
                       goalName={g.name}

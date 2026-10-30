@@ -40,6 +40,12 @@ export interface Transaction {
     name: string;
     targetAmount?: number;
   } | null;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string | null;
+  } | null;
 }
 
 export interface PaginatedTransactions {
@@ -77,9 +83,11 @@ export async function prefetchTransactions(
   queryClient: QueryClient,
   token: string,
   filter?: TransactionFilterInput,
+  workspaceId?: string,
 ) {
   await queryClient.prefetchQuery({
     queryKey: transactionsQueryKey(filter),
-    queryFn: () => serverFetch<PaginatedTransactions>(API_ENDPOINTS.TRANSACTIONS.BASE, token),
+    queryFn: () =>
+      serverFetch<PaginatedTransactions>(API_ENDPOINTS.TRANSACTIONS.BASE, token, workspaceId),
   });
 }

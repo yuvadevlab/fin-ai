@@ -28,10 +28,13 @@ import {
   type AgentConfirmation,
 } from "@/features/ai-advisor";
 import { UI_COPY } from "@/lib/ui-copy";
+import { useWorkspace } from "@/providers";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 import { AdvisorMobileContextSheet } from "./AdvisorMobileContextSheet";
 import { useAdvisorThreadSync } from "../hooks/useAdvisorThreadSync";
 
 export function AiAdvisorPage() {
+  const { isReadOnly } = useWorkspace();
   const [input, setInput] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
@@ -106,6 +109,11 @@ export function AiAdvisorPage() {
         onOpenContext={() => setContextOpen(true)}
         hasMessages={hasMessages}
       />
+      {isReadOnly && (
+        <div className="mb-4">
+          <ReadOnlyWorkspaceBanner />
+        </div>
+      )}
 
       <div className="flex flex-col gap-4 lg:h-[calc(100vh-11rem)] lg:flex-row">
         <div className="bg-card ring-border/50 relative flex min-h-[65vh] flex-1 flex-col overflow-hidden rounded-2xl shadow-sm ring-1 lg:h-full lg:min-h-0 lg:min-w-0">
@@ -123,7 +131,9 @@ export function AiAdvisorPage() {
                 <ChatMessages
                   messages={messages}
                   onSelectFollowUp={handleQuickAction}
-                  onConfirmAction={(id, tool) => confirmAction(id, tool)}
+                  onConfirmAction={(id, tool) => {
+                    if (!isReadOnly) confirmAction(id, tool);
+                  }}
                   onRejectAction={(id, idx) => rejectAction(id, idx)}
                   executingActionId={executingActionId}
                 />

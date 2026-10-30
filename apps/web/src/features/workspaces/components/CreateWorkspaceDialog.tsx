@@ -23,7 +23,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
 
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
-    type: WorkspaceType.FAMILY,
+    type: WorkspaceType.SHARED,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -45,7 +45,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
     setErrors({});
     const parseResult = createWorkspaceSchema.safeParse({
       name: values.name,
-      type: WorkspaceType.FAMILY,
+      type: WorkspaceType.SHARED,
     });
 
     if (!parseResult.success) {
@@ -62,7 +62,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
       const newWs = await createMutation.mutateAsync(parseResult.data);
       switchWorkspace(newWs.id);
       setOpen(false);
-      setValues({ name: "", type: WorkspaceType.FAMILY });
+      setValues({ name: "", type: WorkspaceType.SHARED });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Failed to create workspace";
       setErrors({ root: errorMsg });
@@ -75,7 +75,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
       onOpenChange={setOpen}
       title={UI_COPY.WORKSPACES.CREATE_TITLE}
       description={UI_COPY.WORKSPACES.CREATE_DESCRIPTION}
-      submitLabel={UI_COPY.WORKSPACES.CREATE_FAMILY}
+      submitLabel={UI_COPY.WORKSPACES.CREATE_SHARED}
       loading={createMutation.isPending}
       onSubmit={handleSubmit}
       trigger={trigger}

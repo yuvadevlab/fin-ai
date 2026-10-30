@@ -2,36 +2,40 @@ import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { TransactionType } from "@finai/database";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 @Injectable()
 export class AnalyticsRepository {
   private readonly logger = new Logger(AnalyticsRepository.name);
   constructor(private prisma: PrismaService) {}
 
-  /** Fetch active account balances. */
-  async getAccountBalances(userId: string) {
-    this.logger.info(
-      `[getAccountBalances] Fetching active balances for user ${userId.slice(0, 8)}`,
-    );
+  async resolveTargetIds(
+    userId: string,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ): Promise<string[]> {
+    if (memberUserIds && memberUserIds.length > 0) return memberUserIds;
+    return resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId);
+  }
+
+  async getAccountBalances(userIds: string[]) {
+    this.logger.info(`[getAccountBalances] Fetching balances for ${userIds.length} user(s)`);
     return this.prisma.client.account.findMany({
-      where: { userId, isActive: true },
+      where: { userId: { in: userIds }, isActive: true },
       select: { balance: true },
     });
   }
 
-  /** Fetch transactions in a date range with minimal fields. */
   async getTransactionsInRange(
-    userId: string,
+    userIds: string[],
     from: Date,
     to?: Date,
     extraWhere?: Partial<{ type: TransactionType }>,
   ) {
-    this.logger.info(
-      `[getTransactionsInRange] Fetching txns from ${from.toISOString().slice(0, 10)}${to ? ` to ${to.toISOString().slice(0, 10)}` : ""} for user ${userId.slice(0, 8)}`,
-    );
+    this.logger.info(`[getTransactionsInRange] Fetching txns for ${userIds.length} user(s)`);
     return this.prisma.client.transaction.findMany({
       where: {
-        userId,
+        userId: { in: userIds },
         date: { gte: from, ...(to && { lte: to }) },
         ...extraWhere,
       },
@@ -39,39 +43,36 @@ export class AnalyticsRepository {
     });
   }
 
-  /** Fetch all goal IDs for counting. */
-  async getGoalCount(userId: string) {
-    this.logger.info(`[getGoalCount] Counting goals for user ${userId.slice(0, 8)}`);
-    return this.prisma.client.goal.findMany({ where: { userId }, select: { id: true } });
+  async getGoalCount(userIds: string[]) {
+    this.logger.info(`[getGoalCount] Counting goals for ${userIds.length} user(s)`);
+    return this.prisma.client.goal.findMany({
+      where: { userId: { in: userIds } },
+      select: { id: true },
+    });
   }
 
-  /** Fetch investment current values. */
-  async getInvestmentValues(userId: string) {
-    this.logger.info(
-      `[getInvestmentValues] Fetching investment values for user ${userId.slice(0, 8)}`,
-    );
+  async getInvestmentValues(userIds: string[]) {
+    this.logger.info(`[getInvestmentValues] Fetching investments for ${userIds.length} user(s)`);
     return this.prisma.client.investment.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       select: { currentValue: true },
     });
   }
 
-  /** Fetch goals with amounts and type. */
-  async getGoals(userId: string) {
-    this.logger.info(`[getGoals] Fetching goals for user ${userId.slice(0, 8)}`);
+  async getGoals(userIds: string[]) {
+    this.logger.info(`[getGoals] Fetching goals for ${userIds.length} user(s)`);
     return this.prisma.client.goal.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       select: { currentAmount: true, targetAmount: true, type: true },
     });
   }
 
-  /** Fetch budgets with category spend aggregate for the current month. */
-  async getBudgetsWithSpend(userId: string, startOfMonth: Date) {
+  async getBudgetsWithSpend(userIds: string[], startOfMonth: Date) {
     this.logger.info(
-      `[getBudgetsWithSpend] Fetching budgets + spend for user ${userId.slice(0, 8)}`,
+      `[getBudgetsWithSpend] Fetching budgets + spend for ${userIds.length} user(s)`,
     );
     const budgets = await this.prisma.client.budget.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       include: { category: { select: { id: true } } },
     });
 
@@ -79,7 +80,7 @@ export class AnalyticsRepository {
       budgets.map((b) =>
         this.prisma.client.transaction.aggregate({
           where: {
-            userId,
+            userId: { in: userIds },
             categoryId: b.categoryId,
             type: TransactionType.EXPENSE,
             date: { gte: startOfMonth },
@@ -95,53 +96,46 @@ export class AnalyticsRepository {
     }));
   }
 
-  /** Fetch goals for recommendations (full details). */
-  async getGoalsForRecommendations(userId: string) {
-    this.logger.info(`[getGoalsForRecommendations] Fetching goals for user ${userId.slice(0, 8)}`);
-    return this.prisma.client.goal.findMany({ where: { userId } });
+  async getGoalsForRecommendations(userIds: string[]) {
+    this.logger.info(`[getGoalsForRecommendations] Fetching goals for ${userIds.length} user(s)`);
+    return this.prisma.client.goal.findMany({ where: { userId: { in: userIds } } });
   }
 
-  /** Fetch investments for asset allocation. */
-  async getInvestmentsForAllocation(userId: string) {
+  async getInvestmentsForAllocation(userIds: string[]) {
     this.logger.info(
-      `[getInvestmentsForAllocation] Fetching investments for user ${userId.slice(0, 8)}`,
+      `[getInvestmentsForAllocation] Fetching investments for ${userIds.length} user(s)`,
     );
     return this.prisma.client.investment.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       select: { name: true, currentValue: true },
     });
   }
 
-  /** Fetch category expense breakdown grouped by categoryId. */
-  async getCategoryExpenseGrouped(userId: string, startOfMonth: Date) {
-    this.logger.info(
-      `[getCategoryExpenseGrouped] Grouping expenses since ${startOfMonth.toISOString().slice(0, 10)} for user ${userId.slice(0, 8)}`,
-    );
+  async getCategoryExpenseGrouped(userIds: string[], startOfMonth: Date) {
+    this.logger.info(`[getCategoryExpenseGrouped] Grouping expenses for ${userIds.length} user(s)`);
     return this.prisma.client.transaction.groupBy({
       by: ["categoryId"],
-      where: { userId, date: { gte: startOfMonth }, type: TransactionType.EXPENSE },
+      where: {
+        userId: { in: userIds },
+        date: { gte: startOfMonth },
+        type: TransactionType.EXPENSE,
+      },
       _sum: { amount: true },
       orderBy: { _sum: { amount: "asc" } },
     });
   }
 
-  /** Fetch category names for a list of IDs. */
   async getCategoriesByIds(ids: string[]) {
-    if (ids.length === 0) {
-      this.logger.info("[getCategoriesByIds] No category IDs — skipping query");
-      return [];
-    }
-    this.logger.info(`[getCategoriesByIds] Resolving ${ids.length} categorie(s)`);
+    if (ids.length === 0) return [];
     return this.prisma.client.category.findMany({ where: { id: { in: ids } } });
   }
 
-  /** Fetch budgets with category name and per-category spend. */
-  async getBudgetsWithCategorySpend(userId: string, startOfMonth: Date) {
+  async getBudgetsWithCategorySpend(userIds: string[], startOfMonth: Date) {
     this.logger.info(
-      `[getBudgetsWithCategorySpend] Fetching budgets + category spend since ${startOfMonth.toISOString().slice(0, 10)} for user ${userId.slice(0, 8)}`,
+      `[getBudgetsWithCategorySpend] Fetching budgets + spend for ${userIds.length} user(s)`,
     );
     const budgets = await this.prisma.client.budget.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       include: { category: { select: { name: true } } },
     });
 
@@ -149,7 +143,7 @@ export class AnalyticsRepository {
       budgets.map((b) =>
         this.prisma.client.transaction.aggregate({
           where: {
-            userId,
+            userId: { in: userIds },
             categoryId: b.categoryId,
             type: TransactionType.EXPENSE,
             date: { gte: startOfMonth },
@@ -166,38 +160,34 @@ export class AnalyticsRepository {
     }));
   }
 
-  /** Fetch safe-to-spend data: balances, month transactions, budgets, goals. */
-  async getSafeToSpendData(userId: string, startOfMonth: Date) {
-    this.logger.info(
-      `[getSafeToSpendData] Fetching safe-to-spend inputs for user ${userId.slice(0, 8)}`,
-    );
+  async getSafeToSpendData(userIds: string[], startOfMonth: Date) {
+    this.logger.info(`[getSafeToSpendData] Fetching inputs for ${userIds.length} user(s)`);
     return Promise.all([
       this.prisma.client.account.findMany({
-        where: { userId, isActive: true },
+        where: { userId: { in: userIds }, isActive: true },
         select: { balance: true },
       }),
       this.prisma.client.transaction.findMany({
-        where: { userId, date: { gte: startOfMonth } },
+        where: { userId: { in: userIds }, date: { gte: startOfMonth } },
         select: { amount: true, type: true },
       }),
       this.prisma.client.budget.findMany({
-        where: { userId, categoryId: { not: null } },
+        where: { userId: { in: userIds }, categoryId: { not: null } },
         select: { categoryId: true, limit: true },
       }),
       this.prisma.client.goal.findMany({
-        where: { userId, deadline: { not: null } },
+        where: { userId: { in: userIds }, deadline: { not: null } },
         select: { targetAmount: true, currentAmount: true, deadline: true },
       }),
     ]);
   }
 
-  /** Fetch investments with asset class for diversification. */
-  async getInvestmentsWithAssetClass(userId: string) {
+  async getInvestmentsWithAssetClass(userIds: string[]) {
     this.logger.info(
-      `[getInvestmentsWithAssetClass] Fetching investments + asset class for user ${userId.slice(0, 8)}`,
+      `[getInvestmentsWithAssetClass] Fetching investments for ${userIds.length} user(s)`,
     );
     return this.prisma.client.investment.findMany({
-      where: { userId },
+      where: { userId: { in: userIds } },
       select: { currentValue: true, assetClass: true },
     });
   }

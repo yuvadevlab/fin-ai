@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { Bell, Check, Users, Sparkles, AlertCircle, CheckCheck } from "lucide-react";
+import { Bell, Users, Sparkles, AlertCircle, CheckCheck } from "lucide-react";
 import { Button, Badge, Popover, PopoverTrigger, PopoverContent } from "@finai/ui";
 import { NotificationType, InvitationAction } from "@finai/shared-types";
 import { UI_COPY } from "@/lib";
 import {
   useNotifications,
-  useUnreadNotificationsCount,
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
 } from "@/features/notifications/api";
@@ -15,28 +14,35 @@ import { useMyInvitations, useRespondInvitation } from "@/features/workspaces/ap
 
 export function NotificationsMenu() {
   const { data: notifications = [], isLoading } = useNotifications();
-  const { data: unreadData } = useUnreadNotificationsCount();
   const { data: invitations = [] } = useMyInvitations();
 
   const markReadMutation = useMarkNotificationRead();
   const markAllReadMutation = useMarkAllNotificationsRead();
   const respondMutation = useRespondInvitation();
 
-  const unreadCount = unreadData?.count ?? 0;
-  const totalCount = unreadCount + invitations.length;
+  // Deduplicate: Don't show passive invitation notification when interactive invitation card is active
+  const pendingInvitationIds = new Set(invitations.map((i) => i.id));
+  const displayNotifications = notifications.filter((item) => {
+    const inviteId = (item.data as { invitationId?: string } | null)?.invitationId;
+    return !(
+      item.type === NotificationType.WORKSPACE_INVITATION &&
+      inviteId &&
+      pendingInvitationIds.has(inviteId)
+    );
+  });
+
+  // Calculate unread items strictly from displayed notifications to avoid double-counting active invitations
+  const unreadCount = displayNotifications.filter((item) => !item.read).length;
+  const totalCount = invitations.length + unreadCount;
 
   const getIcon = (type: string) => {
-    switch (type) {
-      case NotificationType.WORKSPACE_INVITATION:
-        return <Users className="text-primary size-4" />;
-      case NotificationType.AI_INSIGHT:
-        return <Sparkles className="text-warning size-4" />;
-      case NotificationType.BUDGET_WARNING:
-      case NotificationType.BUDGET_EXCEEDED:
-        return <AlertCircle className="text-destructive size-4" />;
-      default:
-        return <Bell className="text-muted-foreground size-4" />;
+    if (type === NotificationType.WORKSPACE_INVITATION)
+      return <Users className="text-primary size-4" />;
+    if (type === NotificationType.AI_INSIGHT) return <Sparkles className="text-warning size-4" />;
+    if (type === NotificationType.BUDGET_WARNING || type === NotificationType.BUDGET_EXCEEDED) {
+      return <AlertCircle className="text-destructive size-4" />;
     }
+    return <Bell className="text-muted-foreground size-4" />;
   };
 
   return (
@@ -62,114 +68,141 @@ export function NotificationsMenu() {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-80 p-0 shadow-xl sm:w-96">
-        <div className="flex items-center justify-between border-b p-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold">{UI_COPY.NOTIFICATIONS.TITLE}</span>
-            {unreadCount > 0 && (
-              <Badge variant="secondary" className="text-[10px]">
-                {UI_COPY.NOTIFICATIONS.UNREAD_COUNT(unreadCount)}
-              </Badge>
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        collisionPadding={16}
+        className="border-border/80 bg-popover w-105! max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border p-0! shadow-2xl"
+      >
+        {/* Polished, non-collapsing header with strict 44px height and 16px horizontal alignment */}
+        <div className="border-border/50 bg-muted/30 flex h-11 items-center justify-between border-b px-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="text-foreground text-sm font-semibold tracking-tight">
+              {UI_COPY.NOTIFICATIONS.TITLE}
+            </span>
+            {totalCount > 0 && (
+              <span className="bg-primary/10 text-primary inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                {totalCount}
+              </span>
             )}
           </div>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
+          {totalCount > 0 && (
+            <button
+              type="button"
               disabled={markAllReadMutation.isPending}
               onClick={() => markAllReadMutation.mutate()}
-              className="text-muted-foreground hover:text-foreground h-7 gap-1 px-2 text-xs"
+              className="text-muted-foreground hover:text-foreground inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs font-medium whitespace-nowrap transition-colors"
             >
-              <CheckCheck className="size-3.5" />
-              {UI_COPY.NOTIFICATIONS.MARK_ALL_READ}
-            </Button>
+              <CheckCheck className="size-3.5 shrink-0" />
+              <span>{UI_COPY.NOTIFICATIONS.MARK_ALL_READ}</span>
+            </button>
           )}
         </div>
 
-        <div className="max-h-95 divide-y overflow-y-auto">
-          {/* Workspace Invitations inline in notifications */}
-          {invitations.map((invite) => (
-            <div
-              key={invite.id}
-              className="bg-primary/5 hover:bg-primary/10 flex flex-col gap-2 p-3 transition-colors"
-            >
-              <div className="flex items-start gap-2.5">
-                <div className="bg-primary/15 text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg">
-                  <Users className="size-3.5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-foreground text-xs font-semibold">
-                    {UI_COPY.NOTIFICATIONS.INVITATION_TITLE}
-                  </p>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
-                    {invite.inviter?.name
-                      ? `${invite.inviter.name} invited you to "${invite.workspace?.name}"`
-                      : `You were invited to "${invite.workspace?.name}"`}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-2 pt-1">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={respondMutation.isPending}
-                  onClick={() =>
-                    respondMutation.mutate({
-                      invitationId: invite.id,
-                      action: InvitationAction.REJECT,
-                    })
-                  }
-                  className="h-7 px-2.5 text-xs"
-                >
-                  {UI_COPY.WORKSPACES.DECLINE}
-                </Button>
-                <Button
-                  size="sm"
-                  disabled={respondMutation.isPending}
-                  onClick={() =>
-                    respondMutation.mutate({
-                      invitationId: invite.id,
-                      action: InvitationAction.ACCEPT,
-                    })
-                  }
-                  className="h-7 px-2.5 text-xs"
-                >
-                  <Check className="mr-1 size-3" />
-                  {UI_COPY.WORKSPACES.ACCEPT}
-                </Button>
-              </div>
+        {/* Workspace Invitations Section (Edge-to-edge with unified 16px grid alignment) */}
+        {invitations.length > 0 && (
+          <div className="border-border/50 bg-primary/3 border-b">
+            <div className="px-4 pt-3 pb-1">
+              <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+                {UI_COPY.WORKSPACES.INVITATION_CARD_TITLE}
+              </span>
             </div>
-          ))}
+            {invitations.map((invite) => (
+              <div key={invite.id} className="flex flex-col gap-2.5 px-4 pt-1.5 pb-3.5">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary/10 text-primary mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold">
+                    <Users className="size-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-foreground truncate text-xs font-semibold">
+                        {invite.workspace?.name ?? UI_COPY.WORKSPACES.SHARED_TITLE}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="h-5 shrink-0 px-1.5 text-[10px] font-medium"
+                      >
+                        {invite.role}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground mt-0.5 text-xs leading-normal">
+                      {invite.inviter?.name
+                        ? `${invite.inviter.name} invited you to collaborate`
+                        : UI_COPY.WORKSPACES.INVITATION_CARD_DESC}
+                    </p>
+                  </div>
+                </div>
 
-          {/* Standard notification list */}
-          {notifications.map((item) => (
+                {/* Inline action buttons aligned with content */}
+                <div className="flex items-center gap-2 pl-11">
+                  <Button
+                    size="sm"
+                    disabled={respondMutation.isPending}
+                    onClick={() =>
+                      respondMutation.mutate({
+                        invitationId: invite.id,
+                        action: InvitationAction.ACCEPT,
+                      })
+                    }
+                    className="h-7 cursor-pointer px-3 text-xs font-medium shadow-xs"
+                  >
+                    {UI_COPY.WORKSPACES.ACCEPT}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={respondMutation.isPending}
+                    onClick={() =>
+                      respondMutation.mutate({
+                        invitationId: invite.id,
+                        action: InvitationAction.REJECT,
+                      })
+                    }
+                    className="h-7 cursor-pointer px-3 text-xs font-medium"
+                  >
+                    {UI_COPY.WORKSPACES.DECLINE}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Standard notifications list with matching px-4 grid */}
+        <div className="divide-border/40 max-h-75 divide-y overflow-y-auto">
+          {displayNotifications.map((item) => (
             <div
               key={item.id}
               onClick={() => {
                 if (!item.read) markReadMutation.mutate(item.id);
               }}
-              className={`flex items-start gap-3 p-3 transition-colors ${
+              className={`flex cursor-pointer items-start gap-3 px-4 py-3 transition-colors ${
                 !item.read
-                  ? "bg-secondary/40 hover:bg-secondary/60 cursor-pointer font-medium"
-                  : "hover:bg-secondary/20 opacity-80"
+                  ? "bg-primary/3 hover:bg-primary/6"
+                  : "hover:bg-muted/40 opacity-75 hover:opacity-100"
               }`}
             >
-              <div className="bg-secondary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg">
+              <div className="bg-secondary mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg shadow-xs">
                 {getIcon(item.type)}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-foreground text-xs font-semibold">{item.title}</p>
-                  {!item.read && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-foreground truncate text-xs font-semibold">{item.title}</p>
+                  {!item.read && <span className="bg-primary size-2 shrink-0 rounded-full" />}
                 </div>
-                <p className="text-muted-foreground mt-0.5 line-clamp-2 text-xs">{item.body}</p>
+                <p className="text-muted-foreground mt-0.5 line-clamp-2 text-xs leading-relaxed">
+                  {item.body}
+                </p>
               </div>
             </div>
           ))}
 
-          {notifications.length === 0 && invitations.length === 0 && !isLoading && (
-            <div className="py-8 text-center">
-              <Bell className="text-muted-foreground/40 mx-auto mb-2 size-7" />
+          {/* Empty state */}
+          {displayNotifications.length === 0 && invitations.length === 0 && !isLoading && (
+            <div className="px-4 py-10 text-center">
+              <div className="bg-muted/50 mx-auto mb-2.5 flex size-10 items-center justify-center rounded-full">
+                <Bell className="text-muted-foreground size-5" />
+              </div>
               <p className="text-foreground text-xs font-medium">
                 {UI_COPY.NOTIFICATIONS.ALL_CAUGHT_UP}
               </p>

@@ -18,9 +18,14 @@ export function useCategoryBreakdown() {
   });
 }
 
-export async function prefetchCategoryBreakdown(queryClient: QueryClient, token: string) {
+export async function prefetchCategoryBreakdown(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: categoryBreakdownQueryKey(),
-    queryFn: () => serverFetch<CategoryBreakdownItem[]>(API_ENDPOINTS.ANALYTICS.CATEGORIES, token),
+    queryFn: () =>
+      serverFetch<CategoryBreakdownItem[]>(API_ENDPOINTS.ANALYTICS.CATEGORIES, token, workspaceId),
   });
 }

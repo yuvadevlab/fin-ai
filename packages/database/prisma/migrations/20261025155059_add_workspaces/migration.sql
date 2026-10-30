@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "WorkspaceType" AS ENUM ('PERSONAL', 'FAMILY');
+CREATE TYPE "WorkspaceType" AS ENUM ('PERSONAL', 'SHARED');
 
 -- CreateEnum
 CREATE TYPE "WorkspaceRole" AS ENUM ('OWNER', 'ADMIN', 'MEMBER');
@@ -8,40 +8,47 @@ CREATE TYPE "WorkspaceRole" AS ENUM ('OWNER', 'ADMIN', 'MEMBER');
 CREATE TYPE "InvitationStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED');
 
 -- AlterEnum
+-- This migration adds more than one value to an enum.
+-- With PostgreSQL versions 11 and earlier, this is not possible
+-- in a single migration. This can be worked around by creating
+-- multiple migrations, each migration adding only one value to
+-- the enum.
+
+
 ALTER TYPE "NotificationType" ADD VALUE 'WORKSPACE_INVITATION';
 ALTER TYPE "NotificationType" ADD VALUE 'WORKSPACE_UPDATE';
 
 -- DropForeignKey
-ALTER TABLE "sessions" DROP CONSTRAINT IF EXISTS "sessions_user_id_fkey";
+ALTER TABLE "sessions" DROP CONSTRAINT "sessions_user_id_fkey";
 
 -- AlterTable
-ALTER TABLE "accounts" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "accounts" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "budgets" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "budgets" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "categories" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "categories" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "goals" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "goals" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "investments" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "investments" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "notifications" ADD COLUMN "data" JSONB;
+ALTER TABLE "notifications" ADD COLUMN     "data" JSONB;
 
 -- AlterTable
-ALTER TABLE "transactions" ADD COLUMN "workspace_id" TEXT;
+ALTER TABLE "transactions" ADD COLUMN     "workspace_id" TEXT;
 
 -- AlterTable
-ALTER TABLE "users" DROP COLUMN IF EXISTS "reset_password_expires",
-DROP COLUMN IF EXISTS "reset_password_token",
+ALTER TABLE "users" DROP COLUMN "reset_password_expires",
+DROP COLUMN "reset_password_token",
 ALTER COLUMN "password_hash" DROP NOT NULL;
 
 -- DropTable
-DROP TABLE IF EXISTS "sessions";
+DROP TABLE "sessions";
 
 -- CreateTable
 CREATE TABLE "workspaces" (
@@ -84,6 +91,9 @@ CREATE TABLE "workspace_invitations" (
 
 -- CreateIndex
 CREATE INDEX "workspaces_owner_id_idx" ON "workspaces"("owner_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "workspaces_owner_id_personal_key" ON "workspaces"("owner_id") WHERE ("type" = 'PERSONAL');
 
 -- CreateIndex
 CREATE INDEX "workspace_members_user_id_idx" ON "workspace_members"("user_id");

@@ -31,11 +31,15 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: "Get all categories for current user" })
-  getCategories(@CurrentUser("id") userId: string, @CurrentWorkspace("id") workspaceId: string) {
+  getCategories(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+  ) {
     this.logger.info(
       `[getCategories] Listing categories for user ${userId.slice(0, 8)} (workspace: ${workspaceId.slice(0, 8)})`,
     );
-    return this.categoriesService.getCategories(userId);
+    return this.categoriesService.getCategories(userId, workspaceId, memberUserIds);
   }
 
   @Post()

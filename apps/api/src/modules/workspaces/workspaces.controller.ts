@@ -65,7 +65,7 @@ export class WorkspacesController {
   }
 
   @Post()
-  @ApiOperation({ summary: "Create a new family workspace" })
+  @ApiOperation({ summary: "Create a new shared workspace" })
   createWorkspace(
     @CurrentUser("id") userId: string,
     @Body(new ZodValidationPipe(createWorkspaceSchema)) body: CreateWorkspaceInput,

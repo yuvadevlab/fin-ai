@@ -18,11 +18,13 @@ import { formatINR } from "@finai/finance-engine";
 import { useIsClient } from "@/hooks";
 import { usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";
-import { PrivacyMoney } from "@/components";
+import { PrivacyMoney, ReadOnlyWorkspaceBanner } from "@/components";
+import { useWorkspace } from "@/providers";
 import { AccountDialog } from "./AccountDialog";
 import { Account, useAccounts, useDeleteAccount, useSetDefaultAccount } from "../api";
 
 export function AccountsPage() {
+  const { isReadOnly } = useWorkspace();
   const isClient = useIsClient();
   const { isPrivacyMode } = usePrivacyMode();
   const { data: rawAccounts, isLoading } = useAccounts();
@@ -41,20 +43,13 @@ export function AccountsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
 
-  const getAccountTypeLabel = (type: string) => {
-    switch (type) {
-      case "BANK":
-        return UI_COPY.ACCOUNTS.TYPES.BANK;
-      case "CREDIT_CARD":
-        return UI_COPY.ACCOUNTS.TYPES.CREDIT_CARD;
-      case "WALLET":
-        return UI_COPY.ACCOUNTS.TYPES.DIGITAL_WALLET;
-      case "CASH":
-        return UI_COPY.ACCOUNTS.TYPES.CASH_WALLET;
-      default:
-        return type;
-    }
-  };
+  const getAccountTypeLabel = (type: string) =>
+    ({
+      BANK: UI_COPY.ACCOUNTS.TYPES.BANK,
+      CREDIT_CARD: UI_COPY.ACCOUNTS.TYPES.CREDIT_CARD,
+      WALLET: UI_COPY.ACCOUNTS.TYPES.DIGITAL_WALLET,
+      CASH: UI_COPY.ACCOUNTS.TYPES.CASH_WALLET,
+    })[type] ?? type;
 
   const handleOpenAddAccount = () => {
     setSelectedAccount(null);
@@ -73,22 +68,12 @@ export function AccountsPage() {
 
   const handleDeleteAccountConfirm = async () => {
     if (!accountToDelete) return;
-    try {
-      await deleteAccount.mutateAsync(accountToDelete.id);
-      setDeleteOpen(false);
-      setAccountToDelete(null);
-    } catch {
-      // Error handled by mutation
-    }
+    await deleteAccount.mutateAsync(accountToDelete.id).catch(() => {});
+    setDeleteOpen(false);
+    setAccountToDelete(null);
   };
 
-  const handleSetDefault = async (id: string) => {
-    try {
-      await setDefaultAccount.mutateAsync(id);
-    } catch {
-      // Error handled by mutation
-    }
-  };
+  const handleSetDefault = (id: string) => setDefaultAccount.mutate(id);
 
   return (
     <PageContainer>
@@ -103,11 +88,15 @@ export function AccountsPage() {
             : UI_COPY.ACCOUNTS.PAGE_DESCRIPTION
         }
         actions={
-          <Button size="sm" onClick={handleOpenAddAccount} className="cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
-          </Button>
+          isReadOnly ? undefined : (
+            <Button size="sm" onClick={handleOpenAddAccount} className="cursor-pointer gap-1.5">
+              <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
+            </Button>
+          )
         }
       />
+
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {isClient && !isLoading && accounts.length === 0 ? (
         <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
@@ -120,9 +109,15 @@ export function AccountsPage() {
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             {UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}
           </p>
-          <Button size="sm" onClick={handleOpenAddAccount} className="mt-5 cursor-pointer gap-1.5">
-            <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
-          </Button>
+          {!isReadOnly && (
+            <Button
+              size="sm"
+              onClick={handleOpenAddAccount}
+              className="mt-5 cursor-pointer gap-1.5"
+            >
+              <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
+            </Button>
+          )}
         </div>
       ) : (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,41 +152,43 @@ export function AccountsPage() {
                 </div>
 
                 {/* Actions Dropdown Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
-                      aria-label={`Actions for ${a.name}`}
-                    >
-                      <MoreVertical className="size-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40">
-                    {!a.isDefault && accounts.length > 1 && (
+                {!isReadOnly && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                        aria-label={`Actions for ${a.name}`}
+                      >
+                        <MoreVertical className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      {!a.isDefault && accounts.length > 1 && (
+                        <DropdownMenuItem
+                          onClick={() => handleSetDefault(a.id)}
+                          className="cursor-pointer"
+                        >
+                          <Star className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
-                        onClick={() => handleSetDefault(a.id)}
+                        onClick={() => handleOpenEditAccount(a)}
                         className="cursor-pointer"
                       >
-                        <Star className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
+                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      onClick={() => handleOpenEditAccount(a)}
-                      className="cursor-pointer"
-                    >
-                      <Pencil className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => handleOpenDeleteAccount(a)}
-                      className="text-destructive focus:text-destructive cursor-pointer"
-                    >
-                      <Trash2 className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleOpenDeleteAccount(a)}
+                        className="text-destructive cursor-pointer"
+                      >
+                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
               {/* Account Balance */}

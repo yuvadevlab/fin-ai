@@ -3,7 +3,9 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { type Response } from "express";
 import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { WorkspaceGuard } from "@/common/guards/workspace.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
+import { CurrentWorkspace } from "@/common/decorators/current-workspace.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { agentChatSchema, type AgentChatInput } from "@finai/validation";
 import { AgentStreamEventType } from "@finai/shared-types";
@@ -26,7 +28,7 @@ import type { AgentEventEmitter } from "./agent.types";
  */
 @ApiTags("Agent")
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, ThrottlerGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard, ThrottlerGuard)
 @Controller("agent")
 export class AgentController {
   private readonly logger = new Logger(AgentController.name);
@@ -51,10 +53,13 @@ export class AgentController {
   async chat(
     @Body(new ZodValidationPipe(agentChatSchema)) body: AgentChatInput,
     @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string | undefined,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+    @CurrentWorkspace("isReadOnly") isReadOnly: boolean | undefined,
     @Res() res: Response,
   ) {
     this.logger.info(
-      `[chat] SSE stream started for user ${userId.slice(0, 8)}: "${body.question.slice(0, 50)}" (convo: ${(body.conversationId ?? "").slice(0, 8) || "new"})`,
+      `[chat] SSE stream started for user ${userId.slice(0, 8)} (workspace: ${(workspaceId ?? "").slice(0, 8) || "personal"}, readOnly: ${isReadOnly ?? false})`,
     );
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -66,7 +71,11 @@ export class AgentController {
     };
 
     try {
-      await this.agentService.chat(body, userId, emit);
+      await this.agentService.chat(body, userId, emit, {
+        workspaceId,
+        memberUserIds,
+        isReadOnly: isReadOnly ?? false,
+      });
       this.logger.info(`[chat] SSE stream completed for user ${userId.slice(0, 8)}`);
     } catch (error) {
       this.logger.error(

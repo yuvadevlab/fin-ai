@@ -9,6 +9,7 @@ import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { TransactionType } from "@finai/shared-types";
 import { formatFinanceContextMarkdown } from "./context-formatters";
+import { resolveUserScope } from "@/common/utils/workspace.util";
 
 @Injectable()
 export class ContextBuilderService {
@@ -17,41 +18,46 @@ export class ContextBuilderService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Assembles the full financial snapshot for a user.
+   * Assembles the full financial snapshot for a user or shared workspace.
    */
-  async buildFinanceContext(userId: string): Promise<string> {
+  async buildFinanceContext(
+    userId: string,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ): Promise<string> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const userScope = resolveUserScope(userId, memberUserIds);
 
     const [accounts, monthTxns, recentTxns, budgets, goals, investments, categories] =
       await Promise.all([
         this.prisma.client.account.findMany({
-          where: { userId, isActive: true },
+          where: { userId: userScope, isActive: true },
           select: { name: true, type: true, balance: true, currency: true },
         }),
         this.prisma.client.transaction.findMany({
-          where: { userId, date: { gte: startOfMonth } },
+          where: { userId: userScope, date: { gte: startOfMonth } },
           include: { category: { select: { name: true, group: true } } },
         }),
         this.prisma.client.transaction.findMany({
-          where: { userId },
+          where: { userId: userScope },
           include: { category: { select: { name: true, group: true } } },
           orderBy: { date: "desc" },
           take: 40,
         }),
         this.prisma.client.budget.findMany({
-          where: { userId },
+          where: { userId: userScope },
           include: { category: { select: { name: true } } },
         }),
         this.prisma.client.goal.findMany({
-          where: { userId },
+          where: { userId: userScope },
           orderBy: { deadline: "asc" },
         }),
         this.prisma.client.investment.findMany({
-          where: { userId },
+          where: { userId: userScope },
         }),
         this.prisma.client.category.findMany({
-          where: { userId },
+          where: { userId: userScope },
           select: { name: true },
           orderBy: { name: "asc" },
         }),

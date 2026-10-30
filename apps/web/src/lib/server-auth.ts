@@ -3,10 +3,11 @@ import { StorageKey } from "@finai/shared-types";
 
 export interface ServerAuth {
   token: string;
+  workspaceId?: string;
 }
 
 /**
- * Reads the auth token from request cookies.
+ * Reads the auth token and active workspace from request cookies.
  * Supports both finai-native token and DevLab platform access token.
  * Returns null when token cookie is missing (unauthenticated request).
  */
@@ -17,5 +18,6 @@ export async function getServerAuth(): Promise<ServerAuth | null> {
     cookieStore.get(StorageKey.DEVLAB_ACCESS_TOKEN)?.value;
 
   if (!token) return null;
-  return { token };
+  const workspaceId = cookieStore.get(StorageKey.WORKSPACE_ID)?.value;
+  return { token, workspaceId };
 }

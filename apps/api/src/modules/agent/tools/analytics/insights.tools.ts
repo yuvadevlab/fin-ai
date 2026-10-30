@@ -19,7 +19,8 @@ export function createInsightsTools(analyticsService: AnalyticsService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.INSIGHTS_SAFE_TO_SPEND],
       schema: z.object({}),
-      execute: async (_input, ctx) => analyticsService.getSafeToSpend(ctx.userId),
+      execute: async (_input, ctx) =>
+        analyticsService.getSafeToSpend(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
       serialize: (output) => {
         const result = output as {
           safeToSpend: number;

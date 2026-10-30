@@ -25,9 +25,9 @@ export function WorkspaceSwitcher() {
   const [createOpen, setCreateOpen] = useState(false);
 
   const personalWorkspaces = workspaces.filter((w) => w.type === WorkspaceType.PERSONAL);
-  const familyWorkspaces = workspaces.filter((w) => w.type === WorkspaceType.FAMILY);
+  const sharedWorkspaces = workspaces.filter((w) => w.type === WorkspaceType.SHARED);
 
-  const isFamily = activeWorkspace?.type === WorkspaceType.FAMILY;
+  const isShared = activeWorkspace?.type === WorkspaceType.SHARED;
   const roleLabel =
     userRole === WorkspaceRole.OWNER
       ? UI_COPY.WORKSPACES.ROLE_OWNER
@@ -46,14 +46,14 @@ export function WorkspaceSwitcher() {
             aria-label={UI_COPY.WORKSPACES.SWITCHER_LABEL}
           >
             <div className="bg-primary/10 text-primary flex size-6 shrink-0 items-center justify-center rounded-lg">
-              {isFamily ? <Users className="size-3.5" /> : <User className="size-3.5" />}
+              {isShared ? <Users className="size-3.5" /> : <User className="size-3.5" />}
             </div>
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-1.5">
                 <span className="text-foreground max-w-30 truncate font-semibold sm:max-w-40">
                   {activeWorkspace?.name ?? UI_COPY.WORKSPACES.PERSONAL_TITLE}
                 </span>
-                {isFamily && (
+                {isShared && (
                   <Badge variant="outline" className="hidden text-[10px] sm:inline-flex">
                     {roleLabel}
                   </Badge>
@@ -85,13 +85,13 @@ export function WorkspaceSwitcher() {
             );
           })}
 
-          {familyWorkspaces.length > 0 && (
+          {sharedWorkspaces.length > 0 && (
             <>
               <DropdownMenuSeparator className="my-1" />
               <DropdownMenuLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
-                {UI_COPY.WORKSPACES.FAMILY_TITLE}
+                {UI_COPY.WORKSPACES.SHARED_TITLE}
               </DropdownMenuLabel>
-              {familyWorkspaces.map((ws) => {
+              {sharedWorkspaces.map((ws) => {
                 const isActive = ws.id === activeWorkspaceId;
                 const memberRole =
                   ws.role === WorkspaceRole.OWNER
@@ -129,7 +129,7 @@ export function WorkspaceSwitcher() {
             className="flex cursor-pointer items-center gap-2 rounded-lg p-2 text-sm font-medium"
           >
             <Plus className="text-primary size-4" />
-            <span>{UI_COPY.WORKSPACES.CREATE_FAMILY}</span>
+            <span>{UI_COPY.WORKSPACES.CREATE_SHARED}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem

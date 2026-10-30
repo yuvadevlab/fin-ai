@@ -13,6 +13,12 @@ export interface Goal {
   type?: GoalType;
   createdAt: string;
   updatedAt: string;
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export const goalsQueryKey = () => QUERY_KEYS.GOALS.ALL;
@@ -24,9 +30,9 @@ export function useGoals() {
   });
 }
 
-export async function prefetchGoals(queryClient: QueryClient, token: string) {
+export async function prefetchGoals(queryClient: QueryClient, token: string, workspaceId?: string) {
   await queryClient.prefetchQuery({
     queryKey: goalsQueryKey(),
-    queryFn: () => serverFetch<Goal[]>(API_ENDPOINTS.GOALS.BASE, token),
+    queryFn: () => serverFetch<Goal[]>(API_ENDPOINTS.GOALS.BASE, token, workspaceId),
   });
 }

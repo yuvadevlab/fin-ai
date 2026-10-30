@@ -5,8 +5,8 @@ import { TransactionType } from "@finai/shared-types";
 import { Transaction } from "../api";
 import { TransactionRowActions } from "./TransactionRowActions";
 
-export function getTransactionColumns(onDelete: (id: string) => void) {
-  return [
+export function getTransactionColumns(onDelete?: (id: string) => void, isReadOnly = false) {
+  const cols = [
     {
       header: "Date",
       accessor: (t: Transaction) => (
@@ -55,15 +55,20 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
     {
       header: "Account / Destination",
       accessor: (t: Transaction) => (
-        <span className="text-muted-foreground text-xs font-normal sm:text-sm">
-          {t.type === TransactionType.TRANSFER && t.toAccount
-            ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-            : t.type === TransactionType.INVESTMENT && t.investment
-              ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
-              : t.type === TransactionType.GOAL && t.goal
-                ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
-                : t.account?.name || "Unknown"}
-        </span>
+        <div className="flex flex-col text-xs font-normal sm:text-sm">
+          <span className="text-muted-foreground">
+            {t.type === TransactionType.TRANSFER && t.toAccount
+              ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
+              : t.type === TransactionType.INVESTMENT && t.investment
+                ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
+                : t.type === TransactionType.GOAL && t.goal
+                  ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
+                  : t.account?.name || "Unknown"}
+          </span>
+          {t.user?.name && isReadOnly && (
+            <span className="text-muted-foreground/70 text-[10px]">by {t.user.name}</span>
+          )}
+        </div>
       ),
       className: "hidden sm:table-cell",
     },
@@ -98,10 +103,12 @@ export function getTransactionColumns(onDelete: (id: string) => void) {
       header: "Actions",
       accessor: (t: Transaction) => (
         <div className="flex justify-end">
-          <TransactionRowActions transaction={t} onDelete={onDelete} />
+          {onDelete && <TransactionRowActions transaction={t} onDelete={onDelete} />}
         </div>
       ),
       className: "text-right whitespace-nowrap",
     },
   ];
+
+  return isReadOnly || !onDelete ? cols.filter((c) => c.header !== "Actions") : cols;
 }

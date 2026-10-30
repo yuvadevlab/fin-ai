@@ -6,7 +6,7 @@
 
 export const WorkspaceType = {
   PERSONAL: "PERSONAL",
-  FAMILY: "FAMILY",
+  SHARED: "SHARED",
 } as const;
 export type WorkspaceType = (typeof WorkspaceType)[keyof typeof WorkspaceType];
 

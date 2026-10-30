@@ -18,6 +18,12 @@ export interface Budget {
     name: string;
     group: string;
   };
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export const budgetsQueryKey = () => QUERY_KEYS.BUDGETS.ALL;
@@ -29,9 +35,13 @@ export function useBudgets() {
   });
 }
 
-export async function prefetchBudgets(queryClient: QueryClient, token: string) {
+export async function prefetchBudgets(
+  queryClient: QueryClient,
+  token: string,
+  workspaceId?: string,
+) {
   await queryClient.prefetchQuery({
     queryKey: budgetsQueryKey(),
-    queryFn: () => serverFetch<Budget[]>(API_ENDPOINTS.BUDGETS.BASE, token),
+    queryFn: () => serverFetch<Budget[]>(API_ENDPOINTS.BUDGETS.BASE, token, workspaceId),
   });
 }
