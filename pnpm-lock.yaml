@@ -593,8 +593,8 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/ui':
-        specifier: ^2.0.0
-        version: 2.0.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+        specifier: ^2.1.0
+        version: 2.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -5056,8 +5056,8 @@ packages:
   '@yuva-devlab/tokens@2.0.0':
     resolution: {integrity: sha512-8qLAZ3V4YZlJL2u55mjr09dsMYi1nABv4HMhTsB/iiZhamkVSNkW4p5vPojBu8UiChdjLmVVe8wFhyKRLLesZg==}
 
-  '@yuva-devlab/ui@2.0.0':
-    resolution: {integrity: sha512-90HVf+IIiqStbQqLhNY5rap65EFPe9CsjwiodeiQB9yyP0qBd1tWlYbIodBo+6mER1PGF5E4T69Xgw3lCb+wbg==}
+  '@yuva-devlab/ui@2.1.0':
+    resolution: {integrity: sha512-0Nakg+jnOlO6NeypxkNYzXTLWtn3U32lVEta82jFr6YS1q92EuvrrIIFT4dv/pxg1JqUh68idRl5rWAas00lpA==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -14411,7 +14411,7 @@ snapshots:
 
   '@yuva-devlab/tokens@2.0.0': {}
 
-  '@yuva-devlab/ui@2.0.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
+  '@yuva-devlab/ui@2.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
     dependencies:
       '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-alert-dialog': 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
