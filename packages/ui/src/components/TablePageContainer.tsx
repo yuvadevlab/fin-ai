@@ -34,30 +34,12 @@ interface TablePageContainerProps {
  */
 export function TablePageContainer({ header, children, className }: TablePageContainerProps) {
   return (
-    <div
-      className={cn(
-        "animate-in fade-in flex min-h-full flex-col duration-300 md:h-full md:min-h-0",
-        className,
-      )}
-      style={{
-        paddingInline: "var(--page-padding-x)",
-      }}
-    >
+    <div className={cn("finai-table-page-container", className)}>
       {/* Header section — pinned on desktop, natural scroll on mobile */}
-      <div
-        className="shrink-0 space-y-3 sm:space-y-4"
-        style={{ paddingTop: "var(--page-padding-y)" }}
-      >
-        {header}
-      </div>
+      <div className="finai-table-page-header space-y-3 sm:space-y-4">{header}</div>
 
       {/* Table container — fills remaining height on desktop, natural height on mobile */}
-      <div
-        className="flex flex-1 flex-col md:min-h-0"
-        style={{ paddingBottom: "var(--page-padding-y)", paddingTop: "1rem" }}
-      >
-        {children}
-      </div>
+      <div className="finai-table-page-body">{children}</div>
     </div>
   );
 }

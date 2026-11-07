@@ -63,7 +63,7 @@ In FinAI:
 
 #### 1. Web Dashboard (`apps/web` — Port `3001`)
 
-- **Technology Stack**: Next.js 15 (App Router), React 19, Tailwind CSS v4, React Query v5, `@finai/ui`, `@yuva-devlab/tokens`.
+- **Technology Stack**: Next.js 15 (App Router), React 19, Platform CSS Utilities, React Query v5, `@finai/ui`, `@yuva-devlab/tokens`.
 - **Purpose**: High-performance, responsive wealth management web application.
 - **Detailed Features**:
   - **Net Worth Command Center**: Real-time aggregation of liquid assets, investments, real estate, and liabilities with historical trend charting.

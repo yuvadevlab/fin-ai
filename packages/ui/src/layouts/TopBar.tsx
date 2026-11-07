@@ -38,14 +38,7 @@ export function TopBar({
   ...props
 }: TopBarProps) {
   return (
-    <header
-      role="banner"
-      className={cn(
-        "border-border/80 bg-background/80 sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b px-4 backdrop-blur-md md:px-8",
-        className,
-      )}
-      {...props}
-    >
+    <header role="banner" className={cn("finai-topbar", className)} {...props}>
       <div className="flex items-center gap-2">
         {onMenuClick && (
           <div className="md:hidden">

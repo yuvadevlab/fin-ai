@@ -1,0 +1,24 @@
+/**
+ * @file packages/ui/src/styles/dialogs.css
+ * @description Dialog and modal overlay styles for FinAI.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  .finai-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 90dvh;
+    overflow: hidden;
+    border-radius: var(--radius-2xl, 1rem);
+    padding: 0;
+    z-index: var(--z-modal, 60);
+  }
+
+  .finai-dialog-form {
+    display: flex;
+    flex-direction: column;
+    max-height: 90dvh;
+    overflow: hidden;
+  }
+}

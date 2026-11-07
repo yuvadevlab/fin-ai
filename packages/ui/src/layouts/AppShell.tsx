@@ -9,18 +9,15 @@ interface AppShellProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function AppShell({ sidebar, topbar, children, className, ...props }: AppShellProps) {
   return (
-    <div
-      className={cn("bg-background text-foreground flex h-dvh w-full overflow-hidden", className)}
-      {...props}
-    >
+    <div className={cn("finai-app-shell", className)} {...props}>
       {sidebar}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="finai-app-shell-main">
         {topbar}
         {/* id="main-content" is the target for the skip-to-content link in layout.tsx */}
         <main
           id="main-content"
           aria-label="Main content"
-          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain scroll-smooth"
+          className="finai-main-content"
           tabIndex={-1}
         >
           {children}

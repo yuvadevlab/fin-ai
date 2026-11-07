@@ -10,15 +10,15 @@ import { DEVLAB_CONFIG } from "@finai/shared-types";
 export const APP_ID = process.env.NEXT_PUBLIC_APP_ID || DEVLAB_CONFIG.APP_ID;
 
 /** Fallback base API URL when NEXT_PUBLIC_API_URL environment variable is unset */
-export const DEFAULT_API_BASE_URL = "http://localhost:4000/api/v1";
+export const DEFAULT_API_BASE_URL = DEVLAB_CONFIG.DEFAULT_API_BASE_URL;
 
 /** DevLab Portal Web UI URL (for login redirects) */
 export const DEVLAB_PORTAL_WEB_URL =
-  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || "http://localhost:3005";
+  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_WEB_URL;
 
 /** DevLab Portal API URL (for token verification / OIDC) */
 export const DEVLAB_PORTAL_API_URL =
-  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_API_URL || "http://localhost:3015";
+  process.env.NEXT_PUBLIC_DEVLAB_PORTAL_API_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL;
 
 /** Page-level access and navigation toggles */
 export const PAGE_FLAGS = {

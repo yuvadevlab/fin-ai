@@ -1,0 +1,106 @@
+/**
+ * @file packages/ui/src/styles/cards.css
+ * @description Card primitives and metrics layouts for FinAI.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Base Card ──────────────────────────────────────────────────────────── */
+  .finai-card {
+    background-color: var(--card);
+    border-radius: 1rem;
+    border: none;
+    padding: var(--card-padding, 1.25rem);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--border) 50%, transparent),
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    transition:
+      box-shadow 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .finai-card:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--border) 60%, transparent),
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  }
+
+  .finai-card--interactive {
+    cursor: pointer;
+  }
+
+  /* ── Stat Card ──────────────────────────────────────────────────────────── */
+  .finai-card--stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .finai-stat-label {
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .finai-stat-value {
+    color: var(--foreground);
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .finai-stat-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .finai-stat-trend {
+    border-radius: var(--radius-sm, 0.25rem);
+    padding-inline: 0.375rem;
+    padding-block: 0.125rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+  }
+
+  .finai-stat-trend--up {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+
+  .finai-stat-trend--down {
+    background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+    color: var(--destructive);
+  }
+
+  .finai-stat-trend--flat {
+    background-color: var(--secondary);
+    color: var(--muted-foreground);
+  }
+
+  /* ── KPI Grid ───────────────────────────────────────────────────────────── */
+  .finai-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--card-gap, 1rem);
+  }
+
+  @media (min-width: 640px) {
+    .finai-kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .finai-kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+}

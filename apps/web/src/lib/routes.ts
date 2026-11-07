@@ -30,11 +30,48 @@ export const APP_ROUTES = {
   SETTINGS: "/settings",
 } as const;
 
+/** Options for initiating authentication against DevLab Portal SSO */
+export interface DevLabPortalLoginOptions {
+  redirectUrl?: string;
+  error?: string;
+  prompt?: "login" | "select_account" | "consent";
+}
+
 /** DevLab Central Portal SSO route builders and canonical destinations */
 export const DEVLAB_PORTAL_ROUTES = {
-  LOGIN: (redirectUrl?: string) => {
+  LOGIN: (redirectUrlOrOptions?: string | DevLabPortalLoginOptions) => {
+    let redirectUrl: string | undefined;
+    let error: string | undefined;
+    let prompt: string | undefined;
+
+    if (typeof redirectUrlOrOptions === "object" && redirectUrlOrOptions !== null) {
+      redirectUrl = redirectUrlOrOptions.redirectUrl;
+      error = redirectUrlOrOptions.error;
+      prompt = redirectUrlOrOptions.prompt;
+    } else {
+      redirectUrl = redirectUrlOrOptions;
+    }
+
     const base = `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.LOGIN}?app=${encodeURIComponent(APP_ID)}`;
-    return redirectUrl ? `${base}&redirect=${encodeURIComponent(redirectUrl)}` : base;
+    try {
+      const url = new URL(base);
+      if (redirectUrl) {
+        url.searchParams.set("redirect", redirectUrl);
+      }
+      if (error) {
+        url.searchParams.set("error", error);
+      }
+      if (prompt) {
+        url.searchParams.set("prompt", prompt);
+      }
+      return url.toString();
+    } catch {
+      let result = base;
+      if (redirectUrl) result += `&redirect=${encodeURIComponent(redirectUrl)}`;
+      if (error) result += `&error=${encodeURIComponent(error)}`;
+      if (prompt) result += `&prompt=${encodeURIComponent(prompt)}`;
+      return result;
+    }
   },
   REGISTER: () =>
     `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.REGISTER}?app=${encodeURIComponent(APP_ID)}`,

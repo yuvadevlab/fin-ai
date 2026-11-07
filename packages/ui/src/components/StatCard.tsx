@@ -23,21 +23,19 @@ export function StatCard({
   ...props
 }: StatCardProps) {
   return (
-    <ContentCard className={cn("flex flex-col justify-between p-5", className)} {...props}>
+    <ContentCard className={cn("finai-card--stat", className)} {...props}>
       <div>
-        <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-          {label}
-        </span>
-        <div className="text-foreground mt-2 text-2xl font-bold tracking-tight">{value}</div>
+        <span className="finai-stat-label">{label}</span>
+        <div className="finai-stat-value">{value}</div>
       </div>
-      <div className="mt-4 flex items-center gap-2">
+      <div className="finai-stat-footer">
         {trend && (
           <span
             className={cn(
-              "rounded px-1.5 py-0.5 text-[10px] font-semibold",
-              trend.kind === "up" && "bg-primary/10 text-primary",
-              trend.kind === "down" && "bg-destructive/10 text-destructive",
-              trend.kind === "flat" && "bg-secondary text-muted-foreground",
+              "finai-stat-trend",
+              trend.kind === "up" && "finai-stat-trend--up",
+              trend.kind === "down" && "finai-stat-trend--down",
+              trend.kind === "flat" && "finai-stat-trend--flat",
             )}
           >
             {trend.value}

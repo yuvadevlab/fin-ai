@@ -38,7 +38,6 @@
     "react-hook-form": "^7.71.2",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.0",
-    "tailwind-merge": "^3.0.1",
     "xlsx": "^0.18.5",
     "zod": "^3.24.2"
   },
@@ -50,7 +49,6 @@
     "@storybook/nextjs": "^8.6.18",
     "@storybook/react": "^8.6.18",
     "@storybook/test": "^8.6.15",
-    "@tailwindcss/postcss": "^4.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
@@ -62,7 +60,6 @@
     "eslint-config-next": "^15.1.5",
     "jsdom": "^26.0.0",
     "storybook": "^8.6.19",
-    "tailwindcss": "^4.0.0",
     "typescript": "^5.9.2",
     "vitest": "^4.1.11"
   }

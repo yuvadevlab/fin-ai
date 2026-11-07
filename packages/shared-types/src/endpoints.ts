@@ -107,11 +107,20 @@ export const API_ENDPOINTS = {
 export type ApiEndpointsCatalog = typeof API_ENDPOINTS;
 
 /**
- * DevLab Central Portal SSO route paths and default application identifier.
- * Single source of truth for SSO query parameters and auth redirection routes.
+ * DevLab Central Portal SSO route paths, operational defaults, and application identifiers.
+ * Single source of truth for SSO query parameters, default service URLs, and auth redirection routes.
  */
 export const DEVLAB_CONFIG = {
   APP_ID: "finai",
+  DEFAULT_WEB_PORT: 3001,
+  DEFAULT_API_PORT: 4001,
+  DEFAULT_PORTAL_WEB_PORT: 3000,
+  DEFAULT_PORTAL_API_PORT: 4000,
+  DEFAULT_WEB_URL: "http://localhost:3001",
+  DEFAULT_API_URL: "http://localhost:4001",
+  DEFAULT_API_BASE_URL: "http://localhost:4001/api/v1",
+  DEFAULT_PORTAL_WEB_URL: "http://localhost:3000",
+  DEFAULT_PORTAL_API_URL: "http://localhost:4000",
   PATHS: {
     LOGIN: "/login",
     REGISTER: "/register",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { LoginView } from "@/features/auth";
 
@@ -12,5 +12,9 @@ export const metadata: Metadata = {
  * Pure SSR Server Component route wrapper for FinAI login.
  */
 export default function LoginPage() {
-  return <LoginView />;
+  return (
+    <Suspense fallback={null}>
+      <LoginView />
+    </Suspense>
+  );
 }

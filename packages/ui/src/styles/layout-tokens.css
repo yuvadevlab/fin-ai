@@ -1,0 +1,114 @@
+/**
+ * @file packages/ui/src/styles/layout-tokens.css
+ * @description Master structural dimension tokens for shells, sidebars, headers, and grids.
+ * Governed under @layer dl-tokens.
+ */
+
+@layer dl-tokens {
+  :root,
+  [data-brand="finai"],
+  [data-theme="finai"],
+  [data-theme="finai-light"] {
+    /* ── Typography & Baseline Theme Tokens ───────────────────────────────── */
+    --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+    --theme-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+    --theme-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+    --color-income: var(--income);
+    --color-expense: var(--expense);
+    --color-investment: var(--investment);
+    --card-radius: 1rem;
+
+    /* ── Header / Topbar Dimensions ───────────────────────────────────────── */
+    --topbar-height: 4rem; /* 64px (h-16) */
+    --topbar-padding-x: 1rem; /* 16px */
+    --sidebar-header-height: 4rem; /* 64px */
+
+    /* ── Sidebar Dimensions ───────────────────────────────────────────────── */
+    --sidebar-width: 16rem; /* 256px (w-64) */
+    --sidebar-width-collapsed: 4.5rem; /* 72px (w-18) */
+    --sidebar-padding-x: 0.75rem; /* 12px */
+    --sidebar-padding-y: 1rem; /* 16px */
+
+    /* ── Page Layout & Viewport Containers ───────────────────────────────── */
+    --page-max-width: 96rem; /* 1536px */
+    --page-padding-x: 1rem; /* 16px */
+    --page-padding-y: 1.25rem; /* 20px */
+    --section-gap: 1.5rem; /* 24px */
+
+    /* ── Card & Surface Metrics ──────────────────────────────────────────── */
+    --card-padding: 1.25rem; /* 20px (p-5) */
+    --card-padding-sm: 0.875rem; /* 14px */
+    --card-padding-lg: 1.5rem; /* 24px */
+    --card-gap: 1rem; /* 16px (gap-4) */
+    --card-radius: 1rem; /* 16px (rounded-2xl) */
+
+    /* ── Interactive Controls & Heights ──────────────────────────────────── */
+    --control-height-xs: 1.75rem; /* 28px */
+    --control-height-sm: 2rem; /* 32px */
+    --control-height-md: 2.25rem; /* 36px (Default Button / Input) */
+    --control-height-lg: 2.5rem; /* 40px */
+    --control-height-xl: 3rem; /* 48px */
+
+    /* ── Data Tables & Ledgers ───────────────────────────────────────────── */
+    --table-header-height: 2.5rem; /* 40px Sticky Thead */
+    --table-row-height: 3.25rem; /* 52px */
+    --table-cell-padding-x: 1rem; /* 16px */
+    --table-cell-padding-y: 0.75rem; /* 12px */
+    --table-toolbar-height: 3.5rem; /* 56px Filter Bar */
+
+    /* ── Semantic Layer Z-Index Stack ────────────────────────────────────── */
+    --z-base: 0;
+    --z-card: 1;
+    --z-sticky-table: 10;
+    --z-topbar: 20;
+    --z-sidebar: 30;
+    --z-dropdown: 40;
+    --z-drawer: 50;
+    --z-modal: 60;
+    --z-popover: 70;
+    --z-toast: 80;
+    --z-skip-link: 9999;
+  }
+
+  /* ── Responsive Viewport Scaling ────────────────────────────────────────── */
+  @media (min-width: 640px) {
+    :root {
+      --page-padding-x: 1.5rem;
+      --page-padding-y: 1.5rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --topbar-padding-x: 2rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    :root {
+      --page-padding-x: 2.5rem;
+      --page-padding-y: 2rem;
+      --page-max-width: 120rem;
+    }
+  }
+
+  @media (min-width: 1920px) {
+    :root {
+      --page-padding-x: 3.5rem;
+      --page-max-width: 160rem;
+    }
+  }
+
+  /* ── Native Density Switching (Zero Utility Class Overrides) ───────────── */
+  body.density-compact {
+    --page-padding-y: 0.75rem;
+    --card-padding: 0.75rem;
+    --card-gap: 0.6rem;
+    --section-gap: 0.9rem;
+    --control-height-md: 2rem;
+    --table-header-height: 2rem;
+    --table-row-height: 2.5rem;
+    --table-cell-padding-y: 0.4rem;
+  }
+}

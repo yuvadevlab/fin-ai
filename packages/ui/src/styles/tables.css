@@ -1,0 +1,130 @@
+/**
+ * @file packages/ui/src/styles/tables.css
+ * @description Data tables, ledgers, and pagination layouts using layout tokens.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Table Page Container ───────────────────────────────────────────────── */
+  .finai-table-page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-inline: var(--page-padding-x);
+  }
+
+  @media (min-width: 768px) {
+    .finai-table-page-container {
+      height: 100%;
+      min-height: 0;
+    }
+  }
+
+  .finai-table-page-header {
+    flex-shrink: 0;
+    padding-top: var(--page-padding-y);
+  }
+
+  .finai-table-page-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-top: 1rem;
+    padding-bottom: var(--page-padding-y);
+  }
+
+  @media (min-width: 768px) {
+    .finai-table-page-body {
+      min-height: 0;
+    }
+  }
+
+  /* ── Table Card & Shell ─────────────────────────────────────────────────── */
+  .finai-table-shell {
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    border-radius: var(--card-radius, 1rem);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    display: flex;
+    flex-direction: column;
+  }
+
+  .finai-table-shell--fill {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .finai-table-scroll-area {
+    overflow-x: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── Native Table Structure ─────────────────────────────────────────────── */
+  .finai-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+  }
+
+  .finai-table-thead {
+    background-color: var(--card);
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    line-height: 1.4285714;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .finai-table-thead--sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky-table, 10);
+    box-shadow: 0 1px 0 0 var(--border);
+  }
+
+  .finai-table-th {
+    padding-inline: var(--table-cell-padding-x, 1rem);
+    padding-block: var(--table-cell-padding-y, 0.75rem);
+  }
+
+  .finai-table-tbody {
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  .finai-table-tbody tr {
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    transition: background-color 150ms ease;
+  }
+
+  .finai-table-tbody tr:hover {
+    background-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+  }
+
+  .finai-table-row--interactive {
+    cursor: pointer;
+  }
+
+  .finai-table-td {
+    padding-inline: var(--table-cell-padding-x, 1rem);
+    padding-block: var(--table-cell-padding-y, 0.75rem);
+    font-weight: 500;
+  }
+
+  .finai-table-empty {
+    padding-inline: 1.5rem;
+    padding-block: 2.5rem;
+    text-align: center;
+    color: var(--muted-foreground);
+  }
+
+  /* ── Pagination Footer ──────────────────────────────────────────────────── */
+  .finai-table-pagination-footer {
+    flex-shrink: 0;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: var(--card);
+  }
+}
