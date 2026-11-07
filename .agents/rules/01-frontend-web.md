@@ -109,7 +109,7 @@ src/features/<feature-name>/components/
 
 ## 6. UI & Styling Guidelines (`packages/ui`)
 
-1. **TailwindCSS Exclusively**: Use semantic Tailwind utility tokens. Never use hardcoded arbitrary hex values.
+1. **Design System Tokens Exclusively**: Use semantic design system tokens and platform utility classes. Never use hardcoded arbitrary hex values.
    - Backgrounds & Foreground: `bg-background`, `text-foreground`, `bg-card`, `border-border`, `text-muted-foreground`
    - Primary: `bg-primary`, `text-primary-foreground`
    - Destructive / Error: `bg-destructive/15`, `text-destructive`

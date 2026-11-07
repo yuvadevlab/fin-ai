@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { StorageKey } from "@finai/shared-types";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib";
 
@@ -9,6 +10,9 @@ import { DEVLAB_PORTAL_ROUTES } from "@/lib";
  * Automatically delegates authentication to DevLab Portal Central SSO.
  */
 export function LoginView() {
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error") || searchParams.get("auth_error");
+
   const purgeAndRedirect = useCallback(() => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(StorageKey.TOKEN);
@@ -20,9 +24,14 @@ export function LoginView() {
       document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      window.location.href = DEVLAB_PORTAL_ROUTES.LOGIN(window.location.origin);
+
+      const portalUrl = DEVLAB_PORTAL_ROUTES.LOGIN({
+        redirectUrl: window.location.origin,
+        ...(errorParam ? { error: errorParam, prompt: "login" } : {}),
+      });
+      window.location.href = portalUrl;
     }
-  }, []);
+  }, [errorParam]);
 
   useEffect(() => {
     purgeAndRedirect();

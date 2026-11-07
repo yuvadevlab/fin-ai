@@ -70,28 +70,28 @@ const preview: Preview = {
     viewport: {
       viewports: {
         ...INITIAL_VIEWPORTS,
-        tailwindSm: {
-          name: "Tailwind sm (640px)",
+        viewportSm: {
+          name: "Breakpoint sm (640px)",
           styles: { width: "640px", height: "900px" },
           type: "mobile",
         },
-        tailwindMd: {
-          name: "Tailwind md (768px)",
+        viewportMd: {
+          name: "Breakpoint md (768px)",
           styles: { width: "768px", height: "1024px" },
           type: "tablet",
         },
-        tailwindLg: {
-          name: "Tailwind lg (1024px)",
+        viewportLg: {
+          name: "Breakpoint lg (1024px)",
           styles: { width: "1024px", height: "768px" },
           type: "desktop",
         },
-        tailwindXl: {
-          name: "Tailwind xl (1280px)",
+        viewportXl: {
+          name: "Breakpoint xl (1280px)",
           styles: { width: "1280px", height: "800px" },
           type: "desktop",
         },
-        tailwind2Xl: {
-          name: "Tailwind 2xl (1536px)",
+        viewport2Xl: {
+          name: "Breakpoint 2xl (1536px)",
           styles: { width: "1536px", height: "960px" },
           type: "desktop",
         },

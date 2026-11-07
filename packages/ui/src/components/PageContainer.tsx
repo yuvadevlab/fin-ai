@@ -7,18 +7,7 @@ interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function PageContainer({ children, className, ...props }: PageContainerProps) {
   return (
-    <div
-      className={cn(
-        "animate-in fade-in mx-auto w-full space-y-6 duration-300 xl:space-y-8",
-        className,
-      )}
-      style={{
-        paddingInline: "var(--page-padding-x)",
-        paddingBlock: "var(--page-padding-y)",
-        maxWidth: "var(--page-max-width)",
-      }}
-      {...props}
-    >
+    <div className={cn("finai-page-container space-y-6 xl:space-y-8", className)} {...props}>
       {children}
     </div>
   );

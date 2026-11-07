@@ -62,6 +62,7 @@ export function ScoreGauge({
             cx="60"
             cy="60"
             r={radius}
+            stroke="currentColor"
             strokeWidth={strokeWidth}
             fill="none"
             strokeLinecap="round"

@@ -7,10 +7,7 @@ interface KPIGridProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function KPIGrid({ children, className, ...props }: KPIGridProps) {
   return (
-    <section
-      className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4", className)}
-      {...props}
-    >
+    <section className={cn("finai-kpi-grid", className)} {...props}>
       {children}
     </section>
   );

@@ -95,7 +95,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {searchQuery.trim().length >= 2 && (
           <div
             ref={searchRef}
-            className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4 md:px-8"
+            className="pointer-events-none fixed inset-x-0 flex justify-center"
+            style={{
+              top: "var(--topbar-height)",
+              zIndex: "var(--z-dropdown)",
+              paddingInline: "var(--topbar-padding-x)",
+            }}
           >
             <div className="pointer-events-auto w-full max-w-lg">
               <SearchDropdown query={searchQuery} onClose={() => setSearchQuery("")} />

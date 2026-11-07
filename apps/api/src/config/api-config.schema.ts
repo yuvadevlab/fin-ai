@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { AiProvider } from "@finai/shared-types";
+import { AiProvider, DEVLAB_CONFIG } from "@finai/shared-types";
 
 /**
  * Zod schema validating backend runtime configuration.
@@ -13,23 +13,23 @@ import { AiProvider } from "@finai/shared-types";
  */
 export const ApiConfigSchema = z.object({
   /** HTTP server port */
-  port: z.coerce.number().int().positive().default(4001),
+  port: z.coerce.number().int().positive().default(DEVLAB_CONFIG.DEFAULT_API_PORT),
 
   /**
    * Single canonical web URL for frontend access and CORS origins.
    * Can be a single origin or comma-separated origins.
    */
-  webUrl: z.string().default("http://localhost:3001"),
+  webUrl: z.string().default(DEVLAB_CONFIG.DEFAULT_WEB_URL),
 
   /**
    * DevLab Portal API base URL for OIDC discovery and JWKS public key verification.
    */
-  portalApiUrl: z.string().default("http://localhost:4000"),
+  portalApiUrl: z.string().default(DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL),
 
   /**
    * @deprecated Use portalApiUrl instead.
    */
-  gatewayUrl: z.string().default("http://localhost:3015"),
+  gatewayUrl: z.string().default(DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL),
 
   /** Node execution environment mode */
   nodeEnv: z.enum(["development", "test", "production"]).default("development"),

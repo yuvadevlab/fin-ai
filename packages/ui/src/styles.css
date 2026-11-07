@@ -1,24 +1,57 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+/**
+ * @file packages/ui/src/styles.css
+ * @description Master stylesheet for FinAI UI library.
+ * Architecture: W3C Cascade Layers (dl-reset -> dl-tokens -> dl-components -> dl-layout -> dl-utilities -> dl-app).
+ * Pure Platform CSS architecture.
+ */
+
+/* ── 0. Establish Layer Precedence ───────────────────────────────────────── */
+@layer dl-reset, dl-tokens, dl-components, dl-layout, dl-utilities, dl-app;
+
+/* ── 1. Canonical Design Tokens & Themes ──────────────────────────────────── */
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
-@source "../**";
-@source "../node_modules/@yuva-devlab/ui";
 
-@custom-variant dark (&:is(.dark *));
+/* ── 2. Structural Layout Tokens, Keyframes, Components & Platform Utilities ─────────── */
+@import "./styles/layout-tokens.css";
+@import "./styles/common.css";
+@import "./styles/layouts.css";
+@import "./styles/cards.css";
+@import "./styles/tables.css";
+@import "./styles/badges.css";
+@import "./styles/dialogs.css";
+@import "./styles/utilities.css";
 
-@theme inline {
+/* ── Unlayered Token Normalization ────────────────────────────────────────── */
+:root,
+[data-brand="finai"],
+[data-theme="finai"],
+[data-theme="finai-light"] {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-  --color-ring-offset-background: var(--background);
-  --color-income: var(--income);
-  --color-expense: var(--expense);
-  --color-investment: var(--investment);
+  --theme-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --theme-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 }
 
-@layer base {
-  * {
-    border-color: var(--color-border);
+/* ── 3. Baseline Resets ───────────────────────────────────────────────────── */
+@layer dl-reset {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border, currentColor);
+  }
+
+  html {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--font-sans, "Inter Variable", ui-sans-serif, system-ui, sans-serif);
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html,
@@ -29,76 +62,196 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    margin: 0;
+    line-height: inherit;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: inherit;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+    margin: 0;
+  }
+
+  abbr:where([title]) {
+    text-decoration: underline dotted;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  b,
+  strong {
+    font-weight: bolder;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono, "JetBrains Mono Variable", monospace);
+    font-size: 1em;
+  }
+
+  small {
+    font-size: 80%;
+  }
+
+  sub,
+  sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font-family: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+  }
+
+  button,
+  select {
+    text-transform: none;
+  }
+
+  button,
+  input:where([type="button"]),
+  input:where([type="reset"]),
+  input:where([type="submit"]) {
+    -webkit-appearance: button;
+    background-color: transparent;
+    background-image: none;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: default;
+  }
+
+  blockquote,
+  dl,
+  dd,
+  figure,
+  p,
+  pre {
+    margin: 0;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+  }
+
+  legend {
+    padding: 0;
+  }
+
+  ol,
+  ul,
+  menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  dialog {
+    padding: 0;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: var(--muted-foreground, #9ca3af);
+  }
+
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block;
+    vertical-align: middle;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none;
   }
 }
 
-/* ── Theme-init transition suppressor ──────────────────────────────────────── */
-.finai-no-transition * {
-  transition: none !important;
-  animation: none !important;
-}
-
-/* ── Layout Design Tokens ─────────────────────────────────────────────────── */
-:root {
-  --page-padding-x: 1rem;
-  --page-padding-y: 1.25rem;
-  --page-max-width: 96rem;
-}
-
-@media (min-width: 640px) {
-  :root {
-    --page-padding-x: 1.5rem;
-    --page-padding-y: 1.5rem;
+/* ── 4. App Utilities & Privacy Mask ──────────────────────────────────────── */
+@layer dl-app {
+  /* Theme-init transition suppressor */
+  .finai-no-transition * {
+    transition: none !important;
+    animation: none !important;
   }
-}
 
-@media (min-width: 1536px) {
-  :root {
-    --page-padding-x: 2.5rem;
-    --page-padding-y: 2rem;
-    --page-max-width: 120rem;
+  /* Privacy Mode — pre-hydration CSS mask */
+  html[data-privacy="on"] [data-privacy-sensitive] {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
   }
-}
-
-@media (min-width: 1920px) {
-  :root {
-    --page-padding-x: 3.5rem;
-    --page-max-width: 160rem;
-  }
-}
-
-/* ── Density ─────────────────────────────────────────────────────────────── */
-body.density-compact .p-5 {
-  padding: 0.75rem;
-}
-
-body.density-compact .p-4 {
-  padding: 0.6rem;
-}
-
-body.density-compact .p-3 {
-  padding: 0.5rem;
-}
-
-body.density-compact .gap-4 {
-  gap: 0.6rem;
-}
-
-body.density-compact .space-y-4 > * + * {
-  margin-top: 0.6rem;
-}
-
-body.density-compact .space-y-6 > * + * {
-  margin-top: 0.9rem;
-}
-
-/* ── Privacy Mode — pre-hydration CSS mask ────────────────────────────────── */
-html[data-privacy="on"] [data-privacy-sensitive] {
-  filter: blur(8px);
-  user-select: none;
-  pointer-events: none;
 }

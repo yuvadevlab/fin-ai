@@ -6,6 +6,7 @@
 
 import path from "node:path";
 import dotenv from "dotenv";
+import { DEVLAB_CONFIG } from "@finai/shared-types";
 import { ApiConfigSchema, type ApiConfig } from "./api-config.schema";
 
 let cachedConfig: ApiConfig | null = null;
@@ -62,22 +63,23 @@ export function loadApiConfig(): ApiConfig {
   dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
   dotenv.config({ path: path.resolve(process.cwd(), ".env"), override: true });
 
-  const rawWebUrl = process.env.WEB_URL || "http://localhost:3001";
+  const rawWebUrl = process.env.WEB_URL || DEVLAB_CONFIG.DEFAULT_WEB_URL;
   const parsedCorsOrigins = rawWebUrl
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  // Fallback to localhost:3001 if no valid origins were parsed
-  const corsOrigins = parsedCorsOrigins.length > 0 ? parsedCorsOrigins : ["http://localhost:3001"];
+  // Fallback to default web URL if no valid origins were parsed
+  const corsOrigins =
+    parsedCorsOrigins.length > 0 ? parsedCorsOrigins : [DEVLAB_CONFIG.DEFAULT_WEB_URL];
   // The first origin in the list is always canonical for frontend links/resets
-  const frontendBaseUrl = corsOrigins[0] || "http://localhost:3001";
+  const frontendBaseUrl = corsOrigins[0] || DEVLAB_CONFIG.DEFAULT_WEB_URL;
 
   const parsed = ApiConfigSchema.parse({
     port: process.env.PORT,
     webUrl: rawWebUrl,
-    portalApiUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000",
-    gatewayUrl: process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000",
+    portalApiUrl: process.env.DEVLAB_PORTAL_API_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL,
+    gatewayUrl: process.env.DEVLAB_PORTAL_API_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL,
     nodeEnv: process.env.NODE_ENV,
     databaseUrl: process.env.DATABASE_URL,
     jwtSecret: process.env.JWT_SECRET,

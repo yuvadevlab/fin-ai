@@ -1,6 +1,6 @@
 # @finai/web
 
-`@finai/web` is the user-facing web application for FinAI, built with Next.js 15 (App Router), React 19, TailwindCSS, `@finai/ui`, `@finai/validation`, and `@tanstack/react-query`.
+`@finai/web` is the user-facing web application for FinAI, built with Next.js 15 (App Router), React 19, Platform CSS, `@finai/ui`, `@finai/validation`, and `@tanstack/react-query`.
 
 ---
 
