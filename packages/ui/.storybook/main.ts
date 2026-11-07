@@ -1,5 +1,4 @@
 import type { StorybookConfig } from "@storybook/react-vite";
-import tailwindcss from "@tailwindcss/vite";
 
 /**
  * FinAI UI — Storybook Configuration
@@ -32,8 +31,6 @@ const config: StorybookConfig = {
   },
 
   async viteFinal(config) {
-    config.plugins = config.plugins || [];
-    config.plugins.push(tailwindcss());
     return config;
   },
 

@@ -1,24 +1,27 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+/**
+ * @file packages/ui/src/styles.css
+ * @description Master stylesheet for FinAI UI library.
+ * Architecture: W3C Cascade Layers (dl-reset -> dl-tokens -> dl-components -> dl-layout -> dl-utilities -> dl-app).
+ * Pure Platform CSS with zero Tailwind dependencies.
+ */
+
+/* ── 0. Establish Layer Precedence ───────────────────────────────────────── */
+@layer dl-reset, dl-tokens, dl-components, dl-layout, dl-utilities, dl-app;
+
+/* ── 1. Canonical Design Tokens & Themes ──────────────────────────────────── */
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
-@source "../**";
-@source "../node_modules/@yuva-devlab/ui";
 
-@custom-variant dark (&:is(.dark *));
+/* ── 2. Structural Layout Tokens, Keyframes & Platform Utilities ─────────── */
+@import "./styles/layout-tokens.css";
+@import "./styles/common.css";
+@import "./styles/utilities.css";
 
-@theme inline {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-  --color-ring-offset-background: var(--background);
-  --color-income: var(--income);
-  --color-expense: var(--expense);
-  --color-investment: var(--investment);
-}
-
-@layer base {
+/* ── 3. Baseline Resets ───────────────────────────────────────────────────── */
+@layer dl-reset {
   * {
-    border-color: var(--color-border);
+    box-sizing: border-box;
+    border-color: var(--border);
   }
 
   html,
@@ -29,76 +32,25 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans, "Inter", sans-serif);
     -webkit-font-smoothing: antialiased;
   }
 }
 
-/* ── Theme-init transition suppressor ──────────────────────────────────────── */
-.finai-no-transition * {
-  transition: none !important;
-  animation: none !important;
-}
-
-/* ── Layout Design Tokens ─────────────────────────────────────────────────── */
-:root {
-  --page-padding-x: 1rem;
-  --page-padding-y: 1.25rem;
-  --page-max-width: 96rem;
-}
-
-@media (min-width: 640px) {
-  :root {
-    --page-padding-x: 1.5rem;
-    --page-padding-y: 1.5rem;
+/* ── 4. App Utilities & Privacy Mask ──────────────────────────────────────── */
+@layer dl-app {
+  /* Theme-init transition suppressor */
+  .finai-no-transition * {
+    transition: none !important;
+    animation: none !important;
   }
-}
 
-@media (min-width: 1536px) {
-  :root {
-    --page-padding-x: 2.5rem;
-    --page-padding-y: 2rem;
-    --page-max-width: 120rem;
+  /* Privacy Mode — pre-hydration CSS mask */
+  html[data-privacy="on"] [data-privacy-sensitive] {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
   }
-}
-
-@media (min-width: 1920px) {
-  :root {
-    --page-padding-x: 3.5rem;
-    --page-max-width: 160rem;
-  }
-}
-
-/* ── Density ─────────────────────────────────────────────────────────────── */
-body.density-compact .p-5 {
-  padding: 0.75rem;
-}
-
-body.density-compact .p-4 {
-  padding: 0.6rem;
-}
-
-body.density-compact .p-3 {
-  padding: 0.5rem;
-}
-
-body.density-compact .gap-4 {
-  gap: 0.6rem;
-}
-
-body.density-compact .space-y-4 > * + * {
-  margin-top: 0.6rem;
-}
-
-body.density-compact .space-y-6 > * + * {
-  margin-top: 0.9rem;
-}
-
-/* ── Privacy Mode — pre-hydration CSS mask ────────────────────────────────── */
-html[data-privacy="on"] [data-privacy-sensitive] {
-  filter: blur(8px);
-  user-select: none;
-  pointer-events: none;
 }
