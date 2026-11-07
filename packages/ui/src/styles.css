@@ -12,9 +12,14 @@
 @import "@yuva-devlab/ui/preset.css";
 @import "@yuva-devlab/ui/themes/finai.css";
 
-/* ── 2. Structural Layout Tokens, Keyframes & Platform Utilities ─────────── */
+/* ── 2. Structural Layout Tokens, Keyframes, Components & Platform Utilities ─────────── */
 @import "./styles/layout-tokens.css";
 @import "./styles/common.css";
+@import "./styles/layouts.css";
+@import "./styles/cards.css";
+@import "./styles/tables.css";
+@import "./styles/badges.css";
+@import "./styles/dialogs.css";
 @import "./styles/utilities.css";
 
 /* ── 3. Baseline Resets ───────────────────────────────────────────────────── */

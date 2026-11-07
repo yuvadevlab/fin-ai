@@ -97,12 +97,13 @@ export function Sidebar({
       <aside
         aria-label="Sidebar navigation"
         className={cn(
-          "border-border/80 bg-sidebar flex h-screen shrink-0 flex-col transition-[width] duration-200 ease-in-out",
+          "finai-sidebar",
           !isMobile
-            ? isRail
-              ? "sticky top-0 hidden w-18 border-r md:flex"
-              : "sticky top-0 hidden w-64 border-r md:flex"
-            : "w-full border-none",
+            ? [
+                "finai-sidebar--desktop",
+                isRail ? "finai-sidebar--collapsed" : "finai-sidebar--expanded",
+              ]
+            : "finai-sidebar--mobile",
           className,
         )}
         {...props}

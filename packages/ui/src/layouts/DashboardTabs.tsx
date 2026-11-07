@@ -26,7 +26,7 @@ export function DashboardTabs({
   ...props
 }: DashboardTabsProps) {
   return (
-    <div className={cn("border-border/80 flex border-b", className)} {...props}>
+    <div className={cn("finai-dashboard-tabs", className)} {...props}>
       {tabs.map((t) => {
         // Handle exact matching for home, and prefix matching for sub routes
         const active = t.href === "/" ? pathname === "/" : pathname.startsWith(t.href);
@@ -37,10 +37,8 @@ export function DashboardTabs({
             key={t.href}
             href={t.href}
             className={cn(
-              "-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors outline-none",
-              active
-                ? "border-primary text-primary"
-                : "text-muted-foreground hover:text-foreground border-transparent",
+              "finai-dashboard-tab",
+              active ? "finai-dashboard-tab--active" : "finai-dashboard-tab--inactive",
             )}
           >
             {t.label}
