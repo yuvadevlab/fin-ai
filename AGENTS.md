@@ -12,7 +12,7 @@ All AI agents must inspect and adhere to the relevant topic rulebooks:
 | Topic                         | Rulebook                                                                   | Primary Scope                                                  |
 | :---------------------------- | :------------------------------------------------------------------------- | :------------------------------------------------------------- |
 | **Universal Core Invariants** | [`00-core-invariants.md`](file:///.agents/rules/00-core-invariants.md)     | Monorepo boundaries, 250-line rule, seed safeguards            |
-| **Frontend & Web**            | [`01-frontend-web.md`](file:///.agents/rules/01-frontend-web.md)           | 2-file modals, React Query, Tailwind tokens, `@finai/ui`       |
+| **Frontend & Web**            | [`01-frontend-web.md`](file:///.agents/rules/01-frontend-web.md)           | 2-file modals, React Query, design system tokens, `@finai/ui`  |
 | **Backend API**               | [`02-backend-api.md`](file:///.agents/rules/02-backend-api.md)             | 5-layer NestJS architecture, controllers, repositories, utils  |
 | **AI Advisor & Agent Loop**   | [`03-ai-advisor.md`](file:///.agents/rules/03-ai-advisor.md)               | `@finai/ai-engine`, persona, safety guardrails, 2-phase writes |
 | **Testing Standards**         | [`04-testing-standards.md`](file:///.agents/rules/04-testing-standards.md) | Vitest, Playwright, mock contracts, zero test side-effects     |

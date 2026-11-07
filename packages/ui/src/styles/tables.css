@@ -73,6 +73,7 @@
     background-color: var(--card);
     color: var(--muted-foreground);
     font-size: 0.6875rem;
+    line-height: 1.4285714;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;

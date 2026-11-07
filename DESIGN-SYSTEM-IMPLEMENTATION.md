@@ -8,7 +8,7 @@
 
 ## Vision
 
-Build a **production-grade, token-driven, Tailwind-integrated, themeable design platform** — the Yuva DevLab Design System — whose first canonical theme is the current FinAI visual language, and which can serve FinAI and every future Yuva DevLab web application.
+Build a **production-grade, token-driven, token-driven, themeable design platform** — the Yuva DevLab Design System — whose first canonical theme is the current FinAI visual language, and which can serve FinAI and every future Yuva DevLab web application.
 
 This is not a component library. It is a **design language with architectural discipline** modelled after the structural maturity of Google Material Design, Shopify Polaris, and Microsoft Fluent — but with its own design identity.
 
@@ -18,7 +18,7 @@ This is not a component library. It is a **design language with architectural di
 
 - Establish a canonical, layered design system: Tokens → Theme → Foundations → Primitives → Components → Patterns → Applications.
 - Formalize the existing FinAI visual language into the **Yuva Core Theme** without altering FinAI's look.
-- Make the design system Tailwind-integrated but Tailwind-independent conceptually.
+- Make the design system modular and platform CSS token-driven.
 - Publish stable `@yuva-devlab/*` packages consumable by FinAI and future applications.
 - Enable future applications to inherit the Yuva Core Theme without copying FinAI CSS.
 - Enable future themes without rewriting components.
@@ -27,9 +27,9 @@ This is not a component library. It is a **design language with architectural di
 
 ## Non-Goals
 
-- Do NOT migrate FinAI away from Tailwind CSS.
+- Maintain FinAI visual stability and zero visual regressions.
 - Do NOT introduce CSS Modules, styled-components, or Emotion into FinAI.
-- Do NOT make the design system Tailwind-specific (Tailwind is the tooling layer, not the design layer).
+- Do NOT make the design system tool-dependent.
 - Do NOT break the current FinAI visual identity.
 - Do NOT create per-component packages (`@yuva-devlab/button`, etc.).
 - Do NOT create unnecessary abstractions or packages.
@@ -91,11 +91,11 @@ This is not a component library. It is a **design language with architectural di
 
 #### What Is Missing or Weak
 
-1. **No `@yuva-devlab/tailwind` package** — No Tailwind 4 preset. FinAI cannot consume Yuva tokens.
+1. **No `@yuva-devlab/tokens` package** — No Design system preset. FinAI cannot consume Yuva tokens.
 
 2. **Token color contract mismatch** — Design system: `yd-color-*` CSS variables. FinAI: `--primary`, `--background`, `--foreground` OKLCH-based variables. No bridge exists.
 
-3. **No Tailwind-styled component layer** — `@yuva-devlab/ui` uses Vanilla Extract. FinAI cannot use these components without adding VE to its build.
+3. **No Design system component layer** — `@yuva-devlab/ui` uses Vanilla Extract. FinAI cannot use these components without adding VE to its build.
 
 4. **Missing components** — Card, Dialog, AlertDialog, Popover, Tooltip, DropdownMenu, Tabs, Accordion, Sheet, Toast, Badge, Avatar, Progress, Spinner, Skeleton, EmptyState, Table, Pagination.
 
@@ -116,7 +116,7 @@ This is not a component library. It is a **design language with architectural di
 **Location:** `/Users/yuvarajpattabi/Yuva/yuva-devlab/Repos/finai`
 **Package Manager:** pnpm
 **Frontend:** Next.js 15.x (App Router)
-**CSS Framework:** **Tailwind CSS 4.x** (CSS-first, no `tailwind.config.js`)
+**CSS Architecture:** **Platform Design Tokens & CSS Utilities**
 **Component package:** `@finai/ui` (private, workspace)
 
 #### FinAI Visual Language — Yuva Core Theme Seed
@@ -140,14 +140,14 @@ This is not a component library. It is a **design language with architectural di
 **Base radius:** `0.75rem` (12px) — moderately rounded
 **Design language summary:** Emerald/forest green primary, warm blue-gray neutrals, OKLCH-modern, 12px radius, clean dark mode (deep blue-gray, not pure black). Trust-inspiring, calm, financial wellness aesthetic.
 
-#### FinAI Tailwind Configuration
+#### FinAI CSS Configuration
 
-- **Tailwind 4.x (CSS-first)** — configuration entirely in `apps/web/src/app/globals.css`
-- `@import "tailwindcss"` + `@theme inline { ... }` mapping CSS variables to Tailwind utilities
+- **Platform CSS** — configuration entirely in `apps/web/src/app/globals.css`
+- `@import "design-systemcss"` + `@theme inline { ... }` mapping CSS variables to Platform utilities
 - `:root { ... }` and `.dark { ... }` blocks with OKLCH semantic CSS variables
-- No `tailwind.config.js` — this is the modern Tailwind 4 approach
+- Zero configuration files — pure CSS tokens and utilities
 
-#### FinAI Arbitrary Tailwind Value Audit
+#### FinAI Layout and Sizing Value Audit
 
 | Value                        | Count   | Classification                                             |
 | ---------------------------- | ------- | ---------------------------------------------------------- |
@@ -161,7 +161,7 @@ This is not a component library. It is a **design language with architectural di
 
 Private, workspace-local, not published.
 
-_Primitives (Radix + CVA + Tailwind):_ Button, Input, Progress, Badge, Avatar, Select, Calendar, DatePicker, SearchableSelect, Dialog, Sheet, Popover, Label, Separator, Skeleton, Switch, Tooltip, Card, AlertDialog, Toaster (Sonner), DropdownMenu, Toggle, Table, RadioGroup
+_Primitives (Radix + CVA + Platform CSS):_ Button, Input, Progress, Badge, Avatar, Select, Calendar, DatePicker, SearchableSelect, Dialog, Sheet, Popover, Label, Separator, Skeleton, Switch, Tooltip, Card, AlertDialog, Toaster (Sonner), DropdownMenu, Toggle, Table, RadioGroup
 
 _Layout:_ AppShell, Sidebar, TopBar, DashboardTabs, SidebarItem, SidebarAiCard
 
@@ -177,13 +177,13 @@ _Domain components (FinAI-specific):_ StatCard, KPIGrid, MiniStat, AIInsightCard
 
 1. **Parallel component systems** — `@yuva-devlab/ui` and `@finai/ui` both implement Button, Input, Select, Checkbox, Radio, Switch, Textarea, Form with divergent APIs and styling mechanisms.
 
-2. **Styling mechanism incompatibility** — `@yuva-devlab/ui` uses Vanilla Extract. `@finai/ui` uses Tailwind 4 + CVA. FinAI cannot adopt `@yuva-devlab/ui` components without adding VE to its build.
+2. **Styling mechanism incompatibility** — `@yuva-devlab/ui` uses Vanilla Extract. `@finai/ui` uses Platform CSS + CVA. FinAI cannot adopt `@yuva-devlab/ui` components without adding VE to its build.
 
-3. **Token system incompatibility** — `@yuva-devlab/tokens` emits `yd-color-*` variables. FinAI's Tailwind 4 uses `--primary`, `--background`, etc. No bridge exists today.
+3. **Token system incompatibility** — `@yuva-devlab/tokens` emits `yd-color-*` variables. FinAI's theme uses `--primary`, `--background`, etc. No bridge exists today.
 
 4. **Color encoding divergence** — Design system uses HEX tonal palettes; FinAI uses OKLCH. The visual outputs are close (both center on the same forest green hue) but not mathematically identical.
 
-5. **No `@yuva-devlab/tailwind` package** — The critical missing bridge.
+5. **No `@yuva-devlab/tokens` package** — The critical missing bridge.
 
 6. **`@finai/ui` mixes generic and domain components** — Sidebar, AppShell are FinAI-specific. Table, Badge, Card are generic. MoneyDisplay, ScoreGauge are FinAI-domain. Boundary is not enforced by package structure.
 
@@ -208,8 +208,8 @@ _Domain components (FinAI-specific):_ StatCard, KPIGrid, MiniStat, AIInsightCard
      Light/Dark Themes)
             │
             ▼
-   @yuva-devlab/tailwind
-   (Tailwind 4 preset:
+   @yuva-devlab/tokens
+   (Design system preset:
     CSS variable bridge,
     semantic utilities)
             │
@@ -221,7 +221,7 @@ _Domain components (FinAI-specific):_ StatCard, KPIGrid, MiniStat, AIInsightCard
     │
     ▼
 @yuva-devlab/components
-(Tailwind-styled components:
+(Design system components:
  CVA variants, tokens)
     │
     ▼
@@ -235,7 +235,7 @@ FinAI Future Apps
 **Styling flow:**
 
 ```
-Yuva Token Contract → CSS Custom Properties → Tailwind @theme → Semantic utilities → Components → Apps
+Yuva Token Contract → CSS Custom Properties → Design tokens → Semantic utilities → Components → Apps
 ```
 
 **Theme flow:**
@@ -260,11 +260,11 @@ Light Dark
 | ------------------------- | -------------------------------- | ------------------------------------ | -------- |
 | `@yuva-devlab/colors`     | HSL palette generation           | KEEP                                 | —        |
 | `@yuva-devlab/tokens`     | Token contract + Yuva Core Theme | REFACTOR (add control/icon tokens)   | P1       |
-| `@yuva-devlab/tailwind`   | Tailwind 4 preset                | **CREATE**                           | P1       |
+| `@yuva-devlab/tokens`     | Design system preset             | **CREATE**                           | P1       |
 | `@yuva-devlab/primitives` | Headless Radix behavior          | KEEP                                 | —        |
 | `@yuva-devlab/utils`      | Shared utilities (cn, etc.)      | **CREATE**                           | P2       |
 | `@yuva-devlab/hooks`      | Shared React hooks               | **CREATE**                           | P2       |
-| `@yuva-devlab/components` | Tailwind-styled components       | **CREATE**                           | P2       |
+| `@yuva-devlab/components` | Design system components         | **CREATE**                           | P2       |
 | `@yuva-devlab/ui`         | Existing VE-styled components    | DEPRECATE (after @components stable) | P3       |
 | `@yuva-devlab/icons`      | Icon strategy                    | DEFERRED                             | —        |
 | `@yuva-devlab/cli`        | Scaffolding tool                 | KEEP                                 | —        |
@@ -275,7 +275,7 @@ Light Dark
 ```
 colors        → no @yuva-devlab/* deps
 tokens        → @yuva-devlab/colors only
-tailwind      → @yuva-devlab/tokens only; no React
+design-system      → @yuva-devlab/tokens only; no React
 primitives    → Radix UI only; no style deps
 utils         → no @yuva-devlab/* deps
 hooks         → @yuva-devlab/utils only
@@ -330,7 +330,7 @@ colors.interaction.{focusRing, overlay}
 ### CSS Variable Export
 
 Design system emits: `--yd-color-primary`, `--yd-radius-lg`, etc.
-`@yuva-devlab/tailwind` preset will re-map these to Tailwind conventions:
+`@yuva-devlab/tokens` preset will re-map these to Design token conventions:
 
 ```css
 @theme inline {
@@ -369,22 +369,22 @@ Already implemented in `@yuva-devlab/tokens/src/themes.css.ts`. Light + dark bot
 
 1. Visual parity check against FinAI OKLCH values
 2. Add control height + icon size tokens
-3. Generate Tailwind 4 compatible CSS export
+3. Generate Platform CSS compatible CSS export
 
 ---
 
-## Tailwind Integration Strategy (ADR-003)
+## Design Token Strategy (ADR-003)
 
 ### Problem
 
-FinAI is Tailwind 4. It cannot import Vanilla Extract CSS sources.
+FinAI is Platform CSS. It cannot import Vanilla Extract CSS sources.
 
-### Solution — `@yuva-devlab/tailwind` Package
+### Solution — `@yuva-devlab/tokens` Package
 
 A CSS preset file (`preset.css`) that:
 
 1. `@import "@yuva-devlab/tokens/tokens.css"` — loads the `yd-color-*` CSS variables
-2. Declares `@theme inline { ... }` mapping Yuva variable names to Tailwind-conventional names
+2. Declares `@theme inline { ... }` mapping Yuva variable names to Design token names
 
 FinAI's `globals.css` changes from:
 
@@ -398,7 +398,7 @@ FinAI's `globals.css` changes from:
 to:
 
 ```css
-@import "@yuva-devlab/tailwind/preset.css";
+@import "@yuva-devlab/tokens/preset.css";
 /* Yuva Core colors are now available as bg-primary, text-foreground, etc. */
 ```
 
@@ -418,14 +418,14 @@ But values now come from Yuva tokens — not FinAI's manual OKLCH declarations.
 
 ### Styling Decision for `@yuva-devlab/components` (ADR-005)
 
-**Tailwind utility classes + CVA** — not Vanilla Extract.
+**Platform utility classes + CVA** — not Vanilla Extract.
 
 **Rationale:**
 
-- FinAI is Tailwind 4. VE components cannot be adopted without adding VE to FinAI's build.
-- Tailwind utilities compile to plain CSS. Zero consumer runtime dependency.
+- FinAI is Platform CSS. VE components cannot be adopted without adding VE to FinAI's build.
+- Platform utilities compile to plain CSS. Zero consumer runtime dependency.
 - `@yuva-devlab/ui` (VE-based) is preserved for backward compatibility. Not deprecated yet.
-- A new `@yuva-devlab/components` package is created for the Tailwind-based layer.
+- A new `@yuva-devlab/components` package is created for the Design token-based layer.
 
 ### API Conventions
 
@@ -455,11 +455,11 @@ But values now come from Yuva tokens — not FinAI's manual OKLCH declarations.
 
 ### From `@yuva-devlab/ui` (Vanilla Extract based)
 
-| Component                                                                           | Action                          | Target                    |
-| ----------------------------------------------------------------------------------- | ------------------------------- | ------------------------- |
-| Button, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, NumberInput, Form | REFACTOR in Tailwind            | `@yuva-devlab/components` |
-| Typography, Box, Flex, Grid, Container, Stack, Semantic HTML                        | REFACTOR in Tailwind            | `@yuva-devlab/components` |
-| Image, Divider                                                                      | KEEP (re-implement in Tailwind) | `@yuva-devlab/components` |
+| Component                                                                           | Action                               | Target                    |
+| ----------------------------------------------------------------------------------- | ------------------------------------ | ------------------------- |
+| Button, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, NumberInput, Form | REFACTOR in Design System            | `@yuva-devlab/components` |
+| Typography, Box, Flex, Grid, Container, Stack, Semantic HTML                        | REFACTOR in Design System            | `@yuva-devlab/components` |
+| Image, Divider                                                                      | KEEP (re-implement in Design System) | `@yuva-devlab/components` |
 
 ### From `@finai/ui` (Generic components)
 
@@ -535,11 +535,11 @@ All animations wrapped in `@media (prefers-reduced-motion: no-preference)`.
 
 ## Styling Standards
 
-- `@yuva-devlab/components`: Tailwind utilities + CVA. No VE.
+- `@yuva-devlab/components`: Platform utilities + CVA. No VE.
 - `@yuva-devlab/ui` (existing): Vanilla Extract. Preserved for backward compatibility.
-- `@finai/ui`: Tailwind + Radix. Status quo. Do not change.
+- `@finai/ui`: Design System + Radix. Status quo. Do not change.
 - No `styled-components`, Emotion, or CSS Modules anywhere in design system.
-- `cn()` from `@yuva-devlab/utils` (clsx + tailwind-merge) for class composition.
+- `cn()` from `@yuva-devlab/utils` (clsx + clsx) for class composition.
 - No inline `style={}` with hardcoded values — always reference tokens.
 
 ---
@@ -616,7 +616,7 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 
 **Migration order (after design system stable):**
 
-1. Import `@yuva-devlab/tailwind` preset → Remove FinAI OKLCH color variable declarations
+1. Import `@yuva-devlab/tokens` preset → Remove FinAI OKLCH color variable declarations
 2. Migrate primitives one-by-one (Button → Input → Badge → Card → ...)
 3. Migrate layout foundations (Typography)
 4. Migrate feedback components (Skeleton, LoadingState)
@@ -634,11 +634,11 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 | ----------- | ---------------------------------------------------------------- | ---------------- |
 | **ADR-001** | Keep Vanilla Extract for `@yuva-devlab/tokens` contract          | DONE             |
 | **ADR-002** | Runtime delivery via CSS Custom Properties                       | DONE             |
-| **ADR-003** | Create `@yuva-devlab/tailwind` as Tailwind 4 CSS preset bridge   | DECIDED          |
+| **ADR-003** | Create `@yuva-devlab/tokens` as Platform CSS CSS preset bridge   | DECIDED          |
 | **ADR-004** | Cohesive packages; avoid per-component packages                  | DONE             |
-| **ADR-005** | `@yuva-devlab/components` uses Tailwind/CVA, not VE              | DECIDED          |
+| **ADR-005** | `@yuva-devlab/components` uses Design System/CVA, not VE         | DECIDED          |
 | **ADR-006** | WCAG 2.2 AA via vitest-axe for all interactive components        | DECIDED          |
-| **ADR-007** | FinAI stays on Tailwind; design system adapts                    | FIXED CONSTRAINT |
+| **ADR-007** | FinAI stays on Design System; design system adapts               | FIXED CONSTRAINT |
 | **ADR-008** | Use Changesets for all releases                                  | DONE             |
 | **ADR-009** | Zero FinAI business logic in design system                       | FIXED CONSTRAINT |
 | **ADR-010** | Icon strategy: document Lucide convention; icon package deferred | DEFERRED         |
@@ -697,7 +697,7 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 | ------------------------- | ----------------- | -------- | ------ |
 | `@yuva-devlab/colors`     | KEEP              | —        | DONE   |
 | `@yuva-devlab/tokens`     | REFACTOR          | P1       | TODO   |
-| `@yuva-devlab/tailwind`   | CREATE            | P1       | TODO   |
+| `@yuva-devlab/tokens`     | CREATE            | P1       | TODO   |
 | `@yuva-devlab/primitives` | KEEP              | —        | DONE   |
 | `@yuva-devlab/utils`      | CREATE            | P2       | TODO   |
 | `@yuva-devlab/hooks`      | CREATE            | P2       | TODO   |
@@ -710,20 +710,20 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 
 ## Implementation Phases
 
-| Phase        | Name            | Status   | Key Deliverables                                                                               |
-| ------------ | --------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| **Phase 0**  | Audit           | **DONE** | This document, all audit findings, all ADRs                                                    |
-| **Phase 1**  | Architecture    | TODO     | Package scaffolding, token gap additions, ADRs confirmed                                       |
-| **Phase 2**  | Yuva Core Theme | TODO     | `@yuva-devlab/tailwind` preset, CSS variable bridge, parity verification                       |
-| **Phase 3**  | Foundations     | TODO     | Typography, Spacing, Color, Radius, Elevation, Motion export                                   |
-| **Phase 4**  | Primitives      | TODO     | Control heights + icon sizes in tokens, headless primitives verified                           |
-| **Phase 5**  | Components      | TODO     | All components in status matrix in `@yuva-devlab/components`                                   |
-| **Phase 6**  | Patterns        | TODO     | ConfirmDialog, FormDialog, ActivityStep, Alert, EmptyState                                     |
-| **Phase 7**  | AI Patterns     | DEFERRED | StreamingMessage, ThinkingIndicator, AgentStatus                                               |
-| **Phase 8**  | Quality         | TODO     | Full a11y tests, Storybook docs, visual validation                                             |
-| **Phase 9**  | Publish         | TODO     | `@yuva-devlab/tailwind`, `@yuva-devlab/components`, `@yuva-devlab/utils`, `@yuva-devlab/hooks` |
-| **Phase 10** | FinAI Migration | TODO     | FinAI imports Yuva packages, duplicates removed                                                |
-| **Phase 11** | Cleanup         | TODO     | Deprecate `@yuva-devlab/ui`, remove dead code, final validation                                |
+| Phase        | Name            | Status   | Key Deliverables                                                                             |
+| ------------ | --------------- | -------- | -------------------------------------------------------------------------------------------- |
+| **Phase 0**  | Audit           | **DONE** | This document, all audit findings, all ADRs                                                  |
+| **Phase 1**  | Architecture    | TODO     | Package scaffolding, token gap additions, ADRs confirmed                                     |
+| **Phase 2**  | Yuva Core Theme | TODO     | `@yuva-devlab/tokens` preset, CSS variable bridge, parity verification                       |
+| **Phase 3**  | Foundations     | TODO     | Typography, Spacing, Color, Radius, Elevation, Motion export                                 |
+| **Phase 4**  | Primitives      | TODO     | Control heights + icon sizes in tokens, headless primitives verified                         |
+| **Phase 5**  | Components      | TODO     | All components in status matrix in `@yuva-devlab/components`                                 |
+| **Phase 6**  | Patterns        | TODO     | ConfirmDialog, FormDialog, ActivityStep, Alert, EmptyState                                   |
+| **Phase 7**  | AI Patterns     | DEFERRED | StreamingMessage, ThinkingIndicator, AgentStatus                                             |
+| **Phase 8**  | Quality         | TODO     | Full a11y tests, Storybook docs, visual validation                                           |
+| **Phase 9**  | Publish         | TODO     | `@yuva-devlab/tokens`, `@yuva-devlab/components`, `@yuva-devlab/utils`, `@yuva-devlab/hooks` |
+| **Phase 10** | FinAI Migration | TODO     | FinAI imports Yuva packages, duplicates removed                                              |
+| **Phase 11** | Cleanup         | TODO     | Deprecate `@yuva-devlab/ui`, remove dead code, final validation                              |
 
 ---
 
@@ -747,7 +747,7 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 2. Determine layer (primitive vs semantic)
 3. Add to `createGlobalThemeContract` in `@yuva-devlab/tokens`
 4. Implement value in both light and dark themes
-5. Update Tailwind bridge in `@yuva-devlab/tailwind`
+5. Update Token bridge in `@yuva-devlab/tokens`
 6. Update this document
 
 ### API versioning
@@ -780,7 +780,7 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 - [x] Target architecture designed
 - [x] Package architecture finalized (9 packages + deprecation plan)
 - [x] Token architecture reviewed and gaps identified (control heights, icon sizes, `fontSize.2xs`)
-- [x] Tailwind integration strategy (ADR-003) designed
+- [x] Design token strategy (ADR-003) designed
 - [x] Component classification matrix created (50+ components classified)
 - [x] 10 Architecture Decisions documented (ADR-001 through ADR-010)
 - [x] Implementation phases defined (Phase 0–11)
@@ -813,19 +813,19 @@ Nothing blocked.
 
 ### Exact Next Step
 
-**Phase 1, Step 1:** Create `packages/tailwind` in the design system.
+**Phase 1, Step 1:** Create `packages/design-system` in the design system.
 
-This is the **critical path item** that unblocks FinAI integration (Phase 10) and all Tailwind-based component work (Phase 5). Without it, FinAI cannot consume any Yuva token.
+This is the **critical path item** that unblocks FinAI integration (Phase 10) and all Design token-based component work (Phase 5). Without it, FinAI cannot consume any Yuva token.
 
 Files to create:
 
 ```
-design-system/packages/tailwind/package.json
-design-system/packages/tailwind/src/preset.css      ← @theme inline bridge
-design-system/packages/tailwind/src/index.ts        ← optional JS export
-design-system/packages/tailwind/README.md
-design-system/packages/tailwind/tsconfig.json
-design-system/packages/tailwind/vite.config.ts      ← CSS-only build
+design-system/packages/design-system/package.json
+design-system/packages/design-system/src/preset.css      ← @theme inline bridge
+design-system/packages/design-system/src/index.ts        ← optional JS export
+design-system/packages/design-system/README.md
+design-system/packages/design-system/tsconfig.json
+design-system/packages/design-system/vite.config.ts      ← CSS-only build
 ```
 
-**After Phase 1:** Phase 2 — Verify color parity (HEX tonal vs FinAI OKLCH) and publish `@yuva-devlab/tailwind@0.1.0`.
+**After Phase 1:** Phase 2 — Verify color parity (HEX tonal vs FinAI OKLCH) and publish `@yuva-devlab/tokens@0.1.0`.

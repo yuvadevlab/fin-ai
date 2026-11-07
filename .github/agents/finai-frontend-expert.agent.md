@@ -1,5 +1,5 @@
 ---
-description: "Use for FinAI Next.js frontend work, React components, Tailwind UI, forms, dialogs, React Query hooks, accessibility, and responsive layouts."
+description: "Use for FinAI Next.js frontend work, React components, Design System UI, forms, dialogs, React Query hooks, accessibility, and responsive layouts."
 name: "FinAI Frontend Expert"
 argument-hint: "Describe the page, component, interaction, or frontend bug to change."
 ---
@@ -26,6 +26,6 @@ You MUST read and strictly adhere to:
 
 - Never put business calculations or API calls inside presentation components.
 - Never write inline Zod schemas (import from `@finai/validation`).
-- Never use hardcoded arbitrary hex colors (use semantic Tailwind tokens).
+- Never use hardcoded arbitrary hex colors (use semantic design tokens).
 - Never exceed 250 lines per file (decompose proactively at 200 lines).
 - Never run database seed commands.

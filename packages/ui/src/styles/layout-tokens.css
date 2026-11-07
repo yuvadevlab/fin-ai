@@ -5,7 +5,20 @@
  */
 
 @layer dl-tokens {
-  :root {
+  :root,
+  [data-brand="finai"],
+  [data-theme="finai"],
+  [data-theme="finai-light"] {
+    /* ── Typography & Baseline Theme Tokens ───────────────────────────────── */
+    --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+    --theme-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+    --theme-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+    --color-income: var(--income);
+    --color-expense: var(--expense);
+    --color-investment: var(--investment);
+    --card-radius: 1rem;
+
     /* ── Header / Topbar Dimensions ───────────────────────────────────────── */
     --topbar-height: 4rem; /* 64px (h-16) */
     --topbar-padding-x: 1rem; /* 16px */
@@ -27,8 +40,8 @@
     --card-padding: 1.25rem; /* 20px (p-5) */
     --card-padding-sm: 0.875rem; /* 14px */
     --card-padding-lg: 1.5rem; /* 24px */
-    --card-gap: 1.25rem; /* 20px */
-    --card-radius: var(--radius, 0.75rem);
+    --card-gap: 1rem; /* 16px (gap-4) */
+    --card-radius: 1rem; /* 16px (rounded-2xl) */
 
     /* ── Interactive Controls & Heights ──────────────────────────────────── */
     --control-height-xs: 1.75rem; /* 28px */

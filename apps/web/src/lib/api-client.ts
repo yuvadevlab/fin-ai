@@ -2,6 +2,7 @@
 import { StorageKey } from "@finai/shared-types";
 import { APP_ROUTES } from "./routes";
 import { DEFAULT_API_BASE_URL } from "./app-constants";
+import { isJwtExpired } from "./jwt";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
@@ -47,6 +48,24 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     }
 
     if (token) {
+      if (isJwtExpired(token)) {
+        localStorage.removeItem(StorageKey.TOKEN);
+        localStorage.removeItem(StorageKey.USER);
+        localStorage.removeItem(StorageKey.DEVLAB_ACCESS_TOKEN);
+        localStorage.removeItem(StorageKey.DEVLAB_AUTH_TOKEN);
+        localStorage.removeItem(StorageKey.DEVLAB_AUTH_USER);
+        localStorage.removeItem(StorageKey.WORKSPACE_ID);
+        document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        if (
+          window.location.pathname !== APP_ROUTES.LOGIN &&
+          window.location.pathname !== APP_ROUTES.REGISTER
+        ) {
+          window.location.href = `${APP_ROUTES.LOGIN}?error=session_expired`;
+        }
+        throw new ApiError(401, { message: "Session expired" });
+      }
       headers.set("Authorization", `Bearer ${token}`);
     }
 
@@ -85,7 +104,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
         window.location.pathname !== APP_ROUTES.LOGIN &&
         window.location.pathname !== APP_ROUTES.REGISTER
       ) {
-        window.location.href = APP_ROUTES.LOGIN;
+        window.location.href = `${APP_ROUTES.LOGIN}?error=session_expired`;
       }
     }
     throw new ApiError(response.status, data);

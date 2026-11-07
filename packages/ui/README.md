@@ -1,6 +1,6 @@
 # @finai/ui
 
-`@finai/ui` is the shared React component library for FinAI, built on top of `@yuva-devlab/ui` primitives, Tailwind CSS v4, Lucide icons, and Recharts.
+`@finai/ui` is the shared React component library for FinAI, built on top of `@yuva-devlab/ui` primitives, DevLab Design Tokens, Lucide icons, and Recharts.
 
 ---
 

@@ -7,3 +7,12 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
 @import "@finai/ui/styles.css";
+
+:root,
+html,
+body,
+[data-brand="finai"],
+[data-theme="finai"] {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}

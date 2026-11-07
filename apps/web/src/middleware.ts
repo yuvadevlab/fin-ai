@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { StorageKey } from "@finai/shared-types";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib/routes";
+import { isJwtExpired } from "@/lib/jwt";
 
 /**
  * Authentication middleware running before route execution.
@@ -19,10 +20,21 @@ export function middleware(request: NextRequest) {
   const tokenParam =
     request.nextUrl.searchParams.get("token") || request.nextUrl.searchParams.get("access_token");
 
-  if (tokenParam) {
+  if (tokenParam && tokenParam.trim().length > 0) {
     const cleanUrl = new URL(request.url);
     cleanUrl.searchParams.delete("token");
     cleanUrl.searchParams.delete("access_token");
+
+    // If the incoming token is already expired, reject immediately and force re-auth
+    if (isJwtExpired(tokenParam)) {
+      return NextResponse.redirect(
+        DEVLAB_PORTAL_ROUTES.LOGIN({
+          redirectUrl: cleanUrl.toString(),
+          error: "session_expired",
+          prompt: "login",
+        }),
+      );
+    }
 
     const response = NextResponse.redirect(cleanUrl);
     response.cookies.set(StorageKey.TOKEN, tokenParam, {
@@ -43,8 +55,19 @@ export function middleware(request: NextRequest) {
     request.cookies.get(StorageKey.TOKEN)?.value ||
     request.cookies.get(StorageKey.DEVLAB_ACCESS_TOKEN)?.value;
 
-  if (!token) {
-    return NextResponse.redirect(DEVLAB_PORTAL_ROUTES.LOGIN(request.url));
+  if (!token || isJwtExpired(token)) {
+    const response = NextResponse.redirect(
+      DEVLAB_PORTAL_ROUTES.LOGIN({
+        redirectUrl: request.url,
+        error: token ? "session_expired" : undefined,
+        prompt: token ? "login" : undefined,
+      }),
+    );
+    if (token) {
+      response.cookies.delete(StorageKey.TOKEN);
+      response.cookies.delete(StorageKey.DEVLAB_ACCESS_TOKEN);
+    }
+    return response;
   }
 
   return NextResponse.next();

@@ -12,7 +12,7 @@ Before writing or modifying code in FinAI, review the official [**`FinAI Coding 
 - 🧮 **Pure Finance Engine**: `@finai/finance-engine` MUST contain **zero side-effects and zero I/O**.
 - ✅ **Centralized Validation**: ALL validation schemas MUST reside in `@finai/validation` and use `.safeParse()`.
 - 🔄 **State & Cache**: Feature hooks under `src/features/<name>/api/` using `@tanstack/react-query` with automatic `invalidateQueries()`.
-- 🎨 **Styling**: TailwindCSS semantic color tokens (`bg-card`, `bg-background`, `border-border`, `text-destructive`) and Lucide icons.
+- 🎨 **Styling**: Semantic design system color tokens (`bg-card`, `bg-background`, `border-border`, `text-destructive`) and Lucide icons.
 
 ---
 
@@ -21,7 +21,7 @@ Before writing or modifying code in FinAI, review the official [**`FinAI Coding 
 This monorepo follows a strict modular architecture governed by topic-specific rulebooks:
 
 - 🏛️ **[`00-core-invariants.md`](.agents/rules/00-core-invariants.md)**: Monorepo package boundaries, hard 250-line rule, and database seed safeguards.
-- 💻 **[`01-frontend-web.md`](.agents/rules/01-frontend-web.md)**: 2-file modal pattern, React Query caching, Tailwind semantic tokens, and `@finai/ui`.
+- 💻 **[`01-frontend-web.md`](.agents/rules/01-frontend-web.md)**: 2-file modal pattern, React Query caching, design system semantic tokens, and `@finai/ui`.
 - ⚙️ **[`02-backend-api.md`](.agents/rules/02-backend-api.md)**: 5-layer NestJS architecture, controller/service contracts, and repository patterns.
 - 🤖 **[`03-ai-advisor.md`](.agents/rules/03-ai-advisor.md)**: ReAct agent loop, tool manifests, financial personas, and 2-phase write confirmations.
 - 🧪 **[`04-testing-standards.md`](.agents/rules/04-testing-standards.md)**: Vitest unit testing, Playwright E2E, mock contracts, and zero test side-effects.
@@ -42,7 +42,7 @@ Click any link below to navigate to the standalone documentation for that applic
 - 🤖 **[`packages/ai-engine`](packages/ai-engine/README.md)**: **Shared LLM Engine & Prompt Engineering** — System personas, prompt builder factories, follow-up parsers, Ollama streaming client, and ReAct agent tool planning.
 - 🧮 **[`packages/finance-engine`](packages/finance-engine/README.md)**: **Core Financial Mathematics & Metrics Engine** — Detailed mathematical formulas for Health Score (0-100), Net Worth, Savings Rate, Cash Flow, Budget Variance, Asset Allocation, and Goal Projections.
 - 🗄️ **[`packages/database`](packages/database/README.md)**: PostgreSQL database schema, Prisma Client engine, migration scripts, and seed data.
-- 🎨 **[`packages/ui`](packages/ui/README.md)**: Shared React component library built with TailwindCSS, Radix UI primitives, `<FormDialog>`, and `<FormDialogField>`.
+- 🎨 **[`packages/ui`](packages/ui/README.md)**: Shared React component library built with design system tokens, Radix UI primitives, `<FormDialog>`, and `<FormDialogField>`.
 - ✅ **[`packages/validation`](packages/validation/README.md)**: Zod validation schemas and type inferences shared across forms and API DTOs.
 - 🏷️ **[`packages/shared-types`](packages/shared-types/README.md)**: Shared TypeScript interfaces, enums (`AccountType`, `TransactionType`), and API payload types.
 
@@ -61,7 +61,7 @@ fin-ai/
 │   ├── database/              # Prisma Database Engine & Schema
 │   ├── finance-engine/        # Financial Metric Calculations & Algorithms
 │   ├── shared-types/          # TypeScript Types & Interfaces
-│   ├── ui/                    # Shared Tailwind + Radix React Components
+│   ├── ui/                    # Shared Design System + Radix React Components
 │   └── validation/            # Zod Form & API Validation Schemas
 │
 ├── .agents/
