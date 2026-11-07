@@ -1,6 +1,8 @@
 {
   "name": "finai",
   "private": true,
+  "license": "MIT",
+  "author": "Yuva DevLab <yuva.devlab@gmail.com>",
   "type": "module",
   "packageManager": "pnpm@12.5.1",
   "engines": {

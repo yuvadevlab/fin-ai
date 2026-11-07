@@ -38,6 +38,7 @@
   "dependencies": {
     "@finai/finance-engine": "workspace:*",
     "@finai/shared-types": "workspace:*",
+    "@yuva-devlab/tokens": "^2.0.0",
     "@yuva-devlab/ui": "^2.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",

@@ -577,6 +577,9 @@ importers:
       '@finai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
+      '@yuva-devlab/tokens':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@yuva-devlab/ui':
         specifier: ^2.1.0
         version: 2.1.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7))

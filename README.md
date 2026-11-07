@@ -1,6 +1,67 @@
 # FinAI — Enterprise AI Financial Intelligence Monorepo
 
-FinAI is a modern, full-stack, AI-powered personal and family finance management platform. It enables real-time net worth tracking, automated cash flow calculations, budget adherence scoring, investment portfolio tracking, financial goal projections, and local LLM AI advisory services powered by Ollama.
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.x-green.svg)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-9.x-orange.svg)](https://pnpm.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black.svg)](https://nextjs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-10.x-red.svg)](https://nestjs.com/)
+
+FinAI is an enterprise-grade, full-stack, AI-powered personal and family wealth intelligence platform. It provides real-time net worth tracking, automated cash flow calculations, budget adherence scoring, investment portfolio analytics, multi-year goal projections, and an agentic financial advisor powered by local and cloud LLMs.
+
+---
+
+## 🏛️ System Architecture
+
+```mermaid
+graph TD
+    Client["User Browser (Desktop / Mobile)"]
+
+    subgraph Presentation Layer
+        Portal["DevLab Portal (SSO Authority :3000)"]
+        Web["FinAI Web (Next.js 15 :3001)"]
+    end
+
+    subgraph Service & API Layer
+        API["FinAI API (NestJS 10 :4001)"]
+        AuthService["Auth & Session Guards (RS256)"]
+    end
+
+    subgraph AI & Domain Compute
+        LLM["Ollama / Cloud LLM Engine (:11434)"]
+        FinanceEngine["@finai/finance-engine (Pure Math)"]
+        AIEngine["@finai/ai-engine (ReAct Agent Loop)"]
+    end
+
+    subgraph Persistence Layer
+        DB[("PostgreSQL 16 Database")]
+        Prisma[("Prisma ORM Layer")]
+    end
+
+    Client -->|HTTPS| Web
+    Client -->|SSO Handoff| Portal
+    Portal -.->|Cross-Domain Token| Web
+    Web -->|Authenticated REST / SSE| API
+    API --> AuthService
+    API --> FinanceEngine
+    API --> AIEngine
+    AIEngine --> LLM
+    API --> Prisma
+    Prisma --> DB
+```
+
+---
+
+## 📜 Governance & Architecture Documentation
+
+- 📄 **[MIT License](LICENSE)**: Open-source legal licensing and terms.
+- 🛡️ **[Security Policy (`SECURITY.md`)](SECURITY.md)**: Vulnerability disclosure, patch response SLAs, and security controls.
+- 🤝 **[Contributing Guidelines (`CONTRIBUTING.md`)](CONTRIBUTING.md)**: Monorepo setup, conventional commits, and pre-commit quality gates.
+- 📬 **Maintainer & Support**: Yuva DevLab ([yuva.devlab@gmail.com](mailto:yuva.devlab@gmail.com))
+- 📐 **[Architecture Decision Records (`docs/adr/`)](docs/adr/)**:
+  - [ADR 0001: Pure Platform CSS Architecture with W3C Cascade Layers](docs/adr/0001-platform-css-cascade-layers.md)
+  - [ADR 0002: Distributed SSO Authentication & Redirection Loop Protection](docs/adr/0002-distributed-sso-and-loop-guard.md)
+  - [ADR 0003: Monorepo Decoupling & Shared Package Boundaries](docs/adr/0003-shared-monorepo-package-boundaries.md)
 
 ---
 
