@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { config } from "./config";
 import { Logger, requestLogger, type LoggerConfig, loggerWithConfig } from "@yuva-devlab/logger";
+import { createAppKillSwitchMiddleware, AppStatus } from "@yuva-devlab/auth-server";
+import { DEVLAB_CONFIG } from "@finai/shared-types";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
@@ -29,8 +31,63 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { logger: appLogger });
 
-  // Global prefix
-  app.setGlobalPrefix("api/v1");
+  // Global prefix with root health probe exclusion
+  app.setGlobalPrefix("api/v1", {
+    exclude: ["health", "api/v1/health"],
+  });
+
+  // Emergency platform kill-switch interceptor (whitelisting health probes and swagger documentation)
+  let lastStatus = AppStatus.ACTIVE;
+  let lastCheckTime = 0;
+  const STATUS_CACHE_TTL_MS = 3000;
+
+  const killSwitch = createAppKillSwitchMiddleware(async () => {
+    const now = Date.now();
+    if (now - lastCheckTime < STATUS_CACHE_TTL_MS) {
+      return lastStatus;
+    }
+    try {
+      const portalBase = (config.portalApiUrl || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL).replace(
+        /\/+$/,
+        "",
+      );
+      const res = await fetch(
+        `${portalBase}/api/v1/platform/apps/${encodeURIComponent(DEVLAB_CONFIG.APP_ID)}/status`,
+        {
+          signal: AbortSignal.timeout(1500),
+          headers: { Accept: "application/json" },
+        },
+      );
+      if (res.ok) {
+        const data = (await res.json()) as { status?: string; isActive?: boolean };
+        lastStatus =
+          data.status === "INACTIVE" || data.isActive === false
+            ? AppStatus.INACTIVE
+            : data.status === "MAINTENANCE"
+              ? AppStatus.MAINTENANCE
+              : AppStatus.ACTIVE;
+        lastCheckTime = now;
+      }
+    } catch {
+      // In offline / standalone development scenarios, fail open
+    }
+    return lastStatus;
+  });
+
+  app.use(async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+    const rawUrl = req.url || "/";
+    if (
+      rawUrl.includes("/health") ||
+      rawUrl.includes("/api/docs") ||
+      rawUrl.startsWith("/favicon.ico")
+    ) {
+      return next();
+    }
+    const allowed = await killSwitch(req, res);
+    if (allowed) {
+      next();
+    }
+  });
 
   // Request logger — mounted only when config.logRequests is true.
   // Attaches a per-request correlation id so every log block can include it when debugging.

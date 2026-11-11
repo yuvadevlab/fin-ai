@@ -73,12 +73,9 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
           <CategoryPie data={pieData} />
 
           {/* Compact, fixed-height scrollable category breakdown */}
-          <div className="border-border/60 max-h-28 space-y-2 overflow-y-auto border-t pt-2.5 pr-1">
+          <div className="fn-category-breakdown-list">
             {displayCategories.map((c, i) => (
-              <div
-                key={c.categoryId ?? c.name}
-                className="flex items-center justify-between text-xs"
-              >
+              <div key={c.categoryId ?? c.name} className="fn-category-breakdown-item">
                 <div className="flex min-w-0 items-center gap-2">
                   <span
                     className="size-2 shrink-0 rounded-full"

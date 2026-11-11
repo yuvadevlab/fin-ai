@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
-import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label } from "@finai/ui";
+import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label, cn } from "@finai/ui";
 import { format } from "date-fns";
 import { getPresetDateRanges, PresetDateRangeKeys } from "@/lib/dateCycle";
 import { UI_COPY } from "@/lib/ui-copy";
@@ -70,20 +70,13 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={`border-border bg-card text-foreground hover:bg-secondary/60 h-9 gap-2 font-medium ${className}`}
-        >
+        <Button variant="outline" size="sm" className={cn("fn-date-filter-trigger", className)}>
           <CalendarIcon className="text-primary size-4 shrink-0" />
           <span className="max-w-50 truncate">{currentLabel}</span>
           <ChevronDown className="ml-auto size-3.5 shrink-0 opacity-60" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="bg-card border-border w-80 space-y-3 rounded-xl p-3 shadow-lg"
-        align="end"
-      >
+      <PopoverContent className="fn-date-filter-popover space-y-3" align="end">
         <div className="text-muted-foreground px-1 text-xs font-semibold tracking-wider uppercase">
           {UI_COPY.DASHBOARD.DATE_RANGE.SELECT_DATE_RANGE}
         </div>
@@ -92,11 +85,7 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
             <button
               key={key}
               onClick={() => handleSelectPreset(key as PresetDateRangeKeys)}
-              className={`w-full rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
-                selectedPreset === key
-                  ? "bg-primary text-primary-foreground font-semibold"
-                  : "text-foreground hover:bg-secondary"
-              }`}
+              className={cn("fn-date-filter-preset", selectedPreset === key && "is-active")}
             >
               {item.label}
             </button>

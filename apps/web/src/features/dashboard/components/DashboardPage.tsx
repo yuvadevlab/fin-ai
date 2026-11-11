@@ -91,8 +91,8 @@ export function DashboardPage() {
       <DashboardKpiCards stats={stats} />
 
       {/* Row 1: Primary Overview — Cash Flow Chart (2 cols) + Financial Health (1 col) */}
-      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="min-w-0 lg:col-span-2">
+      <div className="fn-dashboard-hero-grid">
+        <div className="min-w-0">
           <ChartCard
             title={UI_COPY.DASHBOARD.PAGE.MONTHLY_CASH_FLOW}
             action={
@@ -123,13 +123,13 @@ export function DashboardPage() {
           </ChartCard>
         </div>
 
-        <div className="min-w-0 lg:col-span-1">
+        <div className="min-w-0">
           <DashboardHealthCard />
         </div>
       </div>
 
       {/* Row 2: Deep Dive — Expense Trend, Savings Trend & Category Allocation (3 equal columns) */}
-      <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="fn-dashboard-charts-grid">
         <ChartCard
           title={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND}
           hint={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT}

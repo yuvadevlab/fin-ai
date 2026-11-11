@@ -1,0 +1,81 @@
+/**
+ * @file packages/ui/src/styles/transactions.css
+ * @description Semantic component styles for FinAI Transactions toolbar, tables, and bulk creation forms.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Transactions Filter Toolbar ───────────────────────────────────────── */
+  .fn-transactions-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--card);
+    padding: 0.75rem;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .fn-transactions-toolbar {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+  }
+
+  /* ── Table Empty & Loading States ──────────────────────────────────────── */
+  .fn-table-empty-state {
+    display: flex;
+    height: 100%;
+    min-height: 18.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--card);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+
+  /* ── Bulk Transaction Form Card ────────────────────────────────────────── */
+  .fn-bulk-transaction-card {
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    background-color: var(--card);
+    padding: 1rem;
+    box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-bulk-transaction-header {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fn-bulk-transaction-badge {
+    display: inline-flex;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    padding-inline: 0.5rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* ── Transactions Filter Popover ───────────────────────────────────────── */
+  .fn-transactions-filter-popover {
+    width: 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,87 @@
+/**
+ * @file packages/ui/src/styles/entities.css
+ * @description Semantic component styles for FinAI entity pages: Budgets, Goals, Categories, and Health.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Universal Entity Grid Layout ───────────────────────────────────────── */
+  .fn-entity-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-entity-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fn-entity-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ── Universal Entity Empty State ──────────────────────────────────────── */
+  .fn-entity-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-entity-empty-icon {
+    margin-bottom: 1rem;
+    display: flex;
+    width: 3rem;
+    height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--secondary);
+  }
+
+  /* ── Category Item Card ─────────────────────────────────────────────────── */
+  .fn-category-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    transition: all 150ms ease;
+  }
+
+  .fn-category-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-category-icon {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+    background-color: var(--secondary);
+    font-size: 1.25rem;
+  }
+
+  /* ── Health Card Highlights ────────────────────────────────────────────── */
+  .fn-health-highlight-card {
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--primary) 5%, transparent);
+    padding: 1.25rem;
+  }
+}

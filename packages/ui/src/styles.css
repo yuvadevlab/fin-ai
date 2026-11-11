@@ -13,6 +13,7 @@
 @import "@yuva-devlab/ui/themes/finai.css";
 
 /* ── 2. Structural Layout Tokens, Keyframes, Components & Platform Utilities ─────────── */
+@import "./styles/reset.css";
 @import "./styles/layout-tokens.css";
 @import "./styles/common.css";
 @import "./styles/layouts.css";
@@ -20,7 +21,44 @@
 @import "./styles/tables.css";
 @import "./styles/badges.css";
 @import "./styles/dialogs.css";
+@import "./styles/navigation.css";
+@import "./styles/notifications.css";
+@import "./styles/dashboard.css";
+@import "./styles/accounts.css";
+@import "./styles/transactions.css";
+@import "./styles/entities.css";
+@import "./styles/advisor.css";
+@import "./styles/settings.css";
+@import "./styles/auth.css";
 @import "./styles/utilities.css";
+
+/* ── 3. Accessibility & Screen Reader Utilities ────────────────────────────── */
+@layer dl-utilities {
+  .sr-only,
+  .dl-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border-width: 0 !important;
+  }
+
+  .not-sr-only,
+  .dl-not-sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+}
 
 /* ── Unlayered Token Normalization ────────────────────────────────────────── */
 :root,
@@ -31,213 +69,6 @@
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   --theme-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --theme-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-}
-
-/* ── 3. Baseline Resets ───────────────────────────────────────────────────── */
-@layer dl-reset {
-  *,
-  ::before,
-  ::after {
-    box-sizing: border-box;
-    border-width: 0;
-    border-style: solid;
-    border-color: var(--border, currentColor);
-  }
-
-  html {
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: var(--font-sans, "Inter Variable", ui-sans-serif, system-ui, sans-serif);
-    font-feature-settings: normal;
-    font-variation-settings: normal;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  html,
-  body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-
-  body {
-    margin: 0;
-    line-height: inherit;
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: inherit;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  hr {
-    height: 0;
-    color: inherit;
-    border-top-width: 1px;
-    margin: 0;
-  }
-
-  abbr:where([title]) {
-    text-decoration: underline dotted;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: inherit;
-    font-weight: inherit;
-    margin: 0;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: inherit;
-  }
-
-  b,
-  strong {
-    font-weight: bolder;
-  }
-
-  code,
-  kbd,
-  samp,
-  pre {
-    font-family: var(--font-mono, "JetBrains Mono Variable", monospace);
-    font-size: 1em;
-  }
-
-  small {
-    font-size: 80%;
-  }
-
-  sub,
-  sup {
-    font-size: 75%;
-    line-height: 0;
-    position: relative;
-    vertical-align: baseline;
-  }
-
-  sub {
-    bottom: -0.25em;
-  }
-
-  sup {
-    top: -0.5em;
-  }
-
-  table {
-    text-indent: 0;
-    border-color: inherit;
-    border-collapse: collapse;
-  }
-
-  button,
-  input,
-  optgroup,
-  select,
-  textarea {
-    font-family: inherit;
-    font-feature-settings: inherit;
-    font-variation-settings: inherit;
-    font-size: 100%;
-    font-weight: inherit;
-    line-height: inherit;
-    letter-spacing: inherit;
-    color: inherit;
-    margin: 0;
-    padding: 0;
-  }
-
-  button,
-  select {
-    text-transform: none;
-  }
-
-  button,
-  input:where([type="button"]),
-  input:where([type="reset"]),
-  input:where([type="submit"]) {
-    -webkit-appearance: button;
-    background-color: transparent;
-    background-image: none;
-  }
-
-  button,
-  [role="button"] {
-    cursor: pointer;
-  }
-
-  :disabled {
-    cursor: default;
-  }
-
-  blockquote,
-  dl,
-  dd,
-  figure,
-  p,
-  pre {
-    margin: 0;
-  }
-
-  fieldset {
-    margin: 0;
-    padding: 0;
-  }
-
-  legend {
-    padding: 0;
-  }
-
-  ol,
-  ul,
-  menu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  dialog {
-    padding: 0;
-  }
-
-  textarea {
-    resize: vertical;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    opacity: 1;
-    color: var(--muted-foreground, #9ca3af);
-  }
-
-  img,
-  svg,
-  video,
-  canvas,
-  audio,
-  iframe,
-  embed,
-  object {
-    display: block;
-    vertical-align: middle;
-  }
-
-  img,
-  video {
-    max-width: 100%;
-    height: auto;
-  }
-
-  [hidden]:where(:not([hidden="until-found"])) {
-    display: none;
-  }
 }
 
 /* ── 4. App Utilities & Privacy Mask ──────────────────────────────────────── */

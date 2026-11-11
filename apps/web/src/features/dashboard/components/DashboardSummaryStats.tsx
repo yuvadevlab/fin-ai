@@ -46,13 +46,13 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
   );
 
   return (
-    <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <section className="fn-dashboard-summary-grid">
       {/* 1. Investment Portfolio Pillar */}
-      <ContentCard className="flex h-full flex-col justify-between p-5">
+      <ContentCard className="fn-summary-stat-card">
         <div>
-          <div className="flex items-center justify-between">
+          <div className="fn-summary-stat-header">
             <div className="flex items-center gap-2">
-              <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+              <div className="fn-summary-stat-icon">
                 <TrendingUp className="size-4" />
               </div>
               <div>
@@ -72,8 +72,8 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
             </Link>
           </div>
 
-          <div className="mt-4">
-            <p className="text-2xl font-bold tracking-tight">
+          <div className="fn-summary-stat-body">
+            <p className="fn-summary-stat-value">
               <PrivacyMoney value={portfolioValue} />
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
@@ -83,7 +83,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
           </div>
         </div>
 
-        <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
+        <div className="fn-summary-stat-footer">
           <span>{UI_COPY.DASHBOARD.PORTFOLIO.TOTAL_RETURNS}</span>
           <span
             className={`flex items-center gap-1 font-semibold ${
@@ -101,11 +101,11 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
       </ContentCard>
 
       {/* 2. Monthly Budget Discipline Pillar */}
-      <ContentCard className="flex h-full flex-col justify-between p-5">
+      <ContentCard className="fn-summary-stat-card">
         <div>
-          <div className="flex items-center justify-between">
+          <div className="fn-summary-stat-header">
             <div className="flex items-center gap-2">
-              <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+              <div className="fn-summary-stat-icon">
                 <ShieldCheck className="size-4" />
               </div>
               <div>
@@ -125,9 +125,9 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
             </Link>
           </div>
 
-          <div className="mt-4">
+          <div className="fn-summary-stat-body">
             <div className="flex items-baseline justify-between">
-              <p className="text-2xl font-bold tracking-tight">
+              <p className="fn-summary-stat-value">
                 <PrivacyMoney value={budgetSummary.totalSpent} />
               </p>
               <span className="text-muted-foreground text-xs">
@@ -136,23 +136,23 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
             </div>
             <Progress
               value={budgetSummary.usagePercentage}
-              className={`mt-2 h-1.5 ${budgetSummary.usagePercentage > 100 ? "[&>div]:bg-destructive" : budgetSummary.usagePercentage > 85 ? "[&>div]:bg-amber-500" : ""}`}
+              className={`mt-2 h-1.5 ${budgetSummary.usagePercentage > 100 ? "[&>div]:bg-destructive" : budgetSummary.usagePercentage > 85 ? "[&>div]:bg-warning" : ""}`}
             />
           </div>
         </div>
 
-        <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
+        <div className="fn-summary-stat-footer">
           <span>{UI_COPY.DASHBOARD.BUDGET.STATUS}</span>
           <StatusBadge status={budgetSummary.status} />
         </div>
       </ContentCard>
 
       {/* 3. Savings Goals Progress Pillar */}
-      <ContentCard className="flex h-full flex-col justify-between p-5">
+      <ContentCard className="fn-summary-stat-card">
         <div>
-          <div className="flex items-center justify-between">
+          <div className="fn-summary-stat-header">
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+              <div className="fn-summary-stat-icon fn-summary-stat-icon--alt">
                 <Target className="size-4" />
               </div>
               <div>
@@ -172,9 +172,9 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
             </Link>
           </div>
 
-          <div className="mt-4">
+          <div className="fn-summary-stat-body">
             <div className="flex items-baseline justify-between">
-              <p className="text-2xl font-bold tracking-tight">
+              <p className="fn-summary-stat-value">
                 <PrivacyMoney value={goalsSummary.totalCurrent} />
               </p>
               <span className="text-primary text-xs font-semibold">
@@ -185,7 +185,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
           </div>
         </div>
 
-        <div className="border-border/60 text-muted-foreground mt-4 flex items-center justify-between border-t pt-2.5 text-xs">
+        <div className="fn-summary-stat-footer">
           <span>{UI_COPY.DASHBOARD.GOALS.TARGET_TOTAL}</span>
           <span className="text-foreground font-semibold">
             <PrivacyMoney value={goalsSummary.totalTarget} />

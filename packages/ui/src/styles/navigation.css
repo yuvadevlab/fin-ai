@@ -1,0 +1,153 @@
+/**
+ * @file packages/ui/src/styles/navigation.css
+ * @description Semantic component styles for FinAI navigation, shell controls, and topbar popovers.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Shell & Topbar Search Wrapper ─────────────────────────────────────── */
+  .fn-topbar-search-wrap {
+    pointer-events: none;
+    position: fixed;
+    inset-inline: 0;
+    top: var(--topbar-height, 4rem);
+    z-index: var(--z-dropdown, 50);
+    display: flex;
+    justify-content: center;
+    padding-inline: var(--topbar-padding-x, 1rem);
+  }
+
+  .fn-topbar-search-inner {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 32rem;
+  }
+
+  .fn-mobile-drawer {
+    width: 18rem;
+    padding: 0;
+    border-right: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
+  /* ── Read-Only Workspace Banner ────────────────────────────────────────── */
+  .fn-readonly-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+    color: var(--muted-foreground);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.75rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .fn-readonly-banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-md, 0.5rem);
+    background-color: var(--secondary);
+    color: var(--foreground);
+  }
+
+  /* ── Date Range Filter Popover ─────────────────────────────────────────── */
+  .fn-date-filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  .fn-date-filter-trigger:hover {
+    background-color: color-mix(in srgb, var(--secondary) 60%, transparent);
+  }
+
+  .fn-date-filter-popover {
+    width: 20rem;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl, 0.75rem);
+    padding: 0.75rem;
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  }
+
+  .fn-date-filter-preset {
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 150ms ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--foreground);
+  }
+
+  .fn-date-filter-preset:hover {
+    background-color: var(--secondary);
+  }
+
+  .fn-date-filter-preset.is-active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+  }
+
+  /* ── Search Dropdown Floating Panel ────────────────────────────────────── */
+  .fn-search-dropdown {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 8px);
+    z-index: 50;
+    max-height: 26.25rem;
+    overflow-y: auto;
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: color-mix(in srgb, var(--background) 95%, transparent);
+    box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .fn-search-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 0.5rem 0.75rem;
+    transition: background-color 150ms ease;
+    text-decoration: none;
+    color: var(--foreground);
+  }
+
+  .fn-search-item:hover {
+    background-color: var(--secondary);
+  }
+
+  .fn-search-icon-badge {
+    display: flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+}

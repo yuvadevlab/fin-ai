@@ -1,0 +1,79 @@
+/**
+ * @file packages/ui/src/styles/settings.css
+ * @description Semantic component styles for FinAI Settings sections, workspace management, and invitations.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Settings Grid Layout ───────────────────────────────────────────────── */
+  .fn-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-settings-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* ── Settings Section Navigation Card ───────────────────────────────────── */
+  .fn-settings-card {
+    display: flex;
+    cursor: pointer;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    padding: 1.25rem;
+    text-align: left;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    outline: none;
+    transition: all 150ms ease;
+  }
+
+  .fn-settings-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-settings-card-icon {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* ── Workspace Settings & Invitation Cards ──────────────────────────────── */
+  .fn-workspace-card {
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-workspace-invitation-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: var(--radius-2xl, 1rem);
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    outline: none;
+    transition: all 150ms ease;
+  }
+
+  .fn-workspace-invitation-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+}

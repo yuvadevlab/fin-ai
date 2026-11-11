@@ -5,6 +5,14 @@
 
 ---
 
+## 0. Strict Git Commit & Push Restriction (CRITICAL)
+
+- **NEVER** run `git commit`, `git push`, or create pull requests without explicit, affirmative user authorization in the current turn.
+- General task triggers like "start", "proceed", or "fix" authorize code authoring, linting, and testing ONLY.
+- Changes must remain in the working tree or staging until the user explicitly commands to commit.
+
+---
+
 ## 1. Monorepo Package Boundaries & Placement
 
 FinAI is organized into strict package boundaries. Never leak side-effects across package boundaries:
@@ -54,6 +62,9 @@ finai/
    - **React Query Keys**: Use `QUERY_KEYS` from `@finai/shared-types`. Always use `as const` tuples (`readonly (readonly unknown[])[]`). Never use raw string arrays like `["accounts"]`.
    - **UI Copy Dictionaries**: Use `UI_COPY` from `@/lib/ui-copy/`. Zero hardcoded user-facing strings in UI components.
    - **Enums**: Use canonical enums from `@finai/shared-types` (e.g. `AgentStreamEventType`, `AgentMode`, `ExecutionPhase`, `PhaseStatus`, `AccountType`, `StorageKey`, `SEARCH_PARAMS`).
+   - **Enums Over Raw String Unions**: Prefer TypeScript `enum`s or `as const` object dictionaries with mapped types over raw string literal unions (`"dev" | "prod"`). Updating an underlying string value only requires modifying the enum definition.
+   - **URL Query Parameters**: Never hardcode raw query parameter strings or fragments like `"?redirect="` or `searchParams.get("token")`. Use `SEARCH_PARAMS` from `@finai/shared-types` and construct URLs via `URLSearchParams`.
+   - **Environment Isolation**: Consumer apps manage their own environment variables (e.g. `process.env.NEXT_PUBLIC_*`) and pass them explicitly to shared NPM packages via props or configuration parameters. Shared NPM packages must never implicitly read environment variables.
 
 ---
 
@@ -83,7 +94,18 @@ finai/
 
 ---
 
-## 6. Universal Verification Checklist
+## 7. Organization Standards & .github Inheritance
+
+- **Attribution**: Author and committer metadata standardized to `yuva.devlab@gmail.com`.
+- **Branch Naming**: Must strictly follow: `^(feat|fix|refactor|perf|chore|docs|test|ci|hotfix)/[a-z0-9-]+$`.
+- **Pull Requests**: Must conform to the 5-section high-signal template in `yuvadevlab/.github` (Summary, Changes, How to Test, Proof of Verification, Risks).
+- **Conventional Commits**: `<type>(<optional-scope>): <imperative summary>`.
+- **Pure Platform CSS**: Zero references to legacy utility-first CSS frameworks. All styles use W3C Cascade Layers (`@layer dl-*`) and `@yuva-devlab/tokens`.
+- **Semantic Component Architecture (90/10 Standard)**: UI components must declare purpose-revealing semantic classes (`.dl-card`, `.app-card`, `.dl-table`) in domain-scoped modular stylesheets (`< 200 lines`, strictly `< 250 lines`) under `@layer dl-components`. Multi-class utility soup in JSX (`className="class-1 class-2 class-3..."`) is strictly prohibited for component definitions; utilities are reserved exclusively for macro layout orchestration (10% glue). Component themes and variants must be parameterized via CSS variables mapped to `@yuva-devlab/tokens`.
+
+---
+
+## 8. Universal Verification Checklist
 
 Before completing any task, verify:
 
