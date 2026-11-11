@@ -31,6 +31,7 @@
 @import "./styles/settings.css";
 @import "./styles/auth.css";
 @import "./styles/utilities.css";
+
 /* ── 3. Accessibility & Screen Reader Utilities ────────────────────────────── */
 @layer dl-utilities {
   .sr-only,
@@ -68,4 +69,20 @@
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   --theme-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --theme-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+/* ── 4. App Utilities & Privacy Mask ──────────────────────────────────────── */
+@layer dl-app {
+  /* Theme-init transition suppressor */
+  .finai-no-transition * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Privacy Mode — pre-hydration CSS mask */
+  html[data-privacy="on"] [data-privacy-sensitive] {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+  }
 }
