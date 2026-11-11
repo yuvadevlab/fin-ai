@@ -180,5 +180,9 @@ export const SEARCH_PARAMS = {
   CATEGORY: "category",
   CONVERSATION_ID: "conversationId",
   QUERY: "q",
+  REDIRECT: "redirect",
+  APP: "app",
+  TOKEN: "token",
+  ACCESS_TOKEN: "access_token",
 } as const;
 export type SearchParamKey = (typeof SEARCH_PARAMS)[keyof typeof SEARCH_PARAMS];

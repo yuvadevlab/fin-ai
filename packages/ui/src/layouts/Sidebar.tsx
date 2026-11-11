@@ -121,32 +121,34 @@ export function Sidebar({
         {/* Navigation Links */}
         <nav
           aria-label="Main Navigation"
-          className={cn("flex-1 space-y-1 overflow-y-auto px-2", !isRail && "px-4")}
+          className={cn("flex-1 overflow-y-auto px-2", !isRail && "px-4")}
         >
-          {!isRail ? (
-            <div
-              className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase"
-              id="nav-overview-heading"
-            >
-              Overview
-            </div>
-          ) : (
-            <Separator className="my-2 opacity-50" />
-          )}
+          <div className="space-y-1">
+            {!isRail ? (
+              <div
+                className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase"
+                id="nav-overview-heading"
+              >
+                Overview
+              </div>
+            ) : (
+              <Separator className="my-2 opacity-50" />
+            )}
 
-          {visiblePrimaryNav.map((item) => (
-            <SidebarItem
-              key={item.href}
-              item={item}
-              pathname={pathname}
-              isRail={isRail}
-              onNavigate={onNavigate}
-              LinkComponent={Link}
-            />
-          ))}
+            {visiblePrimaryNav.map((item) => (
+              <SidebarItem
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                isRail={isRail}
+                onNavigate={onNavigate}
+                LinkComponent={Link}
+              />
+            ))}
+          </div>
 
           {visibleAdvancedNav.length > 0 && (
-            <div className={cn("pt-4", !isRail && "pt-6")}>
+            <div className={cn("space-y-1 pt-4", !isRail && "pt-6")}>
               {!isRail ? (
                 <div
                   className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase"

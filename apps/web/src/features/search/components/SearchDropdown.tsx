@@ -25,11 +25,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
   if (query.trim().length < 2) return null;
 
   return (
-    <div
-      className="border-border/60 bg-background/95 ring-border/40 absolute inset-x-0 top-[calc(100%+8px)] z-50 max-h-105 overflow-y-auto rounded-xl border shadow-xl ring-1 backdrop-blur-md"
-      role="listbox"
-      aria-label={UI_COPY.SEARCH.RESULTS_LABEL}
-    >
+    <div className="fn-search-dropdown" role="listbox" aria-label={UI_COPY.SEARCH.RESULTS_LABEL}>
       {isFetching && !data && (
         <div className="space-y-2 p-3">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -56,9 +52,9 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               key={t.id}
               href={APP_ROUTES.TRANSACTIONS}
               onClick={onClose}
-              className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
+              className="fn-search-item"
             >
-              <span className="bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-full">
+              <span className="fn-search-icon-badge">
                 <Receipt className="size-3.5" />
               </span>
               <div className="min-w-0 flex-1">
@@ -91,16 +87,16 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
           )}
         >
           <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            Accounts
+            {UI_COPY.SEARCH.ACCOUNTS}
           </p>
           {data!.accounts.map((a) => (
             <Link
               key={a.id}
               href={APP_ROUTES.ACCOUNTS}
               onClick={onClose}
-              className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
+              className="fn-search-item"
             >
-              <span className="bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-full">
+              <span className="fn-search-icon-badge">
                 <Wallet className="size-3.5" />
               </span>
               <div className="min-w-0 flex-1">
@@ -125,18 +121,13 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
           )}
         >
           <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            Goals
+            {UI_COPY.SEARCH.GOALS}
           </p>
           {data!.goals.map((g) => {
             const pct = Math.min(100, Math.round((g.currentAmount / g.targetAmount) * 100));
             return (
-              <Link
-                key={g.id}
-                href={APP_ROUTES.GOALS}
-                onClick={onClose}
-                className="hover:bg-secondary flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
-              >
-                <span className="bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-full">
+              <Link key={g.id} href={APP_ROUTES.GOALS} onClick={onClose} className="fn-search-item">
+                <span className="fn-search-icon-badge">
                   <Target className="size-3.5" />
                 </span>
                 <div className="min-w-0 flex-1">

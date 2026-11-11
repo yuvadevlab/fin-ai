@@ -81,8 +81,8 @@ export function GoalsPage() {
       {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {goals.length === 0 ? (
-        <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
-          <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
+        <div className="fn-entity-empty">
+          <div className="fn-entity-empty-icon">
             <Target className="text-muted-foreground size-6" />
           </div>
           <h3 className="text-foreground text-base font-semibold">{UI_COPY.GOALS.EMPTY_TITLE}</h3>
@@ -100,7 +100,7 @@ export function GoalsPage() {
           )}
         </div>
       ) : (
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <section className="fn-entity-grid">
           {goals.map((g) => {
             const target = g.targetAmount ?? 0;
             const current = g.currentAmount ?? 0;

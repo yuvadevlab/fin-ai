@@ -49,10 +49,7 @@ export function WorkspaceInvitationCard({
         const isPending = respondMutation.isPending;
 
         return (
-          <div
-            key={invite.id}
-            className="bg-card ring-border/50 hover:ring-primary/20 flex flex-col gap-4 rounded-2xl p-5 shadow-sm ring-1 transition outline-none"
-          >
+          <div key={invite.id} className="fn-workspace-invitation-card">
             <div className="flex items-start gap-4">
               <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <Users className="size-5" />

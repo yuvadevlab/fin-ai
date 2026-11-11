@@ -67,13 +67,10 @@ export function AdvisorComposer({
   };
 
   return (
-    <div className="border-border/80 bg-secondary/10 border-t p-3 sm:p-4">
+    <div className="fn-advisor-composer">
       {/* Pending-action helper strip — editing is natural language */}
       {editingPending && (
-        <p
-          className="text-primary bg-primary/5 border-primary/20 mb-2 flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium"
-          role="note"
-        >
+        <p className="fn-advisor-composer-pending" role="note">
           <PencilRuler className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="min-w-0 truncate">
             {UI_COPY.ADVISOR.COMPOSER.PENDING_PREFIX} {pendingConfirmation?.card.title ?? "action"}{" "}
@@ -85,10 +82,7 @@ export function AdvisorComposer({
       {/* Input textarea & submit form */}
       <form
         onSubmit={onSubmit}
-        className={cn(
-          "bg-background border-border/70 flex items-center gap-2 rounded-xl border px-3 py-2 transition-all",
-          isFocused && "border-primary/40 ring-primary/10 ring-2",
-        )}
+        className={cn("fn-advisor-composer-form", isFocused && "is-focused")}
       >
         <textarea
           ref={inputRef}

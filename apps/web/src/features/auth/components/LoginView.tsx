@@ -42,9 +42,9 @@ export function LoginView() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4 text-center">
-      <div className="border-border bg-card w-full max-w-md rounded-2xl border p-8 shadow-xl">
-        <div className="bg-primary/10 text-primary mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl">
+    <div className="fn-auth-page">
+      <div className="fn-auth-card">
+        <div className="fn-auth-icon">
           <svg
             className="size-8 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
@@ -72,11 +72,7 @@ export function LoginView() {
         </p>
 
         <div className="mt-6">
-          <button
-            type="button"
-            onClick={handleManualRedirect}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary/20 inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium shadow transition focus:ring-2 focus:outline-none"
-          >
+          <button type="button" onClick={handleManualRedirect} className="fn-auth-button">
             Continue to DevLab Portal &rarr;
           </button>
         </div>

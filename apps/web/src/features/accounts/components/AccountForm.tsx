@@ -1,6 +1,6 @@
 "use client";
 
-import { FormDialogField, FormField } from "@finai/ui";
+import { FormDialogField, FormField, cn } from "@finai/ui";
 import { Star } from "lucide-react";
 import { UI_COPY } from "@/lib/ui-copy";
 
@@ -87,14 +87,13 @@ export function AccountForm({
           role="checkbox"
           aria-checked={isDefault}
           onClick={() => onChange("isDefault", isDefault ? "false" : "true")}
-          className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
-            isDefault
-              ? "border-primary/40 bg-primary/5 text-primary"
-              : "border-border/60 bg-background hover:border-border text-muted-foreground"
-          }`}
+          className={cn("fn-account-default-toggle", isDefault && "is-active")}
         >
           <Star
-            className={`size-4 shrink-0 transition-all ${isDefault ? "fill-primary text-primary" : ""}`}
+            className={cn(
+              "size-4 shrink-0 transition-all",
+              isDefault && "fill-primary text-primary",
+            )}
           />
           <div>
             <p className="text-sm leading-none font-medium">

@@ -58,7 +58,7 @@ export function WorkspaceSettings() {
   return (
     <div className="space-y-4">
       {/* ── Active workspace card ── */}
-      <div className="bg-card ring-border/50 rounded-2xl p-5 shadow-sm ring-1">
+      <div className="fn-workspace-card">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-4">
             <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">

@@ -65,10 +65,10 @@ export function DashboardHealthCard() {
           </div>
 
           {metrics.length > 0 && (
-            <div className="border-border/60 space-y-2.5 border-t pt-3">
+            <div className="fn-health-metrics-list">
               {metrics.map((m) => (
-                <div key={m.label} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
+                <div key={m.label} className="fn-health-metric-row">
+                  <div className="fn-health-metric-header">
                     <span className="text-muted-foreground truncate font-medium">{m.label}</span>
                     <span className={cn("font-semibold", scoreColor(m.score))}>{m.score}%</span>
                   </div>

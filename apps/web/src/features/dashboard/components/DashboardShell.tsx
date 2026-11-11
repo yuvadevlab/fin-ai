@@ -81,7 +81,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <AppShell sidebar={sidebar} topbar={topbar}>
         {/* Mobile Navigation Drawer */}
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-          <SheetContent side="left" className="border-border/80 w-72 border-r p-0">
+          <SheetContent side="left" className="fn-mobile-drawer">
             <SheetTitle className="sr-only">{UI_COPY.COMMON.ACTIONS.NAVIGATION_MENU}</SheetTitle>
             <Sidebar
               pathname={pathname}
@@ -93,16 +93,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </Sheet>
         {/* Search results dropdown — floats above content */}
         {searchQuery.trim().length >= 2 && (
-          <div
-            ref={searchRef}
-            className="pointer-events-none fixed inset-x-0 flex justify-center"
-            style={{
-              top: "var(--topbar-height)",
-              zIndex: "var(--z-dropdown)",
-              paddingInline: "var(--topbar-padding-x)",
-            }}
-          >
-            <div className="pointer-events-auto w-full max-w-lg">
+          <div ref={searchRef} className="fn-topbar-search-wrap">
+            <div className="fn-topbar-search-inner">
               <SearchDropdown query={searchQuery} onClose={() => setSearchQuery("")} />
             </div>
           </div>

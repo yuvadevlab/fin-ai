@@ -125,7 +125,7 @@ export function TransactionsPage() {
           {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
           {/* Filter toolbar */}
-          <div className="bg-card ring-border/50 flex flex-col gap-2.5 rounded-2xl p-3 shadow-sm ring-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:p-4">
+          <div className="fn-transactions-toolbar">
             <div className="relative w-full sm:w-auto sm:min-w-64 sm:flex-1">
               <SearchBar
                 placeholder={UI_COPY.TRANSACTIONS.SEARCH_PLACEHOLDER}
@@ -177,11 +177,11 @@ export function TransactionsPage() {
       }
     >
       {isLoading ? (
-        <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
+        <div className="fn-table-empty-state">
           <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.LOADING}</p>
         </div>
       ) : transactionsList.length === 0 ? (
-        <div className="bg-card ring-border/50 flex h-full min-h-75 items-center justify-center rounded-2xl shadow-sm ring-1">
+        <div className="fn-table-empty-state">
           <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.EMPTY}</p>
         </div>
       ) : (

@@ -41,12 +41,10 @@ export function BulkTransactionRow({
   const isTransfer = row.kind === TransactionKind.TRANSFER;
 
   return (
-    <div className="bg-card border-border/70 rounded-xl border p-4 shadow-xs">
+    <div className="fn-bulk-transaction-card">
       {/* Card Header: Row number + delete */}
-      <div className="mb-3 flex items-center justify-between">
-        <span className="bg-primary/10 text-primary inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 font-mono text-xs font-bold">
-          #{idx + 1}
-        </span>
+      <div className="fn-bulk-transaction-header">
+        <span className="fn-bulk-transaction-badge">#{idx + 1}</span>
         {canDelete && (
           <button
             type="button"

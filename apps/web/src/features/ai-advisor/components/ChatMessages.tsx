@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, User } from "lucide-react";
-import { extractFollowUpQuestions } from "@finai/ai-engine";
+import { extractFollowUpQuestions } from "@finai/ai-engine/extract-follow-ups";
 import { UI_COPY } from "@/lib";
 import { AgentRun } from "./AgentRun";
 import type { AgentChatMessage } from "@/features/ai-advisor";
@@ -60,10 +60,10 @@ export function ChatMessages({
             ) : (
               /* User message — right-aligned bubble */
               <div className="flex flex-row-reverse gap-3">
-                <div className="bg-secondary text-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm">
+                <div className="fn-chat-user-avatar">
                   <User className="size-4" aria-hidden="true" />
                 </div>
-                <div className="bg-primary text-primary-foreground max-w-2xl rounded-2xl px-4 py-3 text-sm shadow-sm">
+                <div className="fn-chat-user-bubble">
                   <p className="leading-relaxed">{message.text}</p>
                 </div>
               </div>
@@ -80,7 +80,7 @@ export function ChatMessages({
                     <button
                       key={qIdx}
                       onClick={() => onSelectFollowUp(question)}
-                      className="bg-card hover:bg-accent hover:text-accent-foreground border-border/80 text-foreground group flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95"
+                      className="fn-chat-followup-chip group"
                     >
                       <span>{question}</span>
                       <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />

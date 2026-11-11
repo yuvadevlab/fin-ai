@@ -120,16 +120,11 @@ export function CategoriesPage() {
                   {groupName}
                 </h3>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="fn-entity-grid">
                   {cats.map((cat) => (
-                    <div
-                      key={cat.id}
-                      className="bg-card border-border hover:border-primary/20 flex items-center justify-between rounded-2xl border p-4 shadow-sm transition-all"
-                    >
+                    <div key={cat.id} className="fn-category-card">
                       <div className="flex items-center gap-3.5">
-                        <div className="bg-secondary flex size-10 items-center justify-center rounded-xl text-xl">
-                          {cat.icon || "🏷️"}
-                        </div>
+                        <div className="fn-category-icon">{cat.icon || "🏷️"}</div>
                         <div>
                           <p className="text-sm font-semibold">{cat.name}</p>
                           {cat.isDefault && (

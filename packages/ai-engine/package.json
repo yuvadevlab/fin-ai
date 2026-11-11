@@ -11,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./extract-follow-ups": {
+      "types": "./dist/extract-follow-ups.d.ts",
+      "import": "./dist/extract-follow-ups.js",
+      "require": "./dist/extract-follow-ups.cjs"
     }
   },
   "scripts": {
@@ -24,7 +29,7 @@
   "dependencies": {
     "@finai/prompts": "workspace:*",
     "@finai/shared-types": "workspace:*",
-    "@yuva-devlab/ai-client": "^0.2.0",
+    "@yuva-devlab/ai-client": "^0.2.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {

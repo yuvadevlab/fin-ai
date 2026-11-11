@@ -72,26 +72,22 @@ export function NotificationsMenu() {
         align="end"
         sideOffset={8}
         collisionPadding={16}
-        className="border-border/80 bg-popover w-105! max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border p-0! shadow-2xl"
+        className="fn-notifications-popover"
       >
-        {/* Polished, non-collapsing header with strict 44px height and 16px horizontal alignment */}
-        <div className="border-border/50 bg-muted/30 flex h-11 items-center justify-between border-b px-4">
+        {/* Polished, non-collapsing header */}
+        <div className="fn-notifications-header">
           <div className="flex min-w-0 items-center gap-2">
             <span className="text-foreground text-sm font-semibold tracking-tight">
               {UI_COPY.NOTIFICATIONS.TITLE}
             </span>
-            {totalCount > 0 && (
-              <span className="bg-primary/10 text-primary inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold">
-                {totalCount}
-              </span>
-            )}
+            {totalCount > 0 && <span className="fn-notifications-badge">{totalCount}</span>}
           </div>
           {totalCount > 0 && (
             <button
               type="button"
               disabled={markAllReadMutation.isPending}
               onClick={() => markAllReadMutation.mutate()}
-              className="text-muted-foreground hover:text-foreground inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs font-medium whitespace-nowrap transition-colors"
+              className="fn-notifications-mark-read"
             >
               <CheckCheck className="size-3.5 shrink-0" />
               <span>{UI_COPY.NOTIFICATIONS.MARK_ALL_READ}</span>
@@ -99,18 +95,16 @@ export function NotificationsMenu() {
           )}
         </div>
 
-        {/* Workspace Invitations Section (Edge-to-edge with unified 16px grid alignment) */}
+        {/* Workspace Invitations Section */}
         {invitations.length > 0 && (
-          <div className="border-border/50 bg-primary/3 border-b">
-            <div className="px-4 pt-3 pb-1">
-              <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
-                {UI_COPY.WORKSPACES.INVITATION_CARD_TITLE}
-              </span>
+          <div className="fn-notifications-invitations">
+            <div className="fn-notifications-invitations-title">
+              {UI_COPY.WORKSPACES.INVITATION_CARD_TITLE}
             </div>
             {invitations.map((invite) => (
-              <div key={invite.id} className="flex flex-col gap-2.5 px-4 pt-1.5 pb-3.5">
+              <div key={invite.id} className="fn-notifications-invitation-item">
                 <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 text-primary mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold">
+                  <div className="fn-notifications-invitation-avatar">
                     <Users className="size-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -169,22 +163,16 @@ export function NotificationsMenu() {
         )}
 
         {/* Standard notifications list with matching px-4 grid */}
-        <div className="divide-border/40 max-h-75 divide-y overflow-y-auto">
+        <div className="fn-notifications-list">
           {displayNotifications.map((item) => (
             <div
               key={item.id}
               onClick={() => {
                 if (!item.read) markReadMutation.mutate(item.id);
               }}
-              className={`flex cursor-pointer items-start gap-3 px-4 py-3 transition-colors ${
-                !item.read
-                  ? "bg-primary/3 hover:bg-primary/6"
-                  : "hover:bg-muted/40 opacity-75 hover:opacity-100"
-              }`}
+              className={`fn-notifications-item ${!item.read ? "is-unread" : ""}`}
             >
-              <div className="bg-secondary mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg shadow-xs">
-                {getIcon(item.type)}
-              </div>
+              <div className="fn-notifications-item-icon">{getIcon(item.type)}</div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-foreground truncate text-xs font-semibold">{item.title}</p>
@@ -199,8 +187,8 @@ export function NotificationsMenu() {
 
           {/* Empty state */}
           {displayNotifications.length === 0 && invitations.length === 0 && !isLoading && (
-            <div className="px-4 py-10 text-center">
-              <div className="bg-muted/50 mx-auto mb-2.5 flex size-10 items-center justify-center rounded-full">
+            <div className="fn-notifications-empty">
+              <div className="fn-notifications-empty-icon">
                 <Bell className="text-muted-foreground size-5" />
               </div>
               <p className="text-foreground text-xs font-medium">

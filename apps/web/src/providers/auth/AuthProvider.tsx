@@ -3,7 +3,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { DevLabAuthProvider } from "@yuva-devlab/auth-client";
 import { StorageKey } from "@finai/shared-types";
-import { APP_ID, APP_ROUTES } from "@/lib";
+import { APP_ID, APP_ROUTES, DEVLAB_PORTAL_WEB_URL, DEVLAB_PORTAL_API_URL } from "@/lib";
 import { AuthContext, type AuthContextValue, type AuthUser } from "./auth-context";
 
 export interface AuthProviderProps {
@@ -27,7 +27,10 @@ function parseJwtPayload(jwt: string): Record<string, unknown> | null {
 
 function readCookieToken(): string | null {
   if (typeof document === "undefined") return null;
-  const match = document.cookie.match(/(?:^|;\s*)(?:finai_token|devlab_access_token)=([^;]+)/);
+  const cookieRegex = new RegExp(
+    `(?:^|;\\s*)(?:${StorageKey.TOKEN}|${StorageKey.DEVLAB_ACCESS_TOKEN})=([^;]+)`,
+  );
+  const match = document.cookie.match(cookieRegex);
   return match?.[1] ? decodeURIComponent(match[1]) : null;
 }
 
@@ -114,7 +117,11 @@ export function AuthProvider({ initialToken = null, children }: AuthProviderProp
   );
 
   return (
-    <DevLabAuthProvider appId={APP_ID}>
+    <DevLabAuthProvider
+      appId={APP_ID}
+      portalUrl={DEVLAB_PORTAL_WEB_URL}
+      gatewayUrl={DEVLAB_PORTAL_API_URL}
+    >
       <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
     </DevLabAuthProvider>
   );
