@@ -1,0 +1,168 @@
+/**
+ * @file packages/ui/src/styles/notifications.css
+ * @description Semantic component styles for FinAI notifications and workspace invitations.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Notifications Menu Popover ────────────────────────────────────────── */
+  .fn-notifications-popover {
+    width: 26.25rem;
+    max-width: calc(100vw - 2rem);
+    overflow: hidden;
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    background-color: var(--popover);
+    padding: 0;
+    box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  }
+
+  .fn-notifications-header {
+    display: flex;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    background-color: color-mix(in srgb, var(--muted) 30%, transparent);
+    padding-inline: 1rem;
+  }
+
+  .fn-notifications-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    padding: 0.125rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  .fn-notifications-mark-read {
+    display: inline-flex;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--muted-foreground);
+    background: transparent;
+    border: none;
+    transition: color 150ms ease;
+  }
+
+  .fn-notifications-mark-read:hover {
+    color: var(--foreground);
+  }
+
+  /* ── Workspace Invitations Section ─────────────────────────────────────── */
+  .fn-notifications-invitations {
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    background-color: color-mix(in srgb, var(--primary) 3%, transparent);
+  }
+
+  .fn-notifications-invitations-title {
+    padding-inline: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .fn-notifications-invitation-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding-inline: 1rem;
+    padding-top: 0.375rem;
+    padding-bottom: 0.875rem;
+  }
+
+  .fn-notifications-invitation-avatar {
+    margin-top: 0.125rem;
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* ── Notifications List ─────────────────────────────────────────────────── */
+  .fn-notifications-list {
+    max-height: 18.75rem;
+    overflow-y: auto;
+  }
+
+  .fn-notifications-item {
+    display: flex;
+    cursor: pointer;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: background-color 150ms ease;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+
+  .fn-notifications-item:last-child {
+    border-bottom: none;
+  }
+
+  .fn-notifications-item.is-unread {
+    background-color: color-mix(in srgb, var(--primary) 3%, transparent);
+  }
+
+  .fn-notifications-item.is-unread:hover {
+    background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+  }
+
+  .fn-notifications-item:not(.is-unread) {
+    opacity: 0.75;
+  }
+
+  .fn-notifications-item:not(.is-unread):hover {
+    opacity: 1;
+    background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+  }
+
+  .fn-notifications-item-icon {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: var(--secondary);
+    margin-top: 0.125rem;
+  }
+
+  .fn-notifications-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+  }
+
+  .fn-notifications-empty-icon {
+    margin-inline: auto;
+    margin-bottom: 0.625rem;
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--muted) 50%, transparent);
+    color: var(--muted-foreground);
+  }
+}

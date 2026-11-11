@@ -68,7 +68,7 @@ export function TransactionFiltersPopover({
           ) : null}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 space-y-4">
+      <PopoverContent align="end" className="fn-transactions-filter-popover">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold">{UI_COPY.TRANSACTIONS.FILTER_TITLE}</p>
           {activeFilterCount > 0 ? (

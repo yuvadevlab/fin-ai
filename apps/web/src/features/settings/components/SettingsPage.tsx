@@ -13,7 +13,6 @@ import {
   SheetTitle,
   SheetFooter,
   Button,
-  cn,
 } from "@finai/ui";
 import { ProfileSettings } from "./ProfileSettings";
 import { AppearanceSettings } from "./AppearanceSettings";
@@ -60,17 +59,15 @@ export function SettingsPage() {
         description={UI_COPY.SETTINGS.PAGE_DESCRIPTION}
       />
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <section className="fn-settings-grid">
         {sections.map((s) => (
           <button
             key={s.id}
             type="button"
             onClick={() => setSelectedId(s.id)}
-            className={cn(
-              "group bg-card ring-border/50 hover:ring-primary/20 flex cursor-pointer items-start gap-4 rounded-2xl p-5 text-left shadow-sm ring-1 transition outline-none hover:shadow-md",
-            )}
+            className="fn-settings-card group"
           >
-            <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
+            <div className="fn-settings-card-icon">
               <s.icon className="size-5" />
             </div>
             <div>

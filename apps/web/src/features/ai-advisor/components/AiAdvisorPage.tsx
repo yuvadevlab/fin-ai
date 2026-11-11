@@ -115,13 +115,9 @@ export function AiAdvisorPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-4 lg:h-[calc(100vh-11rem)] lg:flex-row">
-        <div className="bg-card ring-border/50 relative flex min-h-[65vh] flex-1 flex-col overflow-hidden rounded-2xl shadow-sm ring-1 lg:h-full lg:min-h-0 lg:min-w-0">
-          <div
-            className="flex-1 overflow-y-auto px-4 py-5 sm:px-6"
-            ref={containerRef}
-            onScroll={handleScroll}
-          >
+      <div className="fn-advisor-layout">
+        <div className="fn-advisor-chat-card">
+          <div className="fn-advisor-chat-scroll" ref={containerRef} onScroll={handleScroll}>
             <div ref={contentRef}>
               {isLoadingConversation && messages.length === 0 ? (
                 <ChatLoadingSkeleton />
@@ -146,7 +142,7 @@ export function AiAdvisorPage() {
               type="button"
               onClick={scrollToBottom}
               aria-label={UI_COPY.COMMON.A11Y.JUMP_TO_LATEST}
-              className="border-border/60 bg-card/95 hover:bg-accent hover:text-accent-foreground absolute bottom-20 left-1/2 z-10 flex -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur-xs transition"
+              className="fn-advisor-jump-bottom"
             >
               <ArrowDown
                 className={`size-3.5 shrink-0 ${isStreaming ? "text-primary animate-bounce" : ""}`}
@@ -171,10 +167,7 @@ export function AiAdvisorPage() {
           />
         </div>
 
-        <aside
-          className="hidden lg:block lg:h-full lg:w-75 lg:min-w-0 lg:shrink-0 lg:overflow-y-auto"
-          aria-label={UI_COPY.ADVISOR.CONTEXT.TITLE}
-        >
+        <aside className="fn-advisor-sidebar" aria-label={UI_COPY.ADVISOR.CONTEXT.TITLE}>
           <ContextPanel
             onQuickAction={handleQuickAction}
             isStreaming={isStreaming}

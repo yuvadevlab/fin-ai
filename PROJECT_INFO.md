@@ -108,7 +108,7 @@ sequenceDiagram
     participant DP as DevLab Portal (:4000)
     participant Engine as @finai/finance-engine
     participant DL as DevLab Logs (:4003)
-    participant IA as IncidentAI (:8085)
+    participant IA as IncidentAI (:8001)
 
     Client->>API: POST /api/v1/advisory/chat (Prompt: "Can I afford a $1,200/mo car?")
     API->>DP: 1. Verify User Tier & Feature Access (:4000)
@@ -121,7 +121,7 @@ sequenceDiagram
     API->>DL: 5. Stream Audit Log & Token Telemetry (:4003)
 
     alt Ingestion Failure or Math Invariant Violation
-        API->>IA: 6. Dispatch Webhook Alert to IncidentAI (:8085)
+        API->>IA: 6. Dispatch Webhook Alert to IncidentAI (:8001)
         IA->>API: 7. Run Automated Sandbox Diagnosis & Alert SRE
     end
 ```
@@ -132,7 +132,7 @@ sequenceDiagram
 | :------------------ | :-------: | :------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
 | **`devlab-portal`** |  Inbound  | HTTP & OIDC JWKS     | `GET http://localhost:4000/.well-known/jwks.json` (Prod: `:4010`) | Validates user session tokens and verifies OIDC cryptographic keypair; redirects unauthenticated users to `:3000`/`:3010`. |
 | **`devlab-logs`**   | Outbound  | HTTP POST            | `POST http://localhost:4003/logs` (Prod: `:4013`)                 | Streams structured audit logs, user advisory session events, and backend latency metrics for centralized telemetry.        |
-| **`incidentai`**    | Outbound  | HTTP POST Webhook    | `POST http://localhost:8085/api/v1/incidents/webhook`             | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.            |
+| **`incidentai`**    | Outbound  | HTTP POST Webhook    | `POST http://localhost:8001/api/v1/incidents/webhook`             | Alerts IncidentAI on unhandled banking sync exceptions, ledger imbalance errors, or advisory timeout anomalies.            |
 | **`devlab-guard`**  |  Inbound  | CLI Git Pre-commit   | `uv run devlab-guard scan --path .`                               | Enforces the 250-line rule, verifies that all enums are strictly used, and guarantees zero inline regexes.                 |
 | **`devlab-shared`** |  Static   | npm Package Imports  | Direct package import                                             | Imports `@yuva-devlab/ui`, `@yuva-devlab/tokens`, `@yuva-devlab/resilience`, and `@yuva-devlab/logger`.                    |
 
@@ -196,7 +196,7 @@ pnpm typecheck
 | `DEVLAB_PORTAL_API_URL`             | String | `http://localhost:4000`  |   Yes    | DevLab Portal API URL for OIDC and JWKS verification (prod: `:4010`).                 |
 | `NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL` | String | `http://localhost:3000`  |   Yes    | DevLab Portal Web UI URL for browser SSO login and redirects (prod: `:3010`).         |
 | `DEVLAB_LOGS_URL`                   | String | `http://localhost:4003`  |   Yes    | DevLab Logs ingestion endpoint (prod: `:4013`).                                       |
-| `INCIDENTAI_WEBHOOK_URL`            | String | `http://localhost:8085`  |    No    | Webhook URL for dispatching incident alerts.                                          |
+| `INCIDENTAI_WEBHOOK_URL`            | String | `http://localhost:8001`  |    No    | Webhook URL for dispatching incident alerts.                                          |
 
 ### 5.4 Testing Financial Math in the Pure Engine
 

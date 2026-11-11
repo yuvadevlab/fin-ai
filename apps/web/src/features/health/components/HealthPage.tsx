@@ -97,7 +97,7 @@ export function HealthPage() {
         </ContentCard>
 
         <div className="grid gap-4 lg:col-span-2 lg:h-full lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
-          <ContentCard className="border-primary/20 bg-primary/5 p-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
+          <ContentCard className="fn-health-highlight-card lg:flex lg:h-full lg:flex-col lg:justify-center">
             <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
               {UI_COPY.HEALTH.NEXT_ACTION}
             </p>

@@ -1,0 +1,153 @@
+/**
+ * @file packages/ui/src/styles/dashboard.css
+ * @description Semantic component styles for FinAI Dashboard, KPI cards, charts layout, and summary pillars.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  /* ── Dashboard Layout Grids ─────────────────────────────────────────────── */
+  .fn-dashboard-hero-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .fn-dashboard-hero-grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .fn-dashboard-charts-grid,
+  .fn-dashboard-summary-grid {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .fn-dashboard-charts-grid,
+    .fn-dashboard-summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ── Summary Stat Pillar Cards ─────────────────────────────────────────── */
+  .fn-summary-stat-card {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+  }
+
+  .fn-summary-stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fn-summary-stat-icon {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+
+  .fn-summary-stat-icon--alt {
+    background-color: color-mix(in srgb, var(--info, #3b82f6) 10%, transparent);
+    color: var(--info, #3b82f6);
+  }
+
+  .fn-summary-stat-body {
+    margin-top: 1rem;
+  }
+
+  .fn-summary-stat-value {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .fn-summary-stat-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  /* ── Category Breakdown List ───────────────────────────────────────────── */
+  .fn-category-breakdown-list {
+    max-height: 7rem;
+    overflow-y: auto;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.625rem;
+    padding-right: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fn-category-breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  /* ── Health Card Metrics ───────────────────────────────────────────────── */
+  .fn-health-metrics-list {
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .fn-health-metric-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .fn-health-metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  /* ── Trend Guide Cards ─────────────────────────────────────────────────── */
+  .fn-trend-guide-card {
+    border-radius: var(--radius-lg, 0.5rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: 0.875rem;
+  }
+
+  .fn-trend-guide-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .fn-trend-guide-badge {
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+}

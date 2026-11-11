@@ -99,8 +99,8 @@ export function AccountsPage() {
       {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {isClient && !isLoading && accounts.length === 0 ? (
-        <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
-          <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
+        <div className="fn-accounts-empty">
+          <div className="fn-accounts-empty-icon">
             <Wallet className="text-muted-foreground size-6" />
           </div>
           <h3 className="text-foreground text-base font-semibold">
@@ -120,28 +120,18 @@ export function AccountsPage() {
           )}
         </div>
       ) : (
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="fn-accounts-grid">
           {accounts.map((a) => (
-            <div
-              key={a.id}
-              className={cn(
-                "bg-card border-border flex flex-col justify-between rounded-2xl border p-5 shadow-sm transition-all",
-                a.isDefault
-                  ? "border-primary/30 ring-primary/20 ring-1"
-                  : "hover:border-primary/20",
-              )}
-            >
+            <div key={a.id} className={cn("fn-account-card", a.isDefault && "is-default")}>
               {/* Header: Name, Type, and visible Edit/Delete actions */}
-              <div className="flex items-start justify-between">
+              <div className="fn-account-card-header">
                 <div className="flex items-center gap-3">
-                  <div className="bg-secondary text-foreground flex size-10 items-center justify-center rounded-xl text-xs font-bold">
-                    {a.name.slice(0, 2).toUpperCase()}
-                  </div>
+                  <div className="fn-account-avatar">{a.name.slice(0, 2).toUpperCase()}</div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <p className="text-foreground text-sm font-semibold">{a.name}</p>
                       {a.isDefault && (
-                        <span className="bg-primary/10 text-primary flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold">
+                        <span className="fn-account-default-badge">
                           <Star className="size-2.5 fill-current" />
                           {UI_COPY.ACCOUNTS.DEFAULT_BADGE}
                         </span>
@@ -192,7 +182,7 @@ export function AccountsPage() {
               </div>
 
               {/* Account Balance */}
-              <div className="mt-5">
+              <div className="fn-account-balance">
                 <p className="text-2xl font-bold tracking-tight">
                   <PrivacyMoney
                     value={a.balance}
@@ -202,7 +192,7 @@ export function AccountsPage() {
               </div>
 
               {/* Status Footer */}
-              <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs">
+              <div className="fn-account-card-footer">
                 <span className="text-muted-foreground">{UI_COPY.ACCOUNTS.ACTIVE_STATUS}</span>
                 <span className="text-muted-foreground font-semibold">{a.currency}</span>
               </div>

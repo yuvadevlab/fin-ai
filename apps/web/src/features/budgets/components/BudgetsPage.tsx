@@ -86,8 +86,8 @@ export function BudgetsPage() {
       {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {budgets.length === 0 ? (
-        <div className="bg-card border-border flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm">
-          <div className="bg-secondary mb-4 flex size-12 items-center justify-center rounded-2xl">
+        <div className="fn-entity-empty">
+          <div className="fn-entity-empty-icon">
             <PiggyBank className="text-muted-foreground size-6" />
           </div>
           <h3 className="text-foreground text-base font-semibold">{UI_COPY.BUDGETS.EMPTY_TITLE}</h3>
@@ -105,7 +105,7 @@ export function BudgetsPage() {
           )}
         </div>
       ) : (
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="fn-entity-grid">
           {budgets.map((b) => {
             const spent = b.spent ?? 0;
             const status = (b.status as BudgetStatus) || calculateBudgetStatus(spent, b.limit);
