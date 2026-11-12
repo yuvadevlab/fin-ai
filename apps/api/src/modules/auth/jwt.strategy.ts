@@ -76,7 +76,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
           // If token was signed with RS256 (DevLab SSO), fetch JWKS public key
           if (header.alg === "RS256") {
-            const portalApiUrl = process.env.DEVLAB_PORTAL_API_URL || "http://localhost:3015";
+            const portalApiUrl = process.env.DEVLAB_PORTAL_API_URL || "http://localhost:4000";
             getDevLabPublicKey(portalApiUrl, header.kid)
               .then((pem) => done(null, pem))
               .catch((err) => {
