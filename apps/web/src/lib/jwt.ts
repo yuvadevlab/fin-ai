@@ -22,7 +22,7 @@ export interface JwtClaims {
  * @param input - Base64 or Base64URL encoded string
  * @returns Decoded UTF-8 string
  */
-function decodeBase64(input: string): string {
+export function decodeBase64(input: string): string {
   const base64 = input.replace(/-/g, "+").replace(/_/g, "/");
   const padLength = (4 - (base64.length % 4)) % 4;
   const padded = base64.padEnd(base64.length + padLength, "=");

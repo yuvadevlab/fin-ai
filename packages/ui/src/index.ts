@@ -163,4 +163,6 @@ export {
   type ThemeProviderProps,
   useConfig,
   useTheme,
+  LegalFooter,
+  type LegalFooterProps,
 } from "@yuva-devlab/ui";

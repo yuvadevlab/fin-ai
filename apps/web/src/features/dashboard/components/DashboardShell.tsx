@@ -14,6 +14,7 @@ import { PrivacyToggle } from "@/components/PrivacyToggle";
 import { useSidebarState } from "@/hooks";
 import { AIInsightFloatingWidget } from "@/features/ai-advisor/components";
 import { WorkspaceSwitcher } from "@/features/workspaces/components";
+import { APP_VERSION } from "@/lib/constants/version";
 import { UI_COPY } from "@/lib/ui-copy";
 
 function CustomLinkComponent({
@@ -53,7 +54,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = useMemo(
     () => (
-      <Sidebar pathname={pathname} LinkComponent={CustomLinkComponent} collapsed={isCollapsed} />
+      <Sidebar
+        pathname={pathname}
+        LinkComponent={CustomLinkComponent}
+        collapsed={isCollapsed}
+        version={APP_VERSION}
+      />
     ),
     [pathname, isCollapsed],
   );
@@ -87,6 +93,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               pathname={pathname}
               LinkComponent={CustomLinkComponent}
               isMobile
+              version={APP_VERSION}
               onNavigate={() => setIsMobileMenuOpen(false)}
             />
           </SheetContent>
