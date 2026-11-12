@@ -53,6 +53,11 @@ import { AppController } from "./app.controller";
         ttl: 60_000,
         limit: 15,
       },
+      {
+        name: "auth",
+        ttl: 60_000,
+        limit: 5,
+      },
     ]),
     // Feature modules
     AuthModule,

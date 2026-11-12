@@ -3,6 +3,7 @@ import { PanelLeftClose, PanelLeft } from "lucide-react";
 import {
   Button,
   cn,
+  LegalFooter,
   Separator,
   Tooltip,
   TooltipContent,
@@ -31,6 +32,7 @@ export interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isMobile?: boolean;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  version?: string;
 }
 
 const DefaultLink = ({
@@ -58,6 +60,7 @@ export function Sidebar({
   isMobile = false,
   collapsed = false,
   onToggleCollapse,
+  version,
   className,
   ...props
 }: SidebarProps) {
@@ -176,6 +179,13 @@ export function Sidebar({
 
         {/* Bottom AI Status Card */}
         <SidebarAiCard isRail={isRail} onNavigate={onNavigate} LinkComponent={Link} />
+
+        {/* Legal & Attribution Footer */}
+        {!isRail && (
+          <div className="border-border/40 border-t px-3 py-2">
+            <LegalFooter variant="sidebar" appName="FinAI" version={version} />
+          </div>
+        )}
 
         {/* Desktop / Tablet Collapse Toggle Footer */}
         {!isMobile && onToggleCollapse && (
