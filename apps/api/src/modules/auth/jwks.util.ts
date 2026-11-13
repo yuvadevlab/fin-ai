@@ -6,9 +6,9 @@
 
 import crypto from "node:crypto";
 import { Logger } from "@yuva-devlab/logger";
+import { DEFAULT_JWKS_PATH } from "@yuva-devlab/auth-server";
 
-/** Canonical RFC 7517 JWKS discovery endpoint path */
-export const DEFAULT_JWKS_PATH = "/.well-known/jwks.json";
+export { DEFAULT_JWKS_PATH };
 
 interface CachedKey {
   pem: string;
