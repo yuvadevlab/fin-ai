@@ -7,8 +7,8 @@
 @layer dl-components {
   /* ── Notifications Menu Popover ────────────────────────────────────────── */
   .fn-notifications-popover {
-    width: 26.25rem;
-    max-width: calc(100vw - 2rem);
+    width: var(--notifications-popover-width, 26.25rem);
+    max-width: var(--popover-max-width, calc(100vw - 2rem));
     overflow: hidden;
     border-radius: var(--radius-2xl, 1rem);
     border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);

@@ -74,31 +74,29 @@ export function AIInsightFloatingWidget() {
   };
 
   return (
-    <div
-      className={cn(
-        // Positioned bottom-20 (80px above bottom) so it NEVER obscures table pagination, footers or docked buttons
-        "fixed right-4 bottom-20 z-40 flex flex-col items-end gap-2 sm:right-6",
-        "pointer-events-none", // let clicks through transparent areas
-      )}
-    >
+    <div className="fn-insight-widget-root">
       {/* Expanded flyout panel — opens directly above the trigger button */}
       <div
         className={cn(
-          "pointer-events-auto w-80 overflow-hidden rounded-2xl shadow-2xl ring-1 transition-all duration-300 sm:w-88",
-          "bg-card/95 ring-border/70 border-primary/20 border backdrop-blur-md",
+          "fn-insight-window",
           isOpen
             ? "mb-1 max-h-115 translate-y-0 opacity-100"
             : "pointer-events-none max-h-0 translate-y-3 opacity-0",
         )}
         aria-hidden={!isOpen}
       >
-        {/* Panel header */}
-        <div className="from-primary/90 to-primary flex items-center justify-between bg-linear-to-r px-4 py-3 text-white">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-4 animate-pulse" />
+        {/* Panel header with glacier knife-shine effect */}
+        <div className="fn-insight-header">
+          <div className="fn-insight-header-content">
+            <Sparkles
+              className="size-4 shrink-0 animate-pulse text-emerald-300"
+              aria-hidden="true"
+            />
             <div>
-              <span className="text-sm font-semibold">{pageTitle}</span>
-              <p className="mt-0.5 text-[10px] leading-none font-medium text-white/80">
+              <span className="block text-sm font-semibold tracking-tight text-white">
+                {pageTitle}
+              </span>
+              <p className="mt-0.5 text-[10px] leading-none font-medium text-emerald-100/80">
                 {UI_COPY.ADVISOR.WIDGET.LIVE_ANALYSIS}
               </p>
             </div>
@@ -108,19 +106,19 @@ export function AIInsightFloatingWidget() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="fn-insight-header-actions">
             {hasLoaded && !isStreaming && (
               <button
                 onClick={refetch}
                 title={UI_COPY.ADVISOR.WIDGET.REFRESH}
-                className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95"
+                className="fn-insight-header-btn"
               >
                 <RefreshCw className="size-3.5" />
               </button>
             )}
             <button
               onClick={() => setIsOpen(false)}
-              className="flex size-7 cursor-pointer items-center justify-center rounded-lg text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95"
+              className="fn-insight-header-btn"
               aria-label={UI_COPY.ADVISOR.WIDGET.CLOSE}
             >
               <ChevronDown className="size-4" />
@@ -148,10 +146,7 @@ export function AIInsightFloatingWidget() {
               <p className="text-muted-foreground text-xs leading-relaxed">
                 {UI_COPY.ADVISOR.WIDGET.READY_DESCRIPTION(pageTitle)}
               </p>
-              <button
-                onClick={handleGenerate}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all active:scale-95"
-              >
+              <button onClick={handleGenerate} className="fn-insight-generate-btn">
                 <Sparkles className="size-3.5 animate-pulse" />
                 {UI_COPY.ADVISOR.WIDGET.GENERATE}
               </button>
@@ -161,7 +156,7 @@ export function AIInsightFloatingWidget() {
 
         {/* Footer link to full advisor */}
         {hasLoaded && (
-          <div className="border-border/60 bg-secondary/30 flex items-center justify-between border-t px-4 py-2">
+          <div className="fn-insight-footer">
             <Link
               href={APP_ROUTES.ADVISOR}
               className="text-primary hover:text-primary/80 flex items-center gap-1.5 text-xs font-medium transition-colors"
@@ -177,45 +172,36 @@ export function AIInsightFloatingWidget() {
         )}
       </div>
 
-      {/* FAB trigger button — mini icon only by default, expands on hover */}
+      {/* FAB trigger button — spacious pill with icon + title */}
       <div className="pointer-events-auto">
         <button
           onClick={handleToggle}
           aria-label={isOpen ? UI_COPY.ADVISOR.WIDGET.CLOSE : UI_COPY.ADVISOR.WIDGET.OPEN}
           aria-expanded={isOpen}
-          className={cn(
-            "group relative flex cursor-pointer items-center shadow-xl transition-all duration-300 active:scale-95",
-            "rounded-full",
-            isOpen
-              ? "bg-primary text-primary-foreground ring-primary/30 gap-2 px-3.5 py-2.5 ring-2"
-              : "bg-card/90 text-foreground ring-border/70 hover:border-primary/40 hover:bg-card border-border/80 border p-2.5 ring-1 backdrop-blur-md hover:gap-2 hover:px-3.5",
-          )}
+          className={cn("fn-insight-trigger", isOpen && "is-open")}
         >
           <Sparkles
             className={cn(
-              "size-4 shrink-0 transition-transform duration-300 group-hover:scale-110",
+              "size-4 shrink-0 transition-transform duration-300",
               isOpen ? "text-primary-foreground animate-pulse" : "text-primary",
             )}
+            aria-hidden="true"
           />
 
-          {/* Text label: hidden initially, smoothly expands on hover or stays visible when open */}
-          <span
-            className={cn(
-              "overflow-hidden text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-300",
-              isOpen
-                ? "max-w-32 opacity-100"
-                : "max-w-0 opacity-0 group-hover:max-w-32 group-hover:opacity-100",
-            )}
-          >
+          <span className="fn-insight-trigger-label">
             {isOpen ? UI_COPY.ADVISOR.WIDGET.TOGGLE_CLOSE : UI_COPY.ADVISOR.WIDGET.TOGGLE_OPEN}
           </span>
 
           {/* Notification dot — shown when insight is ready but panel is closed */}
           {hasNewInsight && !isOpen && (
-            <span className="bg-primary ring-background absolute -top-1 -right-1 size-2.5 animate-bounce rounded-full ring-2" />
+            <span className="fn-insight-notification-dot" aria-hidden="true" />
           )}
 
-          {isOpen && <X className="size-3.5 shrink-0 opacity-70" />}
+          {isOpen && (
+            <span className="fn-insight-trigger-close" aria-hidden="true">
+              <X className="size-3.5 shrink-0" />
+            </span>
+          )}
         </button>
       </div>
     </div>

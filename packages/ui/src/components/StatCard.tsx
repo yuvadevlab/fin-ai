@@ -23,7 +23,7 @@ export function StatCard({
   ...props
 }: StatCardProps) {
   return (
-    <ContentCard className={cn("finai-card--stat", className)} {...props}>
+    <ContentCard className={cn("finai-card--stat p-3.5 sm:p-5", className)} {...props}>
       <div>
         <span className="finai-stat-label">{label}</span>
         <div className="finai-stat-value">{value}</div>

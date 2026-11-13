@@ -45,7 +45,7 @@ export function Pagination({
     <nav
       aria-label="Pagination"
       className={cn(
-        "border-border/60 text-muted-foreground flex flex-wrap items-center justify-between gap-4 border-t px-6 py-3.5 text-xs",
+        "border-border/60 text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-3 py-2.5 text-xs sm:gap-4 sm:px-6 sm:py-3.5",
         className,
       )}
       {...props}

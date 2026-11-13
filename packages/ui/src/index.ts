@@ -6,6 +6,7 @@ export { PageContainer } from "./components/PageContainer";
 export { TablePageContainer } from "./components/TablePageContainer";
 export { PageHeader } from "./components/PageHeader";
 export { SectionHeader } from "./components/SectionHeader";
+export { InfoButton, type InfoButtonProps } from "./components/InfoButton";
 export { ContentCard } from "./components/ContentCard";
 export { StatCard } from "./components/StatCard";
 export { KPIGrid } from "./components/KPIGrid";

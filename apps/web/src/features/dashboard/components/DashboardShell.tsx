@@ -75,10 +75,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         notificationsMenu={<NotificationsMenu />}
         profileMenu={<ProfileMenu />}
         onAddTransactionClick={isReadOnly ? undefined : () => setIsDialogOpen(true)}
+        searchQuery={searchQuery}
+        searchPlaceholder={UI_COPY.SEARCH.PLACEHOLDER}
+        addTransactionLabel={UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
+        cancelLabel={UI_COPY.COMMON.ACTIONS.CANCEL}
         onSearchChange={FEATURE_FLAGS.SEARCH ? (val) => setSearchQuery(val) : undefined}
       />
     ),
-    [isCollapsed, toggleCollapse, isReadOnly],
+    [isCollapsed, toggleCollapse, isReadOnly, searchQuery],
   );
 
   return (

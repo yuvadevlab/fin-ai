@@ -25,7 +25,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Legend Indicator */}
-      <div className="text-muted-foreground mb-2 flex items-center justify-end gap-3.5 pr-2 text-[11px] font-medium">
+      <div className="text-muted-foreground mb-2 flex flex-wrap items-center justify-start gap-2.5 pr-2 text-[11px] font-medium sm:justify-end sm:gap-3.5">
         <span className="inline-flex items-center gap-1.5">
           <span className="bg-primary size-2 rounded-full" aria-hidden="true" />
           Income

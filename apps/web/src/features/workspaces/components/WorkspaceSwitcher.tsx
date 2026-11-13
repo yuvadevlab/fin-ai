@@ -42,15 +42,15 @@ export function WorkspaceSwitcher() {
           <Button
             variant="ghost"
             size="sm"
-            className="hover:bg-secondary flex h-9 items-center gap-2 rounded-xl px-2.5 text-left text-xs sm:text-sm"
+            className="hover:bg-secondary flex h-8 sm:h-9 min-w-0 items-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-2.5 text-left text-xs sm:text-sm"
             aria-label={UI_COPY.WORKSPACES.SWITCHER_LABEL}
           >
             <div className="bg-primary/10 text-primary flex size-6 shrink-0 items-center justify-center rounded-lg">
               {isShared ? <Users className="size-3.5" /> : <User className="size-3.5" />}
             </div>
-            <div className="flex flex-col text-left">
-              <div className="flex items-center gap-1.5">
-                <span className="text-foreground max-w-30 truncate font-semibold sm:max-w-40">
+            <div className="flex min-w-0 flex-col text-left">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <span className="text-foreground max-w-16 truncate font-semibold sm:max-w-36 md:max-w-44">
                   {activeWorkspace?.name ?? UI_COPY.WORKSPACES.PERSONAL_TITLE}
                 </span>
                 {isShared && (
@@ -60,7 +60,7 @@ export function WorkspaceSwitcher() {
                 )}
               </div>
             </div>
-            <ChevronsUpDown className="text-muted-foreground ml-auto size-3.5 opacity-60" />
+            <ChevronsUpDown className="text-muted-foreground ml-auto size-3.5 shrink-0 opacity-60" />
           </Button>
         </DropdownMenuTrigger>
 

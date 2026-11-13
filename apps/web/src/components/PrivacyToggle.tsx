@@ -24,7 +24,7 @@ export function PrivacyToggle({ className, variant = "ghost", size = "icon" }: P
             variant={variant}
             size={size}
             onClick={togglePrivacyMode}
-            className={cn("size-10", className)}
+            className={cn("size-8 sm:size-9", className)}
             aria-label={activePrivacy ? "Disable Privacy Mode" : "Enable Privacy Mode"}
           >
             {activePrivacy ? (

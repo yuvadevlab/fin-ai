@@ -40,6 +40,9 @@ export const INVESTMENTS_COPY = {
   UNREALISED_PL: "Unrealised P&L",
   CURRENT_MARKET_HINT: "Current market value",
   PRINCIPAL_HINT: "Principal amount",
+  CURRENT_RETURN_HINT: "Current return",
+  GAIN: "Gain",
+  LOSS: "Loss",
   ACTIONS: "Actions",
   PL: "P&L",
   ASSET_CLASS_DISPLAY: {

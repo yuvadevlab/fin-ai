@@ -27,6 +27,131 @@
     }
   }
 
+  /* ── Toolbar: search row ──────────────────────────────────────────────── */
+  .fn-toolbar-search-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .fn-toolbar-search-wrap {
+      width: auto;
+      min-width: 16rem;
+      flex: 1;
+    }
+  }
+
+  .fn-toolbar-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    z-index: 10;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: var(--radius-md, 0.375rem);
+    color: var(--muted-foreground);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 150ms;
+  }
+
+  .fn-toolbar-search-clear:hover {
+    background-color: var(--secondary);
+  }
+
+  /* ── Toolbar: actions row (date + filter popover) ─────────────────────── */
+  .fn-toolbar-actions {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-toolbar-actions {
+      width: auto;
+      justify-content: flex-start;
+      gap: 0.75rem;
+    }
+  }
+
+  /* ── Toolbar: chips row ───────────────────────────────────────────────── */
+  .fn-toolbar-chips-wrap {
+    width: 100%;
+    overflow-x: auto;
+    padding-block: 0.125rem;
+    /* hide scrollbar on webkit */
+    scrollbar-width: none;
+  }
+
+  .fn-toolbar-chips-wrap::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .fn-toolbar-chips-wrap {
+      width: auto;
+    }
+  }
+
+  /* ── Filter Chips ─────────────────────────────────────────────────────── */
+  .fn-filter-chips {
+    display: flex;
+    flex-wrap: nowrap; /* keeps chips in a single scrollable row on mobile */
+    gap: 0.375rem;
+    width: max-content; /* allows parent to scroll */
+  }
+
+  @media (min-width: 640px) {
+    .fn-filter-chips {
+      flex-wrap: wrap;
+      width: auto;
+    }
+  }
+
+  .fn-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition:
+      background-color 150ms,
+      color 150ms;
+    outline: none;
+    border: none;
+    background-color: var(--secondary);
+    color: var(--muted-foreground);
+  }
+
+  .fn-filter-chip:hover {
+    background-color: color-mix(in srgb, var(--secondary) 80%, transparent);
+    color: var(--foreground);
+  }
+
+  .fn-filter-chip:focus-visible {
+    box-shadow: 0 0 0 1px var(--ring);
+  }
+
+  .fn-filter-chip--active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-filter-chip--active:hover {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
   /* ── Table Empty & Loading States ──────────────────────────────────────── */
   .fn-table-empty-state {
     display: flex;
@@ -73,7 +198,7 @@
 
   /* ── Transactions Filter Popover ───────────────────────────────────────── */
   .fn-transactions-filter-popover {
-    width: 20rem;
+    width: var(--filter-popover-width, min(20rem, calc(100vw - 2rem)));
     display: flex;
     flex-direction: column;
     gap: 1rem;
