@@ -22,6 +22,8 @@ export interface DataTableProps<T> extends React.HTMLAttributes<HTMLDivElement> 
    * Use this inside <TablePageContainer> for ledger/list pages.
    */
   fillViewport?: boolean;
+  /** Optional custom class name applied to the <table> element */
+  tableClassName?: string;
 }
 
 export function DataTable<T>({
@@ -31,38 +33,25 @@ export function DataTable<T>({
   onRowClick,
   pagination,
   fillViewport = false,
+  tableClassName,
   className,
   ...props
 }: DataTableProps<T>) {
   const tableContent = (
-    <table className="w-full border-collapse text-left text-sm">
-      <thead
-        className={cn(
-          "bg-card text-muted-foreground text-[11px] font-semibold tracking-widest uppercase",
-          fillViewport && "sticky top-0 z-10 shadow-[0_1px_0_0_var(--color-border)]",
-          !fillViewport && "bg-secondary/60",
-        )}
-      >
+    <table className={cn("finai-table", tableClassName)}>
+      <thead className={cn("finai-table-thead", fillViewport && "finai-table-thead--sticky")}>
         <tr>
           {columns.map((col, index) => (
-            <th
-              key={index}
-              scope="col"
-              className={cn("px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3", col.className)}
-            >
+            <th key={index} scope="col" className={cn("finai-table-th", col.className)}>
               {col.header}
             </th>
           ))}
         </tr>
       </thead>
-      <tbody className="divide-border/60 divide-y">
+      <tbody className="finai-table-tbody">
         {data.length === 0 ? (
           <tr>
-            <td
-              colSpan={columns.length}
-              className="text-muted-foreground px-6 py-10 text-center"
-              aria-live="polite"
-            >
+            <td colSpan={columns.length} className="finai-table-empty" aria-live="polite">
               No data available
             </td>
           </tr>
@@ -83,16 +72,10 @@ export function DataTable<T>({
               }
               tabIndex={onRowClick ? 0 : undefined}
               role={onRowClick ? "button" : undefined}
-              className={cn(
-                "hover:bg-secondary/40 focus-visible:bg-secondary/60 transition outline-none",
-                onRowClick && "cursor-pointer",
-              )}
+              className={cn(onRowClick && "finai-table-row--interactive")}
             >
               {columns.map((col, colIndex) => (
-                <td
-                  key={colIndex}
-                  className={cn("p-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4", col.className)}
-                >
+                <td key={colIndex} className={cn("finai-table-td", col.className)}>
                   {col.accessor(item)}
                 </td>
               ))}
@@ -103,87 +86,17 @@ export function DataTable<T>({
     </table>
   );
 
-  if (fillViewport) {
-    return (
-      <div
-        className={cn(
-          "bg-card ring-border/50 flex flex-col overflow-hidden rounded-2xl shadow-sm ring-1 md:h-full md:min-h-0",
-          className,
-        )}
-        {...props}
-      >
-        {/* Scrollable table body — natural height on mobile, sticky scrollable on desktop */}
-        <div className="overflow-x-auto md:min-h-0 md:flex-1 md:overflow-y-auto">
-          {tableContent}
-        </div>
-
-        {/* Docked pagination footer */}
-        {pagination && (
-          <div className="border-border/60 bg-card shrink-0 border-t">
-            <Pagination {...pagination} />
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div
-      className={cn(
-        "bg-card ring-border/50 overflow-hidden rounded-2xl shadow-sm ring-1",
-        className,
-      )}
+      className={cn("finai-table-shell", fillViewport && "finai-table-shell--fill", className)}
       {...props}
     >
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead className="bg-secondary/60 text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
-            <tr>
-              {columns.map((col, index) => (
-                <th
-                  key={index}
-                  className={cn("px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3", col.className)}
-                >
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-border/60 divide-y">
-            {data.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="text-muted-foreground px-6 py-10 text-center"
-                >
-                  No data available
-                </td>
-              </tr>
-            ) : (
-              data.map((item) => (
-                <tr
-                  key={rowKey(item)}
-                  onClick={() => onRowClick?.(item)}
-                  className={cn("hover:bg-secondary/40 transition", onRowClick && "cursor-pointer")}
-                >
-                  {columns.map((col, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className={cn(
-                        "p-3 font-medium sm:px-4 sm:py-3.5 md:px-6 md:py-4",
-                        col.className,
-                      )}
-                    >
-                      {col.accessor(item)}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      {pagination && <Pagination {...pagination} />}
+      <div className="finai-table-scroll-area">{tableContent}</div>
+      {pagination && (
+        <div className="finai-table-pagination-footer">
+          <Pagination {...pagination} />
+        </div>
+      )}
     </div>
   );
 }

@@ -8,7 +8,9 @@
   .finai-dialog-content {
     display: flex;
     flex-direction: column;
-    max-height: 90dvh;
+    width: var(--dialog-max-width, calc(100vw - 2rem));
+    max-width: var(--dialog-width-lg, 32rem);
+    max-height: var(--dialog-max-height, 90dvh);
     overflow: hidden;
     border-radius: var(--radius-2xl, 1rem);
     padding: 0;
@@ -18,7 +20,8 @@
   .finai-dialog-form {
     display: flex;
     flex-direction: column;
-    max-height: 90dvh;
-    overflow: hidden;
+    max-height: var(--dialog-max-height, 90dvh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

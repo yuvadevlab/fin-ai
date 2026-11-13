@@ -28,6 +28,8 @@
 @import "./styles/transactions.css";
 @import "./styles/entities.css";
 @import "./styles/advisor.css";
+@import "./styles/insight-widget.css";
+@import "./styles/insight-window.css";
 @import "./styles/settings.css";
 @import "./styles/auth.css";
 @import "./styles/utilities.css";

@@ -8,6 +8,7 @@ export const HEALTH_COPY = {
   DEFAULT_ACTION: "Add a few transactions to receive a personalized action.",
   PRIORITY_AREA: (label: string): string => `Priority area: ${label}`,
   WHAT_IS_HELPING: "What is helping",
+  MAIN_CONSTRAINT: "Main constraint",
   PAGE_TITLE: "Your financial foundations",
   PAGE_DESCRIPTION: "Each metric has a target and a practical next step.",
   GUIDE_TITLE: "How your financial health score works",
@@ -20,4 +21,5 @@ export const HEALTH_COPY = {
     "A very low emergency fund, high debt pressure, or negative monthly cash flow can limit the overall score even when another metric is strong. This keeps serious risks visible.",
   NOW: "Now:",
   TARGET: "Target:",
+  NEXT_PREFIX: "Next:",
 } as const;

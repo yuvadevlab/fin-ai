@@ -126,7 +126,7 @@ export function TransactionsPage() {
 
           {/* Filter toolbar */}
           <div className="fn-transactions-toolbar">
-            <div className="relative w-full sm:w-auto sm:min-w-64 sm:flex-1">
+            <div className="fn-toolbar-search-wrap">
               <SearchBar
                 placeholder={UI_COPY.TRANSACTIONS.SEARCH_PLACEHOLDER}
                 value={search}
@@ -138,21 +138,20 @@ export function TransactionsPage() {
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="text-muted-foreground hover:bg-secondary absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1"
+                  className="fn-toolbar-search-clear"
                 >
                   <X className="size-3.5" />
                 </button>
               ) : null}
             </div>
 
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start sm:gap-3">
+            <div className="fn-toolbar-actions">
               <DateRangeFilter
                 onRangeChange={(range) => {
                   setDateRange(range);
                   setPage(1);
                 }}
               />
-
               <TransactionFiltersPopover
                 categories={categories}
                 accounts={accounts}
@@ -169,7 +168,7 @@ export function TransactionsPage() {
               />
             </div>
 
-            <div className="w-full overflow-x-auto py-0.5 sm:w-auto">
+            <div className="fn-toolbar-chips-wrap">
               <FilterChips options={chips} selected={selectedFilter} onChange={setSelectedFilter} />
             </div>
           </div>

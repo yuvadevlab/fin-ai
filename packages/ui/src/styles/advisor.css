@@ -15,7 +15,7 @@
   @media (min-width: 1024px) {
     .fn-advisor-layout {
       flex-direction: row;
-      height: calc(100vh - 11rem);
+      height: var(--advisor-workspace-height, calc(100dvh - 11rem));
     }
   }
 
@@ -24,7 +24,7 @@
     position: relative;
     display: flex;
     flex: 1;
-    min-height: 65vh;
+    min-height: var(--advisor-chat-min-height, calc(100dvh - 12rem));
     flex-direction: column;
     overflow: hidden;
     border-radius: var(--radius-2xl, 1rem);

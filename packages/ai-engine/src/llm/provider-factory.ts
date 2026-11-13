@@ -168,12 +168,16 @@ export function createChatModel(
         new GroqAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl }),
       );
     }
-    case AiProvider.GOOGLE_AI_STUDIO:
+    case AiProvider.GOOGLE_AI_STUDIO: {
+      const normalizedBaseUrl = baseUrl.replace(/\/+$/, "").endsWith("/v1beta")
+        ? baseUrl.replace(/\/+$/, "")
+        : `${baseUrl.replace(/\/+$/, "")}/v1beta`;
       return new DevLabChatModel(
         provider,
         model,
-        new GoogleAdapter({ apiKey: apiKey ?? "", baseUrl }),
+        new GoogleAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl }),
       );
+    }
     case AiProvider.OLLAMA:
       return new DevLabChatModel(provider, model, new DevLabOllamaAdapter({ baseUrl }));
     default:

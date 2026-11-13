@@ -80,21 +80,22 @@ export function InvestmentsPage() {
       {
         header: UI_COPY.INVESTMENTS.ASSET,
         accessor: (a: Investment) => (
-          <div>
+          <div className="finai-table-cell--asset">
             <p className="font-semibold">{a.name}</p>
             <p className="text-muted-foreground text-xs">{ASSET_CLASS_LABELS[a.assetClass]}</p>
           </div>
         ),
+        className: "finai-table-cell--asset",
       },
       {
         header: UI_COPY.INVESTMENTS.INVESTED,
         accessor: (a: Investment) => <PrivacyMoney value={a.investedAmount ?? 0} />,
-        className: "text-right",
+        className: "finai-table-cell--right finai-table-cell--nowrap",
       },
       {
         header: UI_COPY.INVESTMENTS.CURRENT_VALUE,
         accessor: (a: Investment) => <PrivacyMoney value={a.currentValue ?? 0} />,
-        className: "text-right",
+        className: "finai-table-cell--right finai-table-cell--nowrap",
       },
       {
         header: UI_COPY.INVESTMENTS.PL,
@@ -104,8 +105,8 @@ export function InvestmentsPage() {
           return (
             <span
               className={cn(
-                "font-bold tabular-nums",
-                pl >= 0 ? "text-primary" : "text-destructive",
+                "finai-table-cell--number finai-table-cell--nowrap",
+                pl >= 0 ? "finai-table-cell--positive" : "finai-table-cell--negative",
               )}
             >
               {pl >= 0 ? "+" : ""}
@@ -113,7 +114,7 @@ export function InvestmentsPage() {
             </span>
           );
         },
-        className: "text-right",
+        className: "finai-table-cell--right finai-table-cell--nowrap",
       },
       {
         header: UI_COPY.INVESTMENTS.ACTIONS,
@@ -134,7 +135,7 @@ export function InvestmentsPage() {
             />
           </div>
         ),
-        className: "text-right whitespace-nowrap",
+        className: "finai-table-cell--right finai-table-cell--nowrap",
       },
     ];
     return isReadOnly ? cols.filter((c) => c.header !== UI_COPY.INVESTMENTS.ACTIONS) : cols;
@@ -160,7 +161,7 @@ export function InvestmentsPage() {
 
       {isReadOnly && <ReadOnlyWorkspaceBanner className="mb-4" />}
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           label={UI_COPY.INVESTMENTS.TOTAL_VALUE}
           value={<PrivacyMoney value={totalValue} />}
@@ -175,9 +176,11 @@ export function InvestmentsPage() {
           label={UI_COPY.INVESTMENTS.UNREALISED_PL}
           value={<PrivacyMoney value={Math.abs(unrealisedPL)} />}
           trend={
-            unrealisedPL >= 0 ? { value: "Gain", kind: "up" } : { value: "Loss", kind: "down" }
+            unrealisedPL >= 0
+              ? { value: UI_COPY.INVESTMENTS.GAIN, kind: "up" }
+              : { value: UI_COPY.INVESTMENTS.LOSS, kind: "down" }
           }
-          hint="Current return"
+          hint={UI_COPY.INVESTMENTS.CURRENT_RETURN_HINT}
         />
       </section>
 

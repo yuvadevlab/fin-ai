@@ -7,6 +7,10 @@ interface FilterChipsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "o
   onChange: (value: string) => void;
 }
 
+/**
+ * Horizontal scrollable row of filter chip buttons.
+ * Semantic classes: `.fn-filter-chips`, `.fn-filter-chip`, `.fn-filter-chip--active`
+ */
 export function FilterChips({
   options,
   selected,
@@ -15,24 +19,17 @@ export function FilterChips({
   ...props
 }: FilterChipsProps) {
   return (
-    <div className={cn("flex flex-wrap gap-1.5", className)} {...props}>
-      {options.map((opt) => {
-        const active = selected === opt;
-        return (
-          <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={cn(
-              "focus-visible:ring-ring cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition outline-none focus-visible:ring-1",
-              active
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
-            )}
-          >
-            {opt}
-          </button>
-        );
-      })}
+    <div className={cn("fn-filter-chips", className)} {...props}>
+      {options.map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => onChange(opt)}
+          className={cn("fn-filter-chip", selected === opt && "fn-filter-chip--active")}
+        >
+          {opt}
+        </button>
+      ))}
     </div>
   );
 }

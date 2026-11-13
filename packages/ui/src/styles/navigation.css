@@ -10,7 +10,7 @@
     pointer-events: none;
     position: fixed;
     inset-inline: 0;
-    top: var(--topbar-height, 4rem);
+    top: var(--topbar-height, 3.5rem);
     z-index: var(--z-dropdown, 50);
     display: flex;
     justify-content: center;
@@ -23,8 +23,141 @@
     max-width: 32rem;
   }
 
+  /* ── Topbar Toggles & Responsive Controls ──────────────────────────────── */
+  .fn-topbar-menu-toggle {
+    display: inline-flex;
+  }
+  .fn-topbar-sidebar-toggle {
+    display: none;
+  }
+  .fn-topbar-search-desktop {
+    display: none;
+  }
+  .fn-topbar-search-mobile-btn {
+    display: inline-flex;
+  }
+
+  @media (min-width: 768px) {
+    .fn-topbar-menu-toggle {
+      display: none;
+    }
+    .fn-topbar-sidebar-toggle {
+      display: inline-flex;
+    }
+    .fn-topbar-search-desktop {
+      display: block;
+    }
+    .fn-topbar-search-mobile-btn {
+      display: none;
+    }
+  }
+
+  /* ── Mobile Topbar Search Active Bar ───────────────────────────────────── */
+  .fn-topbar-mobile-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fn-topbar-mobile-search-input-wrap {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .fn-topbar-desktop-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .fn-topbar-search-clear-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    padding: 0;
+    border: none;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    z-index: 2;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .fn-topbar-search-clear-btn:hover {
+    color: var(--foreground);
+    background-color: var(--accent);
+  }
+
+  /* ── Topbar Controls & Layout ─────────────────────────────────────────── */
+  .fn-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .fn-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .fn-topbar-add-tx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    border-radius: var(--radius-md, 0.375rem);
+    flex-shrink: 0;
+  }
+
+  .fn-topbar-add-tx-text {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .fn-topbar-left {
+      gap: 0.5rem;
+    }
+    .fn-topbar-right {
+      gap: 0.5rem;
+    }
+    .fn-topbar-add-tx-btn {
+      width: auto;
+      padding: 0 0.75rem;
+      gap: 0.375rem;
+    }
+    .fn-topbar-add-tx-text {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .fn-topbar-right {
+      gap: 0.75rem;
+    }
+  }
+
   .fn-mobile-drawer {
-    width: 18rem;
+    width: var(--drawer-mobile-width, min(18rem, calc(100vw - 3rem)));
     padding: 0;
     border-right: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   }
@@ -43,7 +176,6 @@
     padding: 0.625rem 0.875rem;
     font-size: 0.75rem;
     backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
   }
 
   .fn-readonly-banner-icon {
@@ -69,13 +201,12 @@
     color: var(--foreground);
     font-weight: 500;
   }
-
   .fn-date-filter-trigger:hover {
     background-color: color-mix(in srgb, var(--secondary) 60%, transparent);
   }
 
   .fn-date-filter-popover {
-    width: 20rem;
+    width: var(--filter-popover-width, min(20rem, calc(100vw - 2rem)));
     background-color: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl, 0.75rem);
@@ -97,11 +228,9 @@
     cursor: pointer;
     color: var(--foreground);
   }
-
   .fn-date-filter-preset:hover {
     background-color: var(--secondary);
   }
-
   .fn-date-filter-preset.is-active {
     background-color: var(--primary);
     color: var(--primary-foreground);
@@ -121,7 +250,6 @@
     background-color: color-mix(in srgb, var(--background) 95%, transparent);
     box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .fn-search-item {
@@ -134,7 +262,6 @@
     text-decoration: none;
     color: var(--foreground);
   }
-
   .fn-search-item:hover {
     background-color: var(--secondary);
   }

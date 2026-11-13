@@ -53,7 +53,7 @@ export function ProgressCard({
       });
 
   return (
-    <ContentCard className={cn("p-5", className)} {...props}>
+    <ContentCard className={cn("p-4 sm:p-5", className)} {...props}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-base font-semibold">{title}</p>
@@ -64,12 +64,12 @@ export function ProgressCard({
           {actions}
         </div>
       </div>
-      <div className="mt-5 flex items-baseline justify-between">
-        <span className="text-2xl font-bold tracking-tight tabular-nums">
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-1 sm:mt-5">
+        <span className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
           {unit}
           {formattedValue}
         </span>
-        <span className="text-muted-foreground text-sm">
+        <span className="text-muted-foreground text-xs sm:text-sm">
           of {unit}
           {formattedTarget}
         </span>
