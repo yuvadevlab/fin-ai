@@ -7,6 +7,9 @@
 import crypto from "node:crypto";
 import { Logger } from "@yuva-devlab/logger";
 
+/** Canonical RFC 7517 JWKS discovery endpoint path */
+export const DEFAULT_JWKS_PATH = "/.well-known/jwks.json";
+
 interface CachedKey {
   pem: string;
   expiresAt: number;
@@ -58,7 +61,7 @@ export async function getDevLabPublicKey(
   }
 
   const normalizedUrl = portalApiUrl.replace(/\/+$/, "");
-  const jwksUrl = `${normalizedUrl}/.well-known/jwks.json`;
+  const jwksUrl = `${normalizedUrl}${DEFAULT_JWKS_PATH}`;
 
   try {
     const res = await fetch(jwksUrl, {
