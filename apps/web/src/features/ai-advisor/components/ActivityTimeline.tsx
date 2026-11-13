@@ -111,17 +111,14 @@ export function ActivityTimeline({
           )}
         </span>
         {isStreaming && !expanded && (
-          <Loader2
-            className="text-primary shrink-0 motion-safe:size-3.5 motion-safe:animate-spin"
-            aria-hidden="true"
-          />
+          <Loader2 className="text-primary size-3.5 shrink-0 animate-spin" aria-hidden="true" />
         )}
         <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-medium">
           {expanded
             ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.HIDE_DETAILS
             : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.SHOW_DETAILS}
           <ChevronDown
-            className={cn("motion-safe size-3 transition-transform", expanded && "rotate-180")}
+            className={cn("size-3 transition-transform", expanded && "rotate-180")}
             aria-hidden="true"
           />
         </span>

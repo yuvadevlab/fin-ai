@@ -29,12 +29,7 @@ function StatusIcon({ status }: { status: StepStatus }) {
     return <Check className="text-muted-foreground size-3.5" aria-hidden="true" />;
   }
   if (status === "running") {
-    return (
-      <Loader2
-        className="text-primary motion-safe:size-3.5 motion-safe:animate-spin"
-        aria-hidden="true"
-      />
-    );
+    return <Loader2 className="text-primary size-3.5 animate-spin" aria-hidden="true" />;
   }
   if (status === "error") {
     return <X className="text-destructive size-3.5" aria-hidden="true" />;
