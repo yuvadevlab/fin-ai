@@ -6,6 +6,9 @@
 
 import crypto from "node:crypto";
 import { Logger } from "@yuva-devlab/logger";
+import { DEFAULT_JWKS_PATH } from "@yuva-devlab/auth-server";
+
+export { DEFAULT_JWKS_PATH };
 
 interface CachedKey {
   pem: string;
@@ -58,7 +61,7 @@ export async function getDevLabPublicKey(
   }
 
   const normalizedUrl = portalApiUrl.replace(/\/+$/, "");
-  const jwksUrl = `${normalizedUrl}/.well-known/jwks.json`;
+  const jwksUrl = `${normalizedUrl}${DEFAULT_JWKS_PATH}`;
 
   try {
     const res = await fetch(jwksUrl, {
