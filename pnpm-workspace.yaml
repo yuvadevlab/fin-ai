@@ -2,6 +2,11 @@ packages:
   - "apps/*"
   - "packages/*"
 
+overrides:
+  # Pin react-resizable-panels — v4.21.0 has a bundling bug where it tries
+  # to import 'Activity' from 'react', which does not exist in React 19.
+  react-resizable-panels: "4.12.4"
+
 allowBuilds:
   "@nestjs/core": true
   "@prisma/engines": true
