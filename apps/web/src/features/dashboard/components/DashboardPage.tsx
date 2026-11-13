@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Info, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -15,10 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  InfoButton,
 } from "@finai/ui";
 import { calculateNetCashFlow } from "@finai/finance-engine";
 import { TransactionDialog } from "@/features/transactions/components";
@@ -99,7 +96,7 @@ export function DashboardPage() {
               <Select value={cashFlowRange} onValueChange={setCashFlowRange}>
                 <SelectTrigger
                   id="cashflow-range-trigger"
-                  className="h-8 w-34 cursor-pointer text-xs font-medium"
+                  className="fn-cashflow-range-select cursor-pointer"
                   aria-label={UI_COPY.DASHBOARD.CASH_FLOW.RANGE_LABEL}
                 >
                   <SelectValue placeholder={UI_COPY.DASHBOARD.CASH_FLOW.PERIOD_PLACEHOLDER} />
@@ -134,22 +131,12 @@ export function DashboardPage() {
           title={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND}
           hint={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT}
           action={
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground -mr-1 size-6 cursor-pointer rounded-md"
-                    aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_EXPENSE}
-                    onClick={() => setTrendGuide("expense")}
-                  >
-                    <Info className="size-3.5" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <InfoButton
+              className="-mr-1"
+              aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_EXPENSE}
+              tooltip={UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}
+              onClick={() => setTrendGuide("expense")}
+            />
           }
           className="flex h-full flex-col justify-between"
         >
@@ -160,22 +147,12 @@ export function DashboardPage() {
           title={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND}
           hint={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND_HINT}
           action={
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground -mr-1 size-6 cursor-pointer rounded-md"
-                    aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_SAVINGS}
-                    onClick={() => setTrendGuide("savings")}
-                  >
-                    <Info className="size-3.5" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <InfoButton
+              className="-mr-1"
+              aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_SAVINGS}
+              tooltip={UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}
+              onClick={() => setTrendGuide("savings")}
+            />
           }
           className="flex h-full flex-col justify-between"
         >

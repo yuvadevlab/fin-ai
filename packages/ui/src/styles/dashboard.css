@@ -150,4 +150,13 @@
     font-weight: 600;
     color: var(--primary);
   }
+
+  /* ── Cash Flow Range Select Trigger ─────────────────────────────────────── */
+  .fn-cashflow-range-select {
+    width: 9.5rem;
+    min-width: 9.5rem;
+    height: 2rem;
+    font-size: var(--text-body-sm, 0.875rem);
+    font-weight: 500;
+  }
 }

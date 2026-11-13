@@ -57,6 +57,7 @@
 
   .finai-table-scroll-area {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     flex: 1;
     min-height: 0;
   }
@@ -64,6 +65,7 @@
   /* ── Native Table Structure ─────────────────────────────────────────────── */
   .finai-table {
     width: 100%;
+    min-width: var(--table-min-width, 35rem);
     border-collapse: collapse;
     text-align: left;
     font-size: 0.875rem;
@@ -126,5 +128,38 @@
     flex-shrink: 0;
     border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
     background-color: var(--card);
+  }
+
+  /* ── Semantic Cell Modifiers ────────────────────────────────────────────── */
+  .finai-table-cell--right {
+    text-align: right;
+  }
+
+  .finai-table-cell--nowrap {
+    white-space: nowrap;
+  }
+
+  .finai-table-cell--asset {
+    min-width: 10rem;
+  }
+
+  @media (min-width: 640px) {
+    .finai-table-cell--asset {
+      min-width: 12rem;
+    }
+  }
+
+  .finai-table-cell--number {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .finai-table-cell--positive {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .finai-table-cell--negative {
+    color: var(--destructive);
+    font-weight: 700;
   }
 }

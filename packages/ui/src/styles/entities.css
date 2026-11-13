@@ -9,7 +9,7 @@
   .fn-entity-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: clamp(0.75rem, 2vw, 1rem);
   }
 
   @media (min-width: 640px) {
@@ -33,7 +33,7 @@
     border-radius: var(--radius-2xl, 1rem);
     border: 1px solid var(--border);
     background-color: var(--card);
-    padding: 3rem;
+    padding: clamp(1.5rem, 5vw, 3rem);
     text-align: center;
     box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
   }
@@ -75,13 +75,5 @@
     border-radius: var(--radius-xl, 0.75rem);
     background-color: var(--secondary);
     font-size: 1.25rem;
-  }
-
-  /* ── Health Card Highlights ────────────────────────────────────────────── */
-  .fn-health-highlight-card {
-    border-radius: var(--radius-xl, 0.75rem);
-    border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
-    background-color: color-mix(in srgb, var(--primary) 5%, transparent);
-    padding: 1.25rem;
   }
 }

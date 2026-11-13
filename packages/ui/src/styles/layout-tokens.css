@@ -1,7 +1,7 @@
 /**
  * @file packages/ui/src/styles/layout-tokens.css
  * @description Master structural dimension tokens for shells, sidebars, headers, and grids.
- * Governed under @layer dl-tokens.
+ * Mobile-first responsive fluid metrics governed under @layer dl-tokens.
  */
 
 @layer dl-tokens {
@@ -19,43 +19,80 @@
     --color-investment: var(--investment);
     --card-radius: 1rem;
 
-    /* ── Header / Topbar Dimensions ───────────────────────────────────────── */
-    --topbar-height: 4rem; /* 64px (h-16) */
-    --topbar-padding-x: 1rem; /* 16px */
-    --sidebar-header-height: 4rem; /* 64px */
+    /* ── Viewport Safe Area Insets ────────────────────────────────────────── */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+
+    /* ── Header / Topbar Dimensions (Mobile First: 56px default) ──────────── */
+    --topbar-height: 3.5rem; /* 56px on mobile */
+    --topbar-padding-x: clamp(0.75rem, 2.5vw, 1.25rem);
+    --sidebar-header-height: 3.5rem;
 
     /* ── Sidebar Dimensions ───────────────────────────────────────────────── */
-    --sidebar-width: 16rem; /* 256px (w-64) */
-    --sidebar-width-collapsed: 4.5rem; /* 72px (w-18) */
-    --sidebar-padding-x: 0.75rem; /* 12px */
-    --sidebar-padding-y: 1rem; /* 16px */
+    --sidebar-width: 16rem; /* 256px */
+    --sidebar-width-collapsed: 4.5rem; /* 72px */
+    --sidebar-padding-x: 0.75rem;
+    --sidebar-padding-y: 1rem;
 
     /* ── Page Layout & Viewport Containers ───────────────────────────────── */
-    --page-max-width: 96rem; /* 1536px */
-    --page-padding-x: 1rem; /* 16px */
-    --page-padding-y: 1.25rem; /* 20px */
-    --section-gap: 1.5rem; /* 24px */
+    --page-max-width: 96rem;
+    --page-padding-x: clamp(0.75rem, 2.5vw, 1.5rem);
+    --page-padding-y: clamp(0.875rem, 2.5vw, 1.5rem);
+    --section-gap: clamp(1rem, 2.5vw, 1.5rem);
 
     /* ── Card & Surface Metrics ──────────────────────────────────────────── */
-    --card-padding: 1.25rem; /* 20px (p-5) */
-    --card-padding-sm: 0.875rem; /* 14px */
-    --card-padding-lg: 1.5rem; /* 24px */
-    --card-gap: 1rem; /* 16px (gap-4) */
-    --card-radius: 1rem; /* 16px (rounded-2xl) */
+    --card-padding: clamp(0.875rem, 2vw, 1.25rem);
+    --card-padding-sm: clamp(0.75rem, 1.5vw, 0.875rem);
+    --card-padding-lg: clamp(1rem, 2.5vw, 1.5rem);
+    --card-gap: clamp(0.75rem, 2vw, 1rem);
+    --card-radius: 1rem;
 
-    /* ── Interactive Controls & Heights ──────────────────────────────────── */
-    --control-height-xs: 1.75rem; /* 28px */
-    --control-height-sm: 2rem; /* 32px */
-    --control-height-md: 2.25rem; /* 36px (Default Button / Input) */
-    --control-height-lg: 2.5rem; /* 40px */
-    --control-height-xl: 3rem; /* 48px */
+    /* ── Interactive Controls & Touch Friendly Minimums ──────────────────── */
+    --control-height-xs: 1.75rem;
+    --control-height-sm: 2rem;
+    --control-height-md: 2.25rem;
+    --control-height-lg: 2.5rem;
+    --control-height-xl: 3rem;
+    --touch-target-min: 2.75rem; /* 44px touch target WCAG 2.5.5 */
 
     /* ── Data Tables & Ledgers ───────────────────────────────────────────── */
-    --table-header-height: 2.5rem; /* 40px Sticky Thead */
-    --table-row-height: 3.25rem; /* 52px */
-    --table-cell-padding-x: 1rem; /* 16px */
-    --table-cell-padding-y: 0.75rem; /* 12px */
-    --table-toolbar-height: 3.5rem; /* 56px Filter Bar */
+    --table-header-height: 2.5rem;
+    --table-row-height: 3.25rem;
+    --table-cell-padding-x: clamp(0.625rem, 1.5vw, 1rem);
+    --table-cell-padding-y: clamp(0.5rem, 1.2vw, 0.75rem);
+    --table-toolbar-height: 3.5rem;
+
+    /* ── Viewport Offsets & Fluid Screen Bounds ──────────────────────────── */
+    --viewport-gutter: var(--page-padding-x);
+    --viewport-popover-max-width: calc(100vw - (var(--viewport-gutter) * 2));
+    --viewport-drawer-gutter: 3rem;
+    --viewport-drawer-max-width: calc(100vw - var(--viewport-drawer-gutter));
+
+    /* ── Overlay, Popover & Flyout Dimensions ────────────────────────────── */
+    --popover-width-sm: 18rem; /* 288px */
+    --popover-width-md: 20rem; /* 320px */
+    --popover-width-lg: 22.5rem; /* 360px */
+    --popover-width-xl: 26.25rem; /* 420px */
+    --popover-max-width: var(--viewport-popover-max-width);
+    --filter-popover-width: min(var(--popover-width-md), var(--popover-max-width));
+    --insight-window-width: min(var(--popover-width-lg), var(--popover-max-width));
+    --notifications-popover-width: min(var(--popover-width-xl), var(--popover-max-width));
+    --drawer-mobile-width: min(18rem, var(--viewport-drawer-max-width));
+
+    /* ── Modal & Dialog Viewport Dimensions ──────────────────────────────── */
+    --dialog-width-sm: 24rem; /* 384px */
+    --dialog-width-md: 28rem; /* 448px */
+    --dialog-width-lg: 32rem; /* 512px */
+    --dialog-max-width: var(--viewport-popover-max-width);
+    --dialog-max-height: 90dvh;
+
+    /* ── Dynamic Viewport Height Offsets (AI Workspace & Shells) ─────────── */
+    --advisor-workspace-offset-desktop: 11rem;
+    --advisor-workspace-offset-mobile: 12rem;
+    --advisor-workspace-height: calc(100dvh - var(--advisor-workspace-offset-desktop));
+    --advisor-chat-min-height: calc(100dvh - var(--advisor-workspace-offset-mobile));
 
     /* ── Semantic Layer Z-Index Stack ────────────────────────────────────── */
     --z-base: 0;
@@ -74,13 +111,15 @@
   /* ── Responsive Viewport Scaling ────────────────────────────────────────── */
   @media (min-width: 640px) {
     :root {
-      --page-padding-x: 1.5rem;
-      --page-padding-y: 1.5rem;
+      --topbar-height: 3.75rem;
+      --sidebar-header-height: 3.75rem;
     }
   }
 
   @media (min-width: 768px) {
     :root {
+      --topbar-height: 4rem; /* 64px desktop */
+      --sidebar-header-height: 4rem;
       --topbar-padding-x: 2rem;
     }
   }

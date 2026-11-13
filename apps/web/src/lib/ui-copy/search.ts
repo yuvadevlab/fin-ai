@@ -4,4 +4,8 @@ export const SEARCH_COPY = {
   TRANSACTIONS: "Transactions",
   ACCOUNTS: "Accounts",
   GOALS: "Savings Goals",
+  PLACEHOLDER: "Search transactions, categories…",
+  OPEN_SEARCH: "Search",
+  CLOSE_SEARCH: "Close search",
+  CLEAR_SEARCH: "Clear search query",
 } as const;
