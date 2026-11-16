@@ -61,13 +61,15 @@ export class AgentController {
     this.logger.info(
       `[chat] SSE stream started for user ${userId.slice(0, 8)} (workspace: ${(workspaceId ?? "").slice(0, 8) || "personal"}, readOnly: ${isReadOnly ?? false})`,
     );
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
     const emit: AgentEventEmitter = (event) => {
       res.write(`data: ${JSON.stringify(event)}\n\n`);
+      (res as { flush?: () => void }).flush?.();
     };
 
     try {
