@@ -72,7 +72,7 @@ AI_PROVIDER=google-ai-studio
 GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com
 GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions
 GOOGLE_AI_STUDIO_API_KEY=your_api_key_here
-GOOGLE_AI_STUDIO_MODEL=gemini-3-flash-preview
+GOOGLE_AI_STUDIO_MODEL=gemini-3.8-flash
 
 # Alternative: OpenRouter
 # AI_PROVIDER=openrouter
@@ -113,7 +113,7 @@ JWT_SECRET=your-random-32char-secret,\
 WEB_URL=https://your-frontend-domain.com,\
 AI_PROVIDER=google-ai-studio,\
 GOOGLE_AI_STUDIO_API_KEY=your-api-key,\
-GOOGLE_AI_STUDIO_MODEL=gemini-3-flash-preview"
+GOOGLE_AI_STUDIO_MODEL=gemini-3.8-flash"
 ```
 
 #### Option B: Deploy via Render Blueprint

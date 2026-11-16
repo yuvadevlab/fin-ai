@@ -32,7 +32,7 @@ services:
       - key: GOOGLE_AI_STUDIO_API_KEY
         sync: false
       - key: GOOGLE_AI_STUDIO_MODEL
-        value: gemini-3-flash-preview
+        value: gemini-3.8-flash
       - key: DEVLAB_PORTAL_API_URL
         sync: false
 
