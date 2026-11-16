@@ -16,6 +16,22 @@ import { isJwtExpired } from "@/lib/jwt";
  * directly to the DevLab Portal Web UI login.
  */
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Allow public dynamic metadata assets to pass through without authentication
+  const isPublicAsset =
+    pathname === "/opengraph-image" ||
+    pathname.startsWith("/opengraph-image") ||
+    pathname === "/apple-icon" ||
+    pathname.startsWith("/apple-icon") ||
+    pathname === "/icon.svg" ||
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/robots.txt";
+
+  if (isPublicAsset) {
+    return NextResponse.next();
+  }
+
   // 1. If returning from DevLab Portal SSO with token in query params
   const tokenParam =
     request.nextUrl.searchParams.get("token") || request.nextUrl.searchParams.get("access_token");
@@ -81,9 +97,10 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - opengraph-image, apple-icon, icon.svg, manifest, robots
      * - auth routes (login, register, forgot-password, reset-password)
      * - static asset files (containing a dot: .png, .jpg, .svg, etc.)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|login|register|forgot-password|reset-password|.*\\..*).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|opengraph-image|apple-icon|icon\\.svg|manifest\\.webmanifest|robots\\.txt|login|register|forgot-password|reset-password|.*\\..*).*)",
   ],
 };
