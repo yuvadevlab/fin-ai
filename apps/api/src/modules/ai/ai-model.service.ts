@@ -68,25 +68,28 @@ export class AiModelService {
     this.logger.info(`[Stream] Started via ${this.model.provider} (${this.model.model})`);
     let error: Error | undefined;
 
+    const writeChunk = (payload: unknown) => {
+      res.write(`data: ${JSON.stringify(payload)}\n\n`);
+      (res as { flush?: () => void }).flush?.();
+    };
+
     try {
       for await (const event of this.model.stream(request)) {
         switch (event.type) {
           case "text-delta":
             onToken?.(event.text);
-            res.write(`data: ${JSON.stringify({ token: event.text })}\n\n`);
+            writeChunk({ token: event.text });
             break;
           case "tool_call":
             // Tool calls are surfaced as structured events (agentic mode handles these)
-            res.write(`data: ${JSON.stringify({ toolCall: event.toolCall })}\n\n`);
+            writeChunk({ toolCall: event.toolCall });
             break;
           case "usage":
-            res.write(
-              `data: ${JSON.stringify({ usage: { tokensIn: event.tokensIn, tokensOut: event.tokensOut } })}\n\n`,
-            );
+            writeChunk({ usage: { tokensIn: event.tokensIn, tokensOut: event.tokensOut } });
             break;
           case "done":
             this.logger.info(`[Stream] Finished via ${this.model.provider} (${this.model.model})`);
-            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+            writeChunk({ done: true });
             res.end();
             return;
         }
@@ -94,16 +97,14 @@ export class AiModelService {
 
       // Stream ended without explicit "done" — flush terminal events
       this.logger.info(`[Stream] Ended via ${this.model.provider} (${this.model.model})`);
-      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      writeChunk({ done: true });
       res.end();
     } catch (err) {
       error = err as Error;
       this.logger.error(`${this.model.provider} streaming error`, error);
-      res.write(
-        `data: ${JSON.stringify({
-          error: `${this.model.provider} service unavailable. ${error.message}`,
-        })}\n\n`,
-      );
+      writeChunk({
+        error: `${this.model.provider} service unavailable. ${error.message}`,
+      });
       res.end();
     }
   }

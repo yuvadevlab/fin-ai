@@ -74,6 +74,7 @@ export class OllamaService {
             if (token) {
               onToken?.(token);
               res.write(`data: ${JSON.stringify({ token })}\n\n`);
+              (res as { flush?: () => void }).flush?.();
             }
             if (parsed.done) {
               res.write(`data: ${JSON.stringify({ done: true })}\n\n`);

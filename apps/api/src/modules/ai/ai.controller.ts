@@ -100,9 +100,10 @@ export class AiController {
     @Res() res: Response,
   ) {
     // Set SSE headers (CORS is handled globally via WEB_URL config in main.ts)
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
     // Build financial context from DB for user
@@ -177,9 +178,10 @@ export class AiController {
     this.logger.info(
       `[insight] Generating page insight for "${page}" (user: ${userId.slice(0, 8)})`,
     );
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
     const context = await this.contextBuilder.buildFinanceContext(userId);

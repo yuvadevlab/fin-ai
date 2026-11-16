@@ -175,7 +175,11 @@ export function createChatModel(
       return new DevLabChatModel(
         provider,
         model,
-        new GoogleAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl }),
+        new GoogleAdapter({
+          apiKey: apiKey ?? "",
+          baseUrl: normalizedBaseUrl,
+          defaultModel: model,
+        }),
       );
     }
     case AiProvider.OLLAMA:
