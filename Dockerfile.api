@@ -16,10 +16,11 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy root workspace manifests
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.json tsconfig.json ./
 
-# Copy all package manifests across the workspace
+# Copy all package manifests and prisma schema across the workspace
 COPY packages/database/package.json ./packages/database/
+COPY packages/database/prisma ./packages/database/prisma
 COPY packages/shared-types/package.json ./packages/shared-types/
 COPY packages/prompts/package.json ./packages/prompts/
 COPY packages/validation/package.json ./packages/validation/
