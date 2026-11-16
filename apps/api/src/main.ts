@@ -99,10 +99,41 @@ async function bootstrap() {
     app.use(requestLogger(httpLogger as unknown as Logger));
   }
 
-  // CORS configuration using canonical allowed origins parsed from WEB_URL
+  // CORS configuration allowing localhost, all Vercel deployments, and configured WEB_URL origins
   app.enableCors({
-    origin: config.corsOrigins,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+      const isLocalhost =
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://127.0.0.1:") ||
+        origin === "http://localhost" ||
+        origin === "http://127.0.0.1";
+      const isVercel =
+        origin.endsWith(".vercel.app") || /^https:\/\/([a-z0-9-]+)\.vercel\.app$/.test(origin);
+      const isConfigured = config.corsOrigins.includes(origin);
+
+      if (isLocalhost || isVercel || isConfigured) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Accept",
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "x-correlation-id",
+      "x-request-id",
+      "x-tenant-id",
+      "traceparent",
+    ],
   });
 
   // Global exception filter
