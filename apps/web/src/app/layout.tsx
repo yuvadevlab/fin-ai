@@ -39,11 +39,20 @@ export const metadata: Metadata = {
     siteName: COMMON_COPY.METADATA.SITE_NAME,
     title: COMMON_COPY.METADATA.OG_TITLE,
     description: COMMON_COPY.METADATA.OG_DESCRIPTION,
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: COMMON_COPY.METADATA.OG_TITLE,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: COMMON_COPY.METADATA.OG_TITLE,
     description: COMMON_COPY.METADATA.OG_DESCRIPTION,
+    images: ["/opengraph-image"],
     creator: "@yuvadevlab",
   },
   robots: {
