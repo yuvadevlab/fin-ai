@@ -1,11 +1,31 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { LoginView } from "@/features/auth";
+import { COMMON_COPY } from "@/lib/ui-copy/common";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
-  title: "Sign In — FinAI",
-  description: "Sign in to your FinAI personal wealth and finance management dashboard.",
+  title: COMMON_COPY.METADATA.LOGIN_TITLE,
+  description: COMMON_COPY.METADATA.LOGIN_DESCRIPTION,
+  openGraph: {
+    title: COMMON_COPY.METADATA.LOGIN_OG_TITLE,
+    description: COMMON_COPY.METADATA.LOGIN_OG_DESCRIPTION,
+    url: "/login",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: COMMON_COPY.METADATA.LOGIN_OG_TITLE,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: COMMON_COPY.METADATA.LOGIN_OG_TITLE,
+    description: COMMON_COPY.METADATA.LOGIN_OG_DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
 };
 
 /**

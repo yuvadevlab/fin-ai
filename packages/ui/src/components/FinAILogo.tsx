@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { ChartNoAxesCombined } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export interface FinAILogoProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,7 +12,7 @@ export interface FinAILogoProps extends React.HTMLAttributes<HTMLDivElement> {
 export function FinAILogo({
   compact = false,
   showName = true,
-  animated = true,
+  animated: _animated = false,
   markClassName,
   className,
   ...props
@@ -23,12 +23,11 @@ export function FinAILogo({
         className={cn(
           "bg-primary flex shrink-0 items-center justify-center rounded-lg shadow-sm",
           compact ? "size-8" : "ring-primary/20 size-10 rounded-xl shadow-lg ring-4",
-          animated && "animate-pulse",
           markClassName,
         )}
         aria-hidden="true"
       >
-        <Sparkles
+        <ChartNoAxesCombined
           className={cn(compact ? "size-4" : "size-5", "text-primary-foreground")}
           aria-hidden="true"
         />
