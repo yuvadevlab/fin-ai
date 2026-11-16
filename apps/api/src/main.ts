@@ -130,8 +130,13 @@ async function bootstrap() {
       "Authorization",
       "X-Requested-With",
       "x-correlation-id",
+      "X-Correlation-Id",
       "x-request-id",
+      "X-Request-Id",
       "x-tenant-id",
+      "X-Tenant-Id",
+      "x-workspace-id",
+      "X-Workspace-Id",
       "traceparent",
     ],
   });
