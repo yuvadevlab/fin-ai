@@ -121,8 +121,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api/docs", app, document);
 
-  await app.listen(config.port);
-  appLogger.info(`🚀 FinAI API running on http://localhost:${config.port}`);
+  await app.listen(config.port, "0.0.0.0");
+  appLogger.info(`🚀 FinAI API running on http://0.0.0.0:${config.port}`);
   appLogger.info(`📖 Swagger docs: http://localhost:${config.port}/api/docs`);
   appLogger.info(
     `Logger config: enabled=${config.logEnabled}, level=${config.logLevel}, requests=${config.logRequests}, persist=${config.logPersist}, file=${config.logFile ?? "(none)"}`,

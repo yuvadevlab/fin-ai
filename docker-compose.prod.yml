@@ -1,0 +1,75 @@
+# ==============================================================================
+# FinAI — Local Production Stack Validation
+# Author: yuva.devlab@gmail.com
+# Usage: docker compose -f docker-compose.prod.yml up --build -d
+# ==============================================================================
+
+services:
+  # ─── Production PostgreSQL 16 (pgvector enabled) ───────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: finai-prod-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: finai_admin
+      POSTGRES_PASSWORD: FinAiSecurePass2026!
+      POSTGRES_DB: finai
+    volumes:
+      - finai_prod_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finai_admin -d finai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── FinAI Backend API ──────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: finai-prod-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "4001:4001"
+    environment:
+      NODE_ENV: production
+      PORT: 4001
+      DATABASE_URL: postgresql://finai_admin:FinAiSecurePass2026!@postgres:5432/finai?schema=public
+      JWT_SECRET: SuperSecretProductionJwtKey2026FinAi!
+      JWT_EXPIRY: 7d
+      WEB_URL: http://localhost:3001
+      AI_PROVIDER: ${AI_PROVIDER:-google-ai-studio}
+      GOOGLE_AI_STUDIO_BASE_URL: https://generativelanguage.googleapis.com
+      GOOGLE_AI_STUDIO_API_PATH: /v1beta/openai/chat/completions
+      GOOGLE_AI_STUDIO_API_KEY: ${GOOGLE_AI_STUDIO_API_KEY:-}
+      GOOGLE_AI_STUDIO_MODEL: ${GOOGLE_AI_STUDIO_MODEL:-gemini-4-hydrogen}
+      LOG_ENABLED: "true"
+      LOG_LEVEL: info
+
+  # ─── FinAI Web Frontend ─────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: finai-prod-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      NEXT_PUBLIC_API_URL: http://localhost:4001
+      NEXT_PUBLIC_DEVLAB_PORTAL_WEB_URL: http://localhost:3000
+      NEXT_PUBLIC_DEVLAB_PORTAL_API_URL: http://localhost:4000
+      NEXT_PUBLIC_APP_ID: finai
+
+volumes:
+  finai_prod_pgdata:
+    driver: local

@@ -1,0 +1,67 @@
+name: Deploy FinAI API to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "apps/api/**"
+      - "packages/**"
+      - "Dockerfile.api"
+      - "Dockerfile"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud via WIF
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Determine Environment Variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV_NAME=production" >> $GITHUB_ENV
+            echo "SERVICE_NAME=finai-api" >> $GITHUB_ENV
+            echo "DB_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
+          else
+            echo "ENV_NAME=development" >> $GITHUB_ENV
+            echo "SERVICE_NAME=finai-api-dev" >> $GITHUB_ENV
+            echo "DB_URL=${{ secrets.DATABASE_URL_DEV }}" >> $GITHUB_ENV
+          fi
+
+      - name: Prepare Container Entrypoint
+        run: |
+          if [ -f Dockerfile.api ]; then
+            cp Dockerfile.api Dockerfile
+          fi
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --source . \
+            --region asia-southeast1 \
+            --allow-unauthenticated \
+            --port 4001 \
+            --memory 512Mi \
+            --cpu 1 \
+            --set-env-vars "NODE_ENV=${{ env.ENV_NAME }},DATABASE_URL=${{ env.DB_URL }},DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }},AI_PROVIDER=google-ai-studio,AI_PROVIDER_AGENT=google-ai-studio,AI_PROVIDER_CHAT=google-ai-studio,GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }},GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com,GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions,GOOGLE_AI_STUDIO_MODEL=gemini-2.5-flash,WEB_URL=http://localhost:3001" \
+            --quiet
