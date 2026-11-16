@@ -47,7 +47,7 @@ services:
       GOOGLE_AI_STUDIO_BASE_URL: https://generativelanguage.googleapis.com
       GOOGLE_AI_STUDIO_API_PATH: /v1beta/openai/chat/completions
       GOOGLE_AI_STUDIO_API_KEY: ${GOOGLE_AI_STUDIO_API_KEY:-}
-      GOOGLE_AI_STUDIO_MODEL: ${GOOGLE_AI_STUDIO_MODEL:-gemini-4-hydrogen}
+      GOOGLE_AI_STUDIO_MODEL: ${GOOGLE_AI_STUDIO_MODEL:-gemini-3-flash-preview}
       LOG_ENABLED: "true"
       LOG_LEVEL: info
 
