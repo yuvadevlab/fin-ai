@@ -29,6 +29,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/analytics",
+        destination: "/health",
+        permanent: false,
+      },
+      {
+        source: "/settings/profile",
+        destination: "/settings?tab=profile",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

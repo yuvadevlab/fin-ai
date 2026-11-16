@@ -70,4 +70,37 @@ export const COMMON_COPY = {
     NETWORK_DISCONNECTED: "Network connection lost. Reconnecting...",
     UNAUTHORIZED: "Session expired. Please log in again.",
   },
+  BRAND: {
+    NAME: "FinAI",
+    APP_NAME: "FinAI",
+    TAGLINE: "AI-Powered Personal Finance & Wealth Management",
+  },
+  METADATA: {
+    TITLE: "FinAI — AI-Powered Personal Finance & Wealth Management",
+    TITLE_TEMPLATE: "%s | FinAI",
+    DESCRIPTION:
+      "Track expenses, forecast wealth, set budgets, and achieve financial goals with intelligent AI insights.",
+    SITE_NAME: "FinAI",
+    AUTHOR: "Yuva DevLab",
+    AUTHOR_URL: "https://fin-ai-yuvadevlab.vercel.app",
+    KEYWORDS: [
+      "FinAI",
+      "Personal Finance",
+      "AI Financial Advisor",
+      "Wealth Management",
+      "Budgeting",
+      "Expense Tracking",
+      "Investment Analytics",
+      "Smart Money Management",
+    ],
+    OG_TITLE: "FinAI — AI-Powered Personal Finance & Wealth Management",
+    OG_DESCRIPTION:
+      "Intelligent financial tracking, automated budgeting, and AI advisor insights powered by Google Gemini.",
+    OG_IMAGE_ALT: "FinAI AI-Powered Personal Finance & Wealth Management Dashboard",
+    LOGIN_TITLE: "Sign In — FinAI",
+    LOGIN_DESCRIPTION: "Sign in to your FinAI personal wealth and finance management dashboard.",
+    LOGIN_OG_TITLE: "Sign In — FinAI Personal Finance",
+    LOGIN_OG_DESCRIPTION:
+      "Access your personal financial dashboard, AI advisor, and wealth tracking tools.",
+  },
 } as const;

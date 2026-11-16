@@ -1,25 +1,61 @@
 import React from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AppProviders } from "@/providers";
 import { appearanceScript } from "@/lib/appearance-script";
 import { APP_ID } from "@/lib/app-constants";
 import { getServerAuth } from "@/lib/server-auth";
+import { COMMON_COPY } from "@/lib/ui-copy/common";
 import "./globals.css";
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fin-ai-yuvadevlab.vercel.app";
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const viewport: Viewport = {
+  themeColor: "#37b976",
+};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
-  title: "FinAI — AI-Powered Personal Finance",
-  description:
-    "FinAI is an AI-powered dashboard for personal finances — track expenses, set budgets, achieve goals, and get intelligent insights.",
-  authors: [{ name: "FinAI" }],
+  metadataBase: new URL(appUrl),
+  title: {
+    default: COMMON_COPY.METADATA.TITLE,
+    template: COMMON_COPY.METADATA.TITLE_TEMPLATE,
+  },
+  description: COMMON_COPY.METADATA.DESCRIPTION,
+  applicationName: COMMON_COPY.BRAND.APP_NAME,
+  authors: [{ name: COMMON_COPY.METADATA.AUTHOR, url: COMMON_COPY.METADATA.AUTHOR_URL }],
+  creator: COMMON_COPY.METADATA.AUTHOR,
+  publisher: COMMON_COPY.METADATA.AUTHOR,
+  keywords: [...COMMON_COPY.METADATA.KEYWORDS],
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon", type: "image/png" }],
+  },
   openGraph: {
-    title: "FinAI — AI-Powered Personal Finance",
-    description:
-      "Track personal finances with AI-powered insights, budgets, goals, and investment reports.",
     type: "website",
+    locale: "en_US",
+    url: appUrl,
+    siteName: COMMON_COPY.METADATA.SITE_NAME,
+    title: COMMON_COPY.METADATA.OG_TITLE,
+    description: COMMON_COPY.METADATA.OG_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
+    title: COMMON_COPY.METADATA.OG_TITLE,
+    description: COMMON_COPY.METADATA.OG_DESCRIPTION,
+    creator: "@yuvadevlab",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
