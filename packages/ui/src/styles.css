@@ -28,6 +28,13 @@
 @import "./styles/transactions.css";
 @import "./styles/entities.css";
 @import "./styles/advisor-header.css";
+@import "./styles/advisor-cards.css";
+@import "./styles/advisor-landing.css";
+@import "./styles/advisor-guide.css";
+@import "./styles/advisor-console.css";
+@import "./styles/advisor-composer.css";
+@import "./styles/advisor-chat.css";
+@import "./styles/advisor-timeline.css";
 @import "./styles/advisor.css";
 @import "./styles/insight-widget.css";
 @import "./styles/insight-window.css";

@@ -5,6 +5,28 @@
  */
 
 @layer dl-components {
+  /* ── Mobile-Safe Modal Constraints ─────────────────────────────────────── */
+  .dl-dialog-content {
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  @media (min-width: 640px) {
+    .dl-dialog-content.dl-dialog--sm {
+      max-width: 24rem !important;
+    }
+    .dl-dialog-content.dl-dialog--md {
+      max-width: 32rem !important;
+    }
+    .dl-dialog-content.dl-dialog--lg {
+      max-width: 44rem !important;
+      width: 90vw !important;
+    }
+    .dl-dialog-content.dl-dialog--xl {
+      max-width: 56rem !important;
+      width: 92vw !important;
+    }
+  }
+
   .finai-dialog-content {
     display: flex;
     flex-direction: column;

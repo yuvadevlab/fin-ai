@@ -79,46 +79,59 @@ export function ActivityTimeline({
       : null;
 
   return (
-    <div className="bg-muted/40 border-border overflow-hidden rounded-xl border">
+    <div className="fn-timeline">
       {/* Header button */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
-        className="hover:bg-muted/60 flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-left transition"
+        className="fn-timeline-header"
       >
         {expanded ? (
-          <ChevronUp className="text-muted-foreground size-3.5 shrink-0" aria-hidden="true" />
+          <ChevronUp
+            className="fn-timeline-header-icon fn-timeline-header-icon--muted"
+            aria-hidden="true"
+          />
         ) : isStreaming ? (
-          <Sparkles className="text-primary size-3.5 shrink-0 animate-pulse" aria-hidden="true" />
+          <Sparkles
+            className="fn-timeline-header-icon fn-timeline-header-icon--streaming"
+            aria-hidden="true"
+          />
         ) : hasError ? (
-          <AlertTriangle className="text-destructive size-3.5 shrink-0" aria-hidden="true" />
+          <AlertTriangle
+            className="fn-timeline-header-icon fn-timeline-header-icon--error"
+            aria-hidden="true"
+          />
         ) : (
-          <Check className="text-primary size-3.5 shrink-0" aria-hidden="true" />
+          <Check
+            className="fn-timeline-header-icon fn-timeline-header-icon--success"
+            aria-hidden="true"
+          />
         )}
-        <span className="min-w-0 flex-1" aria-live="polite">
+        <span className="fn-timeline-header-content" aria-live="polite">
           <span
             className={cn(
-              "block truncate text-[13px] font-medium",
-              isStreaming ? "text-foreground" : "text-muted-foreground",
+              "fn-timeline-header-title",
+              isStreaming ? "fn-timeline-header-title--active" : "fn-timeline-header-title--idle",
             )}
           >
-            {isStreaming && <span className="text-primary mr-1.5 font-mono text-[11px]">⚡</span>}
+            {isStreaming && <span className="font-mono text-[11px] text-primary mr-1.5">⚡</span>}
             {headerTitle}
           </span>
-          {summaryMeta && (
-            <span className="text-muted-foreground/70 mt-0.5 block text-xs">{summaryMeta}</span>
-          )}
+          {summaryMeta && <span className="fn-timeline-header-meta">{summaryMeta}</span>}
         </span>
         {isStreaming && !expanded && (
-          <Loader2 className="text-primary size-3.5 shrink-0 animate-spin" aria-hidden="true" />
+          <Loader2
+            className="fn-timeline-header-icon fn-timeline-header-icon--streaming animate-spin"
+            aria-hidden="true"
+          />
         )}
-        <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-medium">
+        <span className="fn-timeline-header-toggle">
           {expanded
             ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.HIDE_DETAILS
             : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.SHOW_DETAILS}
           <ChevronDown
-            className={cn("size-3 transition-transform", expanded && "rotate-180")}
+            className={cn("fn-timeline-header-chevron", expanded && "is-open")}
             aria-hidden="true"
           />
         </span>
@@ -126,19 +139,14 @@ export function ActivityTimeline({
 
       {/* Expanded Mode Tabs (Steps vs Live Terminal) */}
       {expanded && (
-        <div className="bg-muted/30 border-border/60 flex items-center justify-between border-t px-3.5 py-1.5">
-          <div className="flex items-center gap-1">
+        <div className="fn-timeline-nav">
+          <div className="fn-timeline-nav-tabs">
             <button
               type="button"
               onClick={() => setViewMode("steps")}
-              className={cn(
-                "flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition",
-                viewMode === "steps"
-                  ? "bg-background text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className={cn("fn-timeline-nav-tab", viewMode === "steps" && "is-active")}
             >
-              <ListTree className="size-3" />
+              <ListTree className="fn-timeline-nav-tab-icon" />
               <span>
                 {UI_COPY.ADVISOR.ACTIVITY_TIMELINE.ACTIVITY_STEP_COUNT(activities.length)}
               </span>
@@ -146,17 +154,12 @@ export function ActivityTimeline({
             <button
               type="button"
               onClick={() => setViewMode("logs")}
-              className={cn(
-                "flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-xs font-medium transition",
-                viewMode === "logs"
-                  ? "bg-background text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className={cn("fn-timeline-nav-tab font-mono", viewMode === "logs" && "is-active")}
             >
-              <Terminal className="size-3" />
+              <Terminal className="fn-timeline-nav-tab-icon" />
               <span>{UI_COPY.ADVISOR.ACTIVITY_TIMELINE.LIVE_CONSOLE}</span>
               {logs.length > 0 && <span className="text-[10px] opacity-75">({logs.length})</span>}
-              {isStreaming && <span className="bg-primary size-1.5 animate-ping rounded-full" />}
+              {isStreaming && <span className="size-1.5 rounded-full bg-primary animate-ping" />}
             </button>
           </div>
           <span className="text-muted-foreground text-[11px]">
@@ -171,14 +174,14 @@ export function ActivityTimeline({
       {showRows && (
         <>
           {expanded && viewMode === "logs" ? (
-            <div className="border-border/40 border-t bg-zinc-950/50 p-2">
+            <div className="border-t border-border/40 bg-zinc-950/50 p-2">
               <LiveRunConsole logs={logs} isStreaming={isStreaming} />
             </div>
           ) : (
             <ul
               id="agent-activity-steps"
               aria-label={UI_COPY.ADVISOR.ACTIVITY_TIMELINE.EXECUTION_STEPS}
-              className="border-border/60 border-t px-3.5 py-1.5"
+              className="fn-timeline-list border-t border-border/60 px-3.5 py-1.5"
             >
               {visible.map((activity, index) => (
                 <ActivityStepRow

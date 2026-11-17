@@ -98,7 +98,7 @@ export function AdvisorComposer({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           disabled={isStreaming}
-          className="text-foreground placeholder:text-muted-foreground flex-1 resize-none bg-transparent text-sm leading-relaxed outline-none disabled:opacity-50"
+          className="fn-advisor-composer-textarea"
           style={{ height: "auto", overflow: "auto" }}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;
@@ -112,7 +112,7 @@ export function AdvisorComposer({
             type="button"
             size="icon"
             variant="destructive"
-            className="size-9 shrink-0 rounded-lg"
+            className="fn-advisor-composer-btn--stop"
             onClick={onStop}
             title={UI_COPY.ADVISOR.COMPOSER.STOP_A11Y}
           >
@@ -122,10 +122,7 @@ export function AdvisorComposer({
           <Button
             type="submit"
             size="icon"
-            className={cn(
-              "size-9 shrink-0 rounded-lg transition-opacity",
-              !value.trim() && "opacity-40",
-            )}
+            className="fn-advisor-composer-btn"
             disabled={!value.trim()}
             title={UI_COPY.ADVISOR.COMPOSER.SEND_A11Y}
           >
@@ -136,15 +133,11 @@ export function AdvisorComposer({
 
       {/* Dynamic status strip during streaming */}
       {isStreaming && (
-        <p className="text-muted-foreground mt-2 flex items-center justify-center gap-1.5 text-center text-[11px]">
-          {runState.isActive && <span className="bg-primary size-1.5 animate-pulse rounded-full" />}
-          <span className="text-foreground font-medium">{runState.statusLabel}</span>
-          <span className="text-muted-foreground">·</span>
-          <button
-            type="button"
-            onClick={onStop}
-            className="hover:text-foreground underline-offset-2 hover:underline"
-          >
+        <p className="fn-advisor-composer-status">
+          {runState.isActive && <span className="fn-advisor-composer-status-pulse" />}
+          <span className="fn-advisor-composer-status-label">{runState.statusLabel}</span>
+          <span>·</span>
+          <button type="button" onClick={onStop} className="fn-advisor-composer-stop-link">
             {UI_COPY.ADVISOR.COMPOSER.STOP_ACTION}
           </button>
         </p>
@@ -152,7 +145,7 @@ export function AdvisorComposer({
 
       {/* Idle keyboard shortcut hint */}
       {!isStreaming && (
-        <p className="text-muted-foreground mt-1.5 text-center text-[10px]">
+        <p className="fn-advisor-composer-hint">
           {editingPending
             ? UI_COPY.ADVISOR.COMPOSER.CORRECTION_HINT
             : UI_COPY.ADVISOR.COMPOSER.ENTER_HINT}

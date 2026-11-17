@@ -26,8 +26,8 @@ export function QuickActions({
   return (
     <div
       className={cn(
-        "flex gap-2",
-        variant === "chips" ? "flex-wrap" : "grid grid-cols-2",
+        "fn-quick-actions",
+        variant === "chips" ? "fn-quick-actions--chips" : "fn-quick-actions--grid",
         className,
       )}
     >
@@ -38,9 +38,7 @@ export function QuickActions({
           disabled={disabled}
           onClick={() => onSelect(action.message)}
           className={cn(
-            variant === "chips"
-              ? "bg-card hover:bg-accent hover:text-accent-foreground border-border/70 text-muted-foreground inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95"
-              : "bg-primary/5 hover:bg-primary/10 border-border/60 hover:border-primary/30 text-muted-foreground hover:text-foreground flex cursor-pointer flex-col items-start gap-0.5 rounded-xl border px-2.5 py-2 text-left transition active:scale-95",
+            variant === "chips" ? "fn-quick-actions-chip" : "fn-quick-actions-card",
             disabled && "pointer-events-none opacity-50",
           )}
         >
@@ -48,19 +46,17 @@ export function QuickActions({
             className={
               variant === "chips"
                 ? "inline-flex items-center gap-1.5"
-                : "inline-flex items-center gap-1.5 text-xs font-semibold"
+                : "fn-quick-actions-card-title"
             }
           >
             <action.icon
-              className={cn("shrink-0", variant === "chips" ? "size-3.5" : "text-primary size-3.5")}
+              className={cn(variant === "chips" ? "size-3.5" : "fn-quick-actions-card-icon")}
               aria-hidden="true"
             />
             <span>{action.label}</span>
           </span>
           {action.hint && variant === "grid" && (
-            <span className="text-muted-foreground/80 text-[10px] leading-tight">
-              {action.hint}
-            </span>
+            <span className="fn-quick-actions-card-hint">{action.hint}</span>
           )}
         </button>
       ))}

@@ -36,7 +36,7 @@ export function ChatMessages({
   executingActionId,
 }: ChatMessagesProps) {
   return (
-    <div className="space-y-5">
+    <div className="fn-chat-thread">
       {messages.map((message, idx) => {
         const isAssistant = message.role === "assistant";
         const isLastMessage = idx === messages.length - 1;
@@ -48,7 +48,7 @@ export function ChatMessages({
             : [];
 
         return (
-          <div key={idx} className="space-y-3">
+          <div key={idx} className="fn-chat-turn">
             {isAssistant ? (
               /* Assistant turn — composed AgentRun */
               <AgentRun
@@ -59,31 +59,31 @@ export function ChatMessages({
               />
             ) : (
               /* User message — right-aligned bubble */
-              <div className="flex flex-row-reverse gap-3">
+              <div className="fn-chat-user-row">
                 <div className="fn-chat-user-avatar">
                   <User className="size-4" aria-hidden="true" />
                 </div>
                 <div className="fn-chat-user-bubble">
-                  <p className="leading-relaxed">{message.text}</p>
+                  <p className="fn-chat-user-text">{message.text}</p>
                 </div>
               </div>
             )}
 
             {/* Follow-up suggestions below the last assistant turn */}
             {followUps.length > 0 && onSelectFollowUp && (
-              <div className="flex flex-col gap-2">
-                <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+              <div className="fn-chat-followups">
+                <p className="fn-chat-followups-title">
                   {UI_COPY.ADVISOR.FEED.SUGGESTED_FOLLOW_UPS}
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="fn-chat-followups-list">
                   {followUps.map((question, qIdx) => (
                     <button
                       key={qIdx}
                       onClick={() => onSelectFollowUp(question)}
-                      className="fn-chat-followup-chip group"
+                      className="fn-chat-followup-chip"
                     >
                       <span>{question}</span>
-                      <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="fn-chat-followup-icon" />
                     </button>
                   ))}
                 </div>
