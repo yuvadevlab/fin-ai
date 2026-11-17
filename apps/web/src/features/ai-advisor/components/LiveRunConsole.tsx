@@ -12,15 +12,15 @@ interface LiveRunConsoleProps {
   className?: string;
 }
 
-const LEVEL_BADGES: Record<AgentRunLogEntry["level"], { label: string; className: string }> = {
-  SYS: { label: "SYS", className: "text-zinc-400 bg-zinc-800/80 border-zinc-700/60" },
-  CTX: { label: "CTX", className: "text-sky-400 bg-sky-950/80 border-sky-850" },
-  LLM: { label: "LLM", className: "text-purple-400 bg-purple-950/80 border-purple-850" },
-  TOOL: { label: "TOOL", className: "text-amber-400 bg-amber-950/80 border-amber-850" },
-  STREAM: { label: "STREAM", className: "text-primary bg-primary/20 border-primary/40" },
-  ACTION: { label: "ACTION", className: "text-blue-400 bg-blue-950/80 border-blue-850" },
-  DONE: { label: "DONE", className: "text-teal-400 bg-teal-950/80 border-teal-850" },
-  ERR: { label: "ERR", className: "text-destructive bg-destructive/20 border-destructive/40" },
+const LEVEL_BADGES: Record<AgentRunLogEntry["level"], { label: string; modifier: string }> = {
+  SYS: { label: "SYS", modifier: "fn-console-badge--sys" },
+  CTX: { label: "CTX", modifier: "fn-console-badge--ctx" },
+  LLM: { label: "LLM", modifier: "fn-console-badge--llm" },
+  TOOL: { label: "TOOL", modifier: "fn-console-badge--tool" },
+  STREAM: { label: "STREAM", modifier: "fn-console-badge--stream" },
+  ACTION: { label: "ACTION", modifier: "fn-console-badge--action" },
+  DONE: { label: "DONE", modifier: "fn-console-badge--done" },
+  ERR: { label: "ERR", modifier: "fn-console-badge--err" },
 };
 
 function formatOffset(ms: number): string {
@@ -51,39 +51,32 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
   };
 
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-xl border border-zinc-800/90 bg-zinc-950 font-mono text-xs text-zinc-300 shadow-inner",
-        className,
-      )}
-    >
+    <div className={cn("fn-console", className)}>
       {/* Console toolbar */}
-      <div className="flex items-center justify-between border-b border-zinc-800/80 bg-zinc-900/90 px-3 py-1.5 text-[11px]">
-        <div className="flex items-center gap-2">
-          <Terminal className="size-3.5 text-zinc-400" />
-          <span className="font-semibold tracking-wider text-zinc-400 uppercase">
-            {UI_COPY.ADVISOR.LIVE_CONSOLE.TITLE}
-          </span>
+      <div className="fn-console-toolbar">
+        <div className="fn-console-brand">
+          <Terminal className="fn-console-icon" />
+          <span className="fn-console-title">{UI_COPY.ADVISOR.LIVE_CONSOLE.TITLE}</span>
           {isStreaming && (
-            <span className="text-primary flex items-center gap-1">
-              <span className="bg-primary size-1.5 animate-pulse rounded-full" />
+            <span className="fn-console-streaming-tag">
+              <span className="fn-console-pulse-dot" />
               <span>{UI_COPY.ADVISOR.LIVE_CONSOLE.RUNNING}</span>
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-zinc-500">
+        <div className="fn-console-actions">
+          <span className="fn-console-count">
             {UI_COPY.ADVISOR.LIVE_CONSOLE.EVENT_COUNT(logs.length)}
           </span>
           {logs.length > 0 && (
             <Button
               variant="ghost"
               size="icon"
-              className="size-6 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+              className="fn-console-copy-btn"
               onClick={handleCopy}
               title={UI_COPY.ADVISOR.LIVE_CONSOLE.COPY_TOOLTIP}
             >
-              {copied ? <Check className="text-primary size-3" /> : <Copy className="size-3" />}
+              {copied ? <Check className="size-3 text-primary" /> : <Copy className="size-3" />}
             </Button>
           )}
         </div>
@@ -94,42 +87,28 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
         ref={scrollRef}
         tabIndex={0}
         aria-label={UI_COPY.ADVISOR.LIVE_CONSOLE.STREAM_LABEL}
-        className="max-h-56 min-h-24 scrollbar-thin scrollbar-thumb-zinc-800 space-y-1 overflow-y-auto p-2.5 select-text focus-visible:outline-none"
+        className="fn-console-stream"
       >
         {logs.length === 0 ? (
-          <p className="py-2 text-zinc-600 italic">{UI_COPY.ADVISOR.LIVE_CONSOLE.EMPTY}</p>
+          <p className="fn-console-empty">{UI_COPY.ADVISOR.LIVE_CONSOLE.EMPTY}</p>
         ) : (
           logs.map((log) => {
             const badge = LEVEL_BADGES[log.level] ?? LEVEL_BADGES.SYS;
             return (
-              <div
-                key={log.id}
-                className="flex items-start gap-2 rounded px-1 py-0.5 font-mono leading-relaxed transition-colors hover:bg-zinc-900/50"
-              >
-                <span className="w-12 shrink-0 text-right text-[10px] text-zinc-500 select-none">
-                  {formatOffset(log.elapsedMs)}
-                </span>
-                <span
-                  className={cn(
-                    "py-0.2 shrink-0 rounded border px-1 text-[9px] font-bold tracking-tight uppercase",
-                    badge.className,
-                  )}
-                >
-                  {badge.label}
-                </span>
-                <span className="min-w-0 flex-1 wrap-break-word text-zinc-200">
+              <div key={log.id} className="fn-console-row">
+                <span className="fn-console-time">{formatOffset(log.elapsedMs)}</span>
+                <span className={cn("fn-console-badge", badge.modifier)}>{badge.label}</span>
+                <span className="fn-console-msg">
                   {log.message}
-                  {log.detail && (
-                    <span className="ml-1.5 text-[11px] text-zinc-400">[{log.detail}]</span>
-                  )}
+                  {log.detail && <span className="fn-console-detail">[{log.detail}]</span>}
                 </span>
               </div>
             );
           })
         )}
         {isStreaming && (
-          <div className="flex animate-pulse items-center gap-2 px-1 text-[11px] text-zinc-500">
-            <span className="bg-primary inline-block size-1.5 rounded-full" />
+          <div className="fn-console-loading-indicator">
+            <span className="fn-console-pulse-dot" />
             <span>{UI_COPY.ADVISOR.LIVE_CONSOLE.PROCESSING}</span>
           </div>
         )}

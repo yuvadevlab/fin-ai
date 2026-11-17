@@ -46,22 +46,20 @@ export function AgentRun({
   const proseContent = insight?.remainingText ? insight.remainingText : text;
 
   return (
-    <div className="space-y-3">
+    <div className="fn-chat-turn">
       {/* 0. Runtime badge — tells the user which mode produced this reply */}
       {message.mode && (
-        <div className="flex justify-end">
+        <div className="fn-chat-mode-row">
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
-              message.mode === "agent"
-                ? "text-primary border-primary/20 bg-primary/5"
-                : "text-muted-foreground border-border/70 bg-muted/40",
+              "fn-chat-mode-tag",
+              message.mode === "agent" ? "fn-chat-mode-tag--agent" : "fn-chat-mode-tag--advisor",
             )}
           >
             {message.mode === "agent" ? (
-              <Zap className="size-3" aria-hidden="true" />
+              <Zap className="fn-chat-mode-icon" aria-hidden="true" />
             ) : (
-              <MessagesSquare className="size-3" aria-hidden="true" />
+              <MessagesSquare className="fn-chat-mode-icon" aria-hidden="true" />
             )}
             {message.mode === "agent" ? "Agent mode" : "Advisor mode"}
           </span>
@@ -83,24 +81,20 @@ export function AgentRun({
 
       {/* 3. Prose response (deduplicated) */}
       {proseContent && (
-        <div className="text-sm leading-relaxed">
+        <div className="fn-chat-prose">
           <MarkdownMessage content={proseContent} />
         </div>
       )}
 
       {/* 4. Error block */}
       {error && (
-        <div className="border-destructive/30 bg-destructive/10 rounded-xl border p-3.5">
-          <div className="flex items-start gap-2.5">
-            <AlertTriangle className="text-destructive mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <div className="fn-chat-error">
+          <div className="fn-chat-error-layout">
+            <AlertTriangle className="fn-chat-error-icon" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="text-destructive text-sm font-semibold">
-                {UI_COPY.ADVISOR.ERROR_TITLE}
-              </p>
-              <p className="text-destructive/90 mt-0.5 text-xs leading-relaxed">{error}</p>
-              <p className="text-muted-foreground mt-1.5 text-xs">
-                {UI_COPY.ADVISOR.ERROR_DESCRIPTION}
-              </p>
+              <p className="fn-chat-error-title">{UI_COPY.ADVISOR.ERROR_TITLE}</p>
+              <p className="fn-chat-error-message">{error}</p>
+              <p className="fn-chat-error-description">{UI_COPY.ADVISOR.ERROR_DESCRIPTION}</p>
             </div>
           </div>
         </div>

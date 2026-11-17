@@ -82,22 +82,15 @@ export function RichConfirmationCard({
   };
 
   return (
-    <div
-      className={cn(
-        "bg-card ring-border/60 animate-in slide-in-from-bottom-2 rounded-xl border shadow-sm",
-        typeAccent?.border,
-      )}
-    >
+    <div className={cn("fn-confirm-card", typeAccent?.border)}>
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-3.5 py-2.5">
+      <div className="fn-confirm-card-header">
         <ShieldAlert
-          className={cn("size-4 shrink-0", typeAccent ? typeAccent.icon : "text-primary")}
+          className={cn("fn-confirm-card-icon", typeAccent ? typeAccent.icon : "text-primary")}
           aria-hidden="true"
         />
-        <p className="text-foreground flex-1 text-sm font-semibold">{card.title}</p>
-        <span
-          className={cn("rounded-full border px-2 py-0.5 text-[11px] font-medium", meta.className)}
-        >
+        <p className="fn-confirm-card-title">{card.title}</p>
+        <span className={cn("fn-confirm-card-status-badge", meta.className)}>
           {isExecuting ? (
             <Loader2 className="mr-1 inline-block size-3 animate-spin text-current" />
           ) : pending ? (
@@ -111,22 +104,12 @@ export function RichConfirmationCard({
 
       {/* Detail rows */}
       {detailRows.length > 0 && (
-        <div
-          className={cn(
-            "border-border/40 divide-y overflow-hidden border-t",
-            effectRows.length > 0 && "border-t-0",
-          )}
-        >
+        <div className="fn-confirm-card-details">
           {detailRows.map(([key, value]) => {
             const isTypeKey = key.toLowerCase() === "type";
             return (
-              <div
-                key={key}
-                className="bg-foreground/2 flex items-center justify-between gap-3 px-3 py-1.5"
-              >
-                <span className="text-muted-foreground text-xs">
-                  {formatConfirmationLabel(key)}
-                </span>
+              <div key={key} className="fn-confirm-card-row">
+                <span className="fn-confirm-card-key">{formatConfirmationLabel(key)}</span>
                 {isTypeKey && typeAccent ? (
                   <span
                     className={cn(
@@ -137,9 +120,7 @@ export function RichConfirmationCard({
                     {value}
                   </span>
                 ) : (
-                  <span className="text-foreground max-w-48 truncate text-xs font-medium">
-                    {maskValue(key, value)}
-                  </span>
+                  <span className="fn-confirm-card-val">{maskValue(key, value)}</span>
                 )}
               </div>
             );
@@ -149,21 +130,21 @@ export function RichConfirmationCard({
 
       {/* Actions — only while pending */}
       {pending && (
-        <div className="flex flex-col gap-1.5 px-3.5 py-2.5">
+        <div className="fn-confirm-card-actions">
           {isReadOnly ? (
-            <p className="text-destructive text-[11px] font-medium">
+            <p className="fn-confirm-card-notice fn-confirm-card-notice--error">
               {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
             </p>
           ) : disabled ? (
-            <p className="text-muted-foreground text-[11px] font-medium">
+            <p className="fn-confirm-card-notice">
               Confirm the previous action first — this action depends on it.
             </p>
           ) : (
-            <p className="text-muted-foreground text-[11px] font-medium">
+            <p className="fn-confirm-card-notice">
               This action has NOT happened yet — confirm to execute.
             </p>
           )}
-          <div className="flex gap-2">
+          <div className="fn-confirm-card-btn-group">
             <Button
               size="sm"
               className="cursor-pointer gap-1.5"

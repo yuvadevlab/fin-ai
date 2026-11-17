@@ -1,0 +1,137 @@
+/**
+ * @file packages/ui/src/styles/advisor-composer.css
+ * @description Semantic component styles for the AI Advisor input composer and form controls.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  .fn-advisor-composer {
+    border-block-start: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    background-color: var(--card);
+    padding: var(--space-3, 0.75rem);
+  }
+
+  @media (min-width: 640px) {
+    .fn-advisor-composer {
+      padding: var(--space-4, 1rem);
+    }
+  }
+
+  .fn-advisor-composer-pending {
+    margin-block-end: var(--space-2, 0.5rem);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--primary) 5%, transparent);
+    padding-inline: var(--space-2-5, 0.625rem);
+    padding-block: var(--space-1, 0.25rem);
+    font-size: 0.6875rem;
+    color: var(--primary);
+  }
+
+  .fn-advisor-composer-form {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    background-color: color-mix(in srgb, var(--muted) 30%, transparent);
+    padding: var(--space-2, 0.5rem);
+    transition:
+      border-color var(--duration-fast, 150ms) ease,
+      box-shadow var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-advisor-composer-form:focus-within,
+  .fn-advisor-composer-form.is-focused {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
+  }
+
+  .fn-advisor-composer-textarea {
+    flex: 1;
+    resize: none;
+    background-color: transparent;
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1.625;
+    color: var(--foreground);
+    outline: none;
+    border: none;
+    min-inline-size: 0;
+  }
+
+  .fn-advisor-composer-textarea::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .fn-advisor-composer-textarea:disabled {
+    opacity: 0.5;
+  }
+
+  .fn-advisor-composer-btn {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-lg, 0.5rem);
+    transition: opacity var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-advisor-composer-btn:disabled {
+    opacity: 0.4;
+  }
+
+  .fn-advisor-composer-btn--stop {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-lg, 0.5rem);
+  }
+
+  .fn-advisor-composer-status {
+    margin-block-start: var(--space-2, 0.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1-5, 0.375rem);
+    text-align: center;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+  }
+
+  .fn-advisor-composer-status-pulse {
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    border-radius: var(--radius-full, 9999px);
+    background-color: var(--primary);
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .fn-advisor-composer-status-label {
+    font-weight: 500;
+    color: var(--foreground);
+  }
+
+  .fn-advisor-composer-stop-link {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+    text-decoration-underline-offset: 2px;
+  }
+
+  .fn-advisor-composer-stop-link:hover {
+    color: var(--foreground);
+    text-decoration: underline;
+  }
+
+  .fn-advisor-composer-hint {
+    margin-block-start: var(--space-1-5, 0.375rem);
+    text-align: center;
+    font-size: 0.625rem;
+    color: var(--muted-foreground);
+  }
+}

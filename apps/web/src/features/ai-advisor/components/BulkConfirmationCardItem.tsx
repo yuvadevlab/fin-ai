@@ -14,26 +14,26 @@ export interface BulkConfirmationCardItemProps {
   itemStatus: AgentConfirmationStatus;
 }
 
-const TYPE_STYLES: Record<string, { badge: string; border: string }> = {
+const TYPE_STYLES: Record<string, { badge: string; modifier: string }> = {
   [TransactionType.INCOME]: {
     badge: "text-primary bg-primary/10 border-primary/20",
-    border: "border-l-primary",
+    modifier: "fn-bulk-card--income",
   },
   [TransactionType.EXPENSE]: {
     badge: "text-destructive bg-destructive/10 border-destructive/20",
-    border: "border-l-destructive",
+    modifier: "fn-bulk-card--expense",
   },
   [TransactionType.TRANSFER]: {
     badge: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
-    border: "border-l-amber-500",
+    modifier: "fn-bulk-card--transfer",
   },
   [TransactionType.INVESTMENT]: {
     badge: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
-    border: "border-l-blue-500",
+    modifier: "fn-bulk-card--investment",
   },
   [TransactionType.GOAL]: {
     badge: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
-    border: "border-l-purple-500",
+    modifier: "fn-bulk-card--goal",
   },
 };
 
@@ -52,30 +52,21 @@ export function BulkConfirmationCardItem({
     <div
       data-card-index={index}
       className={cn(
-        "bg-card border-border/70 min-w-60 flex-1 shrink-0 snap-start rounded-xl border border-l-4 p-3.5 shadow-xs transition-all sm:min-w-67.5",
-        typeStyle.border,
-        itemStatus === AgentConfirmationStatus.REJECTED && "opacity-60 grayscale-50",
-        itemStatus === AgentConfirmationStatus.EXECUTED && "ring-primary/30 ring-1",
+        "fn-bulk-card",
+        typeStyle.modifier,
+        itemStatus === AgentConfirmationStatus.REJECTED && "fn-bulk-card--rejected",
+        itemStatus === AgentConfirmationStatus.EXECUTED && "fn-bulk-card--executed",
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-muted-foreground font-mono text-[11px] font-semibold tracking-wider uppercase">
+      <div className="fn-bulk-card-header">
+        <span className="fn-bulk-card-index">
           #{index + 1} of {totalCount}
         </span>
-        <span
-          className={cn(
-            "rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
-            typeStyle.badge,
-          )}
-        >
-          {item.type}
-        </span>
+        <span className={cn("fn-bulk-card-badge", typeStyle.badge)}>{item.type}</span>
       </div>
 
       <div className="mt-2.5">
-        <p className="text-foreground text-lg font-bold tracking-tight tabular-nums">
-          {maskAmount(item.amount)}
-        </p>
+        <p className="fn-bulk-card-amount">{maskAmount(item.amount)}</p>
       </div>
 
       <div className="mt-2.5 space-y-1.5 text-xs">

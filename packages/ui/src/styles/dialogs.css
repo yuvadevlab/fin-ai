@@ -5,6 +5,28 @@
  */
 
 @layer dl-components {
+  /* ── Mobile-Safe Modal Constraints ─────────────────────────────────────── */
+  .dl-dialog-content {
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  @media (min-width: 640px) {
+    .dl-dialog-content.dl-dialog--sm {
+      max-width: 24rem !important;
+    }
+    .dl-dialog-content.dl-dialog--md {
+      max-width: 32rem !important;
+    }
+    .dl-dialog-content.dl-dialog--lg {
+      max-width: 44rem !important;
+      width: 90vw !important;
+    }
+    .dl-dialog-content.dl-dialog--xl {
+      max-width: 56rem !important;
+      width: 92vw !important;
+    }
+  }
+
   .finai-dialog-content {
     display: flex;
     flex-direction: column;
@@ -23,5 +45,31 @@
     max-height: var(--dialog-max-height, 90dvh);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── DatePicker Month Navigation Layering Fix ──────────────────────────── */
+  .dl-calendar .rdp-month_caption,
+  .dl-calendar .dl-calendar__month-caption {
+    pointer-events: none !important;
+  }
+
+  .dl-calendar .rdp-caption_label,
+  .dl-calendar .dl-calendar__caption-label,
+  .dl-calendar .dl-calendar__dropdowns {
+    pointer-events: auto !important;
+  }
+
+  .dl-calendar .rdp-nav,
+  .dl-calendar .dl-calendar__nav {
+    pointer-events: none !important;
+    z-index: 10 !important;
+  }
+
+  .dl-calendar .rdp-button_previous,
+  .dl-calendar .rdp-button_next,
+  .dl-calendar .dl-calendar__nav-button {
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 10 !important;
   }
 }
