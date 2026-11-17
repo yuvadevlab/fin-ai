@@ -40,57 +40,60 @@ export function AdvisorHeader({
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3">
+      <div className="fn-advisor-header">
         {/* Brand identity */}
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-xl">
-            <Sparkles className="text-primary size-4" aria-hidden="true" />
+        <div className="fn-advisor-header-brand">
+          <div className="fn-advisor-header-icon-box">
+            <Sparkles className="size-4 shrink-0" aria-hidden="true" />
           </div>
-          <div className="min-w-0">
-            <h1 className="text-foreground truncate text-base font-semibold tracking-tight">
-              {UI_COPY.ADVISOR.HEADER.TITLE}
-            </h1>
-            <p className="text-muted-foreground truncate text-[11px]">
-              {UI_COPY.ADVISOR.HEADER.BADGE}
-            </p>
+          <div className="fn-advisor-header-titles">
+            <h1 className="fn-advisor-header-title">{UI_COPY.ADVISOR.HEADER.TITLE}</h1>
+            <p className="fn-advisor-header-badge">{UI_COPY.ADVISOR.HEADER.BADGE}</p>
           </div>
         </div>
 
         {/* Global conversational actions */}
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="fn-advisor-header-actions">
           {/* Informational guide button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setGuideOpen(true)}
-            className="cursor-pointer gap-1.5 text-xs"
+            className="fn-advisor-header-btn"
             aria-label={UI_COPY.ADVISOR.HEADER.GUIDE_BUTTON}
+            title={UI_COPY.ADVISOR.HEADER.GUIDE_BUTTON}
           >
-            <Info className="size-3.5" />
+            <Info className="size-3.5 shrink-0" />
           </Button>
 
           {/* Context toggle — mobile & tablet viewports */}
-          <div className="lg:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onOpenContext}
-              className="cursor-pointer gap-1.5 text-xs lg:hidden!"
-            >
-              <PanelRight className="size-3.5" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onOpenContext}
+            className="fn-advisor-header-btn lg:hidden"
+            aria-label={UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
+            title={UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
+          >
+            <PanelRight className="size-3.5 shrink-0" />
+            <span className="fn-advisor-header-btn-label">
               {UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
-            </Button>
-          </div>
+            </span>
+          </Button>
 
           {/* Past conversations history drawer toggle */}
           <Button
             variant="ghost"
             size="sm"
             onClick={onOpenHistory}
-            className="cursor-pointer gap-1.5 text-xs"
+            className="fn-advisor-header-btn"
+            aria-label={UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
+            title={UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
           >
-            <History className="size-3.5" />
-            <span className="hidden sm:inline">{UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}</span>
+            <History className="size-3.5 shrink-0" />
+            <span className="fn-advisor-header-btn-label">
+              {UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
+            </span>
           </Button>
 
           {/* New chat action button */}
@@ -98,12 +101,15 @@ export function AdvisorHeader({
             variant="outline"
             size="sm"
             onClick={onNewChat}
-            className="cursor-pointer gap-1.5 text-xs"
+            className="fn-advisor-header-btn"
             disabled={!hasMessages}
+            aria-label={UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
+            title={UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
           >
-            <MessageSquarePlus className="size-3.5" />
-            <span className="hidden sm:inline">{UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}</span>
-            <span className="sm:hidden">{UI_COPY.COMMON.ACTIONS.OPEN}</span>
+            <MessageSquarePlus className="size-3.5 shrink-0" />
+            <span className="fn-advisor-header-btn-label">
+              {UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
+            </span>
           </Button>
         </div>
       </div>

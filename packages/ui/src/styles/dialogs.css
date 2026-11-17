@@ -24,4 +24,30 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+  /* ── DatePicker Month Navigation Layering Fix ──────────────────────────── */
+  .dl-calendar .rdp-month_caption,
+  .dl-calendar .dl-calendar__month-caption {
+    pointer-events: none !important;
+  }
+
+  .dl-calendar .rdp-caption_label,
+  .dl-calendar .dl-calendar__caption-label,
+  .dl-calendar .dl-calendar__dropdowns {
+    pointer-events: auto !important;
+  }
+
+  .dl-calendar .rdp-nav,
+  .dl-calendar .dl-calendar__nav {
+    pointer-events: none !important;
+    z-index: 10 !important;
+  }
+
+  .dl-calendar .rdp-button_previous,
+  .dl-calendar .rdp-button_next,
+  .dl-calendar .dl-calendar__nav-button {
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
 }
