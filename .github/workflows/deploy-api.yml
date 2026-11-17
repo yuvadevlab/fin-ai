@@ -47,14 +47,14 @@ jobs:
             echo "ENV_NAME=production" >> $GITHUB_ENV
             echo "SERVICE_NAME=finai-api" >> $GITHUB_ENV
             echo "DB_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_PROD || 'https://fin-ai-yuvadevlab.vercel.app' }}" >> $GITHUB_ENV
-            echo "CORS_ALLOWED_ORIGINS=https://devlab-portal-yuvadevlab.vercel.app,https://fin-ai-yuvadevlab.vercel.app" >> $GITHUB_ENV
+            echo "WEB_URL=${{ vars.WEB_URL_PROD }}" >> $GITHUB_ENV
+            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_PROD }}" >> $GITHUB_ENV
           else
             echo "ENV_NAME=development" >> $GITHUB_ENV
             echo "SERVICE_NAME=finai-api-dev" >> $GITHUB_ENV
             echo "DB_URL=${{ secrets.DATABASE_URL_DEV }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_DEV || 'https://fin-ai-dev-yuvadevlab.vercel.app' }}" >> $GITHUB_ENV
-            echo "CORS_ALLOWED_ORIGINS=https://devlab-portal-dev-yuvadevlab.vercel.app,https://fin-ai-dev-yuvadevlab.vercel.app" >> $GITHUB_ENV
+            echo "WEB_URL=${{ vars.WEB_URL_DEV }}" >> $GITHUB_ENV
+            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_DEV }}" >> $GITHUB_ENV
           fi
 
       - name: Prepare Container Entrypoint
