@@ -47,12 +47,14 @@ jobs:
             echo "ENV_NAME=production" >> $GITHUB_ENV
             echo "SERVICE_NAME=finai-api" >> $GITHUB_ENV
             echo "DB_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_PROD || 'https://fin-ai-one-red.vercel.app' }}" >> $GITHUB_ENV
+            echo "WEB_URL=${{ vars.WEB_URL_PROD }}" >> $GITHUB_ENV
+            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_PROD }}" >> $GITHUB_ENV
           else
             echo "ENV_NAME=development" >> $GITHUB_ENV
             echo "SERVICE_NAME=finai-api-dev" >> $GITHUB_ENV
             echo "DB_URL=${{ secrets.DATABASE_URL_DEV }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_DEV || 'https://fin-ai-git-dev-yuvadevlab.vercel.app' }}" >> $GITHUB_ENV
+            echo "WEB_URL=${{ vars.WEB_URL_DEV }}" >> $GITHUB_ENV
+            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_DEV }}" >> $GITHUB_ENV
           fi
 
       - name: Prepare Container Entrypoint
@@ -70,16 +72,17 @@ jobs:
             --port 4001 \
             --memory 512Mi \
             --cpu 1 \
-            --set-env-vars "\
-          NODE_ENV=${{ env.ENV_NAME }},\
-          DATABASE_URL=${{ env.DB_URL }},\
-          DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }},\
-          AI_PROVIDER=google-ai-studio,\
-          AI_PROVIDER_AGENT=google-ai-studio,\
-          AI_PROVIDER_CHAT=google-ai-studio,\
-          GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }},\
-          GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com,\
-          GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions,\
-          GOOGLE_AI_STUDIO_MODEL=${{ secrets.GOOGLE_AI_STUDIO_MODEL || 'gemini-3.8-flash' }},\
-          WEB_URL=${{ env.WEB_URL }}" \
+            --set-env-vars "^;;^\
+          NODE_ENV=${{ env.ENV_NAME }};;\
+          DATABASE_URL=${{ env.DB_URL }};;\
+          DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }};;\
+          AI_PROVIDER=google-ai-studio;;\
+          AI_PROVIDER_AGENT=google-ai-studio;;\
+          AI_PROVIDER_CHAT=google-ai-studio;;\
+          GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }};;\
+          GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com;;\
+          GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions;;\
+          GOOGLE_AI_STUDIO_MODEL=${{ secrets.GOOGLE_AI_STUDIO_MODEL || 'gemini-2.5-flash' }};;\
+          WEB_URL=${{ env.WEB_URL }};;\
+          CORS_ALLOWED_ORIGINS=${{ env.CORS_ALLOWED_ORIGINS }}" \
             --quiet

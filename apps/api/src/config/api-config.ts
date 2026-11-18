@@ -63,21 +63,19 @@ export function loadApiConfig(): ApiConfig {
   dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
   dotenv.config({ path: path.resolve(process.cwd(), ".env"), override: true });
 
-  const rawWebUrl = process.env.WEB_URL || DEVLAB_CONFIG.DEFAULT_WEB_URL;
-  const parsedCorsOrigins = rawWebUrl
+  const rawCorsSources = process.env.CORS_ALLOWED_ORIGINS || process.env.WEB_URL || "";
+  const corsOrigins = rawCorsSources
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
-
-  // Fallback to default web URL if no valid origins were parsed
-  const corsOrigins =
-    parsedCorsOrigins.length > 0 ? parsedCorsOrigins : [DEVLAB_CONFIG.DEFAULT_WEB_URL];
-  // The first origin in the list is always canonical for frontend links/resets
-  const frontendBaseUrl = corsOrigins[0] || DEVLAB_CONFIG.DEFAULT_WEB_URL;
+  const frontendBaseUrl =
+    (process.env.WEB_URL ? process.env.WEB_URL.split(",")[0]?.trim() : undefined) ||
+    corsOrigins[0] ||
+    "";
 
   const parsed = ApiConfigSchema.parse({
     port: process.env.PORT,
-    webUrl: rawWebUrl,
+    webUrl: process.env.WEB_URL || DEVLAB_CONFIG.DEFAULT_WEB_URL,
     portalApiUrl: process.env.DEVLAB_PORTAL_API_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL,
     gatewayUrl: process.env.DEVLAB_PORTAL_API_URL || DEVLAB_CONFIG.DEFAULT_PORTAL_API_URL,
     nodeEnv: process.env.NODE_ENV,

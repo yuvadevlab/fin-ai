@@ -17,15 +17,32 @@ interface ActivityStepRowProps {
 /** Icon per real activity state: ✓ completed · ◌ running · ○ pending · ✕ failed. */
 function StatusIcon({ status }: { status: AgentActivityStatus }) {
   if (status === AgentActivityStatus.SUCCESS) {
-    return <Check className="text-muted-foreground size-3.5" aria-hidden="true" />;
+    return (
+      <Check
+        className="fn-timeline-header-icon fn-timeline-header-icon--muted"
+        aria-hidden="true"
+      />
+    );
   }
   if (status === AgentActivityStatus.RUNNING) {
-    return <Loader2 className="text-primary size-3.5 animate-spin" aria-hidden="true" />;
+    return (
+      <Loader2
+        className="fn-timeline-header-icon fn-timeline-header-icon--streaming animate-spin"
+        aria-hidden="true"
+      />
+    );
   }
   if (status === AgentActivityStatus.ERROR) {
-    return <X className="text-destructive size-3.5" aria-hidden="true" />;
+    return (
+      <X className="fn-timeline-header-icon fn-timeline-header-icon--error" aria-hidden="true" />
+    );
   }
-  return <Circle className="text-muted-foreground/50 size-3" aria-hidden="true" />;
+  return (
+    <Circle
+      className="fn-timeline-header-icon fn-timeline-header-icon--muted opacity-50"
+      aria-hidden="true"
+    />
+  );
 }
 
 /**
@@ -47,34 +64,30 @@ export function ActivityStepRow({
 
   return (
     <li
-      className={cn("flex items-start gap-2.5 py-1", isCurrent && "bg-primary/5 rounded-md")}
+      className={cn("fn-timeline-item", isCurrent && "is-current")}
       aria-current={isCurrent ? "step" : undefined}
     >
-      <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
+      <span className="fn-timeline-status-icon-box">
         <StatusIcon status={activity.status} />
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="fn-timeline-item-content">
         <span
           className={cn(
-            "block truncate text-[13px] leading-5",
-            activity.status === AgentActivityStatus.RUNNING && "text-foreground font-medium",
-            activity.status === AgentActivityStatus.SUCCESS && "text-muted-foreground",
-            activity.status === AgentActivityStatus.ERROR && "text-destructive font-medium",
-            activity.status === AgentActivityStatus.PENDING && "text-muted-foreground/70",
+            "fn-timeline-item-title",
+            activity.status === AgentActivityStatus.RUNNING && "fn-timeline-item-title--running",
+            activity.status === AgentActivityStatus.SUCCESS && "fn-timeline-item-title--success",
+            activity.status === AgentActivityStatus.ERROR && "fn-timeline-item-title--error",
+            activity.status === AgentActivityStatus.PENDING && "fn-timeline-item-title--pending",
           )}
         >
           {activityLabel(activity)}
           {activity.status === AgentActivityStatus.RUNNING ? "…" : ""}
         </span>
         {expanded && detail && activity.status !== AgentActivityStatus.RUNNING && (
-          <span className="text-muted-foreground/80 mt-0.5 block text-xs leading-4">{detail}</span>
+          <span className="fn-timeline-item-detail">{detail}</span>
         )}
       </span>
-      {expanded && duration && (
-        <span className="text-muted-foreground/70 mt-0.5 shrink-0 font-mono text-[11px]">
-          {duration}
-        </span>
-      )}
+      {expanded && duration && <span className="fn-timeline-item-duration">{duration}</span>}
     </li>
   );
 }
