@@ -1,6 +1,10 @@
 {
-  "name": "finai",
+  "name": "fin-ai",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuvadevlab/fin-ai.git"
+  },
   "license": "MIT",
   "author": "Yuva DevLab <yuva.devlab@gmail.com>",
   "type": "module",
