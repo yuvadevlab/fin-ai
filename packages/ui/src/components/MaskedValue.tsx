@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface MaskedValueProps extends React.HTMLAttributes<HTMLSpanElement> {
   value: React.ReactNode;
@@ -19,11 +20,11 @@ export function MaskedValue({
   ...props
 }: MaskedValueProps) {
   return (
-    <span data-privacy-sensitive className={cn("tabular-nums", className)} {...props}>
+    <span data-privacy-sensitive className={cn("fn-tabular-nums", className)} {...props}>
       {prefix}
       {masked ? (
         <>
-          <span className="sr-only">Value hidden for privacy</span>
+          <span className="dl-sr-only">{UI_COPY_CONSTANTS.MASKED_VALUE.HIDDEN_ARIA}</span>
           <span aria-hidden="true">{maskPlaceholder}</span>
         </>
       ) : (

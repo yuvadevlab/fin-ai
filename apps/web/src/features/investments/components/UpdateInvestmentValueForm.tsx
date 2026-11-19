@@ -30,12 +30,12 @@ export function UpdateInvestmentValueForm({
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="fn-investment-form-stack">
       {investmentName && (
-        <div className="bg-secondary/40 border-border/50 rounded-lg border p-3 text-xs">
-          <p className="text-foreground font-semibold">{investmentName}</p>
+        <div className="fn-investment-summary-box">
+          <p className="fn-investment-summary-name">{investmentName}</p>
           {investedAmount !== undefined && (
-            <p className="text-muted-foreground mt-0.5">
+            <p className="fn-investment-summary-principal">
               {UI_COPY.INVESTMENTS.FORM.INVESTED_PRINCIPAL} ₹
               {investedAmount.toLocaleString("en-IN")}
             </p>

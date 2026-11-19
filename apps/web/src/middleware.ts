@@ -6,7 +6,7 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { StorageKey } from "@fin-ai/shared-types";
+import { StorageKey, AuthQueryParamKey, AuthPrompt, AuthErrorCode } from "@fin-ai/shared-types";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib/routes";
 import { isJwtExpired } from "@/lib/jwt";
 
@@ -34,20 +34,21 @@ export function middleware(request: NextRequest) {
 
   // 1. If returning from DevLab Portal SSO with token in query params
   const tokenParam =
-    request.nextUrl.searchParams.get("token") || request.nextUrl.searchParams.get("access_token");
+    request.nextUrl.searchParams.get(AuthQueryParamKey.TOKEN) ||
+    request.nextUrl.searchParams.get(AuthQueryParamKey.ACCESS_TOKEN);
 
   if (tokenParam && tokenParam.trim().length > 0) {
     const cleanUrl = new URL(request.url);
-    cleanUrl.searchParams.delete("token");
-    cleanUrl.searchParams.delete("access_token");
+    cleanUrl.searchParams.delete(AuthQueryParamKey.TOKEN);
+    cleanUrl.searchParams.delete(AuthQueryParamKey.ACCESS_TOKEN);
 
     // If the incoming token is already expired, reject immediately and force re-auth
     if (isJwtExpired(tokenParam)) {
       return NextResponse.redirect(
         DEVLAB_PORTAL_ROUTES.LOGIN({
           redirectUrl: cleanUrl.toString(),
-          error: "session_expired",
-          prompt: "login",
+          error: AuthErrorCode.SESSION_EXPIRED,
+          prompt: AuthPrompt.LOGIN,
         }),
       );
     }
@@ -75,8 +76,8 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.redirect(
       DEVLAB_PORTAL_ROUTES.LOGIN({
         redirectUrl: request.url,
-        error: token ? "session_expired" : undefined,
-        prompt: token ? "login" : undefined,
+        error: token ? AuthErrorCode.SESSION_EXPIRED : undefined,
+        prompt: token ? AuthPrompt.LOGIN : undefined,
       }),
     );
     if (token) {

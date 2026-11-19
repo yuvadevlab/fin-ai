@@ -53,9 +53,9 @@ export function AppearanceSettings() {
     try {
       await toast
         .promise(updateProfile.mutateAsync({ preferences: updatedPrefs }), {
-          loading: "Saving appearance...",
-          success: "Appearance updated!",
-          error: (error: Error) => error.message || "Failed to update appearance",
+          loading: UI_COPY.SETTINGS.APPEARANCE_SAVING,
+          success: UI_COPY.SETTINGS.APPEARANCE_UPDATED,
+          error: (error: Error) => error.message || UI_COPY.SETTINGS.APPEARANCE_UPDATE_FAILED,
         })
         .unwrap();
     } catch {
@@ -64,16 +64,12 @@ export function AppearanceSettings() {
   };
 
   if (isLoading) {
-    return (
-      <div className="text-muted-foreground py-4 text-center text-sm">
-        {UI_COPY.SETTINGS.LOADING_SETTINGS}
-      </div>
-    );
+    return <div className="fn-settings-loading">{UI_COPY.SETTINGS.LOADING_SETTINGS}</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
+    <div className="fn-settings-section-stack">
+      <div className="fn-settings-form-stack">
         {appearanceOptions.map((item) => {
           let value: string;
           if (item.key === "privacyMode") {

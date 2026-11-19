@@ -85,16 +85,13 @@ export function RichConfirmationCard({
     <div className={cn("fn-confirm-card", typeAccent?.border)}>
       {/* Header */}
       <div className="fn-confirm-card-header">
-        <ShieldAlert
-          className={cn("fn-confirm-card-icon", typeAccent ? typeAccent.icon : "text-primary")}
-          aria-hidden="true"
-        />
+        <ShieldAlert className={cn("fn-confirm-card-icon", typeAccent?.icon)} aria-hidden="true" />
         <p className="fn-confirm-card-title">{card.title}</p>
         <span className={cn("fn-confirm-card-status-badge", meta.className)}>
           {isExecuting ? (
-            <Loader2 className="mr-1 inline-block size-3 animate-spin text-current" />
+            <Loader2 className="fn-confirm-loader" />
           ) : pending ? (
-            <span className="mr-1 inline-block size-1.5 animate-pulse rounded-full bg-current" />
+            <span className="fn-confirm-pulse-dot" />
           ) : null}
           {meta.label}
         </span>
@@ -111,12 +108,7 @@ export function RichConfirmationCard({
               <div key={key} className="fn-confirm-card-row">
                 <span className="fn-confirm-card-key">{formatConfirmationLabel(key)}</span>
                 {isTypeKey && typeAccent ? (
-                  <span
-                    className={cn(
-                      "rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
-                      typeAccent.badge,
-                    )}
-                  >
+                  <span className={cn("fn-confirm-card-type-badge", typeAccent.badge)}>
                     {value}
                   </span>
                 ) : (
@@ -137,28 +129,26 @@ export function RichConfirmationCard({
             </p>
           ) : disabled ? (
             <p className="fn-confirm-card-notice">
-              Confirm the previous action first — this action depends on it.
+              {UI_COPY.ADVISOR.CONFIRMATION.DEPENDENCY_NOTICE}
             </p>
           ) : (
-            <p className="fn-confirm-card-notice">
-              This action has NOT happened yet — confirm to execute.
-            </p>
+            <p className="fn-confirm-card-notice">{UI_COPY.ADVISOR.CONFIRMATION.PENDING_NOTICE}</p>
           )}
           <div className="fn-confirm-card-btn-group">
             <Button
               size="sm"
-              className="cursor-pointer gap-1.5"
+              className="fn-confirm-btn"
               disabled={disabled || isExecuting || isReadOnly}
               onClick={() => onConfirm(confirmation.actionId, confirmation.tool)}
             >
               {isExecuting ? (
                 <>
-                  <Loader2 className="size-3.5 animate-spin" />
+                  <Loader2 className="fn-icon-sm fn-icon-spin" />
                   Confirming…
                 </>
               ) : (
                 <>
-                  <Check className="size-3.5" />
+                  <Check className="fn-icon-sm" />
                   Confirm
                 </>
               )}
@@ -166,11 +156,11 @@ export function RichConfirmationCard({
             <Button
               size="sm"
               variant="outline"
-              className="cursor-pointer gap-1.5"
+              className="fn-confirm-btn"
               disabled={disabled || isExecuting}
               onClick={() => onReject(confirmation.actionId)}
             >
-              <X className="size-3.5" />
+              <X className="fn-icon-sm" />
               Cancel
             </Button>
           </div>

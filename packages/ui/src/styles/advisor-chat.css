@@ -145,11 +145,6 @@
     block-size: 0.75rem;
   }
 
-  .fn-chat-prose {
-    font-size: var(--text-sm, 0.875rem);
-    line-height: 1.625;
-  }
-
   .fn-chat-error {
     border-radius: var(--radius-xl, 0.75rem);
     border: 1px solid color-mix(in srgb, var(--destructive) 30%, transparent);
@@ -161,6 +156,11 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-2-5, 0.625rem);
+  }
+
+  .fn-chat-error-body {
+    min-inline-size: 0;
+    flex: 1 1 0%;
   }
 
   .fn-chat-error-icon {

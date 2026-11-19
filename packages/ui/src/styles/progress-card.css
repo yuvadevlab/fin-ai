@@ -1,0 +1,104 @@
+/**
+ * @file packages/ui/src/styles/progress-card.css
+ * @description Semantic component styles for FinAI progress/goal cards.
+ * Pure platform CSS encapsulated under @layer dl-components.
+ * @module @fin-ai/ui/styles/progress-card
+ */
+
+@layer dl-components {
+  .finai-progress-card {
+    padding: 1rem;
+  }
+  @media (min-width: 640px) {
+    .finai-progress-card {
+      padding: 1.25rem;
+    }
+  }
+
+  .finai-progress-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .finai-progress-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+  }
+
+  .finai-progress-card-sub {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .finai-progress-card-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .finai-progress-card-values {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+  @media (min-width: 640px) {
+    .finai-progress-card-values {
+      margin-top: 1.25rem;
+    }
+  }
+
+  .finai-progress-card-val {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (min-width: 640px) {
+    .finai-progress-card-val {
+      font-size: 1.5rem;
+    }
+  }
+
+  .finai-progress-card-target {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  @media (min-width: 640px) {
+    .finai-progress-card-target {
+      font-size: 0.875rem;
+    }
+  }
+
+  .finai-progress-card-bar {
+    margin-top: 0.75rem;
+    height: 0.375rem;
+  }
+
+  .finai-progress-card-bar.is-over > div {
+    background-color: var(--destructive);
+  }
+
+  .finai-progress-card-bar.is-warn > div {
+    background-color: var(--warning, #f59e0b);
+  }
+
+  .finai-progress-card-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .finai-progress-card-footer-right {
+    font-weight: 600;
+  }
+}

@@ -73,12 +73,8 @@ export function ContributeDialog({ goalId, goalName, trigger }: ContributeDialog
       onCancel={() => setOpen(false)}
       onSubmit={handleSubmit}
     >
-      {errors.amount && (
-        <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-          {errors.amount}
-        </div>
-      )}
-      <div className="space-y-4">
+      {errors.amount && <div className="fn-form-banner-error">{errors.amount}</div>}
+      <div className="fn-form-fields-container">
         <ContributeForm values={values} errors={errors} onChange={handleChange} />
       </div>
     </FormDialog>

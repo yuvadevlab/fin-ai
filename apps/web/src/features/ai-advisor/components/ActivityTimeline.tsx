@@ -115,14 +115,14 @@ export function ActivityTimeline({
               isStreaming ? "fn-timeline-header-title--active" : "fn-timeline-header-title--idle",
             )}
           >
-            {isStreaming && <span className="font-mono text-[11px] text-primary mr-1.5">⚡</span>}
+            {isStreaming && <span className="fn-timeline-spark">⚡</span>}
             {headerTitle}
           </span>
           {summaryMeta && <span className="fn-timeline-header-meta">{summaryMeta}</span>}
         </span>
         {isStreaming && !expanded && (
           <Loader2
-            className="fn-timeline-header-icon fn-timeline-header-icon--streaming animate-spin"
+            className="fn-timeline-header-icon fn-timeline-header-icon--streaming fn-icon-spin"
             aria-hidden="true"
           />
         )}
@@ -154,15 +154,15 @@ export function ActivityTimeline({
             <button
               type="button"
               onClick={() => setViewMode("logs")}
-              className={cn("fn-timeline-nav-tab font-mono", viewMode === "logs" && "is-active")}
+              className={cn("fn-timeline-nav-tab", viewMode === "logs" && "is-active")}
             >
               <Terminal className="fn-timeline-nav-tab-icon" />
               <span>{UI_COPY.ADVISOR.ACTIVITY_TIMELINE.LIVE_CONSOLE}</span>
-              {logs.length > 0 && <span className="text-[10px] opacity-75">({logs.length})</span>}
-              {isStreaming && <span className="size-1.5 rounded-full bg-primary animate-ping" />}
+              {logs.length > 0 && <span className="fn-timeline-log-count">({logs.length})</span>}
+              {isStreaming && <span className="fn-timeline-ping-dot" />}
             </button>
           </div>
-          <span className="text-muted-foreground text-[11px]">
+          <span className="fn-timeline-status-text">
             {isStreaming
               ? UI_COPY.ADVISOR.ACTIVITY_TIMELINE.STREAM_ACTIVE
               : UI_COPY.ADVISOR.ACTIVITY_TIMELINE.COMPLETE}
@@ -174,14 +174,14 @@ export function ActivityTimeline({
       {showRows && (
         <>
           {expanded && viewMode === "logs" ? (
-            <div className="border-t border-border/40 bg-zinc-950/50 p-2">
+            <div className="fn-timeline-console-wrap">
               <LiveRunConsole logs={logs} isStreaming={isStreaming} />
             </div>
           ) : (
             <ul
               id="agent-activity-steps"
               aria-label={UI_COPY.ADVISOR.ACTIVITY_TIMELINE.EXECUTION_STEPS}
-              className="fn-timeline-list border-t border-border/60 px-3.5 py-1.5"
+              className="fn-timeline-list is-bordered"
             >
               {visible.map((activity, index) => (
                 <ActivityStepRow

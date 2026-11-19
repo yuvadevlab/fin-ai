@@ -1,6 +1,7 @@
 import React from "react";
 import { ChartNoAxesCombined } from "lucide-react";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface FinAILogoProps extends React.HTMLAttributes<HTMLDivElement> {
   compact?: boolean;
@@ -18,23 +19,21 @@ export function FinAILogo({
   ...props
 }: FinAILogoProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)} {...props}>
+    <div className={cn("finai-brand-logo", className)} {...props}>
       <div
         className={cn(
-          "bg-primary flex shrink-0 items-center justify-center rounded-lg shadow-sm",
-          compact ? "size-8" : "ring-primary/20 size-10 rounded-xl shadow-lg ring-4",
+          "finai-brand-logo-mark",
+          compact && "finai-brand-logo-mark--compact",
           markClassName,
         )}
         aria-hidden="true"
       >
         <ChartNoAxesCombined
-          className={cn(compact ? "size-4" : "size-5", "text-primary-foreground")}
+          className={cn("finai-brand-logo-icon", compact && "finai-brand-logo-icon--compact")}
           aria-hidden="true"
         />
       </div>
-      {showName && (
-        <span className="text-foreground text-base font-bold tracking-tight">FinAI</span>
-      )}
+      {showName && <span className="finai-brand-logo-text">{UI_COPY_CONSTANTS.BRAND.NAME}</span>}
     </div>
   );
 }

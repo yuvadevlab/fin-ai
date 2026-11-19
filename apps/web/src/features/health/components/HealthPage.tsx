@@ -28,7 +28,7 @@ export function HealthPage() {
     <PageContainer>
       <PageHeader
         title={
-          <span className="inline-flex items-center gap-2">
+          <span className="fn-page-header-inline">
             <span>{UI_COPY.HEALTH.PAGE_TITLE}</span>
             <InfoButton
               aria-label={UI_COPY.HEALTH.GUIDE_A11Y}
@@ -42,19 +42,19 @@ export function HealthPage() {
 
       <HealthGuideDialog open={guideOpen} onOpenChange={setGuideOpen} />
 
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <ContentCard className="flex flex-col items-center justify-center p-5 text-center sm:p-8">
+      <section className="fn-health-summary-grid">
+        <ContentCard className="fn-health-score-card">
           <ScoreGauge
             score={score}
             rating={healthData?.rating ?? HEALTH_RATINGS.NEEDS_ATTENTION}
             showRating
           />
-          <p className="text-foreground mt-4 max-w-sm text-sm font-medium">
+          <p className="fn-health-score-summary">
             {healthData?.summary ?? UI_COPY.HEALTH.ANALYZING}
           </p>
         </ContentCard>
 
-        <div className="grid gap-4 lg:col-span-2 lg:h-full">
+        <div className="fn-health-insights-col">
           {/* Card 1: Next Best Action */}
           <HealthMetricCard
             title={UI_COPY.HEALTH.NEXT_ACTION}
@@ -73,7 +73,7 @@ export function HealthPage() {
             }
           />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="fn-health-metrics-pair">
             {/* Card 2: What is Helping */}
             <HealthMetricCard
               title={UI_COPY.HEALTH.WHAT_IS_HELPING}
@@ -103,18 +103,18 @@ export function HealthPage() {
         </div>
       </section>
 
-      <section className="mt-6 space-y-4">
+      <section className="fn-health-breakdown-section">
         <div>
-          <h2 className="text-foreground text-lg font-bold">{UI_COPY.HEALTH.PAGE_TITLE}</h2>
-          <p className="text-muted-foreground mt-1 text-sm">{UI_COPY.HEALTH.PAGE_DESCRIPTION}</p>
+          <h2 className="fn-health-breakdown-title">{UI_COPY.HEALTH.PAGE_TITLE}</h2>
+          <p className="fn-health-breakdown-subtitle">{UI_COPY.HEALTH.PAGE_DESCRIPTION}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="fn-health-cards-grid">
           {metrics.length === 0
             ? Array.from({ length: 6 }).map((_, i) => (
-                <ContentCard key={i} className="animate-pulse p-5">
-                  <div className="bg-muted h-4 w-1/3 rounded" />
-                  <div className="bg-muted mt-2 h-2 w-full rounded" />
+                <ContentCard key={i} className="fn-health-card-skeleton">
+                  <div className="fn-skeleton-bar" />
+                  <div className="fn-skeleton-bar fn-skeleton-bar--sm" />
                 </ContentCard>
               ))
             : metrics.map((m) => (

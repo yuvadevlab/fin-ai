@@ -9,6 +9,7 @@ import {
   SelectValue,
   cn,
 } from "@yuva-devlab/ui";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {
   currentPage: number;
@@ -41,37 +42,39 @@ export function Pagination({
   const endItem =
     totalItems !== undefined && pageSize ? Math.min(currentPage * pageSize, totalItems) : 0;
 
+  const copy = UI_COPY_CONSTANTS.PAGINATION;
+
   return (
-    <nav
-      aria-label="Pagination"
-      className={cn(
-        "border-border/60 text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-3 py-2.5 text-xs sm:gap-4 sm:px-6 sm:py-3.5",
-        className,
-      )}
-      {...props}
-    >
-      <div className="flex items-center gap-4">
-        <span className="font-medium" aria-current="page">
-          Page <span className="text-foreground font-semibold">{currentPage}</span> of{" "}
-          <span className="text-foreground font-semibold">{totalPages || 1}</span>
+    <nav aria-label={copy.NAV_ARIA} className={cn("finai-pagination", className)} {...props}>
+      <div className="finai-pagination-left">
+        <span className="finai-pagination-info" aria-current="page">
+          {copy.PAGE} <span className="finai-pagination-current">{currentPage}</span> {copy.OF}{" "}
+          <span className="finai-pagination-current">{totalPages || 1}</span>
           {totalItems !== undefined && (
-            <span className="text-muted-foreground ml-1 font-normal">
-              ({startItem > 0 ? `${startItem}–${endItem} of ` : ""}
-              {totalItems} items)
+            <span className="finai-pagination-items-total">
+              ({startItem > 0 ? `${startItem}–${endItem} ${copy.OF} ` : ""}
+              {totalItems} {copy.ITEMS})
             </span>
           )}
         </span>
 
         {showPageSize && onPageSizeChange && pageSize !== undefined && (
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline">Per page:</span>
+          <div className="finai-pagination-size">
+            <span className="finai-pagination-size-label">{copy.PER_PAGE}</span>
             <Select value={String(pageSize)} onValueChange={(val) => onPageSizeChange(Number(val))}>
-              <SelectTrigger className="h-8 w-17.5 text-xs" aria-label="Rows per page">
+              <SelectTrigger
+                className="finai-pagination-size-trigger"
+                aria-label={copy.ROWS_PER_PAGE_ARIA}
+              >
                 <SelectValue placeholder={String(pageSize)} />
               </SelectTrigger>
               <SelectContent>
                 {pageSizeOptions.map((option) => (
-                  <SelectItem key={option} value={String(option)} className="text-xs">
+                  <SelectItem
+                    key={option}
+                    value={String(option)}
+                    className="finai-pagination-size-item"
+                  >
                     {option}
                   </SelectItem>
                 ))}
@@ -81,28 +84,28 @@ export function Pagination({
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="finai-pagination-controls">
         <Button
           variant="outline"
           size="sm"
           disabled={isFirstPage}
           onClick={() => onPageChange(currentPage - 1)}
-          className="h-8 gap-1 px-2.5 text-xs"
-          aria-label="Go to previous page"
+          className="finai-pagination-btn"
+          aria-label={copy.PREV_ARIA}
         >
-          <ChevronLeft className="size-3.5" aria-hidden="true" />
-          <span>Prev</span>
+          <ChevronLeft className="finai-pagination-btn-icon" aria-hidden="true" />
+          <span>{copy.PREV}</span>
         </Button>
         <Button
           variant="outline"
           size="sm"
           disabled={isLastPage}
           onClick={() => onPageChange(currentPage + 1)}
-          className="h-8 gap-1 px-2.5 text-xs"
-          aria-label="Go to next page"
+          className="finai-pagination-btn"
+          aria-label={copy.NEXT_ARIA}
         >
-          <span>Next</span>
-          <ChevronRight className="size-3.5" aria-hidden="true" />
+          <span>{copy.NEXT}</span>
+          <ChevronRight className="finai-pagination-btn-icon" aria-hidden="true" />
         </Button>
       </div>
     </nav>

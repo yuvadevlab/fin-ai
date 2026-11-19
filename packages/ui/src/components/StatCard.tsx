@@ -23,7 +23,7 @@ export function StatCard({
   ...props
 }: StatCardProps) {
   return (
-    <ContentCard className={cn("finai-card--stat p-3.5 sm:p-5", className)} {...props}>
+    <ContentCard className={cn("finai-card--stat", className)} {...props}>
       <div>
         <span className="finai-stat-label">{label}</span>
         <div className="finai-stat-value">{value}</div>
@@ -41,7 +41,7 @@ export function StatCard({
             {trend.value}
           </span>
         )}
-        {hint && <span className="text-muted-foreground text-[11px]">{hint}</span>}
+        {hint && <span className="finai-stat-hint">{hint}</span>}
         {children}
       </div>
     </ContentCard>

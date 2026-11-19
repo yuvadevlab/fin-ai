@@ -1,0 +1,165 @@
+/**
+ * @file packages/ui/src/styles/advisor-bulk-carousel.css
+ * @description Bulk confirmation carousel container, header, controls, and status pills.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Bulk Carousel Container & Header ──────────────────────────────────── */
+  .fn-bulk-confirm-container {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl, 0.75rem);
+    padding: 0.875rem;
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-bulk-confirm-header {
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .fn-bulk-confirm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fn-bulk-confirm-header-icon-wrap {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+  }
+
+  .fn-bulk-confirm-header-icon {
+    color: var(--primary);
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .fn-bulk-confirm-header-title {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-bulk-confirm-header-subtitle {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .fn-bulk-confirm-total-val {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .fn-bulk-confirm-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .fn-bulk-confirm-carousel-nav {
+    margin-right: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .fn-bulk-confirm-nav-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .fn-bulk-confirm-nav-counter {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fn-bulk-confirm-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .fn-bulk-confirm-all-btn {
+    height: 2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .fn-bulk-cancel-all-btn {
+    height: 2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .fn-bulk-confirm-status-pill {
+    border-radius: 9999px;
+    border-width: 1px;
+    border-style: solid;
+    padding-inline: 0.625rem;
+    padding-block: 0.125rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .fn-bulk-confirm-status-pill.is-rejected {
+    border-color: color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+    color: var(--muted-foreground);
+  }
+
+  .fn-bulk-confirm-status-pill.is-executed {
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+
+  .fn-bulk-confirm-scroll-track {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-top: 0.875rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .fn-bulk-confirm-scroll-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fn-bulk-confirm-footer-hint {
+    margin-top: 0.5rem;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+
+  .fn-bulk-confirm-footer-hint.is-error {
+    color: var(--destructive);
+  }
+}

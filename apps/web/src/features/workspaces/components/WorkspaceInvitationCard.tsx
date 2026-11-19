@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Users, Check, X, Mail } from "lucide-react";
-import { Button, Badge } from "@fin-ai/ui";
+import { Button, Badge, cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import { useMyInvitations, useRespondInvitation } from "../api";
 import { WorkspaceRole, InvitationAction } from "@fin-ai/shared-types";
@@ -27,19 +27,19 @@ export function WorkspaceInvitationCard({
   if (invitations.length === 0) {
     if (!showEmptyState) return null;
     return (
-      <div
-        className={`bg-card ring-border/50 flex flex-col items-center gap-2 rounded-2xl p-6 text-center shadow-xs ring-1 ${className ?? ""}`}
-      >
-        <div className="bg-accent text-accent-foreground flex size-10 items-center justify-center rounded-xl">
-          <Mail className="size-5" />
+      <div className={cn("fn-workspace-invitations-empty", className)}>
+        <div className="fn-workspace-invitations-empty-icon">
+          <Mail className="fn-notifications-action-icon" />
         </div>
-        <p className="text-muted-foreground text-sm">{UI_COPY.WORKSPACES.NO_PENDING_INVITATIONS}</p>
+        <p className="fn-workspace-invitations-empty-text">
+          {UI_COPY.WORKSPACES.NO_PENDING_INVITATIONS}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className={`space-y-3 ${className ?? ""}`}>
+    <div className={cn("fn-workspace-invitations-list", className)}>
       {invitations.map((invite) => {
         const roleLabel =
           invite.role === WorkspaceRole.ADMIN
@@ -50,28 +50,28 @@ export function WorkspaceInvitationCard({
 
         return (
           <div key={invite.id} className="fn-workspace-invitation-card">
-            <div className="flex items-start gap-4">
-              <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
-                <Users className="size-5" />
+            <div className="fn-workspace-invitation-body">
+              <div className="fn-workspace-invitation-icon">
+                <Users className="fn-notifications-action-icon" />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-foreground truncate text-sm font-semibold">
+              <div className="fn-workspace-invitation-content">
+                <div className="fn-workspace-invitation-header">
+                  <p className="fn-workspace-invitation-title">
                     {invite.workspace?.name ?? UI_COPY.WORKSPACES.SHARED_TITLE}
                   </p>
-                  <Badge variant="outline" className="shrink-0 text-[10px]">
+                  <Badge variant="outline" className="fn-notifications-role-badge">
                     {roleLabel}
                   </Badge>
                 </div>
-                <p className="text-muted-foreground mt-1 text-xs">
+                <p className="fn-workspace-invitation-desc">
                   {invite.inviter?.name
-                    ? `Invited by ${invite.inviter.name}`
+                    ? UI_COPY.WORKSPACES.INVITED_BY_LABEL(invite.inviter.name)
                     : UI_COPY.WORKSPACES.INVITATION_CARD_DESC}
                 </p>
               </div>
             </div>
 
-            <div className="border-border/40 flex items-center justify-end gap-2 border-t pt-3">
+            <div className="fn-workspace-invitation-footer">
               <Button
                 id={`decline-invite-${invite.id}`}
                 size="sm"
@@ -83,9 +83,9 @@ export function WorkspaceInvitationCard({
                     action: InvitationAction.REJECT,
                   })
                 }
-                className="cursor-pointer gap-1.5 text-xs font-medium"
+                className="fn-workspace-invitation-btn"
               >
-                <X className="size-3.5" />
+                <X className="fn-notifications-action-icon" />
                 {UI_COPY.WORKSPACES.DECLINE}
               </Button>
               <Button
@@ -98,9 +98,9 @@ export function WorkspaceInvitationCard({
                     action: InvitationAction.ACCEPT,
                   })
                 }
-                className="cursor-pointer gap-1.5 text-xs font-medium shadow-xs"
+                className="fn-workspace-invitation-btn"
               >
-                <Check className="size-3.5" />
+                <Check className="fn-notifications-action-icon" />
                 {UI_COPY.WORKSPACES.ACCEPT}
               </Button>
             </div>

@@ -113,8 +113,8 @@ export function TransactionsPage() {
               isReadOnly ? undefined : (
                 <TransactionDialog
                   trigger={
-                    <Button size="sm" className="cursor-pointer gap-1.5">
-                      <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.ADD_TRANSACTION}
+                    <Button size="sm" className="fn-action-btn-with-icon">
+                      <Plus className="fn-action-icon" /> {UI_COPY.TRANSACTIONS.ADD_TRANSACTION}
                     </Button>
                   }
                 />
@@ -131,8 +131,7 @@ export function TransactionsPage() {
                 placeholder={UI_COPY.TRANSACTIONS.SEARCH_PLACEHOLDER}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                containerClassName="w-full"
-                className="pr-9"
+                className="fn-search-input--with-clear"
               />
               {search ? (
                 <button
@@ -140,7 +139,7 @@ export function TransactionsPage() {
                   onClick={() => setSearch("")}
                   className="fn-toolbar-search-clear"
                 >
-                  <X className="size-3.5" />
+                  <X className="fn-notifications-action-icon" />
                 </button>
               ) : null}
             </div>
@@ -177,15 +176,16 @@ export function TransactionsPage() {
     >
       {isLoading ? (
         <div className="fn-table-empty-state">
-          <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.LOADING}</p>
+          <p className="fn-table-empty-text">{UI_COPY.TRANSACTIONS.LOADING}</p>
         </div>
       ) : transactionsList.length === 0 ? (
         <div className="fn-table-empty-state">
-          <p className="text-muted-foreground text-sm">{UI_COPY.TRANSACTIONS.EMPTY}</p>
+          <p className="fn-table-empty-text">{UI_COPY.TRANSACTIONS.EMPTY}</p>
         </div>
       ) : (
         <DataTable
           fillViewport
+          tableClassName="fn-transactions-table"
           data={transactionsList}
           columns={columns}
           rowKey={(t) => t.id}

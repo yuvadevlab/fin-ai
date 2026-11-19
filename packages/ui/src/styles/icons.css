@@ -1,0 +1,57 @@
+/**
+ * @file packages/ui/src/styles/icons.css
+ * @description Semantic icon sizing, flex-shrink bounds, and spinning animations for FinAI.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  .fn-icon-xs {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-sm {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-md {
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-lg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-xl {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-2xl {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-3xl {
+    inline-size: 2rem;
+    block-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .fn-icon-spin {
+    animation: dl-spin 1s linear infinite;
+  }
+
+  .fn-icon-pulse {
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}

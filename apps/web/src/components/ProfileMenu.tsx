@@ -40,44 +40,33 @@ export function ProfileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          id="profile-menu-trigger"
-          className="focus-visible:ring-ring cursor-pointer rounded-full outline-none"
-        >
-          <Avatar className="ring-border/60 size-8 ring-1 transition hover:opacity-80">
-            <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">
-              {initials}
-            </AvatarFallback>
+        <button id="profile-menu-trigger" className="fn-profile-trigger">
+          <Avatar className="fn-profile-avatar">
+            <AvatarFallback className="fn-profile-avatar-fallback">{initials}</AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">{name}</p>
-            {email && <p className="text-muted-foreground text-xs leading-none">{email}</p>}
+      <DropdownMenuContent align="end" className="fn-profile-dropdown">
+        <DropdownMenuLabel className="fn-profile-label">
+          <div className="fn-profile-user-info">
+            <p className="fn-profile-user-name">{name}</p>
+            {email && <p className="fn-profile-user-email">{email}</p>}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link
-            href={`${APP_ROUTES.SETTINGS}?section=profile`}
-            className="flex cursor-pointer items-center gap-2"
-          >
-            <User className="size-4" /> {UI_COPY.COMMON.PROFILE_MENU.PROFILE}
+          <Link href={`${APP_ROUTES.SETTINGS}?section=profile`} className="fn-profile-menu-item">
+            <User className="fn-profile-menu-icon" /> {UI_COPY.COMMON.PROFILE_MENU.PROFILE}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.SETTINGS} className="flex cursor-pointer items-center gap-2">
-            <Settings className="size-4" /> {UI_COPY.COMMON.PROFILE_MENU.SETTINGS}
+          <Link href={APP_ROUTES.SETTINGS} className="fn-profile-menu-item">
+            <Settings className="fn-profile-menu-icon" /> {UI_COPY.COMMON.PROFILE_MENU.SETTINGS}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={logout}
-          className="text-destructive focus:text-destructive flex cursor-pointer items-center gap-2"
-        >
-          <LogOut className="size-4" /> {UI_COPY.COMMON.PROFILE_MENU.LOG_OUT}
+        <DropdownMenuItem onClick={logout} className="fn-profile-menu-item--destructive">
+          <LogOut className="fn-profile-menu-icon" /> {UI_COPY.COMMON.PROFILE_MENU.LOG_OUT}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

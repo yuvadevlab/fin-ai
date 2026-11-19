@@ -29,7 +29,7 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
       {/* Hero identity */}
       <div className="fn-empty-state-hero">
         <div className="fn-empty-state-icon">
-          <Sparkles className="size-7" aria-hidden="true" />
+          <Sparkles className="fn-icon-2xl" aria-hidden="true" />
         </div>
         <h2 className="fn-empty-state-title">{UI_COPY.ADVISOR.EMPTY_STATE.TITLE}</h2>
         <p className="fn-empty-state-subtitle">{UI_COPY.ADVISOR.EMPTY_STATE.SUBTITLE}</p>
@@ -44,7 +44,7 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
             onClick={() => onSelect(action.message)}
             className="fn-empty-state-btn"
           >
-            <span className="inline-flex items-center gap-2">
+            <span className="fn-empty-state-btn-content">
               <action.icon className="fn-empty-state-btn-icon" aria-hidden="true" />
               <span>{action.label}</span>
             </span>

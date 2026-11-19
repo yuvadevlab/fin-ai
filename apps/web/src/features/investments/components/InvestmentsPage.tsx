@@ -81,8 +81,8 @@ export function InvestmentsPage() {
         header: UI_COPY.INVESTMENTS.ASSET,
         accessor: (a: Investment) => (
           <div className="finai-table-cell--asset">
-            <p className="font-semibold">{a.name}</p>
-            <p className="text-muted-foreground text-xs">{ASSET_CLASS_LABELS[a.assetClass]}</p>
+            <p className="fn-asset-name">{a.name}</p>
+            <p className="fn-asset-class">{ASSET_CLASS_LABELS[a.assetClass]}</p>
           </div>
         ),
         className: "finai-table-cell--asset",
@@ -119,17 +119,17 @@ export function InvestmentsPage() {
       {
         header: UI_COPY.INVESTMENTS.ACTIONS,
         accessor: (a: Investment) => (
-          <div className="flex justify-end">
+          <div className="fn-table-actions-cell">
             <UpdateInvestmentValueDialog
               investment={a}
               trigger={
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-muted-foreground hover:text-foreground h-8 cursor-pointer gap-1.5 px-2 text-xs"
+                  className="fn-investment-update-btn"
                   title={UI_COPY.INVESTMENTS.UPDATE_MARKET_VALUE}
                 >
-                  <Pencil className="size-3.5" />
+                  <Pencil className="fn-icon-sm" />
                 </Button>
               }
             />
@@ -150,8 +150,8 @@ export function InvestmentsPage() {
           isReadOnly ? undefined : (
             <InvestmentDialog
               trigger={
-                <Button size="sm" className="cursor-pointer gap-1.5">
-                  <Plus className="size-4" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
+                <Button size="sm" className="fn-header-action-btn">
+                  <Plus className="fn-icon-md" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
                 </Button>
               }
             />
@@ -159,9 +159,9 @@ export function InvestmentsPage() {
         }
       />
 
-      {isReadOnly && <ReadOnlyWorkspaceBanner className="mb-4" />}
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="fn-investments-stats-grid">
         <StatCard
           label={UI_COPY.INVESTMENTS.TOTAL_VALUE}
           value={<PrivacyMoney value={totalValue} />}
@@ -184,23 +184,23 @@ export function InvestmentsPage() {
         />
       </section>
 
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <section className="fn-investments-main-grid">
         <ContentCard>
           <SectionHeader title={UI_COPY.INVESTMENTS.ASSET_ALLOCATION} />
           <CategoryPie data={pieData} />
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="fn-investments-allocation-list">
             {allocationByClass.map((a, i) => (
-              <li key={a.name} className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-2">
+              <li key={a.name} className="fn-investments-allocation-item">
+                <span className="fn-investments-allocation-label">
                   <span
-                    className="size-2 rounded-full"
+                    className="fn-investments-allocation-dot"
                     style={{
                       background: CHART_COLORS[i % CHART_COLORS.length],
                     }}
                   />
                   {a.name}
                 </span>
-                <span className="text-foreground font-semibold">
+                <span className="fn-investments-allocation-value">
                   {totalValue > 0 ? `${((a.value / totalValue) * 100).toFixed(1)}%` : "0%"}
                 </span>
               </li>
@@ -208,7 +208,7 @@ export function InvestmentsPage() {
           </ul>
         </ContentCard>
 
-        <div className="space-y-6 lg:col-span-2">
+        <div className="fn-investments-table-wrap">
           <DataTable data={investments} columns={columns} rowKey={(inv: Investment) => inv.id} />
         </div>
       </section>

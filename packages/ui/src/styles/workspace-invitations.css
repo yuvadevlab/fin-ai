@@ -1,0 +1,114 @@
+/**
+ * @file packages/ui/src/styles/workspace-invitations.css
+ * @description Workspace invitation cards and empty states.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Workspace Invitation Cards ────────────────────────────────────────── */
+  .fn-workspace-invitations-empty {
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-2xl, 1rem);
+    padding: var(--space-6, 1.5rem);
+    text-align: center;
+    box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-workspace-invitations-empty-icon {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    display: flex;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+  }
+
+  .fn-workspace-invitations-empty-text {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm, 0.875rem);
+    margin: 0;
+  }
+
+  .fn-workspace-invitation-card {
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    background-color: var(--card);
+    padding: var(--space-5, 1.25rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-workspace-invitation-body {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-workspace-invitation-icon {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    display: flex;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+  }
+
+  .fn-workspace-invitation-content {
+    min-inline-size: 0;
+    flex: 1;
+  }
+
+  .fn-workspace-invitation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-workspace-invitation-title {
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-workspace-invitation-desc {
+    color: var(--muted-foreground);
+    margin-block-start: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-workspace-invitation-footer {
+    border-block-start: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2, 0.5rem);
+    padding-block-start: var(--space-3, 0.75rem);
+  }
+
+  .fn-workspace-invitation-btn {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+  }
+}

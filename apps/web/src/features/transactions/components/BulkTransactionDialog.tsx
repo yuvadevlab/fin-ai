@@ -200,7 +200,7 @@ export function BulkTransactionDialog({
         loading={createBulk.isPending}
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}
-        className="w-full max-w-2xl"
+        className="fn-dialog-content--bulk"
       >
         <BulkTransactionForm
           rows={rows}

@@ -1,0 +1,143 @@
+/**
+ * @file packages/ui/src/styles/bulk-transactions.css
+ * @description Semantic component styles for FinAI bulk transaction dialog and queue.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Bulk Dialog & Summary Bar ── */
+  .fn-dialog-content--bulk {
+    inline-size: 100%;
+    max-inline-size: 42rem;
+  }
+
+  .fn-bulk-summary-bar {
+    background-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+    border-radius: var(--radius-2xl, 1rem);
+    padding: 0.875rem;
+    box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-bulk-summary-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5, 0.625rem);
+  }
+
+  .fn-bulk-summary-icon {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    display: flex;
+    inline-size: 2rem;
+    block-size: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+  }
+
+  .fn-bulk-summary-title {
+    color: var(--foreground);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .fn-bulk-summary-count {
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    margin: 0;
+  }
+
+  .fn-bulk-summary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2-5, 0.625rem);
+  }
+
+  .fn-bulk-total-box {
+    margin-inline-start: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3, 0.75rem);
+    text-align: end;
+  }
+
+  .fn-bulk-total-label {
+    color: var(--muted-foreground);
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .fn-bulk-total-value {
+    color: var(--foreground);
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 800;
+  }
+
+  .fn-bulk-btn-group {
+    display: flex;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-bulk-template-btn {
+    border-color: var(--border);
+    height: 2rem;
+    cursor: pointer;
+    gap: var(--space-1-5, 0.375rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+  }
+
+  .fn-bulk-template-btn:hover {
+    background-color: var(--secondary);
+  }
+
+  .fn-bulk-upload-btn {
+    height: 2rem;
+    cursor: pointer;
+    gap: var(--space-1-5, 0.375rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  .fn-bulk-rows-container {
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+    max-block-size: 50vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+    overflow-y: auto;
+    border-radius: var(--radius-2xl, 1rem);
+    padding: var(--space-3, 0.75rem);
+    box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-bulk-add-row-btn {
+    border: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+    height: 2.5rem;
+    inline-size: 100%;
+    cursor: pointer;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-xl, 0.75rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  .fn-bulk-add-row-btn:hover {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+  }
+}

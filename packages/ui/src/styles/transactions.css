@@ -1,157 +1,10 @@
 /**
  * @file packages/ui/src/styles/transactions.css
- * @description Semantic component styles for FinAI Transactions toolbar, tables, and bulk creation forms.
- * Architecture: W3C Cascade Layer @layer dl-components
+ * @description Semantic component styles for FinAI Transactions tables, cells, actions, and empty states.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: under 250 lines).
  */
 
 @layer dl-components {
-  /* ── Transactions Filter Toolbar ───────────────────────────────────────── */
-  .fn-transactions-toolbar {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-    border-radius: var(--radius-2xl, 1rem);
-    background-color: var(--card);
-    padding: 0.75rem;
-    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  }
-
-  @media (min-width: 640px) {
-    .fn-transactions-toolbar {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-    }
-  }
-
-  /* ── Toolbar: search row ──────────────────────────────────────────────── */
-  .fn-toolbar-search-wrap {
-    position: relative;
-    width: 100%;
-  }
-
-  @media (min-width: 640px) {
-    .fn-toolbar-search-wrap {
-      width: auto;
-      min-width: 16rem;
-      flex: 1;
-    }
-  }
-
-  .fn-toolbar-search-clear {
-    position: absolute;
-    top: 50%;
-    right: 0.5rem;
-    z-index: 10;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem;
-    border-radius: var(--radius-md, 0.375rem);
-    color: var(--muted-foreground);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background-color 150ms;
-  }
-
-  .fn-toolbar-search-clear:hover {
-    background-color: var(--secondary);
-  }
-
-  /* ── Toolbar: actions row (date + filter popover) ─────────────────────── */
-  .fn-toolbar-actions {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  @media (min-width: 640px) {
-    .fn-toolbar-actions {
-      width: auto;
-      justify-content: flex-start;
-      gap: 0.75rem;
-    }
-  }
-
-  /* ── Toolbar: chips row ───────────────────────────────────────────────── */
-  .fn-toolbar-chips-wrap {
-    width: 100%;
-    overflow-x: auto;
-    padding-block: 0.125rem;
-    /* hide scrollbar on webkit */
-    scrollbar-width: none;
-  }
-
-  .fn-toolbar-chips-wrap::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (min-width: 640px) {
-    .fn-toolbar-chips-wrap {
-      width: auto;
-    }
-  }
-
-  /* ── Filter Chips ─────────────────────────────────────────────────────── */
-  .fn-filter-chips {
-    display: flex;
-    flex-wrap: nowrap; /* keeps chips in a single scrollable row on mobile */
-    gap: 0.375rem;
-    width: max-content; /* allows parent to scroll */
-  }
-
-  @media (min-width: 640px) {
-    .fn-filter-chips {
-      flex-wrap: wrap;
-      width: auto;
-    }
-  }
-
-  .fn-filter-chip {
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-    cursor: pointer;
-    border-radius: 9999px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    transition:
-      background-color 150ms,
-      color 150ms;
-    outline: none;
-    border: none;
-    background-color: var(--secondary);
-    color: var(--muted-foreground);
-  }
-
-  .fn-filter-chip:hover {
-    background-color: color-mix(in srgb, var(--secondary) 80%, transparent);
-    color: var(--foreground);
-  }
-
-  .fn-filter-chip:focus-visible {
-    box-shadow: 0 0 0 1px var(--ring);
-  }
-
-  .fn-filter-chip--active {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-  }
-
-  .fn-filter-chip--active:hover {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-  }
-
   /* ── Table Empty & Loading States ──────────────────────────────────────── */
   .fn-table-empty-state {
     display: flex;
@@ -165,35 +18,10 @@
     border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
   }
 
-  /* ── Bulk Transaction Form Card ────────────────────────────────────────── */
-  .fn-bulk-transaction-card {
-    border-radius: var(--radius-xl, 0.75rem);
-    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-    background-color: var(--card);
-    padding: 1rem;
-    box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-  }
-
-  .fn-bulk-transaction-header {
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .fn-bulk-transaction-badge {
-    display: inline-flex;
-    height: 1.5rem;
-    min-width: 1.5rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9999px;
-    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
-    color: var(--primary);
-    padding-inline: 0.5rem;
-    font-family: var(--font-mono, monospace);
-    font-size: 0.75rem;
-    font-weight: 700;
+  .fn-table-empty-text {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm, 0.875rem);
+    margin: 0;
   }
 
   /* ── Transactions Filter Popover ───────────────────────────────────────── */
@@ -202,5 +30,118 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  /* ── Transactions Ledger Table & Columns ───────────────────────────────── */
+  .fn-transactions-table {
+    min-width: 52rem;
+  }
+
+  .fn-tx-date {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .fn-tx-category-badge {
+    width: fit-content;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .fn-tx-account {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+
+  .fn-tx-account-author {
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+    font-size: 10px;
+  }
+
+  .fn-tx-type-badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .fn-tx-notes {
+    display: block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .fn-tx-amount {
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .fn-tx-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .fn-tx-delete-trigger {
+    color: var(--muted-foreground);
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    transition: color 150ms ease;
+  }
+
+  @media (min-width: 640px) {
+    .fn-tx-delete-trigger {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .fn-tx-delete-trigger:hover {
+    color: var(--destructive);
+  }
+
+  .fn-action-trigger-btn {
+    color: var(--muted-foreground);
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    transition: color 150ms ease;
+  }
+
+  @media (min-width: 640px) {
+    .fn-action-trigger-btn {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .fn-action-trigger-btn:hover {
+    color: var(--foreground);
+  }
+
+  .fn-action-dropdown {
+    width: 9rem;
+  }
+
+  .fn-action-menu-icon {
+    margin-right: 0.5rem;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .fn-search-input--with-clear {
+    padding-right: 2.25rem;
   }
 }

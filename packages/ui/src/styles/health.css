@@ -1,0 +1,217 @@
+/**
+ * @file packages/ui/src/styles/health.css
+ * @description Financial Health assessment cards, score gauges, and metric layout styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Health Metric Card ────────────────────────────────────────────────── */
+  .fn-health-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-4, 1rem);
+  }
+
+  @media (min-width: 640px) {
+    .fn-health-card {
+      padding: var(--space-5, 1.25rem);
+    }
+  }
+
+  .fn-health-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-health-card-title {
+    color: var(--foreground);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .fn-health-card-subtitle {
+    color: var(--muted-foreground);
+    margin-block-start: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-health-card-score-box {
+    text-align: end;
+  }
+
+  .fn-health-card-score {
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: 700;
+  }
+
+  .fn-health-card-status {
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    text-transform: capitalize;
+    margin: 0;
+  }
+
+  .fn-health-card-progress {
+    margin-block-start: var(--space-3, 0.75rem);
+    block-size: 0.375rem;
+  }
+
+  .fn-health-card-metrics {
+    color: var(--muted-foreground);
+    margin-block-start: var(--space-3, 0.75rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-health-card-action {
+    color: var(--foreground);
+    background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+    margin-block-start: var(--space-3, 0.75rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: var(--space-2-5, 0.625rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+    margin-block-end: 0;
+  }
+
+  @media (min-width: 640px) {
+    .fn-health-card-action {
+      padding: var(--space-3, 0.75rem);
+    }
+  }
+
+  /* ── Health Page Grids ─────────────────────────────────────────────────── */
+  .fn-health-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6, 1.5rem);
+  }
+
+  @media (min-width: 1024px) {
+    .fn-health-summary-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .fn-health-score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5, 1.25rem);
+    text-align: center;
+  }
+
+  @media (min-width: 640px) {
+    .fn-health-score-card {
+      padding: var(--space-8, 2rem);
+    }
+  }
+
+  .fn-health-score-summary {
+    color: var(--foreground);
+    margin-block-start: var(--space-4, 1rem);
+    max-inline-size: 24rem;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+  }
+
+  .fn-health-insights-col {
+    display: grid;
+    gap: var(--space-4, 1rem);
+  }
+
+  @media (min-width: 1024px) {
+    .fn-health-insights-col {
+      grid-column: span 2;
+      block-size: 100%;
+    }
+  }
+
+  .fn-health-metrics-pair {
+    display: grid;
+    gap: var(--space-4, 1rem);
+  }
+
+  @media (min-width: 640px) {
+    .fn-health-metrics-pair {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .fn-health-breakdown-section {
+    margin-block-start: var(--space-6, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-health-breakdown-title {
+    color: var(--foreground);
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .fn-health-breakdown-subtitle {
+    color: var(--muted-foreground);
+    margin-block-start: 0.25rem;
+    font-size: var(--text-sm, 0.875rem);
+    margin-block-end: 0;
+  }
+
+  .fn-health-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4, 1rem);
+  }
+
+  @media (min-width: 768px) {
+    .fn-health-cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .fn-health-card-skeleton {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    padding: var(--space-5, 1.25rem);
+  }
+
+  .fn-page-header-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-skeleton-bar {
+    background-color: var(--muted);
+    height: 1rem;
+    inline-size: 33.333%;
+    border-radius: var(--radius-sm, 0.25rem);
+  }
+
+  .fn-skeleton-bar--sm {
+    margin-block-start: 0.5rem;
+    height: 0.5rem;
+    inline-size: 100%;
+  }
+
+  /* ── Score Tiers ───────────────────────────────────────────────────────── */
+  .fn-score--high {
+    color: var(--primary);
+  }
+  .fn-score--mid {
+    color: #d97706;
+  }
+  .fn-score--low {
+    color: var(--destructive);
+  }
+}

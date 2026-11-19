@@ -141,7 +141,7 @@ export function TransactionForm({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="fn-form-body">
       {renderField(amountField)}
       {renderField(kindField)}
       {values.kind === TransactionKind.INVESTMENT && renderField(investmentField)}

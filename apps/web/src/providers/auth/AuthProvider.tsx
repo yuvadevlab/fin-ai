@@ -2,8 +2,8 @@
 
 import React, { useCallback, useState, useMemo } from "react";
 import { DevLabAuthProvider } from "@yuva-devlab/auth-client";
-import { StorageKey } from "@fin-ai/shared-types";
-import { APP_ID, APP_ROUTES, DEVLAB_PORTAL_WEB_URL, DEVLAB_PORTAL_API_URL } from "@/lib";
+import { StorageKey, AuthPrompt } from "@fin-ai/shared-types";
+import { APP_ID, DEVLAB_PORTAL_WEB_URL, DEVLAB_PORTAL_API_URL, DEVLAB_PORTAL_ROUTES } from "@/lib";
 import { AuthContext, type AuthContextValue, type AuthUser } from "./auth-context";
 
 export interface AuthProviderProps {
@@ -101,9 +101,14 @@ export function AuthProvider({ initialToken = null, children }: AuthProviderProp
       localStorage.removeItem(StorageKey.DEVLAB_ACCESS_TOKEN);
       localStorage.removeItem(StorageKey.DEVLAB_AUTH_TOKEN);
       localStorage.removeItem(StorageKey.DEVLAB_AUTH_USER);
-      document.cookie = `${StorageKey.TOKEN}=; path=/; max-age=0; SameSite=Lax`;
-      document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; max-age=0; SameSite=Lax`;
-      window.location.href = APP_ROUTES.LOGIN;
+      localStorage.removeItem(StorageKey.WORKSPACE_ID);
+      document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      window.location.href = DEVLAB_PORTAL_ROUTES.LOGIN({
+        redirectUrl: window.location.origin,
+        prompt: AuthPrompt.LOGIN,
+      });
     }
   }, []);
 

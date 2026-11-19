@@ -23,21 +23,19 @@ export function AgentActivityChip({ activity }: { activity: AgentActivity }) {
     <span
       title={activity.summary ?? UI_COPY.ADVISOR.ACTIVITY_CHIP.FINISHED(activity.tool)}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
-        activity.status === "running" && "bg-primary/10 text-primary border-primary/20",
-        activity.status === "success" && "bg-foreground/5 text-muted-foreground border-border",
-        activity.status === "error" && "bg-destructive/15 text-destructive border-destructive/20",
+        "fn-agent-chip",
+        activity.status === "running" && "is-running",
+        activity.status === "success" && "is-success",
+        activity.status === "error" && "is-error",
       )}
     >
       <Icon
-        className={cn("size-3", activity.status === "running" && "animate-spin")}
+        className={cn("fn-agent-chip-icon", activity.status === "running" && "is-spinning")}
         aria-hidden="true"
       />
       <span>{activity.tool}</span>
       {activity.summary && activity.status !== "running" ? (
-        <span className="text-muted-foreground max-w-48 truncate opacity-80">
-          · {activity.summary}
-        </span>
+        <span className="fn-agent-chip-summary">· {activity.summary}</span>
       ) : null}
     </span>
   );

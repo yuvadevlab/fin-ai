@@ -9,14 +9,11 @@ interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export function SearchBar({ className, containerClassName, ...props }: SearchBarProps) {
   return (
-    <div className={cn("w-full", containerClassName)}>
+    <div className={cn("fn-search-container", containerClassName)}>
       <Input
         type="search"
-        startIcon={<Search className="text-muted-foreground size-4" />}
-        className={cn(
-          "bg-background/50 border-border/80 focus-visible:ring-primary/30 w-full",
-          className,
-        )}
+        startIcon={<Search className="fn-search-icon" />}
+        className={cn("fn-search-input", className)}
         {...props}
       />
     </div>

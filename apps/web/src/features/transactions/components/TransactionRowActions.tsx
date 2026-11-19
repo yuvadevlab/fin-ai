@@ -31,22 +31,22 @@ export function TransactionRowActions({ transaction, onDelete }: TransactionRowA
           <Button
             variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-foreground size-7 cursor-pointer sm:size-8"
-            aria-label={`Actions for transaction`}
+            className="fn-action-trigger-btn"
+            aria-label={UI_COPY.TRANSACTIONS.ACTIONS_ARIA}
           >
-            <MoreHorizontal className="size-4" />
+            <MoreHorizontal className="fn-notifications-action-icon" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-36">
-          <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
-            <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
+        <DropdownMenuContent align="end" className="fn-action-dropdown">
+          <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="fn-profile-menu-item">
+            <Pencil className="fn-action-menu-icon" /> {UI_COPY.COMMON.ACTIONS.EDIT}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setIsDeleteOpen(true)}
-            className="text-destructive focus:text-destructive cursor-pointer"
+            className="fn-profile-menu-item--destructive"
           >
-            <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
+            <Trash2 className="fn-action-menu-icon" /> {UI_COPY.COMMON.ACTIONS.DELETE}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

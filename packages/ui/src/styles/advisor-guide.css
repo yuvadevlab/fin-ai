@@ -124,4 +124,8 @@
     line-height: 1.625;
     color: color-mix(in srgb, var(--foreground) 80%, transparent);
   }
+
+  .fn-guide-tip-strong {
+    font-weight: 600;
+  }
 }

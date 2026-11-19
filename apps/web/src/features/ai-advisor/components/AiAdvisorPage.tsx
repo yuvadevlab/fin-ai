@@ -8,7 +8,7 @@
  */
 
 import { useState } from "react";
-import { PageContainer } from "@fin-ai/ui";
+import { PageContainer, cn } from "@fin-ai/ui";
 import { ArrowDown } from "lucide-react";
 import { AgentChatRole, AgentConfirmationStatus } from "@fin-ai/shared-types";
 import {
@@ -110,7 +110,7 @@ export function AiAdvisorPage() {
         hasMessages={hasMessages}
       />
       {isReadOnly && (
-        <div className="mb-4">
+        <div className="fn-advisor-banner-wrap">
           <ReadOnlyWorkspaceBanner />
         </div>
       )}
@@ -145,7 +145,7 @@ export function AiAdvisorPage() {
               className="fn-advisor-jump-bottom"
             >
               <ArrowDown
-                className={`size-3.5 shrink-0 ${isStreaming ? "text-primary animate-bounce" : ""}`}
+                className={cn("fn-advisor-jump-icon", isStreaming && "is-streaming")}
                 aria-hidden="true"
               />
               <span>

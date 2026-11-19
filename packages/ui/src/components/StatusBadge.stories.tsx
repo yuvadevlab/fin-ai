@@ -46,7 +46,7 @@ export const Over: Story = {
 /** Custom label text for each status. */
 export const CustomLabels: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
       <StatusBadge status="ON_TRACK" trackText="Within budget" />
       <StatusBadge status="NEAR_LIMIT" warnText="Approaching cap" />
       <StatusBadge status="AT_LIMIT" limitText="Cap reached" />
@@ -58,7 +58,7 @@ export const CustomLabels: Story = {
 /** All statuses side by side. */
 export const AllStatuses: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
       <StatusBadge status="ON_TRACK" />
       <StatusBadge status="NEAR_LIMIT" />
       <StatusBadge status="AT_LIMIT" />

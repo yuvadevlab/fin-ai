@@ -15,6 +15,7 @@ import {
   DialogTrigger,
   toast,
 } from "@yuva-devlab/ui";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export type AISuggestion = {
   title: string;
@@ -33,10 +34,10 @@ export interface AISuggestionsDialogProps {
 
 export function AISuggestionsDialog({
   trigger,
-  title = "AI Suggestions",
+  title = UI_COPY_CONSTANTS.AI_SUGGESTIONS_DIALOG.TITLE,
   description,
   suggestions,
-  applyLabel = "Apply selected",
+  applyLabel = UI_COPY_CONSTANTS.AI_SUGGESTIONS_DIALOG.APPLY_SELECTED,
   onApply,
 }: AISuggestionsDialogProps) {
   const [open, setOpen] = useState(false);
@@ -47,7 +48,7 @@ export function AISuggestionsDialog({
 
   const handleApply = () => {
     onApply?.(picked);
-    toast.success(`${picked.length} suggestion${picked.length > 1 ? "s" : ""} applied`);
+    toast.success(UI_COPY_CONSTANTS.AI_SUGGESTIONS_DIALOG.APPLIED(picked.length));
     setPicked([]);
     setOpen(false);
   };
@@ -55,15 +56,15 @@ export function AISuggestionsDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent size="lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="text-primary size-4" /> {title}
+          <DialogTitle className="fn-action-btn-with-icon">
+            <Sparkles className="fn-search-icon" /> {title}
           </DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
         <DialogBody>
-          <ul className="space-y-2">
+          <ul className="fn-ai-suggest-list">
             {suggestions.map((s) => {
               const active = picked.includes(s.title);
               return (
@@ -71,27 +72,15 @@ export function AISuggestionsDialog({
                   <button
                     type="button"
                     onClick={() => toggle(s.title)}
-                    className={cn(
-                      "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition",
-                      active
-                        ? "border-primary bg-primary/5"
-                        : "border-border bg-card hover:border-primary/40",
-                    )}
+                    className={cn("fn-ai-suggest-item", active && "is-active")}
                   >
-                    <div
-                      className={cn(
-                        "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border",
-                        active
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border",
-                      )}
-                    >
-                      {active ? <Check className="size-3" /> : null}
+                    <div className={cn("fn-ai-suggest-checkbox", active && "is-active")}>
+                      {active ? <Check className="fn-ai-suggest-check-icon" /> : null}
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold">{s.title}</p>
-                      <p className="text-muted-foreground mt-0.5 text-xs">{s.detail}</p>
-                      <p className="text-primary mt-2 text-xs font-medium">{s.impact}</p>
+                    <div className="fn-ai-suggest-content">
+                      <p className="fn-ai-suggest-title">{s.title}</p>
+                      <p className="fn-ai-suggest-detail">{s.detail}</p>
+                      <p className="fn-ai-suggest-impact">{s.impact}</p>
                     </div>
                   </button>
                 </li>
@@ -101,7 +90,7 @@ export function AISuggestionsDialog({
         </DialogBody>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
+            {UI_COPY_CONSTANTS.AI_SUGGESTIONS_DIALOG.CANCEL}
           </Button>
           <Button disabled={picked.length === 0} onClick={handleApply}>
             {applyLabel}

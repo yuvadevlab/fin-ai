@@ -24,22 +24,16 @@ export function StatusBadge({
   const isAtLimit = status === BudgetStatus.AT_LIMIT || status === "at_limit" || status === "limit";
   const isWarn = status === BudgetStatus.NEAR_LIMIT || status === "near";
 
+  const getBadgeVariantClass = () => {
+    if (isOver) return "finai-badge--over";
+    if (isAtLimit) return "finai-badge--at-limit";
+    if (isWarn) return "finai-badge--near-limit";
+    return "finai-badge--on-track";
+  };
+
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold",
-        isOver
-          ? "bg-destructive/10 text-destructive"
-          : isAtLimit
-            ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
-            : isWarn
-              ? "bg-amber-500/10 text-amber-600"
-              : "bg-primary/10 text-primary",
-        className,
-      )}
-      {...props}
-    >
-      {(isOver || isAtLimit) && <AlertTriangle className="size-3" />}
+    <span className={cn("finai-badge", getBadgeVariantClass(), className)} {...props}>
+      {(isOver || isAtLimit) && <AlertTriangle className="fn-icon-xs" />}
       {isOver ? overText : isAtLimit ? limitText : isWarn ? warnText : trackText}
     </span>
   );

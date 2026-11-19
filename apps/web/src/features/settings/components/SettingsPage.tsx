@@ -53,7 +53,7 @@ export function SettingsPage() {
   const active = sections.find((s) => s.id === (selectedId ?? sectionQuery)) || null;
 
   return (
-    <PageContainer className="max-w-5xl">
+    <PageContainer className="fn-settings-container">
       <PageHeader
         title={UI_COPY.SETTINGS.PAGE_TITLE}
         description={UI_COPY.SETTINGS.PAGE_DESCRIPTION}
@@ -68,32 +68,30 @@ export function SettingsPage() {
             className="fn-settings-card group"
           >
             <div className="fn-settings-card-icon">
-              <s.icon className="size-5" />
+              <s.icon className="fn-settings-icon-svg" />
             </div>
             <div>
-              <p className="font-semibold">{s.label}</p>
-              <p className="text-muted-foreground mt-1 text-sm">{s.desc}</p>
+              <p className="fn-settings-label">{s.label}</p>
+              <p className="fn-settings-desc">{s.desc}</p>
             </div>
-            <span className="text-muted-foreground ml-auto transition group-hover:translate-x-0.5">
-              →
-            </span>
+            <span className="fn-settings-arrow">→</span>
           </button>
         ))}
       </section>
 
       <Sheet open={!!active} onOpenChange={(open) => !open && setSelectedId("")}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+        <SheetContent className="fn-settings-sheet-content">
           {active ? (
             <>
               <SheetHeader>
                 <SheetTitle>{active.label}</SheetTitle>
                 <SheetDescription>{active.desc}</SheetDescription>
               </SheetHeader>
-              <div className="mt-6">{active.body}</div>
-              <SheetFooter className="mt-6">
+              <div className="fn-settings-sheet-body">{active.body}</div>
+              <SheetFooter className="fn-settings-sheet-footer">
                 <Button
                   variant="ghost"
-                  className="w-full cursor-pointer"
+                  className="fn-settings-close-btn"
                   onClick={() => setSelectedId("")}
                 >
                   {UI_COPY.SETTINGS.CLOSE}

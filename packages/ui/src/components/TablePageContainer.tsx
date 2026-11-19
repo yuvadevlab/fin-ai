@@ -36,7 +36,7 @@ export function TablePageContainer({ header, children, className }: TablePageCon
   return (
     <div className={cn("finai-table-page-container", className)}>
       {/* Header section — pinned on desktop, natural scroll on mobile */}
-      <div className="finai-table-page-header space-y-3 sm:space-y-4">{header}</div>
+      <div className="finai-table-page-header">{header}</div>
 
       {/* Table container — fills remaining height on desktop, natural height on mobile */}
       <div className="finai-table-page-body">{children}</div>

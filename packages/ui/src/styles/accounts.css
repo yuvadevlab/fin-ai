@@ -1,7 +1,7 @@
 /**
  * @file packages/ui/src/styles/accounts.css
- * @description Semantic component styles for FinAI Accounts page, account cards, and modals.
- * Architecture: W3C Cascade Layer @layer dl-components
+ * @description Semantic component styles for FinAI Accounts page layouts and forms.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: strictly under 250 lines).
  */
 
 @layer dl-components {
@@ -22,73 +22,6 @@
     .fn-accounts-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-  }
-
-  /* ── Account Card Component ────────────────────────────────────────────── */
-  .fn-account-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: var(--radius-2xl, 1rem);
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    padding: var(--card-padding, 1.25rem);
-    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-    transition: all 150ms ease;
-  }
-
-  .fn-account-card:hover {
-    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
-  }
-
-  .fn-account-card.is-default {
-    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent);
-  }
-
-  .fn-account-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  .fn-account-avatar {
-    display: flex;
-    width: 2.5rem;
-    height: 2.5rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-xl, 0.75rem);
-    background-color: var(--secondary);
-    color: var(--foreground);
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-
-  .fn-account-default-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.125rem;
-    border-radius: 9999px;
-    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
-    color: var(--primary);
-    padding: 0.125rem 0.375rem;
-    font-size: 0.625rem;
-    font-weight: 600;
-  }
-
-  .fn-account-balance {
-    margin-top: 1rem;
-  }
-
-  .fn-account-card-footer {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-    padding-top: 0.75rem;
-    font-size: 0.75rem;
   }
 
   /* ── Account Empty State ───────────────────────────────────────────────── */
@@ -140,5 +73,36 @@
     border-color: color-mix(in srgb, var(--primary) 40%, transparent);
     background-color: color-mix(in srgb, var(--primary) 5%, transparent);
     color: var(--primary);
+  }
+
+  .fn-account-form-note {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  .fn-account-star-toggle-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    transition: all 150ms ease;
+  }
+
+  .fn-account-star-toggle-icon.is-active {
+    fill: var(--primary);
+    color: var(--primary);
+  }
+
+  .fn-account-default-toggle-title {
+    font-size: 0.875rem;
+    line-height: 1;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .fn-account-default-toggle-desc {
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    margin-bottom: 0;
   }
 }

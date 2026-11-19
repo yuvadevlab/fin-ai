@@ -1,7 +1,7 @@
 /**
  * @file packages/ui/src/styles/dashboard.css
- * @description Semantic component styles for FinAI Dashboard, KPI cards, charts layout, and summary pillars.
- * Architecture: W3C Cascade Layer @layer dl-components
+ * @description Semantic component styles for FinAI Dashboard, KPI cards, layout grids, and summary pillars.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: under 250 lines).
  */
 
 @layer dl-components {
@@ -87,76 +87,143 @@
     color: var(--muted-foreground);
   }
 
-  /* ── Category Breakdown List ───────────────────────────────────────────── */
-  .fn-category-breakdown-list {
-    max-height: 7rem;
-    overflow-y: auto;
-    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-    padding-top: 0.625rem;
-    padding-right: 0.25rem;
+  .fn-stat-pillar-info {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
   }
 
-  .fn-category-breakdown-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.75rem;
-  }
-
-  /* ── Health Card Metrics ───────────────────────────────────────────────── */
-  .fn-health-metrics-list {
-    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-    padding-top: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-
-  .fn-health-metric-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .fn-health-metric-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.75rem;
-  }
-
-  /* ── Trend Guide Cards ─────────────────────────────────────────────────── */
-  .fn-trend-guide-card {
-    border-radius: var(--radius-lg, 0.5rem);
-    border: 1px solid var(--border);
-    background-color: var(--card);
-    padding: 0.875rem;
-  }
-
-  .fn-trend-guide-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-
-  .fn-trend-guide-badge {
-    flex-shrink: 0;
-    text-align: right;
-    font-size: 0.75rem;
+  .fn-stat-pillar-title {
+    font-size: var(--text-xs, 0.75rem);
     font-weight: 600;
-    color: var(--primary);
+    color: var(--foreground);
+    margin: 0;
   }
 
-  /* ── Cash Flow Range Select Trigger ─────────────────────────────────────── */
-  .fn-cashflow-range-select {
-    width: 9.5rem;
-    min-width: 9.5rem;
-    height: 2rem;
-    font-size: var(--text-body-sm, 0.875rem);
-    font-weight: 500;
+  .fn-stat-pillar-sub {
+    font-size: 0.625rem;
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+
+  .fn-stat-pillar-invested {
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    margin-bottom: 0;
+  }
+
+  .fn-stat-pillar-return {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+  }
+
+  .fn-stat-pillar-pct {
+    font-size: 0.6875rem;
+    font-weight: 400;
+  }
+
+  .fn-stat-pillar-baseline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .fn-stat-pillar-limit {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-stat-pillar-funded {
+    color: var(--primary);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  /* ── Score Gauge Component ──────────────────────────────────────────────── */
+  .finai-score-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .finai-score-gauge-ring-wrap {
+    position: relative;
+  }
+
+  .finai-score-gauge-arc {
+    transition: stroke-dashoffset 800ms ease-out;
+  }
+
+  .finai-score-gauge--excellent {
+    color: var(--primary);
+    stroke: var(--primary);
+  }
+
+  .finai-score-gauge--good {
+    color: var(--warning, #f59e0b);
+    stroke: var(--warning, #f59e0b);
+  }
+
+  .finai-score-gauge--poor {
+    color: var(--destructive);
+    stroke: var(--destructive);
+  }
+
+  .finai-score-gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .finai-score-gauge-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .finai-score-gauge-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--foreground);
+    line-height: 1;
+  }
+
+  .finai-score-gauge-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+  }
+
+  .finai-score-gauge-rating {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .fn-kpi-savings-bar {
+    background-color: color-mix(in srgb, var(--border) 60%, transparent);
+    margin-inline-start: auto;
+    height: 0.25rem;
+    width: 4rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 9999px;
+  }
+
+  .fn-kpi-savings-fill {
+    background-color: var(--primary);
+    height: 100%;
   }
 }

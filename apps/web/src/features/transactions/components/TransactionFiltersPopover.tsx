@@ -59,30 +59,24 @@ export function TransactionFiltersPopover({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="cursor-pointer gap-1.5">
-          <Filter className="size-4" /> {UI_COPY.TRANSACTIONS.FILTERS}
+        <Button variant="outline" size="sm" className="fn-filter-trigger">
+          <Filter className="fn-notifications-action-icon" /> {UI_COPY.TRANSACTIONS.FILTERS}
           {activeFilterCount > 0 ? (
-            <span className="bg-primary text-primary-foreground ml-1 rounded-full px-1.5 text-[10px] font-semibold">
-              {activeFilterCount}
-            </span>
+            <span className="fn-filter-badge">{activeFilterCount}</span>
           ) : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="fn-transactions-filter-popover">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">{UI_COPY.TRANSACTIONS.FILTER_TITLE}</p>
+        <div className="fn-filter-header">
+          <p className="fn-filter-title">{UI_COPY.TRANSACTIONS.FILTER_TITLE}</p>
           {activeFilterCount > 0 ? (
-            <button
-              type="button"
-              className="text-primary cursor-pointer text-xs hover:underline"
-              onClick={clearFilters}
-            >
+            <button type="button" className="fn-filter-reset" onClick={clearFilters}>
               {UI_COPY.TRANSACTIONS.RESET_FILTERS}
             </button>
           ) : null}
         </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs">{UI_COPY.TRANSACTIONS.CATEGORY_LABEL}</Label>
+        <div className="fn-filter-group">
+          <Label className="fn-filter-label">{UI_COPY.TRANSACTIONS.CATEGORY_LABEL}</Label>
           <Select value={categoryId} onValueChange={setCategoryId}>
             <SelectTrigger>
               <SelectValue />
@@ -97,8 +91,8 @@ export function TransactionFiltersPopover({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs">{UI_COPY.TRANSACTIONS.ACCOUNT_LABEL}</Label>
+        <div className="fn-filter-group">
+          <Label className="fn-filter-label">{UI_COPY.TRANSACTIONS.ACCOUNT_LABEL}</Label>
           <Select value={accountId} onValueChange={setAccountId}>
             <SelectTrigger>
               <SelectValue />
@@ -113,9 +107,9 @@ export function TransactionFiltersPopover({
             </SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label className="text-xs">{UI_COPY.TRANSACTIONS.MIN_AMOUNT}</Label>
+        <div className="fn-filter-grid-2">
+          <div className="fn-filter-group">
+            <Label className="fn-filter-label">{UI_COPY.TRANSACTIONS.MIN_AMOUNT}</Label>
             <Input
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
@@ -123,8 +117,8 @@ export function TransactionFiltersPopover({
               placeholder={UI_COPY.TRANSACTIONS.MIN_AMOUNT_PLACEHOLDER}
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">{UI_COPY.TRANSACTIONS.MAX_AMOUNT}</Label>
+          <div className="fn-filter-group">
+            <Label className="fn-filter-label">{UI_COPY.TRANSACTIONS.MAX_AMOUNT}</Label>
             <Input
               value={maxAmount}
               onChange={(e) => setMaxAmount(e.target.value)}

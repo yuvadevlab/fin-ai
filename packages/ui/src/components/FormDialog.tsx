@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface FormDialogProps {
   open?: boolean;
@@ -52,33 +53,29 @@ export function FormDialog({
 
   className,
 }: FormDialogProps) {
+  const copy = UI_COPY_CONSTANTS.FORM_DIALOG;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
 
-      <DialogContent
-        className={cn(
-          "flex max-h-[90dvh] flex-col overflow-hidden rounded-2xl p-0",
-          className?.includes("max-w-") ? "" : "sm:max-w-md",
-          className,
-        )}
-      >
-        <form onSubmit={onSubmit} className="flex max-h-[90dvh] flex-col overflow-hidden">
-          <DialogHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
+      <DialogContent className={cn("finai-dialog-content", className)}>
+        <form onSubmit={onSubmit} className="finai-dialog-form">
+          <DialogHeader className="finai-dialog-header">
             <DialogTitle>{title}</DialogTitle>
 
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
 
-          <DialogBody className="space-y-4 px-4 py-2 sm:px-6">{children}</DialogBody>
+          <DialogBody className="finai-dialog-body">{children}</DialogBody>
 
-          <DialogFooter className="flex-col-reverse gap-2 p-4 pt-2 sm:flex-row sm:gap-2 sm:p-6 sm:pt-2">
+          <DialogFooter className="finai-dialog-footer">
             <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
-              {cancelLabel}
+              {cancelLabel || copy.CANCEL}
             </Button>
 
             <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : submitLabel}
+              {loading ? copy.SAVING : submitLabel || copy.SAVE}
             </Button>
           </DialogFooter>
         </form>
