@@ -1,4 +1,4 @@
-name: Deploy FinAI API to Google Cloud Run
+name: 🚀 Deploy FinAI API to Google Cloud Run
 
 on:
   push:
@@ -20,75 +20,83 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: deploy-api-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  validate:
+    name: ⚡ Pre-Flight Quality Gate
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (!contains(github.event.head_commit.message, 'sync/main-to-dev') &&
        !contains(github.event.head_commit.message, 'reverse merge main into dev') &&
        !contains(github.event.head_commit.message, 'chore(sync):'))
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    uses: yuvadevlab/.github/.github/workflows/reusable-ci.yml@main
+    with:
+      node-version: "24"
+      run-tests: true
 
-      - name: Authenticate to Google Cloud via WIF
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+  deploy-dev:
+    name: 🚢 Deploy Development
+    needs: [validate]
+    if: github.ref == 'refs/heads/dev'
+    uses: yuvadevlab/.github/.github/workflows/reusable-deploy-cloudrun.yml@main
+    with:
+      service-name: "finai-api-dev"
+      dockerfile: "Dockerfile.api"
+      port: 4001
+      memory: "512Mi"
+      cpu: "1"
+      min-instances: 0
+      max-instances: 2
+      concurrency: 80
+      cpu-boost: true
+      env-vars: |
+        NODE_ENV=development
+        DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}
+        DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }}
+        AI_PROVIDER=google-ai-studio
+        AI_PROVIDER_AGENT=google-ai-studio
+        AI_PROVIDER_CHAT=google-ai-studio
+        GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }}
+        GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com
+        GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions
+        GOOGLE_AI_STUDIO_MODEL=${{ secrets.GOOGLE_AI_STUDIO_MODEL || 'gemini-2.5-flash' }}
+        WEB_URL=${{ vars.WEB_URL_DEV }}
+        CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_DEV }}
+    secrets:
+      WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Determine Environment Variables
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "ENV_NAME=production" >> $GITHUB_ENV
-            echo "SERVICE_NAME=finai-api" >> $GITHUB_ENV
-            echo "MAX_INSTANCES=5" >> $GITHUB_ENV
-            echo "DB_URL=${{ secrets.DATABASE_URL_PROD }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_PROD }}" >> $GITHUB_ENV
-            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_PROD }}" >> $GITHUB_ENV
-          else
-            echo "ENV_NAME=development" >> $GITHUB_ENV
-            echo "SERVICE_NAME=finai-api-dev" >> $GITHUB_ENV
-            echo "MAX_INSTANCES=2" >> $GITHUB_ENV
-            echo "DB_URL=${{ secrets.DATABASE_URL_DEV }}" >> $GITHUB_ENV
-            echo "WEB_URL=${{ vars.WEB_URL_DEV }}" >> $GITHUB_ENV
-            echo "CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_DEV }}" >> $GITHUB_ENV
-          fi
-
-      - name: Prepare Container Entrypoint
-        run: |
-          if [ -f Dockerfile.api ]; then
-            cp Dockerfile.api Dockerfile
-          fi
-
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --source . \
-            --region asia-southeast1 \
-            --allow-unauthenticated \
-            --port 4001 \
-            --memory 512Mi \
-            --cpu 1 \
-            --min-instances 0 \
-            --max-instances ${{ env.MAX_INSTANCES }} \
-            --cpu-throttling \
-            --concurrency 80 \
-            --set-env-vars "^;;^\
-          NODE_ENV=${{ env.ENV_NAME }};;\
-          DATABASE_URL=${{ env.DB_URL }};;\
-          DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }};;\
-          AI_PROVIDER=google-ai-studio;;\
-          AI_PROVIDER_AGENT=google-ai-studio;;\
-          AI_PROVIDER_CHAT=google-ai-studio;;\
-          GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }};;\
-          GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com;;\
-          GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions;;\
-          GOOGLE_AI_STUDIO_MODEL=${{ secrets.GOOGLE_AI_STUDIO_MODEL || 'gemini-2.5-flash' }};;\
-          WEB_URL=${{ env.WEB_URL }};;\
-          CORS_ALLOWED_ORIGINS=${{ env.CORS_ALLOWED_ORIGINS }}" \
-            --quiet
+  deploy-prod:
+    name: 🚀 Deploy Production
+    needs: [validate]
+    if: github.ref == 'refs/heads/main'
+    uses: yuvadevlab/.github/.github/workflows/reusable-deploy-cloudrun.yml@main
+    with:
+      service-name: "finai-api"
+      dockerfile: "Dockerfile.api"
+      port: 4001
+      memory: "512Mi"
+      cpu: "1"
+      min-instances: 1
+      max-instances: 5
+      concurrency: 80
+      cpu-boost: true
+      env-vars: |
+        NODE_ENV=production
+        DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}
+        DEVLAB_PORTAL_API_URL=${{ secrets.DEVLAB_PORTAL_API_URL }}
+        AI_PROVIDER=google-ai-studio
+        AI_PROVIDER_AGENT=google-ai-studio
+        AI_PROVIDER_CHAT=google-ai-studio
+        GOOGLE_AI_STUDIO_API_KEY=${{ secrets.GOOGLE_AI_STUDIO_API_KEY }}
+        GOOGLE_AI_STUDIO_BASE_URL=https://generativelanguage.googleapis.com
+        GOOGLE_AI_STUDIO_API_PATH=/v1beta/openai/chat/completions
+        GOOGLE_AI_STUDIO_MODEL=${{ secrets.GOOGLE_AI_STUDIO_MODEL || 'gemini-2.5-flash' }}
+        WEB_URL=${{ vars.WEB_URL_PROD }}
+        CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS_PROD }}
+    secrets:
+      WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ secrets.WIF_SERVICE_ACCOUNT }}
