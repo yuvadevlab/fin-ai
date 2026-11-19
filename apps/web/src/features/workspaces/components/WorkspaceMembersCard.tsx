@@ -22,20 +22,20 @@ function getRoleMeta(role: WorkspaceRole) {
     case WorkspaceRole.OWNER:
       return {
         label: UI_COPY.WORKSPACES.ROLE_OWNER,
-        icon: <Crown className="size-2.5" />,
-        className: "border-primary/30 text-primary bg-primary/10",
+        icon: <Crown className="fn-notifications-action-icon" />,
+        className: "fn-role-owner",
       };
     case WorkspaceRole.ADMIN:
       return {
         label: UI_COPY.WORKSPACES.ROLE_ADMIN,
-        icon: <ShieldCheck className="size-2.5" />,
-        className: "border-[hsl(var(--primary)/0.35)] text-primary bg-[hsl(var(--primary)/0.08)]",
+        icon: <ShieldCheck className="fn-notifications-action-icon" />,
+        className: "fn-role-admin",
       };
     default:
       return {
         label: UI_COPY.WORKSPACES.ROLE_MEMBER,
-        icon: <User2 className="size-2.5" />,
-        className: "border-border text-muted-foreground bg-muted/40",
+        icon: <User2 className="fn-notifications-action-icon" />,
+        className: "fn-role-member",
       };
   }
 }
@@ -67,30 +67,28 @@ export function WorkspaceMembersCard({
 
   return (
     <>
-      <div className="bg-card ring-border/50 overflow-hidden rounded-2xl shadow-sm ring-1">
+      <div className="fn-workspace-members-card">
         {/* Header */}
-        <div className="border-border/50 flex items-center justify-between border-b px-5 py-4">
+        <div className="fn-workspace-members-header">
           <div>
-            <p className="text-sm font-semibold">{UI_COPY.WORKSPACES.MEMBERS}</p>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              {UI_COPY.WORKSPACES.MEMBERS_DESCRIPTION}
-            </p>
+            <p className="fn-workspace-members-title">{UI_COPY.WORKSPACES.MEMBERS}</p>
+            <p className="fn-workspace-members-desc">{UI_COPY.WORKSPACES.MEMBERS_DESCRIPTION}</p>
           </div>
           {isOwnerOrAdmin && (
             <Button
               id="invite-member-btn"
               size="sm"
               onClick={onInvite}
-              className="gap-1.5 text-xs shadow-sm"
+              className="fn-action-btn-sm"
             >
-              <UserPlus className="size-3.5" />
+              <UserPlus className="fn-notifications-action-icon" />
               {UI_COPY.WORKSPACES.INVITE_MEMBER}
             </Button>
           )}
         </div>
 
         {/* Member rows */}
-        <ul className="divide-y">
+        <ul className="fn-workspace-members-list">
           {members.map((member: WorkspaceMember) => {
             const canRemove =
               isOwner || (userRole === WorkspaceRole.ADMIN && member.role === WorkspaceRole.MEMBER);
@@ -98,42 +96,41 @@ export function WorkspaceMembersCard({
             const roleMeta = getRoleMeta(member.role);
 
             return (
-              <li
-                key={member.id}
-                className="group hover:bg-muted/30 flex items-center justify-between gap-3 px-4 py-3 transition-colors sm:px-5"
-              >
+              <li key={member.id} className="fn-workspace-member-item">
                 {/* Avatar + info */}
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <Avatar className="ring-background size-9 shrink-0 shadow-2xs ring-1">
+                <div className="fn-workspace-member-info">
+                  <Avatar className="fn-workspace-member-avatar">
                     {member.user?.avatarUrl ? (
-                      <AvatarImage src={member.user.avatarUrl} alt={member.user?.name ?? "User"} />
+                      <AvatarImage
+                        src={member.user.avatarUrl}
+                        alt={member.user?.name ?? UI_COPY.COMMON.PROFILE_MENU.FALLBACK_USER}
+                      />
                     ) : null}
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                      {member.user?.name?.slice(0, 2).toUpperCase() ?? "U"}
+                    <AvatarFallback className="fn-workspace-member-avatar-fallback">
+                      {member.user?.name?.slice(0, 2).toUpperCase() ??
+                        UI_COPY.COMMON.PROFILE_MENU.FALLBACK_INITIAL}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-foreground truncate text-sm leading-none font-medium">
-                        {member.user?.name ?? "User"}
+                  <div className="fn-workspace-member-content">
+                    <div className="fn-workspace-member-name-row">
+                      <p className="fn-workspace-member-name">
+                        {member.user?.name ?? UI_COPY.COMMON.PROFILE_MENU.FALLBACK_USER}
                       </p>
                       {isSelf && (
-                        <span className="text-muted-foreground/70 shrink-0 text-[10px] font-normal">
-                          (you)
+                        <span className="fn-workspace-member-self-badge">
+                          {UI_COPY.WORKSPACES.YOU_BADGE}
                         </span>
                       )}
                     </div>
-                    <p className="text-muted-foreground mt-1 truncate text-xs">
-                      {member.user?.email}
-                    </p>
+                    <p className="fn-workspace-member-email">{member.user?.email}</p>
                   </div>
                 </div>
 
                 {/* Role badge + actions */}
-                <div className="flex shrink-0 items-center gap-1.5">
+                <div className="fn-workspace-member-actions">
                   <Badge
                     variant="outline"
-                    className={`shrink-0 gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap shadow-2xs ${roleMeta.className}`}
+                    className={`fn-workspace-member-role-badge ${roleMeta.className}`}
                   >
                     {roleMeta.icon}
                     <span>{roleMeta.label}</span>
@@ -147,13 +144,15 @@ export function WorkspaceMembersCard({
                       onClick={() =>
                         setMemberToRemove({
                           id: member.userId,
-                          name: member.user?.name ?? "this member",
+                          name: member.user?.name ?? UI_COPY.WORKSPACES.THIS_MEMBER,
                         })
                       }
-                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-7 shrink-0 cursor-pointer rounded-lg transition-all"
-                      aria-label={`Remove ${member.user?.name ?? "member"}`}
+                      className="fn-workspace-member-remove-btn"
+                      aria-label={UI_COPY.WORKSPACES.REMOVE_MEMBER_A11Y(
+                        member.user?.name ?? UI_COPY.WORKSPACES.THIS_MEMBER,
+                      )}
                     >
-                      <Trash2 className="size-3.5" />
+                      <Trash2 className="fn-notifications-action-icon" />
                     </Button>
                   )}
                 </div>
@@ -164,15 +163,15 @@ export function WorkspaceMembersCard({
 
         {/* Leave footer */}
         {!isOwner && (
-          <div className="flex justify-end border-t px-5 py-3">
+          <div className="fn-workspace-members-footer">
             <Button
               id="leave-workspace-btn"
               variant="ghost"
               size="sm"
               onClick={onLeave}
-              className="hover:bg-destructive/10 hover:text-destructive gap-1.5 text-xs transition-colors"
+              className="fn-action-btn-sm"
             >
-              <LogOut className="size-3.5" />
+              <LogOut className="fn-notifications-action-icon" />
               {UI_COPY.WORKSPACES.LEAVE_WORKSPACE}
             </Button>
           </div>
@@ -183,7 +182,10 @@ export function WorkspaceMembersCard({
         open={Boolean(memberToRemove)}
         onOpenChange={(open) => !open && setMemberToRemove(null)}
         title={UI_COPY.WORKSPACES.REMOVE_MEMBER}
-        description={`Remove ${memberToRemove?.name ?? "this member"} from ${workspaceName ?? "this workspace"}? They will lose access to shared records.`}
+        description={UI_COPY.WORKSPACES.REMOVE_MEMBER_DESC(
+          memberToRemove?.name ?? UI_COPY.WORKSPACES.THIS_MEMBER,
+          workspaceName ?? UI_COPY.WORKSPACES.THIS_WORKSPACE,
+        )}
         confirmText={UI_COPY.WORKSPACES.REMOVE_MEMBER}
         destructive
         onConfirm={handleConfirmRemove}

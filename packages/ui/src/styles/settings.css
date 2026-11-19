@@ -76,4 +76,143 @@
   .fn-workspace-invitation-card:hover {
     border-color: color-mix(in srgb, var(--primary) 20%, transparent);
   }
+
+  /* ── Settings Subsections & Items ───────────────────────────────────────── */
+  .fn-settings-loading {
+    color: var(--muted-foreground);
+    padding-block: var(--space-4, 1rem);
+    text-align: center;
+    font-size: var(--text-sm, 0.875rem);
+  }
+
+  .fn-settings-form-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-settings-section-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6, 1.5rem);
+  }
+
+  .fn-settings-save-btn {
+    margin-block-start: var(--space-4, 1rem);
+    inline-size: 100%;
+    cursor: pointer;
+  }
+
+  .fn-settings-item-row {
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .fn-settings-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .fn-settings-field-label {
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-settings-categories-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-settings-category-pill {
+    border-radius: var(--radius-full, 9999px);
+    padding-inline: 0.75rem;
+    padding-block: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-settings-manage-btn {
+    padding-block-start: 0.5rem;
+  }
+
+  /* ── Settings Page Cards & Sheet Elements ──────────────────────────────── */
+  .fn-settings-container {
+    max-width: 64rem;
+  }
+
+  .fn-settings-icon-svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .fn-settings-label {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-settings-desc {
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+  }
+
+  .fn-settings-arrow {
+    color: var(--muted-foreground);
+    margin-left: auto;
+    transition: transform 150ms ease;
+  }
+
+  .fn-settings-card:hover .fn-settings-arrow {
+    transform: translateX(0.125rem);
+  }
+
+  .fn-settings-sheet-content {
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  @media (min-width: 640px) {
+    .fn-settings-sheet-content {
+      max-width: 32rem;
+    }
+  }
+
+  .fn-settings-sheet-body {
+    margin-top: 1.5rem;
+  }
+
+  .fn-settings-sheet-footer {
+    margin-top: 1.5rem;
+  }
+
+  .fn-settings-close-btn {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .fn-settings-row-label {
+    font-size: var(--text-sm, 0.875rem);
+  }
+
+  .fn-settings-row-title {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .fn-settings-row-desc {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs, 0.75rem);
+    margin: 0;
+  }
+
+  .fn-settings-row-val {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs, 0.75rem);
+  }
 }

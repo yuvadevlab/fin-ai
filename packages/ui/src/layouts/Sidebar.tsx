@@ -14,6 +14,7 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarAiCard } from "./SidebarAiCard";
 import { IconMap, primaryNav, advancedNav, type DbMenuItem } from "./sidebarNavItems";
 import { FinAILogo } from "../components/FinAILogo";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export { type DbMenuItem };
 
@@ -95,10 +96,12 @@ export function Sidebar({
     return advancedNav;
   }, [menuItems]);
 
+  const copy = UI_COPY_CONSTANTS.SIDEBAR;
+
   return (
     <TooltipProvider delayDuration={150}>
       <aside
-        aria-label="Sidebar navigation"
+        aria-label={copy.NAV_ARIA}
         className={cn(
           "finai-sidebar",
           !isMobile
@@ -112,30 +115,22 @@ export function Sidebar({
         {...props}
       >
         {/* Header / Brand */}
-        <div className={cn("p-4", isRail ? "flex justify-center p-3" : "p-6")}>
-          <FinAILogo
-            compact
-            showName={!isRail}
-            className={cn(!isRail && "px-2")}
-            markClassName="size-8"
-          />
+        <div className={cn("fn-sidebar-header", isRail && "fn-sidebar-header--collapsed")}>
+          <FinAILogo compact showName={!isRail} markClassName="size-8" />
         </div>
 
         {/* Navigation Links */}
         <nav
-          aria-label="Main Navigation"
-          className={cn("flex-1 overflow-y-auto px-2", !isRail && "px-4")}
+          aria-label={copy.MAIN_NAV_ARIA}
+          className={cn("fn-sidebar-nav", isRail && "fn-sidebar-nav--collapsed")}
         >
-          <div className="space-y-1">
+          <div className="fn-sidebar-nav-group">
             {!isRail ? (
-              <div
-                className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase"
-                id="nav-overview-heading"
-              >
-                Overview
+              <div className="fn-sidebar-nav-heading" id="nav-overview-heading">
+                {copy.OVERVIEW_HEADING}
               </div>
             ) : (
-              <Separator className="my-2 opacity-50" />
+              <Separator className="fn-sidebar-separator" />
             )}
 
             {visiblePrimaryNav.map((item) => (
@@ -151,16 +146,18 @@ export function Sidebar({
           </div>
 
           {visibleAdvancedNav.length > 0 && (
-            <div className={cn("space-y-1 pt-4", !isRail && "pt-6")}>
+            <div
+              className={cn(
+                "fn-sidebar-nav-group fn-sidebar-nav-group--advanced",
+                !isRail && "is-expanded",
+              )}
+            >
               {!isRail ? (
-                <div
-                  className="text-muted-foreground/70 mb-2 px-3 text-[10px] font-bold tracking-widest uppercase"
-                  id="nav-intelligence-heading"
-                >
+                <div className="fn-sidebar-nav-heading" id="nav-intelligence-heading">
                   Intelligence
                 </div>
               ) : (
-                <Separator className="my-2 opacity-50" />
+                <Separator className="fn-sidebar-separator" />
               )}
 
               {visibleAdvancedNav.map((item) => (
@@ -182,14 +179,18 @@ export function Sidebar({
 
         {/* Legal & Attribution Footer */}
         {!isRail && (
-          <div className="border-border/40 border-t px-3 py-2">
-            <LegalFooter variant="sidebar" appName="FinAI" version={version} />
+          <div className="fn-sidebar-legal-wrap">
+            <LegalFooter
+              variant="sidebar"
+              appName={UI_COPY_CONSTANTS.BRAND.NAME}
+              version={version}
+            />
           </div>
         )}
 
         {/* Desktop / Tablet Collapse Toggle Footer */}
         {!isMobile && onToggleCollapse && (
-          <div className="border-border/60 border-t p-2">
+          <div className="fn-sidebar-collapse-wrap">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -197,10 +198,10 @@ export function Sidebar({
                   size="sm"
                   onClick={onToggleCollapse}
                   className={cn(
-                    "text-muted-foreground hover:text-foreground w-full cursor-pointer rounded-lg text-xs font-medium",
-                    isRail ? "size-10 justify-center p-0" : "justify-start gap-2.5 px-3 py-2",
+                    "fn-sidebar-collapse-btn",
+                    isRail && "fn-sidebar-collapse-btn--rail",
                   )}
-                  aria-label={isRail ? "Expand sidebar (Cmd+B)" : "Collapse sidebar (Cmd+B)"}
+                  aria-label={isRail ? copy.EXPAND_ARIA : copy.COLLAPSE_ARIA}
                   aria-expanded={!isRail}
                 >
                   {isRail ? (
@@ -208,14 +209,14 @@ export function Sidebar({
                   ) : (
                     <>
                       <PanelLeftClose className="size-4 shrink-0" aria-hidden="true" />
-                      <span>Collapse Sidebar</span>
+                      <span>{copy.COLLAPSE_TEXT}</span>
                     </>
                   )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={12}>
-                <p className="text-xs">
-                  {isRail ? "Expand sidebar (Cmd+B)" : "Collapse sidebar (Cmd+B)"}
+                <p className="fn-sidebar-collapse-text">
+                  {isRail ? copy.EXPAND_ARIA : copy.COLLAPSE_ARIA}
                 </p>
               </TooltipContent>
             </Tooltip>

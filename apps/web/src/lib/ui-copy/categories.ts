@@ -37,4 +37,8 @@ export const CATEGORIES_COPY = {
   ADD_DESCRIPTION: "Create a new custom category for your transactions and budgets.",
   EDIT_DESCRIPTION: "Update custom category details.",
   CREATE_CATEGORY: "Create Category",
+  OTHER_COUNT: (count: number): string => `Other (${count} more)`,
+  SELECT_EMOJI: "Select emoji",
+  AI_SUGGEST: "AI Suggest",
+  AI_SUGGESTING: "Suggesting...",
 } as const;

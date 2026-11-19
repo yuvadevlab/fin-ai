@@ -1,0 +1,206 @@
+/**
+ * @file packages/ui/src/styles/dashboard-cards.css
+ * @description Dashboard health overview card and category allocation breakdown card styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Dashboard Health Card ─────────────────────────────────────────────── */
+  .fn-health-dashboard-card {
+    display: flex;
+    block-size: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-5, 1.25rem);
+  }
+
+  .fn-health-view-all-link {
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .fn-health-view-all-link:hover {
+    color: color-mix(in srgb, var(--primary) 80%, transparent);
+  }
+
+  .fn-health-view-all-icon {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .fn-health-loading-box {
+    display: flex;
+    block-size: 14rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-health-loading-circle {
+    background-color: var(--muted);
+    inline-size: 7rem;
+    block-size: 7rem;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  .fn-health-loading-bar {
+    background-color: var(--muted);
+    block-size: 0.75rem;
+    inline-size: 6rem;
+    border-radius: var(--radius-sm, 0.25rem);
+  }
+
+  .fn-health-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-health-gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-block-start: 0.25rem;
+    text-align: center;
+  }
+
+  .fn-health-gauge-desc {
+    color: var(--muted-foreground);
+    margin-block-start: 0.25rem;
+    font-size: 0.6875rem;
+    margin-block-end: 0;
+  }
+
+  .fn-health-metric-label {
+    color: var(--muted-foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .fn-health-progress-bar {
+    block-size: 0.375rem;
+  }
+
+  /* ── Dashboard Category Allocation Card ────────────────────────────────── */
+  .fn-category-chart-card {
+    display: flex;
+    block-size: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .fn-category-view-all-link {
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .fn-category-view-all-link:hover {
+    color: color-mix(in srgb, var(--primary) 80%, transparent);
+  }
+
+  .fn-category-view-all-icon {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .fn-category-chart-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-category-row-label-wrap {
+    display: flex;
+    min-inline-size: 0;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-category-row-dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  .fn-category-row-name {
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .fn-category-row-pct {
+    color: color-mix(in srgb, var(--muted-foreground) 80%, transparent);
+    font-size: 0.625rem;
+  }
+
+  .fn-category-row-amount {
+    color: var(--foreground);
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+
+  .fn-category-empty-state {
+    color: var(--muted-foreground);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-block: 2.5rem;
+    text-align: center;
+  }
+
+  .fn-category-empty-icon-wrap {
+    background-color: color-mix(in srgb, var(--secondary) 60%, transparent);
+    margin-block-end: 0.75rem;
+    display: flex;
+    inline-size: 3rem;
+    block-size: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  .fn-category-empty-icon {
+    color: color-mix(in srgb, var(--muted-foreground) 60%, transparent);
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+
+  .fn-category-empty-title {
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .fn-category-empty-desc {
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+    margin-block-start: 0.125rem;
+    font-size: 0.6875rem;
+    margin-block-end: 0;
+  }
+
+  .fn-chart-card-full {
+    display: flex;
+    block-size: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}

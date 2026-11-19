@@ -27,26 +27,24 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
   return (
     <div className="fn-search-dropdown" role="listbox" aria-label={UI_COPY.SEARCH.RESULTS_LABEL}>
       {isFetching && !data && (
-        <div className="space-y-2 p-3">
+        <div className="fn-search-skeleton-list">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-muted h-10 animate-pulse rounded-lg" />
+            <div key={i} className="fn-search-skeleton-item" />
           ))}
         </div>
       )}
 
       {!isFetching && !hasResults && (
-        <div className="flex flex-col items-center gap-2 py-10 text-center">
-          <SearchX className="text-muted-foreground size-8" />
-          <p className="text-muted-foreground text-sm">{UI_COPY.SEARCH.NO_RESULTS(query)}</p>
+        <div className="fn-search-empty-wrap">
+          <SearchX className="fn-search-empty-icon" />
+          <p className="fn-search-empty-text">{UI_COPY.SEARCH.NO_RESULTS(query)}</p>
         </div>
       )}
 
       {/* Transactions */}
       {(data?.transactions?.length ?? 0) > 0 && (
-        <section className="p-2">
-          <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            {UI_COPY.SEARCH.TRANSACTIONS}
-          </p>
+        <section className="fn-search-section">
+          <p className="fn-search-section-title">{UI_COPY.SEARCH.TRANSACTIONS}</p>
           {data!.transactions.map((t) => (
             <Link
               key={t.id}
@@ -57,18 +55,16 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               <span className="fn-search-icon-badge">
                 <Receipt className="size-3.5" />
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-foreground truncate text-sm font-semibold">
-                  {t.notes ?? t.categoryName}
-                </p>
-                <p className="text-muted-foreground text-xs">
+              <div className="fn-search-item-info">
+                <p className="fn-search-item-title">{t.notes ?? t.categoryName}</p>
+                <p className="fn-search-item-meta">
                   {t.accountName} · {new Date(t.date).toLocaleDateString("en-IN")}
                 </p>
               </div>
               <span
                 className={cn(
-                  "shrink-0 text-sm font-semibold",
-                  t.type === TransactionType.EXPENSE ? "text-destructive" : "text-primary",
+                  "fn-search-amount",
+                  t.type === TransactionType.EXPENSE ? "is-expense" : "is-income",
                 )}
               >
                 <PrivacyMoney value={t.amount} />
@@ -81,14 +77,9 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
       {/* Accounts */}
       {(data?.accounts?.length ?? 0) > 0 && (
         <section
-          className={cn(
-            "p-2",
-            (data?.transactions?.length ?? 0) > 0 && "border-border/40 border-t",
-          )}
+          className={cn("fn-search-section", (data?.transactions?.length ?? 0) > 0 && "has-border")}
         >
-          <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            {UI_COPY.SEARCH.ACCOUNTS}
-          </p>
+          <p className="fn-search-section-title">{UI_COPY.SEARCH.ACCOUNTS}</p>
           {data!.accounts.map((a) => (
             <Link
               key={a.id}
@@ -99,13 +90,13 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               <span className="fn-search-icon-badge">
                 <Wallet className="size-3.5" />
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-foreground truncate text-sm font-semibold">{a.name}</p>
-                <p className="text-muted-foreground text-xs capitalize">
+              <div className="fn-search-item-info">
+                <p className="fn-search-item-title">{a.name}</p>
+                <p className="fn-search-item-meta is-capitalize">
                   {a.type.toLowerCase().replace("_", " ")}
                 </p>
               </div>
-              <PrivacyMoney value={a.balance} className="shrink-0 text-sm font-semibold" />
+              <PrivacyMoney value={a.balance} className="fn-search-amount" />
             </Link>
           ))}
         </section>
@@ -115,14 +106,12 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
       {(data?.goals?.length ?? 0) > 0 && (
         <section
           className={cn(
-            "p-2",
+            "fn-search-section",
             ((data?.transactions?.length ?? 0) > 0 || (data?.accounts?.length ?? 0) > 0) &&
-              "border-border/40 border-t",
+              "has-border",
           )}
         >
-          <p className="text-muted-foreground mb-1 px-2 text-[10px] font-bold tracking-wider uppercase">
-            {UI_COPY.SEARCH.GOALS}
-          </p>
+          <p className="fn-search-section-title">{UI_COPY.SEARCH.GOALS}</p>
           {data!.goals.map((g) => {
             const pct = Math.min(100, Math.round((g.currentAmount / g.targetAmount) * 100));
             return (
@@ -130,19 +119,16 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
                 <span className="fn-search-icon-badge">
                   <Target className="size-3.5" />
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-foreground truncate text-sm font-semibold">{g.name}</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <div className="bg-border h-1 flex-1 overflow-hidden rounded-full">
-                      <div
-                        className="bg-primary h-full rounded-full"
-                        style={{ width: `${pct}%` }}
-                      />
+                <div className="fn-search-item-info">
+                  <p className="fn-search-item-title">{g.name}</p>
+                  <div className="fn-search-goal-progress">
+                    <div className="fn-search-goal-bar">
+                      <div className="fn-search-goal-fill" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-muted-foreground text-[10px]">{pct}%</span>
+                    <span className="fn-search-goal-pct">{pct}%</span>
                   </div>
                 </div>
-                <ArrowRight className="text-muted-foreground size-3.5 shrink-0" />
+                <ArrowRight className="fn-search-arrow-icon" />
               </Link>
             );
           })}

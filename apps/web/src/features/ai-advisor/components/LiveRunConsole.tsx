@@ -76,7 +76,11 @@ export function LiveRunConsole({ logs = [], isStreaming = false, className }: Li
               onClick={handleCopy}
               title={UI_COPY.ADVISOR.LIVE_CONSOLE.COPY_TOOLTIP}
             >
-              {copied ? <Check className="size-3 text-primary" /> : <Copy className="size-3" />}
+              {copied ? (
+                <Check className="fn-console-copy-icon is-copied" />
+              ) : (
+                <Copy className="fn-console-copy-icon" />
+              )}
             </Button>
           )}
         </div>

@@ -39,16 +39,10 @@ export function SidebarItem({
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       aria-label={isRail ? item.label : undefined}
-      className={cn(
-        "flex items-center rounded-lg text-sm font-semibold transition-all outline-none",
-        isRail ? "mx-auto size-10 items-center justify-center p-0" : "gap-3 px-3 py-2",
-        active
-          ? "bg-accent text-accent-foreground shadow-sm"
-          : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-      )}
+      className={cn("fn-sidebar-link", isRail && "is-rail", active && "is-active")}
     >
       <Icon
-        className={cn("size-4 shrink-0", active ? "text-primary" : "")}
+        className={cn("fn-sidebar-link-icon", active && "is-active")}
         strokeWidth={2}
         aria-hidden="true"
       />
@@ -61,7 +55,7 @@ export function SidebarItem({
       <Tooltip key={item.href}>
         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
         <TooltipContent side="right" sideOffset={12}>
-          <p className="text-xs font-medium">{item.label}</p>
+          <p className="fn-sidebar-tooltip-title">{item.label}</p>
         </TooltipContent>
       </Tooltip>
     );

@@ -44,7 +44,7 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
             onClick={() => onSelect(action.message)}
             className="fn-empty-state-btn"
           >
-            <span className="inline-flex items-center gap-2">
+            <span className="fn-empty-state-btn-content">
               <action.icon className="fn-empty-state-btn-icon" aria-hidden="true" />
               <span>{action.label}</span>
             </span>

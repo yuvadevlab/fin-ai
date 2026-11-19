@@ -8,18 +8,11 @@ import { APP_ROUTES } from "@/lib";
 import { useHealthScore } from "../api/getHealthScore";
 import { UI_COPY } from "@/lib/ui-copy";
 
-function scoreColor(v: number) {
-  if (v >= 80) return "text-primary";
-  if (v >= 60) return "text-amber-500";
-  return "text-destructive";
+function scoreClass(v: number) {
+  if (v >= 80) return "fn-score--high";
+  if (v >= 60) return "fn-score--mid";
+  return "fn-score--low";
 }
-
-const RATING_LABEL: Record<string, string> = {
-  "Strong foundation": "Strong foundation",
-  "Building stability": "Building stability",
-  "Needs a plan": "Needs a plan",
-  "Needs attention": "Needs attention",
-};
 
 export function DashboardHealthCard() {
   const { data: healthData, isLoading } = useHealthScore();
@@ -34,34 +27,29 @@ export function DashboardHealthCard() {
     <ChartCard
       title={UI_COPY.DASHBOARD.HEALTH_CARD.TITLE}
       hint={
-        <Link
-          href={APP_ROUTES.HEALTH}
-          className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
-        >
+        <Link href={APP_ROUTES.HEALTH} className="fn-health-view-all-link">
           {UI_COPY.DASHBOARD.HEALTH_CARD.VIEW_ALL}{" "}
-          <ArrowUpRight className="size-3" aria-hidden="true" />
+          <ArrowUpRight className="fn-health-view-all-icon" aria-hidden="true" />
         </Link>
       }
-      className="flex h-full flex-col justify-between p-5"
+      className="fn-health-dashboard-card"
     >
       {isLoading ? (
-        <div className="flex h-56 flex-col items-center justify-center gap-3">
-          <div className="bg-muted size-28 animate-pulse rounded-full" />
-          <div className="bg-muted h-3 w-24 rounded" />
+        <div className="fn-health-loading-box">
+          <div className="fn-health-loading-circle" />
+          <div className="fn-health-loading-bar" />
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex flex-col items-center justify-center pt-1 text-center">
+        <div className="fn-health-content">
+          <div className="fn-health-gauge-wrap">
             <ScoreGauge
               score={score}
               size={120}
               strokeWidth={8}
-              rating={RATING_LABEL[healthData?.rating ?? ""] ?? "—"}
+              rating={healthData?.rating ?? "—"}
               showRating
             />
-            <p className="text-muted-foreground mt-1 text-[11px]">
-              {UI_COPY.DASHBOARD.HEALTH_CARD.DESCRIPTION}
-            </p>
+            <p className="fn-health-gauge-desc">{UI_COPY.DASHBOARD.HEALTH_CARD.DESCRIPTION}</p>
           </div>
 
           {metrics.length > 0 && (
@@ -69,10 +57,10 @@ export function DashboardHealthCard() {
               {metrics.map((m) => (
                 <div key={m.label} className="fn-health-metric-row">
                   <div className="fn-health-metric-header">
-                    <span className="text-muted-foreground truncate font-medium">{m.label}</span>
-                    <span className={cn("font-semibold", scoreColor(m.score))}>{m.score}%</span>
+                    <span className="fn-health-metric-label">{m.label}</span>
+                    <span className={cn("fn-font-semibold", scoreClass(m.score))}>{m.score}%</span>
                   </div>
-                  <Progress value={m.score} className="h-1.5" />
+                  <Progress value={m.score} className="fn-health-progress-bar" />
                 </div>
               ))}
             </div>

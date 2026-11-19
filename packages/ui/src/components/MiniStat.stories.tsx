@@ -43,31 +43,39 @@ export const SavingsGoal: Story = {
     label: "Retirement Pot",
     value: "₹28,50,000",
     sub: "Target: ₹50,00,000",
-    icon: <PiggyBank className="text-primary size-5" />,
+    icon: <PiggyBank style={{ color: "var(--primary)", width: "1.25rem", height: "1.25rem" }} />,
   },
 };
 
 /** Grid showcase demonstrating multiple mini stats side-by-side. */
 export const GridShowcase: Story = {
   render: () => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: "1rem",
+      }}
+    >
       <MiniStat
         label="Income"
         value="₹1,20,000"
         sub="This month"
-        icon={<ArrowUpRight className="text-primary size-5" />}
+        icon={
+          <ArrowUpRight style={{ color: "var(--primary)", width: "1.25rem", height: "1.25rem" }} />
+        }
       />
       <MiniStat
         label="Investments"
         value="₹8,40,000"
         sub="18 Holdings"
-        icon={<DollarSign className="size-5 text-indigo-500" />}
+        icon={<DollarSign style={{ color: "#6366f1", width: "1.25rem", height: "1.25rem" }} />}
       />
       <MiniStat
         label="Liquid Cash"
         value="₹65,000"
         sub="In 2 savings accounts"
-        icon={<Wallet className="size-5 text-amber-500" />}
+        icon={<Wallet style={{ color: "#f59e0b", width: "1.25rem", height: "1.25rem" }} />}
       />
     </div>
   ),

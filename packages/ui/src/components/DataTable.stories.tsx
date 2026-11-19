@@ -61,7 +61,7 @@ const columns = [
     header: "Amount",
     className: "text-right",
     accessor: (row: SampleTransaction) => (
-      <MoneyDisplay value={row.amount} showSign className="text-sm font-semibold" />
+      <MoneyDisplay value={row.amount} showSign style={{ fontSize: "0.875rem", fontWeight: 600 }} />
     ),
   },
 ];

@@ -2,15 +2,16 @@ import React from "react";
 import { Badge } from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
 import { TransactionType } from "@fin-ai/shared-types";
+import { UI_COPY } from "@/lib/ui-copy";
 import { Transaction } from "../api";
 import { TransactionRowActions } from "./TransactionRowActions";
 
 export function getTransactionColumns(onDelete?: (id: string) => void, isReadOnly = false) {
   const cols = [
     {
-      header: "Date",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.DATE,
       accessor: (t: Transaction) => (
-        <span className="text-muted-foreground text-xs font-normal sm:text-sm">
+        <span className="fn-tx-date">
           {new Date(t.date).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
@@ -20,69 +21,59 @@ export function getTransactionColumns(onDelete?: (id: string) => void, isReadOnl
       className: "whitespace-nowrap",
     },
     {
-      header: "Notes",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.CATEGORY,
       accessor: (t: Transaction) => (
-        <span className="text-muted-foreground block max-w-37.5 truncate text-xs font-normal sm:text-sm lg:max-w-50">
-          {t.notes || "-"}
-        </span>
+        <Badge variant="secondary" className="fn-tx-category-badge">
+          {t.category?.name || UI_COPY.TRANSACTIONS.COLUMNS.UNCATEGORIZED}
+        </Badge>
       ),
-      className: "hidden md:table-cell",
+      className: "whitespace-nowrap",
     },
     {
-      header: "Category",
-      accessor: (t: Transaction) => (
-        <div className="flex flex-col gap-0.5">
-          <Badge
-            variant="secondary"
-            className="w-fit rounded-full text-xs font-normal whitespace-nowrap"
-          >
-            {t.category?.name || "Uncategorized"}
-          </Badge>
-          {/* Subtitle visible on mobile screens where Account column is hidden */}
-          <span className="text-muted-foreground block max-w-32.5 truncate text-[11px] font-normal sm:hidden">
-            {t.type === TransactionType.TRANSFER && t.toAccount
-              ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-              : t.type === TransactionType.INVESTMENT && t.investment
-                ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
-                : t.type === TransactionType.GOAL && t.goal
-                  ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
-                  : t.account?.name || t.notes || ""}
-          </span>
-        </div>
-      ),
-      className: "min-w-[110px]",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.ACCOUNT,
+      accessor: (t: Transaction) => {
+        const destination =
+          t.type === TransactionType.TRANSFER && t.toAccount
+            ? `${t.account?.name || UI_COPY.TRANSACTIONS.COLUMNS.UNKNOWN_ACCOUNT} → ${t.toAccount?.name}`
+            : t.type === TransactionType.INVESTMENT && t.investment
+              ? `${t.account?.name || UI_COPY.TRANSACTIONS.COLUMNS.UNKNOWN_ACCOUNT} → ${t.investment?.name}`
+              : t.type === TransactionType.GOAL && t.goal
+                ? `${t.account?.name || UI_COPY.TRANSACTIONS.COLUMNS.UNKNOWN_ACCOUNT} → ${t.goal?.name}`
+                : t.account?.name || UI_COPY.TRANSACTIONS.COLUMNS.UNKNOWN_ACCOUNT;
+
+        return (
+          <div className="fn-tx-account">
+            <span>{destination}</span>
+            {t.user?.name && isReadOnly && (
+              <span className="fn-tx-account-author">
+                {UI_COPY.TRANSACTIONS.COLUMNS.AUTHOR_PREFIX} {t.user.name}
+              </span>
+            )}
+          </div>
+        );
+      },
+      className: "whitespace-nowrap",
     },
     {
-      header: "Account / Destination",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.TYPE,
       accessor: (t: Transaction) => (
-        <div className="flex flex-col text-xs font-normal sm:text-sm">
-          <span className="text-muted-foreground">
-            {t.type === TransactionType.TRANSFER && t.toAccount
-              ? `${t.account?.name || "Unknown"} → ${t.toAccount?.name}`
-              : t.type === TransactionType.INVESTMENT && t.investment
-                ? `${t.account?.name || "Unknown"} → ${t.investment?.name}`
-                : t.type === TransactionType.GOAL && t.goal
-                  ? `${t.account?.name || "Unknown"} → ${t.goal?.name}`
-                  : t.account?.name || "Unknown"}
-          </span>
-          {t.user?.name && isReadOnly && (
-            <span className="text-muted-foreground/70 text-[10px]">by {t.user.name}</span>
-          )}
-        </div>
-      ),
-      className: "hidden sm:table-cell",
-    },
-    {
-      header: "Type",
-      accessor: (t: Transaction) => (
-        <Badge variant="outline" className="text-xs font-normal capitalize">
+        <Badge variant="outline" className="fn-tx-type-badge">
           {t.type.toLowerCase()}
         </Badge>
       ),
-      className: "hidden sm:table-cell",
+      className: "whitespace-nowrap",
     },
     {
-      header: "Amount",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.NOTES,
+      accessor: (t: Transaction) => (
+        <span className="fn-tx-notes" title={t.notes || undefined}>
+          {t.notes || UI_COPY.TRANSACTIONS.COLUMNS.EMPTY_NOTES}
+        </span>
+      ),
+      className: "whitespace-nowrap",
+    },
+    {
+      header: UI_COPY.TRANSACTIONS.COLUMNS.AMOUNT,
       accessor: (t: Transaction) => {
         const isOutflow =
           t.type === TransactionType.EXPENSE ||
@@ -93,16 +84,16 @@ export function getTransactionColumns(onDelete?: (id: string) => void, isReadOnl
           <PrivacyMoney
             value={displayAmount}
             showSign={t.type === TransactionType.INCOME}
-            className="text-xs font-semibold sm:text-sm"
+            className="fn-tx-amount"
           />
         );
       },
       className: "text-right whitespace-nowrap",
     },
     {
-      header: "Actions",
+      header: UI_COPY.TRANSACTIONS.COLUMNS.ACTIONS,
       accessor: (t: Transaction) => (
-        <div className="flex justify-end">
+        <div className="fn-tx-actions">
           {onDelete && <TransactionRowActions transaction={t} onDelete={onDelete} />}
         </div>
       ),
@@ -110,5 +101,7 @@ export function getTransactionColumns(onDelete?: (id: string) => void, isReadOnl
     },
   ];
 
-  return isReadOnly || !onDelete ? cols.filter((c) => c.header !== "Actions") : cols;
+  return isReadOnly || !onDelete
+    ? cols.filter((c) => c.header !== UI_COPY.TRANSACTIONS.COLUMNS.ACTIONS)
+    : cols;
 }

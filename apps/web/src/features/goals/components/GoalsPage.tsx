@@ -71,7 +71,7 @@ export function GoalsPage() {
         description={UI_COPY.GOALS.PAGE_DESCRIPTION}
         actions={
           isReadOnly ? undefined : (
-            <Button size="sm" onClick={handleOpenCreateGoal} className="cursor-pointer gap-1.5">
+            <Button size="sm" onClick={handleOpenCreateGoal} className="fn-header-action-btn">
               <Plus className="size-4" /> {UI_COPY.GOALS.NEW_GOAL}
             </Button>
           )
@@ -83,18 +83,12 @@ export function GoalsPage() {
       {goals.length === 0 ? (
         <div className="fn-entity-empty">
           <div className="fn-entity-empty-icon">
-            <Target className="text-muted-foreground size-6" />
+            <Target className="fn-entity-empty-icon-svg" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">{UI_COPY.GOALS.EMPTY_TITLE}</h3>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            {UI_COPY.GOALS.EMPTY_DESCRIPTION}
-          </p>
+          <h3 className="fn-entity-empty-title">{UI_COPY.GOALS.EMPTY_TITLE}</h3>
+          <p className="fn-entity-empty-desc">{UI_COPY.GOALS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
-            <Button
-              size="sm"
-              onClick={handleOpenCreateGoal}
-              className="mt-5 cursor-pointer gap-1.5"
-            >
+            <Button size="sm" onClick={handleOpenCreateGoal} className="fn-entity-empty-btn">
               <Plus className="size-4" /> {UI_COPY.GOALS.CREATE_FIRST}
             </Button>
           )}
@@ -118,8 +112,8 @@ export function GoalsPage() {
                 key={g.id}
                 title={g.name}
                 subtitle={
-                  <span className="text-muted-foreground mt-1 flex items-center gap-1.5 text-xs">
-                    <Target className="size-3" />
+                  <span className="fn-goal-subtitle">
+                    <Target className="fn-goal-icon-sm" />
                     <span>
                       {UI_COPY.GOALS.TARGET} {formattedDeadline}
                     </span>
@@ -130,11 +124,7 @@ export function GoalsPage() {
                 unit="₹"
                 percentage={pct}
                 masked={isPrivacyMode}
-                statusBadge={
-                  <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-xs font-bold">
-                    {pct}%
-                  </span>
-                }
+                statusBadge={<span className="fn-goal-badge">{pct}%</span>}
                 actions={
                   isReadOnly ? undefined : (
                     <DropdownMenu>
@@ -142,25 +132,25 @@ export function GoalsPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                          className="fn-goal-menu-trigger"
                           aria-label={UI_COPY.GOALS.ACTIONS_FOR(g.name)}
                         >
                           <MoreVertical className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36">
+                      <DropdownMenuContent align="end" className="fn-goal-menu-content">
                         <DropdownMenuItem
                           onClick={() => handleOpenEditGoal(g)}
-                          className="cursor-pointer"
+                          className="fn-goal-menu-item"
                         >
-                          <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
+                          <Pencil className="fn-goal-menu-icon" /> {UI_COPY.COMMON.ACTIONS.EDIT}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleOpenDeleteGoal(g)}
-                          className="text-destructive cursor-pointer"
+                          className="fn-goal-menu-item-destructive"
                         >
-                          <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
+                          <Trash2 className="fn-goal-menu-icon" /> {UI_COPY.COMMON.ACTIONS.DELETE}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -177,12 +167,9 @@ export function GoalsPage() {
                       goalId={g.id}
                       goalName={g.name}
                       trigger={
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:text-primary h-7 cursor-pointer text-xs font-semibold"
-                        >
-                          <Landmark className="mr-1 size-3" /> {UI_COPY.COMMON.ACTIONS.SAVE_SHORT}
+                        <Button variant="ghost" size="sm" className="fn-goal-save-btn">
+                          <Landmark className="fn-goal-icon-sm" />{" "}
+                          {UI_COPY.COMMON.ACTIONS.SAVE_SHORT}
                         </Button>
                       }
                     />

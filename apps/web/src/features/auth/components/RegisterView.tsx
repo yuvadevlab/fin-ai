@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export function RegisterView() {
   useEffect(() => {
@@ -11,14 +12,10 @@ export function RegisterView() {
   }, []);
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4 text-center">
-      <div className="border-border bg-card w-full max-w-md rounded-2xl border p-8 shadow-xl">
-        <h1 className="text-foreground text-xl font-bold tracking-tight">
-          Redirecting to DevLab Registration
-        </h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          New user registration is managed centrally at DevLab Portal...
-        </p>
+    <div className="fn-auth-page">
+      <div className="fn-auth-card">
+        <h1 className="fn-auth-title">{UI_COPY.AUTH.REGISTER.TITLE}</h1>
+        <p className="fn-auth-desc">{UI_COPY.AUTH.REGISTER.DESCRIPTION}</p>
       </div>
     </div>
   );

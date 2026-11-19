@@ -11,15 +11,13 @@ interface MiniStatProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function MiniStat({ label, value, sub, icon, className, ...props }: MiniStatProps) {
   return (
-    <ContentCard className={cn("flex items-center justify-between p-5", className)} {...props}>
-      <div className="space-y-1">
-        <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-          {label}
-        </p>
-        <p className="text-xl font-bold">{value}</p>
-        {sub && <p className="text-muted-foreground text-xs">{sub}</p>}
+    <ContentCard className={cn("finai-ministat", className)} {...props}>
+      <div className="finai-ministat-body">
+        <p className="finai-ministat-label">{label}</p>
+        <p className="finai-ministat-value">{value}</p>
+        {sub && <p className="finai-ministat-sub">{sub}</p>}
       </div>
-      {icon && <div className="text-muted-foreground shrink-0">{icon}</div>}
+      {icon && <div className="finai-ministat-icon">{icon}</div>}
     </ContentCard>
   );
 }

@@ -22,38 +22,38 @@ export interface ChatLoadingSkeletonProps {
 export function ChatLoadingSkeleton({ className }: ChatLoadingSkeletonProps) {
   return (
     <div
-      className={cn("space-y-6 py-4", className)}
+      className={cn("fn-chat-skeleton", className)}
       role="status"
       aria-label={UI_COPY.ADVISOR.SKELETON.STATUS_LABEL}
     >
       {/* Turn 1: User inquiry skeleton */}
-      <div className="flex flex-row-reverse gap-3">
-        <div className="bg-muted size-8 shrink-0 animate-pulse rounded-full" />
-        <div className="bg-muted/70 h-10 w-48 animate-pulse rounded-2xl" />
+      <div className="fn-chat-skeleton-row is-user">
+        <div className="fn-chat-skeleton-avatar" />
+        <div className="fn-chat-skeleton-user-bubble" />
       </div>
 
       {/* Turn 1: Assistant response prose skeleton */}
-      <div className="flex gap-3">
-        <div className="bg-muted size-8 shrink-0 animate-pulse rounded-full" />
-        <div className="max-w-xl flex-1 space-y-2.5">
-          <div className="bg-muted/70 h-4 w-3/4 animate-pulse rounded-md" />
-          <div className="bg-muted/60 h-4 w-5/6 animate-pulse rounded-md" />
-          <div className="bg-muted/50 h-4 w-1/2 animate-pulse rounded-md" />
+      <div className="fn-chat-skeleton-row">
+        <div className="fn-chat-skeleton-avatar" />
+        <div className="fn-chat-skeleton-body">
+          <div className="fn-chat-skeleton-line is-width-75" />
+          <div className="fn-chat-skeleton-line is-width-85" />
+          <div className="fn-chat-skeleton-line is-width-50" />
         </div>
       </div>
 
       {/* Turn 2: Follow-up user message skeleton */}
-      <div className="flex flex-row-reverse gap-3 pt-2">
-        <div className="bg-muted size-8 shrink-0 animate-pulse rounded-full" />
-        <div className="bg-muted/70 h-10 w-64 animate-pulse rounded-2xl" />
+      <div className="fn-chat-skeleton-row is-followup">
+        <div className="fn-chat-skeleton-avatar" />
+        <div className="fn-chat-skeleton-user-bubble is-long" />
       </div>
 
       {/* Turn 2: Assistant second turn skeleton */}
-      <div className="flex gap-3">
-        <div className="bg-muted size-8 shrink-0 animate-pulse rounded-full" />
-        <div className="max-w-lg flex-1 space-y-2.5">
-          <div className="bg-muted/70 h-4 w-4/5 animate-pulse rounded-md" />
-          <div className="bg-muted/50 h-4 w-2/3 animate-pulse rounded-md" />
+      <div className="fn-chat-skeleton-row">
+        <div className="fn-chat-skeleton-avatar" />
+        <div className="fn-chat-skeleton-body">
+          <div className="fn-chat-skeleton-line is-width-80" />
+          <div className="fn-chat-skeleton-line is-width-65" />
         </div>
       </div>
       <span className="sr-only">{UI_COPY.ADVISOR.SKELETON.SR_TEXT}</span>

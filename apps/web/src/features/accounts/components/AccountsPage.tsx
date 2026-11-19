@@ -89,7 +89,7 @@ export function AccountsPage() {
         }
         actions={
           isReadOnly ? undefined : (
-            <Button size="sm" onClick={handleOpenAddAccount} className="cursor-pointer gap-1.5">
+            <Button size="sm" onClick={handleOpenAddAccount} className="fn-header-action-btn">
               <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
             </Button>
           )
@@ -101,20 +101,12 @@ export function AccountsPage() {
       {isClient && !isLoading && accounts.length === 0 ? (
         <div className="fn-accounts-empty">
           <div className="fn-accounts-empty-icon">
-            <Wallet className="text-muted-foreground size-6" />
+            <Wallet className="fn-entity-empty-icon-svg" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">
-            {UI_COPY.ACCOUNTS.EMPTY_TITLE}
-          </h3>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            {UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}
-          </p>
+          <h3 className="fn-entity-empty-title">{UI_COPY.ACCOUNTS.EMPTY_TITLE}</h3>
+          <p className="fn-entity-empty-desc">{UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
-            <Button
-              size="sm"
-              onClick={handleOpenAddAccount}
-              className="mt-5 cursor-pointer gap-1.5"
-            >
+            <Button size="sm" onClick={handleOpenAddAccount} className="fn-entity-empty-btn">
               <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
             </Button>
           )}
@@ -125,19 +117,19 @@ export function AccountsPage() {
             <div key={a.id} className={cn("fn-account-card", a.isDefault && "is-default")}>
               {/* Header: Name, Type, and visible Edit/Delete actions */}
               <div className="fn-account-card-header">
-                <div className="flex items-center gap-3">
+                <div className="fn-account-header-info">
                   <div className="fn-account-avatar">{a.name.slice(0, 2).toUpperCase()}</div>
                   <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-foreground text-sm font-semibold">{a.name}</p>
+                    <div className="fn-account-title-wrap">
+                      <p className="fn-account-name">{a.name}</p>
                       {a.isDefault && (
                         <span className="fn-account-default-badge">
-                          <Star className="size-2.5 fill-current" />
+                          <Star className="fn-account-star-icon" />
                           {UI_COPY.ACCOUNTS.DEFAULT_BADGE}
                         </span>
                       )}
                     </div>
-                    <p className="text-muted-foreground text-xs">{getAccountTypeLabel(a.type)}</p>
+                    <p className="fn-account-type">{getAccountTypeLabel(a.type)}</p>
                   </div>
                 </div>
 
@@ -148,33 +140,34 @@ export function AccountsPage() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                        className="fn-account-menu-trigger"
                         aria-label={`Actions for ${a.name}`}
                       >
                         <MoreVertical className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuContent align="end" className="fn-account-menu-content">
                       {!a.isDefault && accounts.length > 1 && (
                         <DropdownMenuItem
                           onClick={() => handleSetDefault(a.id)}
-                          className="cursor-pointer"
+                          className="fn-account-menu-item"
                         >
-                          <Star className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
+                          <Star className="fn-account-menu-icon" />{" "}
+                          {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem
                         onClick={() => handleOpenEditAccount(a)}
-                        className="cursor-pointer"
+                        className="fn-account-menu-item"
                       >
-                        <Pencil className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
+                        <Pencil className="fn-account-menu-icon" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => handleOpenDeleteAccount(a)}
-                        className="text-destructive cursor-pointer"
+                        className="fn-account-menu-item-destructive"
                       >
-                        <Trash2 className="mr-2 size-3.5" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
+                        <Trash2 className="fn-account-menu-icon" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -183,18 +176,15 @@ export function AccountsPage() {
 
               {/* Account Balance */}
               <div className="fn-account-balance">
-                <p className="text-2xl font-bold tracking-tight">
-                  <PrivacyMoney
-                    value={a.balance}
-                    className={cn(a.balance < 0 && "text-destructive")}
-                  />
+                <p className="fn-account-balance-val">
+                  <PrivacyMoney value={a.balance} className={cn(a.balance < 0 && "is-negative")} />
                 </p>
               </div>
 
               {/* Status Footer */}
               <div className="fn-account-card-footer">
-                <span className="text-muted-foreground">{UI_COPY.ACCOUNTS.ACTIVE_STATUS}</span>
-                <span className="text-muted-foreground font-semibold">{a.currency}</span>
+                <span className="fn-account-status">{UI_COPY.ACCOUNTS.ACTIVE_STATUS}</span>
+                <span className="fn-account-currency">{a.currency}</span>
               </div>
             </div>
           ))}

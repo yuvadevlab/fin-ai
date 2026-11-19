@@ -96,39 +96,37 @@ export function CategoriesPage() {
         description={UI_COPY.CATEGORIES.PAGE_DESCRIPTION}
         actions={
           isReadOnly ? undefined : (
-            <Button size="sm" onClick={handleOpenAddCategory} className="cursor-pointer gap-1.5">
+            <Button size="sm" onClick={handleOpenAddCategory} className="fn-header-action-btn">
               <Plus className="size-4" /> {UI_COPY.CATEGORIES.ADD}
             </Button>
           )
         }
       />
 
-      {isReadOnly && <ReadOnlyWorkspaceBanner className="mt-4" />}
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <Loader2 className="text-primary size-8 animate-spin" />
+        <div className="fn-loading-center">
+          <Loader2 className="fn-loading-spinner" />
         </div>
       ) : (
-        <div className="mt-6 space-y-8">
+        <div className="fn-categories-stack">
           {Object.entries(groupedCategories).map(([groupName, cats]) => {
             if (cats.length === 0) return null;
 
             return (
-              <div key={groupName} className="space-y-4">
-                <h3 className="text-foreground text-xs font-bold tracking-wider uppercase opacity-90">
-                  {groupName}
-                </h3>
+              <div key={groupName} className="fn-category-group">
+                <h3 className="fn-category-group-title">{groupName}</h3>
 
                 <div className="fn-entity-grid">
                   {cats.map((cat) => (
                     <div key={cat.id} className="fn-category-card">
-                      <div className="flex items-center gap-3.5">
+                      <div className="fn-category-info">
                         <div className="fn-category-icon">{cat.icon || "🏷️"}</div>
                         <div>
-                          <p className="text-sm font-semibold">{cat.name}</p>
+                          <p className="fn-category-name">{cat.name}</p>
                           {cat.isDefault && (
-                            <span className="text-muted-foreground text-[10px]">
+                            <span className="fn-category-default-badge">
                               {UI_COPY.CATEGORIES.DEFAULT}
                             </span>
                           )}
@@ -141,25 +139,25 @@ export function CategoriesPage() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                              className="fn-category-menu-trigger"
                               aria-label={UI_COPY.CATEGORIES.ACTIONS_FOR(cat.name)}
                             >
                               <MoreVertical className="size-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-36">
+                          <DropdownMenuContent align="end" className="fn-category-menu-content">
                             <DropdownMenuItem
                               onClick={() => handleOpenEditCategory(cat)}
-                              className="cursor-pointer"
+                              className="fn-goal-menu-item"
                             >
-                              <Pencil className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.EDIT}
+                              <Pencil className="fn-goal-menu-icon" /> {UI_COPY.CATEGORIES.EDIT}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => handleOpenDeleteCategory(cat)}
-                              className="text-destructive cursor-pointer"
+                              className="fn-goal-menu-item-destructive"
                             >
-                              <Trash2 className="mr-2 size-3.5" /> {UI_COPY.CATEGORIES.DELETE}
+                              <Trash2 className="fn-goal-menu-icon" /> {UI_COPY.CATEGORIES.DELETE}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

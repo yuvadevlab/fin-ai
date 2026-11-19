@@ -184,5 +184,36 @@ export const SEARCH_PARAMS = {
   APP: "app",
   TOKEN: "token",
   ACCESS_TOKEN: "access_token",
+  PROMPT: "prompt",
+  ERROR: "error",
+  AUTH_ERROR: "auth_error",
+  SESSION_EXPIRED: "session_expired",
 } as const;
 export type SearchParamKey = (typeof SEARCH_PARAMS)[keyof typeof SEARCH_PARAMS];
+
+/** Standard URL query parameter keys for authentication and SSO handoffs */
+export const AuthQueryParamKey = {
+  REDIRECT: SEARCH_PARAMS.REDIRECT,
+  APP: SEARCH_PARAMS.APP,
+  TOKEN: SEARCH_PARAMS.TOKEN,
+  ACCESS_TOKEN: SEARCH_PARAMS.ACCESS_TOKEN,
+  PROMPT: SEARCH_PARAMS.PROMPT,
+  ERROR: SEARCH_PARAMS.ERROR,
+  AUTH_ERROR: SEARCH_PARAMS.AUTH_ERROR,
+  SESSION_EXPIRED: SEARCH_PARAMS.SESSION_EXPIRED,
+} as const;
+export type AuthQueryParamKey = (typeof AuthQueryParamKey)[keyof typeof AuthQueryParamKey];
+
+/** Canonical authentication prompt directives */
+export const AuthPrompt = {
+  LOGIN: "login",
+  SELECT_ACCOUNT: "select_account",
+  CONSENT: "consent",
+} as const;
+export type AuthPrompt = (typeof AuthPrompt)[keyof typeof AuthPrompt];
+
+/** Canonical authentication error codes passed via query parameters */
+export const AuthErrorCode = {
+  SESSION_EXPIRED: "session_expired",
+} as const;
+export type AuthErrorCode = (typeof AuthErrorCode)[keyof typeof AuthErrorCode];

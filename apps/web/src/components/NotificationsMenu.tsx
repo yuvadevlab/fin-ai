@@ -31,19 +31,23 @@ export function NotificationsMenu() {
     );
   });
 
-  // Calculate unread items strictly from displayed notifications to avoid double-counting active invitations
+  // Calculate unread items strictly from displayed notifications
   const unreadCount = displayNotifications.filter((item) => !item.read).length;
   const totalCount = invitations.length + unreadCount;
 
   const getIcon = (type: string) => {
     if (type === NotificationType.WORKSPACE_INVITATION)
-      return <Users className="text-primary size-4" />;
-    if (type === NotificationType.AI_INSIGHT) return <Sparkles className="text-warning size-4" />;
+      return <Users className="fn-notifications-action-icon is-primary" />;
+    if (type === NotificationType.AI_INSIGHT)
+      return <Sparkles className="fn-notifications-action-icon is-warning" />;
     if (type === NotificationType.BUDGET_WARNING || type === NotificationType.BUDGET_EXCEEDED) {
-      return <AlertCircle className="text-destructive size-4" />;
+      return <AlertCircle className="fn-notifications-action-icon is-destructive" />;
     }
-    return <Bell className="text-muted-foreground size-4" />;
+    return <Bell className="fn-notifications-action-icon is-muted" />;
   };
+
+  const a11yLabel =
+    totalCount > 0 ? UI_COPY.NOTIFICATIONS.A11Y_UNREAD(totalCount) : UI_COPY.NOTIFICATIONS.TITLE;
 
   return (
     <Popover>
@@ -51,18 +55,13 @@ export function NotificationsMenu() {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-secondary relative cursor-pointer rounded-full"
-          aria-label={
-            totalCount > 0 ? `Notifications, ${totalCount} unread items available` : "Notifications"
-          }
+          className="fn-notifications-trigger"
+          aria-label={a11yLabel}
         >
-          <Bell className="size-4" aria-hidden="true" />
+          <Bell className="fn-notifications-bell-icon" aria-hidden="true" />
           {totalCount > 0 && (
-            <span
-              className="bg-primary absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white shadow-xs"
-              aria-hidden="true"
-            >
-              {totalCount > 9 ? "9+" : totalCount}
+            <span className="fn-notifications-unread-dot" aria-hidden="true">
+              {totalCount > 9 ? UI_COPY.NOTIFICATIONS.OVERFLOW_BADGE : totalCount}
             </span>
           )}
         </Button>
@@ -74,12 +73,9 @@ export function NotificationsMenu() {
         collisionPadding={16}
         className="fn-notifications-popover"
       >
-        {/* Polished, non-collapsing header */}
         <div className="fn-notifications-header">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="text-foreground text-sm font-semibold tracking-tight">
-              {UI_COPY.NOTIFICATIONS.TITLE}
-            </span>
+          <div className="fn-notifications-header-title-box">
+            <span className="fn-notifications-header-title">{UI_COPY.NOTIFICATIONS.TITLE}</span>
             {totalCount > 0 && <span className="fn-notifications-badge">{totalCount}</span>}
           </div>
           {totalCount > 0 && (
@@ -89,13 +85,12 @@ export function NotificationsMenu() {
               onClick={() => markAllReadMutation.mutate()}
               className="fn-notifications-mark-read"
             >
-              <CheckCheck className="size-3.5 shrink-0" />
+              <CheckCheck className="fn-notifications-action-icon" />
               <span>{UI_COPY.NOTIFICATIONS.MARK_ALL_READ}</span>
             </button>
           )}
         </div>
 
-        {/* Workspace Invitations Section */}
         {invitations.length > 0 && (
           <div className="fn-notifications-invitations">
             <div className="fn-notifications-invitations-title">
@@ -103,32 +98,28 @@ export function NotificationsMenu() {
             </div>
             {invitations.map((invite) => (
               <div key={invite.id} className="fn-notifications-invitation-item">
-                <div className="flex items-start gap-3">
+                <div className="fn-notifications-invitation-body">
                   <div className="fn-notifications-invitation-avatar">
-                    <Users className="size-4" />
+                    <Users className="fn-notifications-bell-icon" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-foreground truncate text-xs font-semibold">
+                  <div className="fn-notifications-invitation-content">
+                    <div className="fn-notifications-invitation-header">
+                      <span className="fn-notifications-invitation-name">
                         {invite.workspace?.name ?? UI_COPY.WORKSPACES.SHARED_TITLE}
                       </span>
-                      <Badge
-                        variant="outline"
-                        className="h-5 shrink-0 px-1.5 text-[10px] font-medium"
-                      >
+                      <Badge variant="outline" className="fn-notifications-role-badge">
                         {invite.role}
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground mt-0.5 text-xs leading-normal">
+                    <p className="fn-notifications-invitation-desc">
                       {invite.inviter?.name
-                        ? `${invite.inviter.name} invited you to collaborate`
+                        ? UI_COPY.WORKSPACES.INVITED_BY(invite.inviter.name)
                         : UI_COPY.WORKSPACES.INVITATION_CARD_DESC}
                     </p>
                   </div>
                 </div>
 
-                {/* Inline action buttons aligned with content */}
-                <div className="flex items-center gap-2 pl-11">
+                <div className="fn-notifications-invitation-actions">
                   <Button
                     size="sm"
                     disabled={respondMutation.isPending}
@@ -138,7 +129,7 @@ export function NotificationsMenu() {
                         action: InvitationAction.ACCEPT,
                       })
                     }
-                    className="h-7 cursor-pointer px-3 text-xs font-medium shadow-xs"
+                    className="fn-notifications-accept-btn"
                   >
                     {UI_COPY.WORKSPACES.ACCEPT}
                   </Button>
@@ -152,7 +143,7 @@ export function NotificationsMenu() {
                         action: InvitationAction.REJECT,
                       })
                     }
-                    className="h-7 cursor-pointer px-3 text-xs font-medium"
+                    className="fn-notifications-decline-btn"
                   >
                     {UI_COPY.WORKSPACES.DECLINE}
                   </Button>
@@ -162,7 +153,6 @@ export function NotificationsMenu() {
           </div>
         )}
 
-        {/* Standard notifications list with matching px-4 grid */}
         <div className="fn-notifications-list">
           {displayNotifications.map((item) => (
             <div
@@ -173,30 +163,23 @@ export function NotificationsMenu() {
               className={`fn-notifications-item ${!item.read ? "is-unread" : ""}`}
             >
               <div className="fn-notifications-item-icon">{getIcon(item.type)}</div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-foreground truncate text-xs font-semibold">{item.title}</p>
-                  {!item.read && <span className="bg-primary size-2 shrink-0 rounded-full" />}
+              <div className="fn-notifications-item-content">
+                <div className="fn-notifications-item-header">
+                  <p className="fn-notifications-item-title">{item.title}</p>
+                  {!item.read && <span className="fn-notifications-unread-indicator" />}
                 </div>
-                <p className="text-muted-foreground mt-0.5 line-clamp-2 text-xs leading-relaxed">
-                  {item.body}
-                </p>
+                <p className="fn-notifications-item-body">{item.body}</p>
               </div>
             </div>
           ))}
 
-          {/* Empty state */}
           {displayNotifications.length === 0 && invitations.length === 0 && !isLoading && (
             <div className="fn-notifications-empty">
               <div className="fn-notifications-empty-icon">
-                <Bell className="text-muted-foreground size-5" />
+                <Bell className="fn-notifications-empty-bell" />
               </div>
-              <p className="text-foreground text-xs font-medium">
-                {UI_COPY.NOTIFICATIONS.ALL_CAUGHT_UP}
-              </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {UI_COPY.NOTIFICATIONS.EMPTY_DESC}
-              </p>
+              <p className="fn-notifications-empty-title">{UI_COPY.NOTIFICATIONS.ALL_CAUGHT_UP}</p>
+              <p className="fn-notifications-empty-desc">{UI_COPY.NOTIFICATIONS.EMPTY_DESC}</p>
             </div>
           )}
         </div>

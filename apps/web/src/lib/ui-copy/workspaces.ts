@@ -20,13 +20,23 @@ export const WORKSPACES_COPY = {
   ROLE_ADMIN: "Admin",
   ROLE_MEMBER: "Member",
   ROLE_OWNER: "Owner",
+  MEMBER_COUNT_ROLE: (count: number, role: string) =>
+    `${count} member${count === 1 ? "" : "s"} • ${role}`,
   PENDING_INVITATIONS: "Pending Invitations",
   INVITATION_CARD_TITLE: "Workspace Invitation",
   INVITATION_CARD_DESC: "You have been invited to collaborate on a shared workspace.",
+  INVITED_BY: (name: string) => `${name} invited you to collaborate`,
+  INVITED_BY_LABEL: (name: string) => `Invited by ${name}`,
   ACCEPT: "Accept",
   DECLINE: "Decline",
   REMOVE_MEMBER: "Remove",
+  REMOVE_MEMBER_A11Y: (name: string) => `Remove ${name} from workspace`,
   REMOVE_MEMBER_CONFIRM: "Are you sure you want to remove this member from the workspace?",
+  REMOVE_MEMBER_DESC: (name: string, ws: string) =>
+    `Remove ${name} from ${ws}? They will lose access to shared records.`,
+  THIS_MEMBER: "this member",
+  THIS_WORKSPACE: "this workspace",
+  YOU_BADGE: "(you)",
   LEAVE_WORKSPACE: "Leave Workspace",
   LEAVE_WORKSPACE_CONFIRM:
     "Are you sure you want to leave this workspace? You will lose access to shared records.",
@@ -41,4 +51,6 @@ export const WORKSPACES_COPY = {
   JOINED_SUCCESS: "Joined workspace successfully!",
   DECLINED_SUCCESS: "Invitation declined",
   RESPOND_ERROR: "Failed to process invitation",
+  CREATE_ERROR: "Failed to create workspace",
+  INVITE_ERROR: "Failed to send invitation",
 } as const;

@@ -26,15 +26,32 @@ export interface ActivityStepProps {
 /** Status icon: ✓ completed · ◌ running · ○ pending · ✕ failed. */
 function StatusIcon({ status }: { status: StepStatus }) {
   if (status === "success") {
-    return <Check className="text-muted-foreground size-3.5" aria-hidden="true" />;
+    return (
+      <Check
+        className="fn-timeline-status-icon fn-timeline-status-icon--success"
+        aria-hidden="true"
+      />
+    );
   }
   if (status === "running") {
-    return <Loader2 className="text-primary size-3.5 animate-spin" aria-hidden="true" />;
+    return (
+      <Loader2
+        className="fn-timeline-status-icon fn-timeline-status-icon--running"
+        aria-hidden="true"
+      />
+    );
   }
   if (status === "error") {
-    return <X className="text-destructive size-3.5" aria-hidden="true" />;
+    return (
+      <X className="fn-timeline-status-icon fn-timeline-status-icon--error" aria-hidden="true" />
+    );
   }
-  return <Circle className="text-muted-foreground/50 size-3" aria-hidden="true" />;
+  return (
+    <Circle
+      className="fn-timeline-status-icon fn-timeline-status-icon--pending"
+      aria-hidden="true"
+    />
+  );
 }
 
 /**
@@ -50,35 +67,31 @@ function StatusIcon({ status }: { status: StepStatus }) {
 export function ActivityStep({ step, expanded = false, isCurrent = false }: ActivityStepProps) {
   return (
     <li
-      className={cn("flex items-start gap-2.5 py-1", isCurrent && "bg-primary/5 rounded-md")}
+      className={cn("fn-timeline-item", isCurrent && "fn-timeline-item--current")}
       aria-current={isCurrent ? "step" : undefined}
     >
-      <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
+      <span className="fn-timeline-item-icon">
         <StatusIcon status={step.status} />
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="fn-timeline-item-content">
         <span
           className={cn(
-            "block truncate text-[13px] leading-5",
-            step.status === "running" && "text-foreground font-medium",
-            step.status === "success" && "text-muted-foreground",
-            step.status === "error" && "text-destructive font-medium",
-            step.status === "pending" && "text-muted-foreground/70",
+            "fn-timeline-item-title",
+            step.status === "running" && "fn-timeline-item-title--running",
+            step.status === "success" && "fn-timeline-item-title--success",
+            step.status === "error" && "fn-timeline-item-title--error",
+            step.status === "pending" && "fn-timeline-item-title--pending",
           )}
         >
           {step.label}
           {step.status === "running" ? "…" : ""}
         </span>
         {expanded && step.detail && step.status !== "running" && (
-          <span className="text-muted-foreground/80 mt-0.5 block text-xs leading-4">
-            {step.detail}
-          </span>
-        )}{" "}
+          <span className="fn-timeline-item-detail">{step.detail}</span>
+        )}
       </span>
       {expanded && step.duration && (
-        <span className="text-muted-foreground/70 mt-0.5 shrink-0 font-mono text-[11px]">
-          {step.duration}
-        </span>
+        <span className="fn-timeline-item-duration">{step.duration}</span>
       )}
     </li>
   );

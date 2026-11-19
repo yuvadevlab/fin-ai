@@ -25,10 +25,10 @@ export interface HealthMetricCardProps {
   className?: string;
 }
 
-function scoreColor(v: number): string {
-  if (v >= 80) return "text-primary";
-  if (v >= 60) return "text-amber-600";
-  return "text-destructive";
+function scoreClass(v: number): string {
+  if (v >= 80) return "fn-score--high";
+  if (v >= 60) return "fn-score--mid";
+  return "fn-score--low";
 }
 
 function formatMetricValue(value: number, unit: string): string {
@@ -62,26 +62,24 @@ export function HealthMetricCard({
   className,
 }: HealthMetricCardProps) {
   return (
-    <ContentCard className={cn("flex flex-col justify-between p-4 sm:p-5", className)}>
-      <div className="flex items-start justify-between gap-3">
+    <ContentCard className={cn("fn-health-card", className)}>
+      <div className="fn-health-card-header">
         <div>
-          <p className="text-foreground text-sm font-bold">{title}</p>
-          <p className="text-muted-foreground mt-1 text-xs">{subtitle}</p>
+          <p className="fn-health-card-title">{title}</p>
+          <p className="fn-health-card-subtitle">{subtitle}</p>
         </div>
         {score != null && (
-          <div className="text-right">
-            <span className={cn("text-lg font-bold", scoreColor(score))}>{score}</span>
-            {status && (
-              <p className="text-muted-foreground text-[11px] capitalize">{statusLabel(status)}</p>
-            )}
+          <div className="fn-health-card-score-box">
+            <span className={cn("fn-health-card-score", scoreClass(score))}>{score}</span>
+            {status && <p className="fn-health-card-status">{statusLabel(status)}</p>}
           </div>
         )}
       </div>
 
-      {score != null && <Progress value={score} className="mt-3 h-1.5" />}
+      {score != null && <Progress value={score} className="fn-health-card-progress" />}
 
       {current != null && target != null && unit && (
-        <div className="text-muted-foreground mt-3 flex flex-wrap justify-between gap-1 text-xs">
+        <div className="fn-health-card-metrics">
           <span>
             {UI_COPY.HEALTH.NOW} {formatMetricValue(current, unit)}
           </span>
@@ -92,7 +90,7 @@ export function HealthMetricCard({
       )}
 
       {nextAction && (
-        <p className="text-foreground bg-muted/40 mt-3 rounded-lg p-2.5 text-xs font-medium sm:p-3">
+        <p className="fn-health-card-action">
           {UI_COPY.HEALTH.NEXT_PREFIX} {nextAction}
         </p>
       )}

@@ -57,20 +57,20 @@ export function ContextPanel({
   const showReview = reviewed.length > 0 && !isStreaming;
 
   return (
-    <div className={cn("flex flex-col gap-5", className)}>
+    <div className={cn("fn-advisor-context", className)}>
       {/* Quick actions section */}
       <section aria-label={UI_COPY.ADVISOR.CONTEXT.QUICK_ACTIONS_TITLE}>
         <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.QUICK_ACTIONS_TITLE}</SectionTitle>
-        <QuickActions onSelect={onQuickAction} className="grid grid-cols-2 gap-2" />
+        <QuickActions onSelect={onQuickAction} className="fn-advisor-context-quick" />
       </section>
 
       {/* Adaptive: live agent streaming indicator */}
       {isStreaming && (
         <section aria-live="polite" aria-label={UI_COPY.ADVISOR.CONTEXT.AGENT_STATUS_TITLE}>
           <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.AGENT_STATUS_TITLE}</SectionTitle>
-          <div className="bg-primary/5 border-primary/20 flex items-center gap-2.5 rounded-xl border px-3 py-2.5">
-            <Loader2 className="text-primary size-4 animate-spin" aria-hidden="true" />
-            <span className="text-foreground text-sm font-medium">
+          <div className="fn-advisor-context-streaming">
+            <Loader2 className="fn-advisor-context-streaming-icon" aria-hidden="true" />
+            <span className="fn-advisor-context-streaming-text">
               {streamingLabel ?? UI_COPY.ADVISOR.CONTEXT.STREAMING_DEFAULT}
             </span>
           </div>
@@ -81,23 +81,23 @@ export function ContextPanel({
       {!isStreaming && pendingConfirmation && (
         <section aria-label={UI_COPY.ADVISOR.CONTEXT.ACTION_TITLE}>
           <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.ACTION_TITLE}</SectionTitle>
-          <div className="bg-card border-border/60 rounded-xl border p-3 shadow-sm">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-4 shrink-0 text-amber-600" aria-hidden="true" />
-              <p className="text-foreground min-w-0 flex-1 truncate text-sm font-semibold">
+          <div className="fn-advisor-context-card">
+            <div className="fn-advisor-context-card-header">
+              <ShieldCheck className="fn-advisor-context-card-icon" aria-hidden="true" />
+              <p className="fn-advisor-context-card-title">
                 {pendingConfirmation.card.title ?? UI_COPY.ADVISOR.COMPOSER.PENDING_PREFIX}
               </p>
             </div>
-            <span className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-amber-600">
-              <Bot className="size-3.5" aria-hidden="true" />
+            <span className="fn-advisor-context-card-status">
+              <Bot className="fn-advisor-context-card-status-icon" aria-hidden="true" />
               {UI_COPY.ADVISOR.CONTEXT.WAITING_APPROVAL}
             </span>
             {actionRows.length > 0 && (
-              <div className="bg-foreground/2 border-border/40 mt-2.5 space-y-1 border-t pt-2">
+              <div className="fn-advisor-context-action-list">
                 {actionRows.map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-muted-foreground">{key}</span>
-                    <span className="text-foreground max-w-40 truncate font-medium">{value}</span>
+                  <div key={key} className="fn-advisor-context-action-row">
+                    <span className="fn-advisor-context-action-key">{key}</span>
+                    <span className="fn-advisor-context-action-val">{value}</span>
                   </div>
                 ))}
               </div>
@@ -110,11 +110,11 @@ export function ContextPanel({
       {showReview && (
         <section aria-label={UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}>
           <SectionTitle>{UI_COPY.ADVISOR.CONTEXT.JUST_REVIEWED_TITLE}</SectionTitle>
-          <ul className="bg-card border-border/60 space-y-1.5 rounded-xl border px-3 py-2.5 shadow-sm">
+          <ul className="fn-advisor-context-review-list">
             {reviewed.map((a, i) => (
-              <li key={`${a.tool}-${i}`} className="flex flex-col gap-0.5">
-                <span className="text-foreground text-xs font-medium">{activityLabel(a)}</span>
-                <span className="text-muted-foreground truncate text-[11px]">{a.summary}</span>
+              <li key={`${a.tool}-${i}`} className="fn-advisor-context-review-item">
+                <span className="fn-advisor-context-review-title">{activityLabel(a)}</span>
+                <span className="fn-advisor-context-review-summary">{a.summary}</span>
               </li>
             ))}
           </ul>
@@ -131,9 +131,5 @@ export function ContextPanel({
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="text-muted-foreground mb-2 text-[11px] font-bold tracking-wider uppercase">
-      {children}
-    </h3>
-  );
+  return <h3 className="fn-advisor-context-title">{children}</h3>;
 }

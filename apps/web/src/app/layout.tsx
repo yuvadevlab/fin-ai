@@ -90,11 +90,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
          * Allows keyboard-only and screen-reader users to bypass the sidebar
          * navigation and jump straight to the main page content.
          */}
-        <a
-          href="#main-content"
-          className="bg-primary text-primary-foreground focus:ring-ring fixed top-4 left-4 z-9999 -translate-y-20 rounded-lg px-4 py-2 text-sm font-semibold shadow-lg transition-transform focus:ring-2 focus:ring-offset-2 focus:outline-none"
-        >
-          Skip to main content
+        <a href="#main-content" className="fn-skip-to-content">
+          {COMMON_COPY.A11Y.SKIP_TO_CONTENT}
         </a>
 
         <AppProviders initialToken={auth?.token}>{children}</AppProviders>

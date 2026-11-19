@@ -96,46 +96,45 @@ export function BulkConfirmationCarousel({
       : `${scrollState.firstVisible + 1}–${scrollState.lastVisible + 1} of ${items.length}`;
 
   return (
-    <div className="bg-card ring-border/60 animate-in slide-in-from-bottom-2 rounded-xl border p-3.5 shadow-sm">
+    <div className="fn-bulk-confirm-container">
       {/* Header bar */}
-      <div className="border-border/50 flex flex-wrap items-center justify-between gap-2 border-b pb-3">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 flex size-8 items-center justify-center rounded-lg">
-            <Layers className="text-primary size-4" aria-hidden="true" />
+      <div className="fn-bulk-confirm-header">
+        <div className="fn-bulk-confirm-header-left">
+          <div className="fn-bulk-confirm-header-icon-wrap">
+            <Layers className="fn-bulk-confirm-header-icon" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-foreground text-sm font-semibold">
+            <p className="fn-bulk-confirm-header-title">
               {!isAllResolved
-                ? `Record ${pendingCount} transaction${pendingCount > 1 ? "s" : ""}`
-                : "Batch transactions"}
+                ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.RECORD_TRANSACTIONS(pendingCount)
+                : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.BATCH_TRANSACTIONS}
             </p>
-            <p className="text-muted-foreground text-xs font-medium">
-              Total: <span className="text-foreground font-semibold">{maskedTotal}</span>
+            <p className="fn-bulk-confirm-header-subtitle">
+              {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.TOTAL}{" "}
+              <span className="fn-bulk-confirm-total-val">{maskedTotal}</span>
             </p>
           </div>
         </div>
 
         {/* Action buttons & Nav in header */}
-        <div className="flex items-center gap-1.5">
+        <div className="fn-bulk-confirm-header-actions">
           {scrollState.hasOverflow && (
-            <div className="mr-1 flex items-center gap-1">
+            <div className="fn-bulk-confirm-carousel-nav">
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-7"
+                className="fn-bulk-confirm-nav-btn"
                 disabled={!scrollState.canScrollLeft}
                 onClick={handlePrev}
                 aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.PREVIOUS}
               >
                 <ChevronLeft className="size-4" />
               </Button>
-              <span className="text-muted-foreground text-xs font-medium tabular-nums">
-                {visibleRangeLabel}
-              </span>
+              <span className="fn-bulk-confirm-nav-counter">{visibleRangeLabel}</span>
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-7"
+                className="fn-bulk-confirm-nav-btn"
                 disabled={!scrollState.canScrollRight}
                 onClick={handleNext}
                 aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.NEXT}
@@ -146,10 +145,10 @@ export function BulkConfirmationCarousel({
           )}
 
           {!isAllResolved ? (
-            <div className="flex items-center gap-1.5">
+            <div className="fn-bulk-confirm-bulk-actions">
               <Button
                 size="sm"
-                className="h-8 cursor-pointer gap-1.5 px-3 text-xs"
+                className="fn-bulk-confirm-all-btn"
                 disabled={disabled || isExecuting || isReadOnly}
                 onClick={handleConfirmAll}
               >
@@ -158,33 +157,34 @@ export function BulkConfirmationCarousel({
                 ) : (
                   <Check className="size-3.5" />
                 )}
-                Confirm All ({pendingCount})
+                {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CONFIRM_ALL(pendingCount)}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="h-8 cursor-pointer gap-1.5 px-2.5 text-xs"
+                className="fn-bulk-cancel-all-btn"
                 disabled={disabled || isExecuting}
                 onClick={handleRejectAll}
               >
                 <X className="size-3.5" />
-                Cancel All
+                {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_ALL}
               </Button>
             </div>
           ) : (
             <span
               className={cn(
-                "rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                rejectedCount === items.length
-                  ? "border-border/60 bg-muted/40 text-muted-foreground"
-                  : "border-primary/20 bg-primary/10 text-primary",
+                "fn-bulk-confirm-status-pill",
+                rejectedCount === items.length ? "is-rejected" : "is-executed",
               )}
             >
               {rejectedCount === items.length
-                ? "✕ Cancelled"
+                ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCELLED
                 : executedCount === items.length
-                  ? "✓ All recorded"
-                  : `✓ ${executedCount} recorded, ${rejectedCount} cancelled`}
+                  ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.ALL_RECORDED
+                  : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.RESOLVED_COUNTS(
+                      executedCount,
+                      rejectedCount,
+                    )}
             </span>
           )}
         </div>
@@ -194,7 +194,7 @@ export function BulkConfirmationCarousel({
       <div
         ref={scrollRef}
         onScroll={updateScrollState}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pt-3.5 pb-1"
+        className="fn-bulk-confirm-scroll-track"
         tabIndex={0}
         role="region"
         aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.A11Y_LABEL}
@@ -212,15 +212,10 @@ export function BulkConfirmationCarousel({
 
       {/* Footer hint */}
       {!isAllResolved && (
-        <p
-          className={cn(
-            "mt-2 text-[11px] font-medium",
-            isReadOnly ? "text-destructive" : "text-muted-foreground",
-          )}
-        >
+        <p className={cn("fn-bulk-confirm-footer-hint", isReadOnly && "is-error")}>
           {isReadOnly
             ? UI_COPY.WORKSPACES.READ_ONLY_BANNER
-            : "Confirm or cancel individual cards above, or record all remaining items in one click."}
+            : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.FOOTER_HINT}
         </p>
       )}
     </div>

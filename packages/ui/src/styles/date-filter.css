@@ -1,0 +1,79 @@
+/**
+ * @file packages/ui/src/styles/date-filter.css
+ * @description Date range preset selection and custom date picker popover styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Date Range Filter Popover ─────────────────────────────────────────── */
+  .fn-date-filter-heading {
+    color: var(--muted-foreground);
+    padding-inline: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .fn-date-filter-calendar-icon {
+    color: var(--primary);
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .fn-date-filter-label {
+    max-inline-size: 12.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fn-date-filter-chevron {
+    margin-inline-start: auto;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .fn-date-filter-custom-section {
+    border-block-start: 1px solid var(--border);
+    margin-block-start: var(--space-3, 0.75rem);
+    padding-block-start: var(--space-3, 0.75rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-date-filter-custom-heading {
+    color: var(--muted-foreground);
+    padding-inline: 0.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  .fn-date-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-date-filter-field-label {
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+  }
+
+  .fn-date-filter-input {
+    height: 2rem;
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-date-filter-submit {
+    margin-block-start: 0.25rem;
+    height: 2rem;
+    inline-size: 100%;
+    font-size: var(--text-xs, 0.75rem);
+  }
+}

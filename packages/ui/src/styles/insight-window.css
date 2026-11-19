@@ -83,6 +83,44 @@
     gap: 0.625rem;
   }
 
+  .fn-insight-header-sparkle {
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+    color: #6ee7b7;
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .fn-insight-title {
+    display: block;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+  }
+
+  .fn-insight-live-text {
+    margin-block-start: 0.125rem;
+    font-size: 0.625rem;
+    line-height: 1;
+    font-weight: 500;
+    color: rgba(209, 250, 229, 0.8);
+  }
+
+  .fn-insight-live-badge {
+    margin-inline-start: var(--space-1, 0.25rem);
+    border-radius: var(--radius-full, 9999px);
+    background-color: rgba(255, 255, 255, 0.2);
+    padding-inline: var(--space-2, 0.5rem);
+    padding-block: 0.125rem;
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    text-transform: uppercase;
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   .fn-insight-header-actions {
     position: relative;
     z-index: 2;
@@ -115,41 +153,6 @@
 
   .fn-insight-header-btn:active {
     transform: scale(0.95);
-  }
-
-  .fn-insight-generate-btn {
-    display: inline-flex;
-    cursor: pointer;
-    align-items: center;
-    gap: 0.375rem;
-    border-radius: var(--radius-xl, 0.75rem);
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    padding: 0.5rem 1rem;
-    font-size: var(--text-caption, 0.75rem);
-    font-weight: 600;
-    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-    border: none;
-    transition:
-      background-color 150ms ease,
-      transform 150ms ease;
-  }
-
-  .fn-insight-generate-btn:hover {
-    background-color: color-mix(in srgb, var(--primary) 90%, black);
-  }
-
-  .fn-insight-generate-btn:active {
-    transform: scale(0.96);
-  }
-
-  .fn-insight-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-    background-color: color-mix(in srgb, var(--secondary) 30%, transparent);
-    padding: 0.5rem 1rem;
   }
 }
 

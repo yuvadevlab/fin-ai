@@ -1,0 +1,153 @@
+/**
+ * @file packages/ui/src/styles/categories.css
+ * @description Category listing, grouped management, dialogs, and emoji picker styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Category Groups & Cards ───────────────────────────────────────────── */
+  .fn-categories-stack {
+    margin-block-start: var(--space-6, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8, 2rem);
+  }
+
+  .fn-category-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-category-group-title {
+    color: var(--foreground);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .fn-category-info {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  .fn-category-name {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-category-default-badge {
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+  }
+
+  .fn-category-menu-trigger {
+    color: var(--muted-foreground);
+    inline-size: 2rem;
+    block-size: 2rem;
+    cursor: pointer;
+  }
+
+  .fn-category-menu-trigger:hover {
+    color: var(--foreground);
+  }
+
+  .fn-category-menu-content {
+    inline-size: 9rem;
+  }
+
+  /* ── Category Form & AI Suggestion ─────────────────────────────────────── */
+  .fn-category-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+
+  .fn-category-icon-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-category-icon-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fn-category-icon-label {
+    font-size: 0.9375rem;
+    line-height: 1;
+    font-weight: 500;
+  }
+
+  .fn-category-suggest-btn {
+    height: 1.75rem;
+    gap: 0.25rem;
+    padding-inline: var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+    cursor: pointer;
+  }
+
+  .fn-category-suggest-icon {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  /* ── Emoji Picker Popover ──────────────────────────────────────────────── */
+  .fn-emoji-picker-btn {
+    height: 2.5rem;
+    inline-size: 100%;
+    justify-content: flex-start;
+    text-align: start;
+    font-weight: 400;
+  }
+
+  .fn-emoji-picker-btn:hover {
+    background-color: transparent;
+  }
+
+  .fn-emoji-picker-val {
+    color: var(--muted-foreground);
+    margin-inline-end: 0.5rem;
+    font-size: var(--text-sm, 0.875rem);
+  }
+
+  .fn-emoji-picker-icon {
+    margin-inline-start: auto;
+    inline-size: 1rem;
+    block-size: 1rem;
+    opacity: 0.5;
+  }
+
+  .fn-emoji-picker-popover {
+    inline-size: auto;
+    border: none;
+    padding: 0;
+    box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  }
+
+  .fn-emoji-picker-wrap {
+    overscroll-behavior: contain;
+  }
+
+  /* ── Loading Center State ──────────────────────────────────────────────── */
+  .fn-loading-center {
+    display: flex;
+    height: 16rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fn-loading-spinner {
+    color: var(--primary);
+    inline-size: 2rem;
+    block-size: 2rem;
+    animation: dl-spin 1s linear infinite;
+  }
+}

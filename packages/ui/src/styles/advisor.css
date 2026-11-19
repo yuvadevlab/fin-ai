@@ -86,6 +86,36 @@
     color: var(--accent-foreground);
   }
 
+  .fn-advisor-banner-wrap {
+    margin-block-end: var(--space-4, 1rem);
+  }
+
+  .fn-advisor-mobile-sheet {
+    inline-size: 21.25rem;
+    overflow-y: auto;
+  }
+
+  @media (min-width: 640px) {
+    .fn-advisor-mobile-sheet {
+      max-inline-size: 28rem;
+    }
+  }
+
+  .fn-advisor-mobile-sheet-body {
+    margin-block-start: var(--space-4, 1rem);
+  }
+
+  .fn-advisor-jump-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .fn-advisor-jump-icon.is-streaming {
+    color: var(--primary);
+    animation: bounce 1s infinite;
+  }
+
   .fn-advisor-sidebar {
     display: none;
   }

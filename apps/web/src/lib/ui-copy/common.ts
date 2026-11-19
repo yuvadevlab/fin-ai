@@ -64,6 +64,14 @@ export const COMMON_COPY = {
     OPEN_MENU: "Open menu",
     EXPAND_SECTION: "Expand section",
     COLLAPSE_SECTION: "Collapse section",
+    SKIP_TO_CONTENT: "Skip to main content",
+    ENABLE_PRIVACY: "Enable Privacy Mode",
+    DISABLE_PRIVACY: "Disable Privacy Mode",
+  },
+  NOT_FOUND: {
+    TITLE: "404 - Page Not Found",
+    DESC: "The requested financial resource or page could not be found.",
+    RETURN_HOME: "Return to Dashboard",
   },
   ERROR: {
     GENERIC_FAILURE: "Something went wrong. Please try again.",

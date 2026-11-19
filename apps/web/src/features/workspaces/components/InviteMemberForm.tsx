@@ -42,7 +42,7 @@ export function InviteMemberForm({ values, errors, onChange }: InviteMemberFormP
           onChange={onChange}
         />
       ))}
-      <p className="text-muted-foreground text-xs">{UI_COPY.WORKSPACES.INVITE_DESCRIPTION}</p>
+      <p className="fn-form-helper-text">{UI_COPY.WORKSPACES.INVITE_DESCRIPTION}</p>
     </>
   );
 }

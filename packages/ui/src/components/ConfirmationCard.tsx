@@ -1,5 +1,6 @@
 import { Check, ShieldAlert, X } from "lucide-react";
 import { Button, cn } from "@yuva-devlab/ui";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export type ConfirmationStatus = "pending" | "executed" | "rejected" | "failed";
 
@@ -26,20 +27,20 @@ export interface ConfirmationCardProps {
 
 const STATUS_META: Record<ConfirmationStatus, { label: string; className: string }> = {
   pending: {
-    label: "Awaiting your approval",
-    className: "text-primary bg-primary/10 border-primary/20",
+    label: UI_COPY_CONSTANTS.CONFIRMATION_CARD.AWAITING_APPROVAL,
+    className: "fn-status-pending",
   },
   executed: {
-    label: "Confirmed & executed",
-    className: "text-primary bg-primary/10 border-primary/20",
+    label: UI_COPY_CONSTANTS.CONFIRMATION_CARD.CONFIRMED,
+    className: "fn-status-executed",
   },
   rejected: {
-    label: "Rejected",
-    className: "text-muted-foreground bg-muted/40 border-border/60",
+    label: UI_COPY_CONSTANTS.CONFIRMATION_CARD.REJECTED,
+    className: "fn-status-rejected",
   },
   failed: {
-    label: "Failed to execute",
-    className: "text-destructive bg-destructive/10 border-destructive/20",
+    label: UI_COPY_CONSTANTS.CONFIRMATION_CARD.FAILED,
+    className: "fn-status-failed",
   },
 };
 
@@ -106,37 +107,31 @@ export function ConfirmationCard({
 
   const { effectRows, detailRows } = partitionRows(rows ?? []);
 
+  const copy = UI_COPY_CONSTANTS.CONFIRMATION_CARD;
+
   return (
-    <div className="bg-card ring-border/50 animate-in slide-in-from-bottom-2 rounded-xl border shadow-sm">
+    <div className="fn-confirm-card">
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-3.5 py-2.5">
-        <ShieldAlert className="text-primary size-4 shrink-0" aria-hidden="true" />
-        <p className="text-foreground flex-1 text-sm font-semibold">{title}</p>
-        <span
-          className={cn("rounded-full border px-2 py-0.5 text-[11px] font-medium", meta.className)}
-        >
-          {pending && (
-            <span className="mr-1 inline-block size-1.5 animate-pulse rounded-full bg-current" />
-          )}
+      <div className="fn-confirm-card-header">
+        <ShieldAlert className="fn-confirm-card-icon" aria-hidden="true" />
+        <p className="fn-confirm-card-title">{title}</p>
+        <span className={cn("fn-confirm-card-status-badge", meta.className)}>
+          {pending && <span className="fn-confirm-pulse-dot" />}
           {meta.label}
         </span>
       </div>
 
       {/* Effect preview (before → after) when available */}
       {effectRows.length > 0 && (
-        <div className="border-border/40 border-t px-3.5 py-2.5">
-          <div className="flex items-center gap-3">
+        <div className="fn-confirm-effect-container">
+          <div className="fn-confirm-effect-row">
             {effectRows.map(([key, value], idx) => (
-              <div key={key} className="flex items-center gap-3">
-                <div className="text-center">
-                  <p className="text-muted-foreground text-[11px] font-medium uppercase">{key}</p>
-                  <p className="text-foreground mt-0.5 text-sm font-semibold tabular-nums">
-                    {value}
-                  </p>
+              <div key={key} className="fn-confirm-effect-item">
+                <div className="fn-confirm-effect-box">
+                  <p className="fn-confirm-effect-key">{key}</p>
+                  <p className="fn-confirm-effect-val">{value}</p>
                 </div>
-                {idx < effectRows.length - 1 && (
-                  <span className="text-muted-foreground text-lg">→</span>
-                )}
+                {idx < effectRows.length - 1 && <span className="fn-confirm-effect-arrow">→</span>}
               </div>
             ))}
           </div>
@@ -145,19 +140,11 @@ export function ConfirmationCard({
 
       {/* Detail rows */}
       {detailRows.length > 0 && (
-        <div
-          className={cn(
-            "border-border/40 divide-border/40 divide-y overflow-hidden border-t",
-            effectRows.length > 0 && "border-t-0",
-          )}
-        >
+        <div className="fn-confirm-card-details">
           {detailRows.map(([key, value]) => (
-            <div
-              key={key}
-              className="bg-foreground/2 flex items-center justify-between gap-3 px-3 py-1.5"
-            >
-              <span className="text-muted-foreground text-xs">{key}</span>
-              <span className="text-foreground max-w-48 truncate text-xs font-medium">{value}</span>
+            <div key={key} className="fn-confirm-card-row">
+              <span className="fn-confirm-card-key">{key}</span>
+              <span className="fn-confirm-card-val">{value}</span>
             </div>
           ))}
         </div>
@@ -165,33 +152,27 @@ export function ConfirmationCard({
 
       {/* Actions — only while pending */}
       {pending && (
-        <div className="flex flex-col gap-1.5 px-3.5 py-2.5">
-          {disabled && (
-            <p className="text-muted-foreground text-[11px] font-medium">
-              Confirm the previous action first — this action depends on it.
-            </p>
-          )}
-          <p className="text-muted-foreground text-[11px] font-medium">
-            This action has NOT happened yet — confirm to execute.
-          </p>
-          <div className="flex gap-2">
+        <div className="fn-confirm-card-actions">
+          {disabled && <p className="fn-confirm-card-notice">{copy.DEPENDENCY_NOTICE}</p>}
+          <p className="fn-confirm-card-notice">{copy.PENDING_NOTICE}</p>
+          <div className="fn-confirm-card-btn-group">
             <Button
               size="sm"
-              className="cursor-pointer gap-1.5"
+              className="fn-confirm-btn"
               disabled={disabled}
               onClick={() => onConfirm(confirmation.actionId)}
             >
               <Check className="size-3.5" />
-              Confirm
+              {copy.CONFIRM_BTN}
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="cursor-pointer gap-1.5"
+              className="fn-confirm-btn"
               onClick={() => onReject(confirmation.actionId)}
             >
               <X className="size-3.5" />
-              Cancel
+              {copy.CANCEL_BTN}
             </Button>
           </div>
         </div>

@@ -77,7 +77,7 @@ export function AccountForm({
         />
       ))}
       {editMode && (
-        <p className="text-muted-foreground text-xs">{UI_COPY.ACCOUNTS.FORM.EDIT_RESTRICTIONS}</p>
+        <p className="fn-account-form-note">{UI_COPY.ACCOUNTS.FORM.EDIT_RESTRICTIONS}</p>
       )}
 
       {/* Default account toggle — only shown when there are multiple accounts or in create mode */}
@@ -89,21 +89,14 @@ export function AccountForm({
           onClick={() => onChange("isDefault", isDefault ? "false" : "true")}
           className={cn("fn-account-default-toggle", isDefault && "is-active")}
         >
-          <Star
-            className={cn(
-              "size-4 shrink-0 transition-all",
-              isDefault && "fill-primary text-primary",
-            )}
-          />
+          <Star className={cn("fn-account-star-toggle-icon", isDefault && "is-active")} />
           <div>
-            <p className="text-sm leading-none font-medium">
+            <p className="fn-account-default-toggle-title">
               {isDefault
                 ? UI_COPY.ACCOUNTS.FORM.DEFAULT_ACCOUNT
                 : UI_COPY.ACCOUNTS.FORM.SET_DEFAULT}
             </p>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {UI_COPY.ACCOUNTS.FORM.AUTO_SELECTED}
-            </p>
+            <p className="fn-account-default-toggle-desc">{UI_COPY.ACCOUNTS.FORM.AUTO_SELECTED}</p>
           </div>
         </button>
       )}

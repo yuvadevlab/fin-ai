@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface MoneyDisplayProps extends React.HTMLAttributes<HTMLSpanElement> {
   value: number;
@@ -39,7 +40,7 @@ export function MoneyDisplay({
         .find((p) => p.type === "currency")?.value || "₹";
     displayContent = (
       <>
-        <span className="sr-only">Amount hidden for privacy</span>
+        <span className="sr-only">{UI_COPY_CONSTANTS.MONEY_DISPLAY.HIDDEN_ARIA}</span>
         <span aria-hidden="true">
           {sign}
           {symbol}&nbsp;{maskPlaceholder}

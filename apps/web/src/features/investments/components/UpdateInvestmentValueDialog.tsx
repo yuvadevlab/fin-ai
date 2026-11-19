@@ -102,11 +102,7 @@ export function UpdateInvestmentValueDialog({
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}
     >
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-          {errors.root}
-        </div>
-      )}
+      {errors.root && <div className="fn-form-banner-error">{errors.root}</div>}
       <UpdateInvestmentValueForm
         values={values}
         errors={errors}

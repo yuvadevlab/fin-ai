@@ -49,17 +49,17 @@ export function BulkTransactionRow({
           <button
             type="button"
             onClick={() => onRemoveRow(row.id)}
-            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer rounded-lg p-1.5 transition-colors"
+            className="fn-bulk-tx-delete-btn"
             title={UI_COPY.TRANSACTIONS.IMPORT.REMOVE_ENTRY}
             aria-label={UI_COPY.TRANSACTIONS.IMPORT.REMOVE_ENTRY}
           >
-            <Trash2 className="size-icon-sm" />
+            <Trash2 className="fn-notifications-action-icon" />
           </button>
         )}
       </div>
 
       {/* Row 1: Amount (full width) */}
-      <div className="mb-3">
+      <div className="fn-bulk-field-group">
         <FormDialogField
           field={{
             type: "number",
@@ -74,7 +74,7 @@ export function BulkTransactionRow({
       </div>
 
       {/* Row 2: Type | Date */}
-      <div className="mb-3 grid grid-cols-2 gap-3">
+      <div className="fn-bulk-grid-2">
         <FormDialogField
           field={{
             type: "select",
@@ -99,7 +99,7 @@ export function BulkTransactionRow({
       </div>
 
       {/* Row 3: Category | Account */}
-      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="fn-bulk-grid-responsive">
         <FormDialogField
           field={{
             type: "select",
@@ -136,7 +136,7 @@ export function BulkTransactionRow({
 
       {/* Row 4 (Transfer only): To Account */}
       {isTransfer && (
-        <div className="mb-3">
+        <div className="fn-bulk-field-group">
           <FormDialogField
             field={{
               type: "select",

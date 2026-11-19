@@ -71,31 +71,19 @@ export function HistoryDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-80 overflow-y-auto sm:max-w-sm">
+      <SheetContent side="right" className="fn-history-sheet">
         <SheetHeader>
           <SheetTitle>{UI_COPY.ADVISOR.DRAWER.TITLE}</SheetTitle>
           <SheetDescription>{UI_COPY.ADVISOR.DRAWER.DESCRIPTION}</SheetDescription>
         </SheetHeader>
 
-        <div className="mt-4 space-y-1.5">
-          {isEmpty && (
-            <p className="text-muted-foreground py-10 text-center text-sm">
-              {UI_COPY.ADVISOR.DRAWER.EMPTY}
-            </p>
-          )}
+        <div className="fn-history-list">
+          {isEmpty && <p className="fn-history-empty">{UI_COPY.ADVISOR.DRAWER.EMPTY}</p>}
 
           {list.map((conversation) => {
             const active = conversation.id === activeConversationId;
             return (
-              <div
-                key={conversation.id}
-                className={cn(
-                  "group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition",
-                  active
-                    ? "bg-primary/10 text-foreground"
-                    : "hover:bg-secondary/60 text-muted-foreground hover:text-foreground",
-                )}
-              >
+              <div key={conversation.id} className={cn("fn-history-item", active && "is-active")}>
                 {/* Semantic link: preserves browser a11y, middle-click and Cmd+click while enabling 0ms SPA clicks */}
                 <a
                   href={APP_ROUTES.ADVISOR_THREAD(conversation.id)}
@@ -106,14 +94,14 @@ export function HistoryDrawer({
                       onSelectConversation(conversation);
                     }
                   }}
-                  className="focus-visible:ring-ring flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 outline-none focus-visible:ring-1"
+                  className="fn-history-link"
                 >
-                  <MessageSquare className="size-3.5 shrink-0" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">
+                  <MessageSquare className="fn-history-icon" aria-hidden="true" />
+                  <span className="fn-history-text">
+                    <span className="fn-history-title">
                       {conversation.title || UI_COPY.ADVISOR.DRAWER.UNTITLED_CHAT}
                     </span>
-                    <span className="text-muted-foreground block text-[11px]">
+                    <span className="fn-history-time">
                       {formatRelativeTime(conversation.updatedAt)}
                     </span>
                   </span>
@@ -124,11 +112,11 @@ export function HistoryDrawer({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-7 shrink-0 opacity-0 transition group-hover:opacity-100"
+                    className="fn-history-delete-btn"
                     onClick={(e) => onDeleteConversation(conversation.id, e)}
                     title={UI_COPY.ADVISOR.DRAWER.DELETE_TOOLTIP}
                   >
-                    <Trash2 className="text-muted-foreground hover:text-destructive size-3.5" />
+                    <Trash2 className="fn-history-delete-icon" />
                     <span className="sr-only">{UI_COPY.ADVISOR.DRAWER.DELETE_A11Y}</span>
                   </Button>
                 )}

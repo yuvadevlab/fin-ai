@@ -1,0 +1,162 @@
+/**
+ * @file packages/ui/src/styles/account-cards.css
+ * @description Semantic component styles for FinAI Account Cards.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: strictly under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Account Card Component ────────────────────────────────────────────── */
+  .fn-account-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: var(--card-padding, 1.25rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    transition: all 150ms ease;
+  }
+
+  .fn-account-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-account-card.is-default {
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-account-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .fn-account-avatar {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+    background-color: var(--secondary);
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .fn-account-default-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    padding: 0.125rem 0.375rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+  }
+
+  .fn-account-balance {
+    margin-top: 1rem;
+  }
+
+  .fn-account-card-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .fn-account-header-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .fn-account-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .fn-account-name {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-account-star-icon {
+    width: 0.625rem;
+    height: 0.625rem;
+    fill: currentColor;
+  }
+
+  .fn-account-type {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .fn-account-menu-trigger {
+    color: var(--muted-foreground);
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fn-account-menu-trigger:hover {
+    color: var(--foreground);
+  }
+
+  .fn-account-menu-content {
+    width: 10rem;
+  }
+
+  .fn-account-menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .fn-account-menu-item-destructive {
+    color: var(--destructive);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .fn-account-menu-icon {
+    margin-right: 0.5rem;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .fn-account-balance-val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+
+  .fn-account-balance-val .is-negative {
+    color: var(--destructive);
+  }
+
+  .fn-account-status {
+    color: var(--muted-foreground);
+  }
+
+  .fn-account-currency {
+    color: var(--muted-foreground);
+    font-weight: 600;
+  }
+}

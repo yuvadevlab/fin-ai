@@ -1,0 +1,127 @@
+/**
+ * @file packages/ui/src/styles/goals.css
+ * @description Semantic component styles for FinAI goals and progress states.
+ * Pure platform CSS encapsulated under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Goal Card Inner Elements ─────────────────────────────────────────── */
+  .fn-goal-subtitle {
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+  }
+
+  .fn-goal-icon-sm {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .fn-goal-badge {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .fn-goal-menu-trigger {
+    color: var(--muted-foreground);
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fn-goal-menu-trigger:hover {
+    color: var(--foreground);
+  }
+
+  .fn-goal-menu-content {
+    width: 9rem;
+  }
+
+  .fn-goal-menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .fn-goal-menu-item-destructive {
+    color: var(--destructive);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .fn-goal-menu-icon {
+    margin-right: 0.5rem;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .fn-goal-save-btn {
+    height: 1.75rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .fn-goal-save-btn:hover {
+    color: var(--primary);
+  }
+
+  /* ── Universal Entity Empty States ──────────────────────────────────────── */
+  .fn-entity-empty-icon-svg {
+    color: var(--muted-foreground);
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .fn-entity-empty-title {
+    color: var(--foreground);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-entity-empty-desc {
+    color: var(--muted-foreground);
+    margin-top: 0.25rem;
+    max-width: 24rem;
+    font-size: 0.875rem;
+  }
+
+  .fn-entity-empty-btn {
+    margin-top: 1.25rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  /* ── Form Containers & Error Banners ─────────────────────────────────────── */
+  .fn-form-banner-error {
+    background-color: color-mix(in srgb, var(--destructive) 15%, transparent);
+    color: var(--destructive);
+    margin-bottom: 1rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .fn-form-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

@@ -93,27 +93,27 @@ export function TrendCalculationDialog({ type, onOpenChange }: TrendCalculationD
           <DialogDescription>{content.description}</DialogDescription>
         </DialogHeader>
 
-        <DialogBody className="space-y-3">
+        <DialogBody className="fn-form-body">
           {content.items.map((item) => (
-            <div key={item.label} className="fn-trend-guide-card">
-              <div className="fn-trend-guide-header">
-                <p className="text-foreground text-sm font-bold">{item.label}</p>
-                <span className="fn-trend-guide-badge">{item.badge}</span>
+            <div key={item.label} className="fn-health-guide-item">
+              <div className="fn-health-guide-header">
+                <p className="fn-health-guide-label">{item.label}</p>
+                <span className="fn-health-guide-target">{item.badge}</span>
               </div>
-              <p className="text-muted-foreground mt-1.5 text-xs leading-5">{item.explanation}</p>
-              <p className="text-muted-foreground border-border mt-2.5 border-t pt-2 text-xs leading-5">
-                <span className="text-foreground font-semibold">{UI_COPY.HEALTH.WHAT_COUNTS}</span>{" "}
-                {item.counts}
+              <p className="fn-health-guide-explanation">{item.explanation}</p>
+              <p className="fn-health-guide-counts">
+                <span className="fn-font-semibold">{UI_COPY.HEALTH.WHAT_COUNTS}</span> {item.counts}
               </p>
-              <p className="text-foreground bg-muted/40 mt-2.5 rounded-md p-2.5 text-xs">
-                <span className="font-semibold">{UI_COPY.HEALTH.CALCULATION_NOTE}</span> {item.note}
+              <p className="fn-health-guide-improvement">
+                <span className="fn-font-semibold">{UI_COPY.HEALTH.CALCULATION_NOTE}</span>{" "}
+                {item.note}
               </p>
             </div>
           ))}
         </DialogBody>
 
-        <DialogFooter className="justify-start">
-          <p className="text-muted-foreground text-xs leading-5">{content.footer}</p>
+        <DialogFooter className="fn-dialog-footer--start">
+          <p className="fn-health-guide-footer-text">{content.footer}</p>
         </DialogFooter>
       </DialogContent>
     </Dialog>

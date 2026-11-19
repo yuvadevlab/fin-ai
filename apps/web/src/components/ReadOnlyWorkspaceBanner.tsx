@@ -10,18 +10,13 @@ export interface ReadOnlyWorkspaceBannerProps {
 export function ReadOnlyWorkspaceBanner({ className }: ReadOnlyWorkspaceBannerProps) {
   return (
     <div role="status" className={cn("fn-readonly-banner", className)}>
-      <div className="flex min-w-0 items-center gap-2.5">
+      <div className="fn-readonly-banner-content">
         <div className="fn-readonly-banner-icon">
-          <Eye className="size-3.5" aria-hidden="true" />
+          <Eye size={14} aria-hidden="true" />
         </div>
-        <p className="text-muted-foreground font-normal text-pretty">
-          {UI_COPY.WORKSPACES.READ_ONLY_BANNER}
-        </p>
+        <p className="fn-readonly-banner-text">{UI_COPY.WORKSPACES.READ_ONLY_BANNER}</p>
       </div>
-      <Badge
-        variant="secondary"
-        className="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-wider uppercase"
-      >
+      <Badge variant="secondary" className="fn-readonly-banner-badge">
         {UI_COPY.WORKSPACES.READ_ONLY_BADGE}
       </Badge>
     </div>

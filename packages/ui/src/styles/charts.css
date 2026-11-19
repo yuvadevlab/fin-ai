@@ -1,0 +1,58 @@
+/**
+ * @file packages/ui/src/styles/charts.css
+ * @description Semantic component styles for FinAI charts and chart legends.
+ * Pure platform CSS encapsulated under @layer dl-components.
+ * @module @fin-ai/ui/styles/charts
+ */
+
+@layer dl-components {
+  .fn-chart-container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .fn-chart-legend {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.625rem;
+    padding-right: 0.5rem;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+
+  @media (min-width: 640px) {
+    .fn-chart-legend {
+      justify-content: flex-end;
+      gap: 0.875rem;
+    }
+  }
+
+  .fn-chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .fn-chart-legend-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+  }
+
+  .fn-chart-legend-dot--income {
+    background-color: var(--primary);
+  }
+
+  .fn-chart-legend-dot--expense {
+    background-color: var(--destructive);
+  }
+
+  .fn-chart-legend-dot--investment {
+    background-color: #3b82f6;
+  }
+}

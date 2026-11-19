@@ -1,0 +1,110 @@
+/**
+ * @file packages/ui/src/styles/sidebar-ai-card.css
+ * @description Semantic component styles for FinAI Sidebar AI Advisor status card.
+ * Pure platform CSS encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Sidebar AI Card Elements ──────────────────────────────────────────── */
+  .fn-sidebar-ai-rail-wrap {
+    padding: 0.5rem;
+  }
+
+  .fn-sidebar-ai-rail-btn {
+    position: relative;
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-inline: auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+    transition: all 150ms ease;
+  }
+
+  .fn-sidebar-ai-rail-btn:hover {
+    background-color: color-mix(in srgb, var(--secondary) 80%, transparent);
+  }
+
+  .fn-sidebar-ai-card-wrap {
+    padding: 1rem;
+  }
+
+  .fn-sidebar-ai-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+    padding: 0.875rem;
+    transition: all 150ms ease;
+    text-decoration: none;
+  }
+
+  .fn-sidebar-ai-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 60%, transparent);
+  }
+
+  .fn-sidebar-ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fn-sidebar-ai-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fn-sidebar-ai-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .fn-sidebar-ai-badge {
+    border-radius: var(--radius-md, 0.375rem);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    padding-inline: 0.375rem;
+    padding-block: 0.125rem;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  .fn-sidebar-ai-desc {
+    margin-top: 0.375rem;
+    font-size: 11px;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+  }
+
+  .fn-sidebar-ai-action {
+    margin-top: 0.625rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  .fn-sidebar-ai-action:hover {
+    text-decoration: underline;
+  }
+
+  .fn-sidebar-ai-action-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+    transition: transform 150ms ease;
+  }
+
+  .fn-sidebar-ai-card:hover .fn-sidebar-ai-action-icon {
+    transform: translateX(0.125rem);
+  }
+}

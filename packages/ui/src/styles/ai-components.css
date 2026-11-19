@@ -1,0 +1,230 @@
+/**
+ * @file packages/ui/src/styles/ai-components.css
+ * @description AI insight cards, suggestions dialogs, and timeline status icon styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── AI Insight Card ───────────────────────────────────────────────────── */
+  .fn-ai-insight-card {
+    border-radius: var(--radius-2xl, 1rem);
+    padding: var(--space-6, 1.5rem);
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    transition: all var(--duration-normal, 300ms) ease;
+  }
+
+  .fn-ai-insight-card:hover {
+    transform: scale(1.01);
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  }
+
+  .fn-ai-insight-card--dark {
+    background: linear-gradient(to bottom right, #18181b, #09090b);
+    color: #f4f4f5;
+    border: 1px solid rgba(39, 39, 42, 0.6);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  }
+
+  .fn-ai-insight-card--light {
+    background: linear-gradient(
+      to bottom right,
+      var(--background),
+      color-mix(in srgb, var(--accent) 40%, transparent)
+    );
+    color: var(--foreground);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-ai-insight-header {
+    margin-block-end: var(--space-4, 1rem);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5, 0.625rem);
+  }
+
+  .fn-ai-insight-icon-box {
+    inline-size: 1.625rem;
+    block-size: 1.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full, 9999px);
+    background: linear-gradient(to top right, var(--primary), #6366f1);
+    box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-ai-insight-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    color: var(--primary-foreground);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .fn-ai-insight-title {
+    background: linear-gradient(to right, var(--primary), #818cf8, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    margin: 0;
+  }
+
+  .fn-ai-insight-badge {
+    margin-inline-start: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .fn-ai-insight-badge--dark {
+    color: #71717a;
+  }
+
+  .fn-ai-insight-badge--light {
+    color: var(--muted-foreground);
+  }
+
+  .fn-ai-insight-body {
+    font-size: 0.8125rem;
+    line-height: 1.625;
+    font-weight: 400;
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  .fn-ai-insight-body--dark {
+    color: #d4d4d8;
+  }
+
+  .fn-ai-insight-body--light {
+    color: color-mix(in srgb, var(--foreground) 90%, transparent);
+  }
+
+  .fn-ai-insight-cta {
+    margin-block-start: var(--space-5, 1.25rem);
+    inline-size: 100%;
+    border-radius: var(--radius-lg, 0.5rem);
+    font-weight: 500;
+  }
+
+  .fn-ai-insight-cta--dark {
+    background-color: #27272a;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .fn-ai-insight-cta--dark:hover {
+    background-color: #3f3f46;
+  }
+
+  /* ── AI Suggestions Dialog ─────────────────────────────────────────────── */
+  .fn-ai-suggest-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .fn-ai-suggest-item {
+    display: flex;
+    inline-size: 100%;
+    align-items: flex-start;
+    gap: var(--space-3, 0.75rem);
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: var(--space-4, 1rem);
+    text-align: start;
+    cursor: pointer;
+    transition: all var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-ai-suggest-item:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+
+  .fn-ai-suggest-item.is-active {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 5%, transparent);
+  }
+
+  .fn-ai-suggest-checkbox {
+    margin-block-start: 0.125rem;
+    display: flex;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full, 9999px);
+    border: 1px solid var(--border);
+  }
+
+  .fn-ai-suggest-checkbox.is-active {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .fn-ai-suggest-check-icon {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .fn-ai-suggest-content {
+    flex: 1;
+  }
+
+  .fn-ai-suggest-title {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-ai-suggest-detail {
+    color: var(--muted-foreground);
+    margin-block-start: 0.125rem;
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-ai-suggest-impact {
+    color: var(--primary);
+    margin-block-start: var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+    margin-block-end: 0;
+  }
+
+  /* ── Timeline Status Icons ─────────────────────────────────────────────── */
+  .fn-timeline-status-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+  }
+
+  .fn-timeline-status-icon--success {
+    color: var(--muted-foreground);
+  }
+
+  .fn-timeline-status-icon--running {
+    color: var(--primary);
+    animation: spin 1s linear infinite;
+  }
+
+  .fn-timeline-status-icon--error {
+    color: var(--destructive);
+  }
+
+  .fn-timeline-status-icon--pending {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    color: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
+  }
+}

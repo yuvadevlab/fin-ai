@@ -72,7 +72,7 @@ export function AdvisorComposer({
       {editingPending && (
         <p className="fn-advisor-composer-pending" role="note">
           <PencilRuler className="size-3.5 shrink-0" aria-hidden="true" />
-          <span className="min-w-0 truncate">
+          <span className="fn-advisor-composer-pending-text">
             {UI_COPY.ADVISOR.COMPOSER.PENDING_PREFIX} {pendingConfirmation?.card.title ?? "action"}{" "}
             {UI_COPY.ADVISOR.COMPOSER.PENDING_SUFFIX}
           </span>

@@ -47,6 +47,46 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  .finai-dialog-header {
+    padding: 1rem;
+    padding-bottom: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .finai-dialog-header {
+      padding: 1.5rem;
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .finai-dialog-body {
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .finai-dialog-body {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .finai-dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    padding: 1rem;
+    padding-top: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .finai-dialog-footer {
+      flex-direction: row;
+      justify-content: flex-end;
+      padding: 1.5rem;
+      padding-top: 0.5rem;
+    }
+  }
+
   /* ── DatePicker Month Navigation Layering Fix ──────────────────────────── */
   .dl-calendar .rdp-month_caption,
   .dl-calendar .dl-calendar__month-caption {

@@ -42,30 +42,34 @@ export function WorkspaceSwitcher() {
           <Button
             variant="ghost"
             size="sm"
-            className="hover:bg-secondary flex h-8 sm:h-9 min-w-0 items-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-2.5 text-left text-xs sm:text-sm"
+            className="fn-workspace-switcher-trigger"
             aria-label={UI_COPY.WORKSPACES.SWITCHER_LABEL}
           >
-            <div className="bg-primary/10 text-primary flex size-6 shrink-0 items-center justify-center rounded-lg">
-              {isShared ? <Users className="size-3.5" /> : <User className="size-3.5" />}
+            <div className="fn-workspace-switcher-icon">
+              {isShared ? (
+                <Users className="fn-notifications-action-icon" />
+              ) : (
+                <User className="fn-notifications-action-icon" />
+              )}
             </div>
-            <div className="flex min-w-0 flex-col text-left">
-              <div className="flex min-w-0 items-center gap-1.5">
-                <span className="text-foreground max-w-16 truncate font-semibold sm:max-w-36 md:max-w-44">
+            <div className="fn-workspace-switcher-label-wrap">
+              <div className="fn-workspace-switcher-row">
+                <span className="fn-workspace-switcher-name">
                   {activeWorkspace?.name ?? UI_COPY.WORKSPACES.PERSONAL_TITLE}
                 </span>
                 {isShared && (
-                  <Badge variant="outline" className="hidden text-[10px] sm:inline-flex">
+                  <Badge variant="outline" className="fn-workspace-switcher-badge">
                     {roleLabel}
                   </Badge>
                 )}
               </div>
             </div>
-            <ChevronsUpDown className="text-muted-foreground ml-auto size-3.5 shrink-0 opacity-60" />
+            <ChevronsUpDown className="fn-workspace-switcher-chevron" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="start" className="w-64 p-1.5 shadow-lg">
-          <DropdownMenuLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+        <DropdownMenuContent align="start" className="fn-workspace-switcher-menu">
+          <DropdownMenuLabel className="fn-workspace-switcher-group-label">
             {UI_COPY.WORKSPACES.PERSONAL_TITLE}
           </DropdownMenuLabel>
           {personalWorkspaces.map((ws) => {
@@ -74,21 +78,21 @@ export function WorkspaceSwitcher() {
               <DropdownMenuItem
                 key={ws.id}
                 onClick={() => switchWorkspace(ws.id)}
-                className="flex cursor-pointer items-center justify-between gap-2 rounded-lg p-2"
+                className="fn-workspace-switcher-item"
               >
-                <div className="flex items-center gap-2">
-                  <User className="text-muted-foreground size-4" />
-                  <span className="text-sm font-medium">{ws.name}</span>
+                <div className="fn-workspace-switcher-item-left">
+                  <User className="fn-notifications-action-icon fn-icon--muted" />
+                  <span className="fn-workspace-switcher-item-name">{ws.name}</span>
                 </div>
-                {isActive && <Check className="text-primary size-4" />}
+                {isActive && <Check className="fn-notifications-action-icon fn-icon--primary" />}
               </DropdownMenuItem>
             );
           })}
 
           {sharedWorkspaces.length > 0 && (
             <>
-              <DropdownMenuSeparator className="my-1" />
-              <DropdownMenuLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+              <DropdownMenuSeparator className="fn-workspace-switcher-sep" />
+              <DropdownMenuLabel className="fn-workspace-switcher-group-label">
                 {UI_COPY.WORKSPACES.SHARED_TITLE}
               </DropdownMenuLabel>
               {sharedWorkspaces.map((ws) => {
@@ -104,39 +108,41 @@ export function WorkspaceSwitcher() {
                   <DropdownMenuItem
                     key={ws.id}
                     onClick={() => switchWorkspace(ws.id)}
-                    className="flex cursor-pointer items-center justify-between gap-2 rounded-lg p-2"
+                    className="fn-workspace-switcher-item"
                   >
-                    <div className="flex items-center gap-2">
-                      <Users className="text-muted-foreground size-4" />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">{ws.name}</span>
-                        <span className="text-muted-foreground text-[10px]">
-                          {ws.memberCount} member{ws.memberCount === 1 ? "" : "s"} • {memberRole}
+                    <div className="fn-workspace-switcher-item-left">
+                      <Users className="fn-notifications-action-icon fn-icon--muted" />
+                      <div className="fn-workspace-switcher-label-wrap">
+                        <span className="fn-workspace-switcher-item-name">{ws.name}</span>
+                        <span className="fn-workspace-switcher-item-meta">
+                          {UI_COPY.WORKSPACES.MEMBER_COUNT_ROLE(ws.memberCount, memberRole)}
                         </span>
                       </div>
                     </div>
-                    {isActive && <Check className="text-primary size-4" />}
+                    {isActive && (
+                      <Check className="fn-notifications-action-icon fn-icon--primary" />
+                    )}
                   </DropdownMenuItem>
                 );
               })}
             </>
           )}
 
-          <DropdownMenuSeparator className="my-1" />
+          <DropdownMenuSeparator className="fn-workspace-switcher-sep" />
 
           <DropdownMenuItem
             onClick={() => setCreateOpen(true)}
-            className="flex cursor-pointer items-center gap-2 rounded-lg p-2 text-sm font-medium"
+            className="fn-workspace-switcher-action-item"
           >
-            <Plus className="text-primary size-4" />
+            <Plus className="fn-notifications-action-icon fn-icon--primary" />
             <span>{UI_COPY.WORKSPACES.CREATE_SHARED}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={() => router.push(APP_ROUTES.SETTINGS)}
-            className="text-muted-foreground flex cursor-pointer items-center gap-2 rounded-lg p-2 text-xs"
+            className="fn-workspace-switcher-settings-item"
           >
-            <Settings className="size-3.5" />
+            <Settings className="fn-notifications-action-icon" />
             <span>{UI_COPY.WORKSPACES.MANAGE_SETTINGS}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

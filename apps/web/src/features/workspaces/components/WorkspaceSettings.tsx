@@ -16,22 +16,22 @@ import { WorkspaceMembersCard } from "./WorkspaceMembersCard";
 function getRoleDisplay(role?: WorkspaceRole | null) {
   if (role === WorkspaceRole.OWNER) {
     return {
-      icon: <Crown className="size-3" />,
+      icon: <Crown className="fn-notifications-action-icon" />,
       label: UI_COPY.WORKSPACES.ROLE_OWNER,
-      className: "border-primary/30 text-primary bg-primary/10",
+      className: "fn-role-owner",
     };
   }
   if (role === WorkspaceRole.ADMIN) {
     return {
-      icon: <Shield className="size-3" />,
+      icon: <Shield className="fn-notifications-action-icon" />,
       label: UI_COPY.WORKSPACES.ROLE_ADMIN,
-      className: "border-primary/20 text-primary/80 bg-primary/5",
+      className: "fn-role-admin",
     };
   }
   return {
-    icon: <User className="size-3" />,
+    icon: <User className="fn-notifications-action-icon" />,
     label: UI_COPY.WORKSPACES.PERSONAL_TITLE,
-    className: "border-border text-muted-foreground bg-muted/40",
+    className: "fn-role-member",
   };
 }
 
@@ -56,28 +56,29 @@ export function WorkspaceSettings() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="fn-workspace-settings-container">
       {/* ── Active workspace card ── */}
       <div className="fn-workspace-card">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-4">
-            <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
-              {isShared ? <Users className="size-5" /> : <User className="size-5" />}
+        <div className="fn-workspace-header">
+          <div className="fn-workspace-info">
+            <div className="fn-workspace-avatar">
+              {isShared ? (
+                <Users className="fn-notifications-action-icon" />
+              ) : (
+                <User className="fn-notifications-action-icon" />
+              )}
             </div>
             <div>
-              <p className="text-foreground text-sm font-semibold">
+              <p className="fn-workspace-name">
                 {activeWorkspace?.name ?? UI_COPY.WORKSPACES.PERSONAL_TITLE}
               </p>
-              <p className="text-muted-foreground mt-1 text-xs">
+              <p className="fn-workspace-type">
                 {isShared ? UI_COPY.WORKSPACES.SHARED_TITLE : UI_COPY.WORKSPACES.PERSONAL_TITLE}
               </p>
             </div>
           </div>
 
-          <Badge
-            variant="outline"
-            className={`mt-0.5 shrink-0 gap-1 text-[10px] ${role.className}`}
-          >
+          <Badge variant="outline" className={`fn-workspace-role-badge ${role.className}`}>
             {role.icon}
             {role.label}
           </Badge>
@@ -85,15 +86,15 @@ export function WorkspaceSettings() {
 
         {/* Leave workspace action for members */}
         {isShared && userRole !== WorkspaceRole.OWNER && (
-          <div className="border-border/40 mt-4 flex justify-end border-t pt-3">
+          <div className="fn-workspace-actions">
             <Button
               id="leave-workspace-btn"
               variant="ghost"
               size="sm"
               onClick={() => setLeaveConfirmOpen(true)}
-              className="hover:bg-destructive/10 hover:text-destructive cursor-pointer gap-1.5 text-xs transition-colors"
+              className="fn-workspace-leave-btn"
             >
-              <LogOut className="size-3.5" />
+              <LogOut className="fn-notifications-action-icon" />
               {UI_COPY.WORKSPACES.LEAVE_WORKSPACE}
             </Button>
           </div>
@@ -102,18 +103,14 @@ export function WorkspaceSettings() {
 
       {/* ── Create shared workspace card ── */}
       {!isShared && (
-        <div className="bg-card ring-border/50 flex flex-col gap-3 rounded-2xl p-5 shadow-sm ring-1">
-          <div className="flex items-start gap-4">
-            <div className="bg-accent text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
-              <Plus className="size-5" />
+        <div className="fn-workspace-create-card">
+          <div className="fn-workspace-info">
+            <div className="fn-workspace-avatar">
+              <Plus className="fn-notifications-action-icon" />
             </div>
             <div>
-              <p className="text-foreground text-sm font-semibold">
-                {UI_COPY.WORKSPACES.CREATE_SHARED}
-              </p>
-              <p className="text-muted-foreground mt-1 text-xs">
-                {UI_COPY.WORKSPACES.CREATE_DESCRIPTION}
-              </p>
+              <p className="fn-workspace-name">{UI_COPY.WORKSPACES.CREATE_SHARED}</p>
+              <p className="fn-workspace-type">{UI_COPY.WORKSPACES.CREATE_DESCRIPTION}</p>
             </div>
           </div>
           <Button
@@ -121,25 +118,23 @@ export function WorkspaceSettings() {
             size="sm"
             variant="outline"
             onClick={() => setCreateOpen(true)}
-            className="w-full cursor-pointer gap-1.5 text-xs font-medium"
+            className="fn-workspace-create-btn"
           >
-            <Plus className="size-3.5" />
+            <Plus className="fn-notifications-action-icon" />
             {UI_COPY.WORKSPACES.CREATE_SHARED}
           </Button>
         </div>
       )}
 
       {/* ── Pending invitations ── */}
-      <section className="space-y-2 pt-2">
-        <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-          {UI_COPY.WORKSPACES.PENDING_INVITATIONS}
-        </p>
+      <section className="fn-workspace-section">
+        <p className="fn-workspace-section-title">{UI_COPY.WORKSPACES.PENDING_INVITATIONS}</p>
         <WorkspaceInvitationCard showEmptyState />
       </section>
 
       {/* ── Members (shared workspace only) ── */}
       {isShared && activeWorkspaceId && (
-        <section className="space-y-2 pt-2">
+        <section className="fn-workspace-section">
           <WorkspaceMembersCard
             workspaceId={activeWorkspaceId}
             workspaceName={activeWorkspace?.name}

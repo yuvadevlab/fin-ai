@@ -20,10 +20,10 @@ export function DeleteTransactionButton({ transactionId, onDelete }: DeleteTrans
         variant="ghost"
         size="icon"
         aria-label={UI_COPY.TRANSACTIONS.DELETE_BUTTON_ARIA}
-        className="text-muted-foreground hover:text-destructive size-7 cursor-pointer sm:size-8"
+        className="fn-tx-delete-trigger"
         onClick={() => setIsConfirmOpen(true)}
       >
-        <Trash2 className="size-3 sm:size-3.5" />
+        <Trash2 className="fn-notifications-action-icon" />
       </Button>
       <ConfirmDialog
         open={isConfirmOpen}
