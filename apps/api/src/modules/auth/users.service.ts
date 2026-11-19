@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { Prisma } from "@finai/database";
-import { UserPreferences } from "@finai/shared-types";
-import { type UpdateProfileInput } from "@finai/validation";
+import { Prisma } from "@fin-ai/database";
+import { UserPreferences } from "@fin-ai/shared-types";
+import { type UpdateProfileInput } from "@fin-ai/validation";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 
 @Injectable()

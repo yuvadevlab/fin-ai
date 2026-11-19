@@ -3,9 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Receipt, Wallet, Target, SearchX } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType } from "@fin-ai/shared-types";
 import { APP_ROUTES } from "@/lib";
 import { UI_COPY } from "@/lib/ui-copy";
 import { useSearch } from "../api";

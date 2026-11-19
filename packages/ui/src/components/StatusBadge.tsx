@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
-import { BudgetStatus } from "@finai/shared-types";
+import { BudgetStatus } from "@fin-ai/shared-types";
 import { cn } from "../lib/utils";
 
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {

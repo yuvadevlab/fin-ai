@@ -1,7 +1,7 @@
 "use client";
 
-import { FormDialogField, FormField } from "@finai/ui";
-import { GoalType } from "@finai/shared-types";
+import { FormDialogField, FormField } from "@fin-ai/ui";
+import { GoalType } from "@fin-ai/shared-types";
 import { useReferenceOptions } from "@/hooks/useReferenceOptions";
 import { UI_COPY } from "@/lib/ui-copy";
 

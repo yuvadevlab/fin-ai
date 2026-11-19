@@ -2,13 +2,13 @@
  * @file apps/api/src/modules/ai/conversation.service.ts
  * @description AI conversation and message history persistence service.
  * Manages conversational threads, message logs, and summary titles in PostgreSQL.
- * @module @finai/api/modules/ai/conversation.service
+ * @module @fin-ai/api/modules/ai/conversation.service
  */
 
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { MessageRole, Conversation, Message } from "@finai/database";
+import { MessageRole, Conversation, Message } from "@fin-ai/database";
 
 /**
  * Service managing AI conversation persistence, thread summaries, and chat history.

@@ -1,8 +1,8 @@
 "use client";
 
 import { Check, Circle, Loader2, X } from "lucide-react";
-import { cn } from "@finai/ui";
-import { AgentActivityStatus } from "@finai/shared-types";
+import { cn } from "@fin-ai/ui";
+import { AgentActivityStatus } from "@fin-ai/shared-types";
 import type { AgentActivity } from "../api/agentTypes";
 import { activityLabel, formatDuration } from "../utils/deriveRunState";
 

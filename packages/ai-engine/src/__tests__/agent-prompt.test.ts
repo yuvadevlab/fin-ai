@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAgentSystemPrompt } from "@finai/prompts";
+import { buildAgentSystemPrompt } from "@fin-ai/prompts";
 
 /**
  * Pins the advisor-first behavior contract in the agent system prompt.

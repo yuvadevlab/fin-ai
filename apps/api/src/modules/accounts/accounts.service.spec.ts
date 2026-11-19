@@ -3,7 +3,7 @@ import { AccountsService } from "./accounts.service";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { NotFoundException } from "@nestjs/common";
 import { describe, it, expect, beforeEach, vi, Mock } from "vitest";
-import { AccountType } from "@finai/shared-types";
+import { AccountType } from "@fin-ai/shared-types";
 
 describe("AccountsService", () => {
   let service: AccountsService;

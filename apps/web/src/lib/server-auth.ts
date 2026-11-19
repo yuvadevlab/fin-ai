@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 
 export interface ServerAuth {
   token: string;

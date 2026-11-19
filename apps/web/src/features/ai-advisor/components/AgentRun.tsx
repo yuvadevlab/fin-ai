@@ -2,12 +2,12 @@
 
 import { useMemo } from "react";
 import { AlertTriangle, MessagesSquare, Zap } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
 import { RichConfirmationCard } from "./RichConfirmationCard";
-import { AgentConfirmationStatus } from "@finai/shared-types";
+import { AgentConfirmationStatus } from "@fin-ai/shared-types";
 import type { AgentChatMessage } from "../api/agentTypes";
 import { extractFinancialInsight } from "../utils/financialInsight";
 import { UI_COPY } from "@/lib/ui-copy";

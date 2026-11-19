@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, User } from "lucide-react";
-import { extractFollowUpQuestions } from "@finai/ai-engine/extract-follow-ups";
+import { extractFollowUpQuestions } from "@fin-ai/ai-engine/extract-follow-ups";
 import { UI_COPY } from "@/lib";
 import { AgentRun } from "./AgentRun";
 import type { AgentChatMessage } from "@/features/ai-advisor";

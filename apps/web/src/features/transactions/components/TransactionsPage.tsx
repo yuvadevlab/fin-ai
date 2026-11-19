@@ -9,9 +9,9 @@ import {
   SearchBar,
   FilterChips,
   Button,
-} from "@finai/ui";
-import { TransactionFilterInput } from "@finai/validation";
-import { TransactionType } from "@finai/shared-types";
+} from "@fin-ai/ui";
+import { TransactionFilterInput } from "@fin-ai/validation";
+import { TransactionType } from "@fin-ai/shared-types";
 import { format } from "date-fns";
 import { useCategories } from "@/features/categories/api";
 import { useAccounts } from "@/features/accounts/api";

@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/options/options.controller.ts
  * @description Dynamic database-backed reference options and application configuration endpoints.
- * @module @finai/api/modules/options/options.controller
+ * @module @fin-ai/api/modules/options/options.controller
  */
 
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";

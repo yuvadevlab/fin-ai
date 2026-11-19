@@ -1,5 +1,5 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { formatCurrencyShort } from "@finai/finance-engine";
+import { formatCurrencyShort } from "@fin-ai/finance-engine";
 import { axisProps, tooltipStyle } from "./chart-theme";
 
 interface ExpenseBarDataPoint {

@@ -15,7 +15,7 @@ You MUST read and strictly adhere to:
 
 ## Role Scope & Focus
 
-- Own all system personas, prompt templates, prompt builders, follow-up parsers, and tool schemas in `@finai/ai-engine`.
+- Own all system personas, prompt templates, prompt builders, follow-up parsers, and tool schemas in `@fin-ai/ai-engine`.
 - Maintain the ReAct execution loop, dispatchers, runners, and tool factories in `apps/api/src/modules/agent/`.
 - Ensure write actions enforce the **two-phase proposal pattern** (`PROPOSED` row + confirmation card -> explicit user confirmation).
 - Keep domain refusal guardrails intact (politely refuse non-financial requests).

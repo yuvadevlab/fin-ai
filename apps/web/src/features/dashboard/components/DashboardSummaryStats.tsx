@@ -3,13 +3,13 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight, TrendingUp, Target, ShieldCheck } from "lucide-react";
-import { ContentCard, Progress, StatusBadge } from "@finai/ui";
+import { ContentCard, Progress, StatusBadge } from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
 import { APP_ROUTES } from "@/lib";
 import { useInvestments } from "@/features/investments/api/getInvestments";
 import { useBudgets } from "@/features/budgets/api/getBudgets";
 import { useGoals } from "@/features/goals/api/getGoals";
-import { calculateAggregateBudget, calculateAggregateGoals } from "@finai/finance-engine";
+import { calculateAggregateBudget, calculateAggregateGoals } from "@fin-ai/finance-engine";
 import type { DashboardStats } from "../api";
 import { UI_COPY } from "@/lib/ui-copy";
 
@@ -34,7 +34,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
   const returnPercentage =
     totalInvested > 0 ? ((totalReturns / totalInvested) * 100).toFixed(1) : "0.0";
 
-  // Delegate all financial aggregations directly to pure functions in @finai/finance-engine
+  // Delegate all financial aggregations directly to pure functions in @fin-ai/finance-engine
   const budgetSummary = useMemo(
     () => calculateAggregateBudget(Array.isArray(budgetsData) ? budgetsData : []),
     [budgetsData],

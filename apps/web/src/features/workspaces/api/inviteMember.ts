@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS, type WorkspaceInvitation } from "@finai/shared-types";
+import { API_ENDPOINTS, type WorkspaceInvitation } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
-import { type InviteWorkspaceMemberInput } from "@finai/validation";
-import { toast } from "@finai/ui";
+import { type InviteWorkspaceMemberInput } from "@fin-ai/validation";
+import { toast } from "@fin-ai/ui";
 import { workspaceMembersQueryKey } from "./getWorkspaceMembers";
 
 interface InviteMemberVariables {

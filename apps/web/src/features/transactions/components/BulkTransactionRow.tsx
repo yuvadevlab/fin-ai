@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Trash2 } from "lucide-react";
-import { FormDialogField } from "@finai/ui";
-import { TransactionKind } from "@finai/shared-types";
+import { FormDialogField } from "@fin-ai/ui";
+import { TransactionKind } from "@fin-ai/shared-types";
 import { BulkRow } from "./BulkTransactionForm";
 import { UI_COPY } from "@/lib/ui-copy";
 

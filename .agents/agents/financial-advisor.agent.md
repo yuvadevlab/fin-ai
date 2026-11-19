@@ -19,5 +19,5 @@ The **Autonomous Financial Advisor Agent** provides conversational financial pla
 
 ## Operating Invariants
 
-- 100% adherence to financial schemas in `@finai/validation`.
+- 100% adherence to financial schemas in `@fin-ai/validation`.
 - Tool calls must execute within 3000ms deadlines.

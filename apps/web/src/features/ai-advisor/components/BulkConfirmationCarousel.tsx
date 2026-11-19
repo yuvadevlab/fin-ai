@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Layers, Loader2, X } from "lucide-react";
-import { Button, cn } from "@finai/ui";
-import { formatINR } from "@finai/finance-engine";
+import { Button, cn } from "@fin-ai/ui";
+import { formatINR } from "@fin-ai/finance-engine";
 import { usePrivacyMode } from "@/hooks";
 import { useWorkspace } from "@/providers";
-import { AgentConfirmationStatus } from "@finai/shared-types";
+import { AgentConfirmationStatus } from "@fin-ai/shared-types";
 import type { AgentConfirmation } from "../api/agentTypes";
 import { parseBulkRows, type BulkTransactionItem } from "../utils/parseBulkRows";
 import { BulkConfirmationCardItem } from "./BulkConfirmationCardItem";

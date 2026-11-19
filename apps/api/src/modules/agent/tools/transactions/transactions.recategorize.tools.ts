@@ -2,7 +2,7 @@ import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
-import type { TransactionFilterInput } from "@finai/validation";
+import type { TransactionFilterInput } from "@fin-ai/validation";
 import {
   AgentCardType,
   AgentToolName,
@@ -11,8 +11,8 @@ import {
   ToolConfirmationType,
   ToolInvalidationTag,
   TransactionType,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
 import { resolveCategoryRef, splitRef } from "../../entity-reference";
 import { TOOL_MESSAGES } from "../tool-messages.constants";
 

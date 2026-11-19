@@ -23,12 +23,12 @@ You MUST read and strictly adhere to:
   - `utils/` (Pure deterministic calculations)
 - Scope all database queries by `userId` or `workspaceId`.
 - Decorate endpoints with `@ApiOperation()`, `@ApiResponse()`, and `@UseGuards(JwtAuthGuard)`.
-- Keep mathematical calculations in `@finai/finance-engine` or pure utility functions.
+- Keep mathematical calculations in `@fin-ai/finance-engine` or pure utility functions.
 
 ## Hard Constraints
 
 - Never perform un-scoped queries that could leak user data.
-- Never write inline Zod schemas (import from `@finai/validation`).
+- Never write inline Zod schemas (import from `@fin-ai/validation`).
 - Never import services via barrel index files (import directly to prevent circular DI).
 - Never exceed 250 lines per file (decompose proactively at 200 lines).
 - Never execute database seed commands automatically.

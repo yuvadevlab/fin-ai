@@ -11,7 +11,7 @@ import {
   Sparkles,
   Terminal,
 } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import type { AgentActivity, AgentRunLogEntry } from "../api/agentTypes";
 import { deriveRunState, formatDuration, standbyLabel } from "../utils/deriveRunState";
 import { ActivityStepRow } from "./ActivityStepRow";

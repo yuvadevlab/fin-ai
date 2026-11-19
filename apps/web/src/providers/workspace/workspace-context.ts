@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { WorkspaceRole, WorkspaceWithRole } from "@finai/shared-types";
+import type { WorkspaceRole, WorkspaceWithRole } from "@fin-ai/shared-types";
 
 export interface WorkspaceContextValue {
   activeWorkspaceId: string | null;

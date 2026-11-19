@@ -1,7 +1,7 @@
 import React from "react";
-import { Badge } from "@finai/ui";
+import { Badge } from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType } from "@fin-ai/shared-types";
 import { Transaction } from "../api";
 import { TransactionRowActions } from "./TransactionRowActions";
 

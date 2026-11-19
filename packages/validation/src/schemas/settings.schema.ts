@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Shape of the persisted `User.preferences` Json column (see @finai/shared-types UserPreferences). */
+/** Shape of the persisted `User.preferences` Json column (see @fin-ai/shared-types UserPreferences). */
 export const userPreferencesSchema = z.object({
   notifications: z.record(z.boolean()).optional(),
   appearance: z.record(z.union([z.string(), z.boolean()])).optional(),

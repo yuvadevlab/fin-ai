@@ -1,10 +1,10 @@
 /**
  * @file apps/web/src/features/ai-advisor/api/agentChatStreamer.ts
  * @description Helper for streaming SSE agent chat responses and parsing events.
- * @module @finai/web/features/ai-advisor/api/agentChatStreamer
+ * @module @fin-ai/web/features/ai-advisor/api/agentChatStreamer
  */
 
-import type { AgentStreamEvent } from "@finai/ai-engine";
+import type { AgentStreamEvent } from "@fin-ai/ai-engine";
 import { API_BASE_URL, API_ROUTES } from "@/lib";
 import { handleAgentStreamEvent, type AgentEventPort } from "./agentEventHandlers";
 

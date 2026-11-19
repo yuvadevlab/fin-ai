@@ -3,7 +3,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/context/AgentChatProvider.tsx
  * @description State provider preserving chat streams and messages across route transitions.
- * @module @finai/web/features/ai-advisor/context/AgentChatProvider
+ * @module @fin-ai/web/features/ai-advisor/context/AgentChatProvider
  */
 
 import type { ReactNode } from "react";

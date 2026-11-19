@@ -1,5 +1,5 @@
 {
-  "name": "@finai/web",
+  "name": "@fin-ai/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -18,11 +18,11 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
-    "@finai/ai-engine": "workspace:*",
-    "@finai/finance-engine": "workspace:*",
-    "@finai/shared-types": "workspace:*",
-    "@finai/ui": "workspace:*",
-    "@finai/validation": "workspace:*",
+    "@fin-ai/ai-engine": "workspace:*",
+    "@fin-ai/finance-engine": "workspace:*",
+    "@fin-ai/shared-types": "workspace:*",
+    "@fin-ai/ui": "workspace:*",
+    "@fin-ai/validation": "workspace:*",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tanstack/react-query": "^5.101.1",

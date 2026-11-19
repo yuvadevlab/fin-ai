@@ -1,7 +1,7 @@
 /**
  * @file packages/ai-engine/src/llm/devlab-chat.model.ts
  * @description ChatModel adapter backed by the canonical @yuva-devlab/ai-client provider layer.
- * @module @finai/ai-engine/llm
+ * @module @fin-ai/ai-engine/llm
  */
 
 import { MessageRole, type ILLMProvider, type AIMessage } from "@yuva-devlab/ai-client";

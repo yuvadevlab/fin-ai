@@ -1,5 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS, ToolInvalidationTag } from "@finai/shared-types";
+import { QUERY_KEYS, ToolInvalidationTag } from "@fin-ai/shared-types";
 
 /**
  * Maps agent tool-name prefixes to the React Query cache keys that must be

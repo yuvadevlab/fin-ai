@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { AppearanceContext, AppearancePrefs } from "./appearance-context";
 
 const STORAGE_KEY = StorageKey.APPEARANCE;

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { randomUUID } from "crypto";
-import { Prisma } from "@finai/database";
+import { Prisma } from "@fin-ai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
 import { buildConfirmationCard as generateConfirmationCard } from "./dispatchers/agent-proposal-builder";
@@ -12,7 +12,7 @@ import {
   listProposedActions,
   listActionsByConversation,
 } from "./action-query.helper";
-import type { AgentCard } from "@finai/ai-engine";
+import type { AgentCard } from "@fin-ai/ai-engine";
 
 /**
  * How long a proposed (unconfirmed) action stays valid. A short TTL limits

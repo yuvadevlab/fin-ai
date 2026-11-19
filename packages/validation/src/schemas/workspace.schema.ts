@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { WorkspaceRole, WorkspaceType } from "@finai/shared-types";
+import { WorkspaceRole, WorkspaceType } from "@fin-ai/shared-types";
 
 /**
  * Validation schema for creating a new workspace.

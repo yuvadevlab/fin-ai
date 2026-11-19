@@ -1,4 +1,4 @@
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType } from "@fin-ai/shared-types";
 import { cn } from "../lib/utils";
 
 export type { TransactionType };

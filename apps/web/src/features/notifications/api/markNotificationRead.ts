@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS } from "@finai/shared-types";
+import { API_ENDPOINTS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { notificationsQueryKey, NotificationItem } from "./getNotifications";
 import { unreadNotificationsCountQueryKey } from "./getUnreadCount";

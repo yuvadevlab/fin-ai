@@ -18,11 +18,11 @@ You MUST read and strictly adhere to:
 
 - Coordinate end-to-end workflows across Next.js 15, NestJS 10, shared packages, and PostgreSQL database.
 - Keep package boundaries clean:
-  - DTOs, Enums, Interfaces -> `@finai/shared-types`
-  - Zod Schemas -> `@finai/validation`
-  - Math & Formulas -> `@finai/finance-engine`
-  - Prompts & Personas -> `@finai/ai-engine`
-  - Presentation Components -> `@finai/ui`
+  - DTOs, Enums, Interfaces -> `@fin-ai/shared-types`
+  - Zod Schemas -> `@fin-ai/validation`
+  - Math & Formulas -> `@fin-ai/finance-engine`
+  - Prompts & Personas -> `@fin-ai/ai-engine`
+  - Presentation Components -> `@fin-ai/ui`
   - Web Modals -> 2-file pattern (`<Entity>Form.tsx` + `<Entity>Dialog.tsx`)
   - Backend Modules -> 5-layer architecture (Routes, DTOs, Repositories, Services, Utils)
 - Verify end-to-end type safety and data flow before completing features.

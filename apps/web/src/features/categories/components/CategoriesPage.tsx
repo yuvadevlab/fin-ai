@@ -12,7 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { Category, useCategories, useDeleteCategory } from "../api";
 import { CategoryDialog } from "./CategoryDialog";
 import { UI_COPY } from "@/lib/ui-copy";

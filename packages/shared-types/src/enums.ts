@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/enums.ts
  * @description Canonical domain enums and lookup types for the FinAI monorepo.
- * @module @finai/shared-types/enums
+ * @module @fin-ai/shared-types/enums
  */
 
 /**

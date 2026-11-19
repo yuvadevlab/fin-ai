@@ -4,13 +4,13 @@
  * @file apps/web/src/features/ai-advisor/components/AiAdvisorPage.tsx
  * @description Master AI Advisor conversation workspace component.
  * Integrates route-based thread state, zero-latency caching, history drawer, and financial context.
- * @module @finai/web/features/ai-advisor/components/AiAdvisorPage
+ * @module @fin-ai/web/features/ai-advisor/components/AiAdvisorPage
  */
 
 import { useState } from "react";
-import { PageContainer } from "@finai/ui";
+import { PageContainer } from "@fin-ai/ui";
 import { ArrowDown } from "lucide-react";
-import { AgentChatRole, AgentConfirmationStatus } from "@finai/shared-types";
+import { AgentChatRole, AgentConfirmationStatus } from "@fin-ai/shared-types";
 import {
   ChatMessages,
   ChatLoadingSkeleton,

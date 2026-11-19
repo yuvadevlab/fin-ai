@@ -3,7 +3,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/AdvisorGuideDialog.tsx
  * @description Educational modal dialog explaining financial advisor capabilities and examples.
- * @module @finai/web/features/ai-advisor/components/AdvisorGuideDialog
+ * @module @fin-ai/web/features/ai-advisor/components/AdvisorGuideDialog
  */
 
 import {
@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { Sparkles, HelpCircle } from "lucide-react";
 import { UI_COPY } from "@/lib";
 import { ADVISOR_GUIDE_SECTIONS } from "@/features/ai-advisor";

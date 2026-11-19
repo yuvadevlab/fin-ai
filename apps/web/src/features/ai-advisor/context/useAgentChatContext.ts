@@ -3,7 +3,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/context/useAgentChatContext.ts
  * @description Consumer hook accessing the active AgentChatContext instance.
- * @module @finai/web/features/ai-advisor/context/useAgentChatContext
+ * @module @fin-ai/web/features/ai-advisor/context/useAgentChatContext
  */
 
 import { useContext } from "react";

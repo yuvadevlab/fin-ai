@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib";
-import { API_ENDPOINTS } from "@finai/shared-types";
+import { API_ENDPOINTS } from "@fin-ai/shared-types";
 import type { AiConversation, AiMessage } from "./useConversations";
 import { fetchConversationActions, type AgentActionHistoryItem } from "./agentActions";
 import type { AgentChatMessage, AgentConfirmation } from "./agentTypes";

@@ -3,7 +3,7 @@ import { fn } from "@storybook/test";
 import { DataTable } from "./DataTable";
 import { MoneyDisplay } from "./MoneyDisplay";
 import { TransactionTypeBadge } from "./TransactionTypeBadge";
-import type { TransactionType } from "@finai/shared-types";
+import type { TransactionType } from "@fin-ai/shared-types";
 
 interface SampleTransaction {
   id: string;

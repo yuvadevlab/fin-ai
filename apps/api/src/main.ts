@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { config } from "./config";
 import { Logger, requestLogger, type LoggerConfig, loggerWithConfig } from "@yuva-devlab/logger";
 import { createAppKillSwitchMiddleware, AppStatus } from "@yuva-devlab/auth-server";
-import { DEVLAB_CONFIG } from "@finai/shared-types";
+import { DEVLAB_CONFIG } from "@fin-ai/shared-types";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";

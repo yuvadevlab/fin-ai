@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/utils/confirmationDisplay.ts
  * @description Formatters and sanitizers for confirmation card rows and labels in the UI.
- * @module @finai/web/features/ai-advisor/utils/confirmationDisplay
+ * @module @fin-ai/web/features/ai-advisor/utils/confirmationDisplay
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   AgentToolName,
   BULK_ITEM_PREFIX,
   ConfirmationRowLabel,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 import type { AgentConfirmation } from "../api/agentTypes";
 
 /**

@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight, PieChart as PieIcon } from "lucide-react";
-import { ChartCard, CategoryPie, CHART_COLORS } from "@finai/ui";
+import { ChartCard, CategoryPie, CHART_COLORS } from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
 import { APP_ROUTES } from "@/lib";
 import type { CategoryBreakdownItem } from "../api";

@@ -6,18 +6,18 @@
 
 ## 1. Testing Frameworks
 
-| Layer                   | Tool         | Location                                        | Command                                    |
-| :---------------------- | :----------- | :---------------------------------------------- | :----------------------------------------- |
-| **Pure Engines**        | Vitest       | `packages/finance-engine`, `packages/ai-engine` | `pnpm --filter @finai/finance-engine test` |
-| **Backend API**         | Vitest       | `apps/api/src/**/*.spec.ts`                     | `pnpm --filter @finai/api test`            |
-| **Frontend Components** | Vitest + RTL | `apps/web/src/**/*.test.tsx`                    | `pnpm --filter @finai/web test`            |
-| **E2E Browser Flows**   | Playwright   | `apps/web/e2e/**/*.spec.ts`                     | `pnpm --filter @finai/web test:e2e`        |
+| Layer                   | Tool         | Location                                        | Command                                     |
+| :---------------------- | :----------- | :---------------------------------------------- | :------------------------------------------ |
+| **Pure Engines**        | Vitest       | `packages/finance-engine`, `packages/ai-engine` | `pnpm --filter @fin-ai/finance-engine test` |
+| **Backend API**         | Vitest       | `apps/api/src/**/*.spec.ts`                     | `pnpm --filter @fin-ai/api test`            |
+| **Frontend Components** | Vitest + RTL | `apps/web/src/**/*.test.tsx`                    | `pnpm --filter @fin-ai/web test`            |
+| **E2E Browser Flows**   | Playwright   | `apps/web/e2e/**/*.spec.ts`                     | `pnpm --filter @fin-ai/web test:e2e`        |
 
 ---
 
 ## 2. Unit Testing Principles
 
-1. **Pure Engine Isolation**: Pure math in `@finai/finance-engine` and prompt builders in `@finai/ai-engine` must be thoroughly covered with deterministic unit tests.
+1. **Pure Engine Isolation**: Pure math in `@fin-ai/finance-engine` and prompt builders in `@fin-ai/ai-engine` must be thoroughly covered with deterministic unit tests.
 2. **Mocking External Dependencies**:
    - **Prisma**: In unit tests, mock `PrismaService` via jest-mock/vitest mocks. Never hit the live database during unit tests.
    - **Ollama / LLMs**: In agent tests, mock the streaming client using recorded SSE chunks or deterministic mock generators.

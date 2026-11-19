@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS, type ReferenceOption } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS, type ReferenceOption } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 
 export const referenceOptionsQueryKey = (category: string) => QUERY_KEYS.OPTIONS.CATEGORY(category);

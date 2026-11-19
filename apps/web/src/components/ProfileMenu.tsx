@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/providers";

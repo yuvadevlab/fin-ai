@@ -7,8 +7,8 @@ import {
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { WorkspacesRepository } from "../repositories/workspaces.repository";
 import { NotificationsService } from "@/modules/notifications/services/notifications.service";
-import { InvitationStatus, NotificationType, WorkspaceRole } from "@finai/database";
-import { InviteWorkspaceMemberInput } from "@finai/validation";
+import { InvitationStatus, NotificationType, WorkspaceRole } from "@fin-ai/database";
+import { InviteWorkspaceMemberInput } from "@fin-ai/validation";
 import { Logger } from "@yuva-devlab/logger";
 
 @Injectable()

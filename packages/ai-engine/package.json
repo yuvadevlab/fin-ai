@@ -1,5 +1,5 @@
 {
-  "name": "@finai/ai-engine",
+  "name": "@fin-ai/ai-engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -27,8 +27,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@finai/prompts": "workspace:*",
-    "@finai/shared-types": "workspace:*",
+    "@fin-ai/prompts": "workspace:*",
+    "@fin-ai/shared-types": "workspace:*",
     "@yuva-devlab/ai-client": "^0.2.2",
     "zod": "^3.24.2"
   },

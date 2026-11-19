@@ -1,7 +1,7 @@
 "use client";
 
-import { TransactionKind } from "@finai/shared-types";
-import { FormDialogField, FormField } from "@finai/ui";
+import { TransactionKind } from "@fin-ai/shared-types";
+import { FormDialogField, FormField } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export interface TransactionFormProps {

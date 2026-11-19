@@ -28,7 +28,7 @@ import {
   type UpdateTransactionInput,
   type TransactionFilterInput,
   type CreateBulkTransactionsInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Transactions")
 @ApiBearerAuth()

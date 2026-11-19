@@ -1,10 +1,10 @@
 /**
  * @file packages/ai-engine/src/agent/tool-descriptors.descriptions.ts
  * @description Centralized, reusable descriptions instructing LLMs on agent tool parameters and semantics.
- * @module @finai/ai-engine/agent/tool-descriptors-descriptions
+ * @module @fin-ai/ai-engine/agent/tool-descriptors-descriptions
  */
 
-import { AgentToolName } from "@finai/shared-types";
+import { AgentToolName } from "@fin-ai/shared-types";
 
 /** Reusable tool descriptions instructing LLM model on tool parameters and semantics */
 export const AGENT_TOOL_DESCRIPTIONS: Record<string, string> = {

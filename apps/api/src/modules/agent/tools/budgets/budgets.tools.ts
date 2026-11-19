@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/agent/tools/budgets.tools.ts
  * @description Read + write tools over the BudgetsService.
- * @module @finai/api/agent/tools/budgets
+ * @module @fin-ai/api/agent/tools/budgets
  */
 
 import { z } from "zod";
@@ -12,8 +12,8 @@ import {
   agentCreateBudgetSchema,
   agentUpdateBudgetSchema,
   agentDeleteBudgetSchema,
-} from "@finai/validation";
-import { formatINR } from "@finai/finance-engine";
+} from "@fin-ai/validation";
+import { formatINR } from "@fin-ai/finance-engine";
 import {
   AgentCardType,
   AgentToolName,
@@ -22,8 +22,8 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
 import { resolveCategoryRef, splitRef } from "../../entity-reference";
 import { resolveBudgetMatch } from "./budgets.resolve";
 import { createBudgetTransferTool } from "./budgets.transfer.tool";

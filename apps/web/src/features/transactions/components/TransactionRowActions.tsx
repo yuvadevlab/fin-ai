@@ -10,7 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { Transaction } from "../api";
 import { TransactionDialog } from "./TransactionDialog";
 import { UI_COPY } from "@/lib/ui-copy";

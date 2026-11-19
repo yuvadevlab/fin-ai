@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Terminal } from "lucide-react";
-import { Button, cn } from "@finai/ui";
+import { Button, cn } from "@fin-ai/ui";
 import type { AgentRunLogEntry } from "../api/agentTypes";
 import { UI_COPY } from "@/lib/ui-copy";
 

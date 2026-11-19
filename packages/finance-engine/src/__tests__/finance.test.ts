@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { HEALTH_METRIC_KEYS } from "@finai/shared-types";
+import { HEALTH_METRIC_KEYS } from "@fin-ai/shared-types";
 import {
   calculateSavingsRate,
   calculateMonthlySavings,

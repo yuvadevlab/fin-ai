@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Bell, Users, Sparkles, AlertCircle, CheckCheck } from "lucide-react";
-import { Button, Badge, Popover, PopoverTrigger, PopoverContent } from "@finai/ui";
-import { NotificationType, InvitationAction } from "@finai/shared-types";
+import { Button, Badge, Popover, PopoverTrigger, PopoverContent } from "@fin-ai/ui";
+import { NotificationType, InvitationAction } from "@fin-ai/shared-types";
 import { UI_COPY } from "@/lib";
 import {
   useNotifications,

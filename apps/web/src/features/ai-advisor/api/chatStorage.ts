@@ -3,10 +3,10 @@
  * @description In-memory and sessionStorage persistence adapter for conversational threads.
  * Provides 0ms instant thread switching without UI jitter or skeleton flashing,
  * mirroring the architecture pattern established in OrchestrAI Cowork Studio.
- * @module @finai/web/features/ai-advisor/api/chatStorage
+ * @module @fin-ai/web/features/ai-advisor/api/chatStorage
  */
 
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import type { AgentChatMessage } from "./agentTypes";
 
 /** Prefix key used to isolate cached conversation threads within browser sessionStorage */

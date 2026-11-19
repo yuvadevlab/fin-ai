@@ -1,6 +1,6 @@
 "use client";
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@finai/ui";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@fin-ai/ui";
 import { ContextPanel } from "./ContextPanel";
 import { UI_COPY } from "@/lib/ui-copy";
 import type { AgentActivity, AgentConfirmation } from "../api/agentTypes";

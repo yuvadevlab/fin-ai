@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { buildToolPlanInstructions, type LlmChatRequest, type LlmMessage } from "@finai/ai-engine";
-import { buildAgentSystemPrompt } from "@finai/prompts";
+import { buildToolPlanInstructions, type LlmChatRequest, type LlmMessage } from "@fin-ai/ai-engine";
+import { buildAgentSystemPrompt } from "@fin-ai/prompts";
 import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { ToolRegistry } from "../tool-registry";
@@ -9,7 +9,7 @@ import { ActionManager } from "../action-manager";
 import { EntityMemoryService } from "../entity-memory";
 import { serverTodayISO } from "../date.utils";
 import { buildPendingActionSection, SHARED_WORKSPACE_AGENT_NOTICE } from "../utils";
-import { LlmRole, MessageRole } from "@finai/shared-types";
+import { LlmRole, MessageRole } from "@fin-ai/shared-types";
 import type { AgentWorkspaceContext } from "../agent.types";
 
 const HISTORY_WINDOW = 12;

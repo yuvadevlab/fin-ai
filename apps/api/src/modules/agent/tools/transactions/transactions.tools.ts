@@ -1,15 +1,15 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
-import type { TransactionFilterInput } from "@finai/validation";
-import { formatINR } from "@finai/finance-engine";
+import type { TransactionFilterInput } from "@fin-ai/validation";
+import { formatINR } from "@fin-ai/finance-engine";
 import {
   AgentToolName,
   ToolAccessLevel,
   ToolConfirmationType,
   TransactionType,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@fin-ai/ai-engine";
 import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const flexibleDateSchema = z

@@ -3,7 +3,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/HistoryDrawer.tsx
  * @description Slide-over history drawer listing past conversational threads with instant switching.
- * @module @finai/web/features/ai-advisor/components/HistoryDrawer
+ * @module @fin-ai/web/features/ai-advisor/components/HistoryDrawer
  */
 
 import { MessageSquare, Trash2 } from "lucide-react";
@@ -15,7 +15,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { UI_COPY, APP_ROUTES } from "@/lib";
 import type { AiConversation } from "@/features/ai-advisor";
 

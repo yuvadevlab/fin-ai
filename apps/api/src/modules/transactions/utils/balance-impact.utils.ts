@@ -1,4 +1,4 @@
-import { TransactionType } from "@finai/database";
+import { TransactionType } from "@fin-ai/database";
 
 /**
  * Computes the balance delta for a given transaction type and amount.

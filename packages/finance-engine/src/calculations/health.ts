@@ -4,7 +4,7 @@ import {
   HEALTH_METRIC_WEIGHTS,
   HEALTH_RATINGS,
   HEALTH_TARGETS,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 import { debtScore, metric, scoreRatio, type ComponentScore } from "./health-helpers";
 
 /**

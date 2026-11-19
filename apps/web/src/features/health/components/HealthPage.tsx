@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { HEALTH_RATINGS } from "@finai/shared-types";
-import { ContentCard, InfoButton, PageContainer, PageHeader, ScoreGauge } from "@finai/ui";
+import { HEALTH_RATINGS } from "@fin-ai/shared-types";
+import { ContentCard, InfoButton, PageContainer, PageHeader, ScoreGauge } from "@fin-ai/ui";
 import { useHealthScore } from "@/features/dashboard/api/getHealthScore";
 import { HealthGuideDialog } from "./HealthGuideDialog";
 import { HealthMetricCard } from "./HealthMetricCard";

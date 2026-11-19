@@ -1,5 +1,5 @@
 /**
- * @module @finai/prompts
+ * @module @fin-ai/prompts
  * Centralized, type-safe prompt constants, specialist personas, and dynamic prompt builders.
  */
 

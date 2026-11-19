@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { API_ENDPOINTS, SEARCH_PARAMS } from "@finai/shared-types";
+import { API_ENDPOINTS, SEARCH_PARAMS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 
 export const useSuggestEmoji = () => {

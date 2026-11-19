@@ -1,4 +1,4 @@
-import { PrismaClient, WorkspaceType } from "@finai/database";
+import { PrismaClient, WorkspaceType } from "@fin-ai/database";
 
 /**
  * Resolves all member user IDs for a given workspace.

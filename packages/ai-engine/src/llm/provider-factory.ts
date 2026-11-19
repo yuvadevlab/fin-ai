@@ -33,7 +33,7 @@ import {
   OpenAIAdapter,
 } from "@yuva-devlab/ai-client";
 import { DevLabChatModel } from "./devlab-chat.model";
-import { AiProvider, AiProviderRole } from "@finai/shared-types";
+import { AiProvider, AiProviderRole } from "@fin-ai/shared-types";
 
 export { AiProvider, AiProviderRole };
 

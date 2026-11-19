@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import type { Preview } from "@storybook/react";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TooltipProvider, Toaster } from "@finai/ui";
-import "@finai/ui/styles.css";
+import { TooltipProvider, Toaster } from "@fin-ai/ui";
+import "@fin-ai/ui/styles.css";
 import "../src/app/globals.css";
 
 function StorybookWrapper({ children, theme }: { children: React.ReactNode; theme: string }) {

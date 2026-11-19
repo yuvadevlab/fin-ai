@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/lib/index.ts
  * @description Centralized barrel export for web utility libraries, routes, copy, and clients.
- * @module @finai/web/lib
+ * @module @fin-ai/web/lib
  */
 
 export * from "./routes";

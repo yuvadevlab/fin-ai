@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { GoalType } from "@finai/shared-types";
-import { createGoalSchema, updateGoalSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { GoalType } from "@fin-ai/shared-types";
+import { createGoalSchema, updateGoalSchema } from "@fin-ai/validation";
 import { useCreateGoal, useUpdateGoal, type Goal } from "../api";
 import { GoalForm } from "./GoalForm";
 import { UI_COPY } from "@/lib/ui-copy";

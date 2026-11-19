@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { ChartCard, ScoreGauge, Progress, cn } from "@finai/ui";
+import { ChartCard, ScoreGauge, Progress, cn } from "@fin-ai/ui";
 import { APP_ROUTES } from "@/lib";
 import { useHealthScore } from "../api/getHealthScore";
 import { UI_COPY } from "@/lib/ui-copy";

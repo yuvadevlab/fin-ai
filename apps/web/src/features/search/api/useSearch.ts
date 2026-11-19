@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS, SEARCH_PARAMS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS, SEARCH_PARAMS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 
 export interface SearchTransaction {

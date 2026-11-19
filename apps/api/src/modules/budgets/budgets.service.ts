@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { CreateBudgetInput, UpdateBudgetInput } from "@finai/validation";
-import { calculateBudgetStatus } from "@finai/finance-engine";
-import { Prisma, TransactionType } from "@finai/database";
+import { CreateBudgetInput, UpdateBudgetInput } from "@fin-ai/validation";
+import { calculateBudgetStatus } from "@fin-ai/finance-engine";
+import { Prisma, TransactionType } from "@fin-ai/database";
 import { transferBudgetAllocation } from "./budgets-transfer.util";
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 

@@ -1,6 +1,6 @@
-# @finai/finance-engine
+# @fin-ai/finance-engine
 
-`@finai/finance-engine` is a pure TypeScript package containing the core financial mathematics, calculation engines, scoring algorithms, and recommendation rules for the FinAI platform.
+`@fin-ai/finance-engine` is a pure TypeScript package containing the core financial mathematics, calculation engines, scoring algorithms, and recommendation rules for the FinAI platform.
 
 It operates with zero external side effects and zero I/O, ensuring deterministic, testable, and reusable financial analytics across the backend API, Next.js frontend, and offline background workers.
 
@@ -149,11 +149,11 @@ import {
   calculateBudgetStatus,
   calculateAssetAllocation,
   calculateGoalProjection,
-} from "@finai/finance-engine";
+} from "@fin-ai/finance-engine";
 ```
 
 ## Running Package Unit Tests
 
 ```bash
-pnpm --filter @finai/finance-engine test
+pnpm --filter @fin-ai/finance-engine test
 ```

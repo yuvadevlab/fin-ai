@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/agent/tools/index.ts
  * @description Central barrel exporting all domain agent tools by category.
- * @module @finai/api/agent/tools
+ * @module @fin-ai/api/agent/tools
  */
 
 export * from "./accounts/accounts.tools";

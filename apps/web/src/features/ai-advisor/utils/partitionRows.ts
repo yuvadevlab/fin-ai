@@ -1,4 +1,4 @@
-import { BULK_ITEM_PREFIX } from "@finai/shared-types";
+import { BULK_ITEM_PREFIX } from "@fin-ai/shared-types";
 
 /**
  * Partitions card rows into before/after effect pairs vs plain detail rows.

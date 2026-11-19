@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MaskedValue, type MaskedValueProps } from "@finai/ui";
+import { MaskedValue, type MaskedValueProps } from "@fin-ai/ui";
 import { usePrivacyMode } from "@/hooks";
 
 export interface PrivacyValueProps extends MaskedValueProps {

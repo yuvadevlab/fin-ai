@@ -12,11 +12,11 @@ In full-stack architectures, code sharing between frontend (`apps/web`) and back
 
 We enforce strict package boundaries using pnpm workspaces:
 
-1. **`@finai/shared-types`**: Pure TypeScript interfaces, enums (`TransactionType`, `AccountType`), and API payloads. Zero runtime dependencies.
-2. **`@finai/validation`**: Universal Zod validation schemas with type inference. Shared across frontend forms and backend validation pipes.
-3. **`@finai/finance-engine`**: Pure mathematical domain functions (Health Score, Net Worth, Savings Rate) with zero network I/O, zero side-effects, and 100% unit test coverage.
-4. **`@finai/ai-engine`**: LLM prompts, persona builders, and streaming parser utilities.
-5. **`@finai/ui`**: React component design system primitives with packaged styles.
+1. **`@fin-ai/shared-types`**: Pure TypeScript interfaces, enums (`TransactionType`, `AccountType`), and API payloads. Zero runtime dependencies.
+2. **`@fin-ai/validation`**: Universal Zod validation schemas with type inference. Shared across frontend forms and backend validation pipes.
+3. **`@fin-ai/finance-engine`**: Pure mathematical domain functions (Health Score, Net Worth, Savings Rate) with zero network I/O, zero side-effects, and 100% unit test coverage.
+4. **`@fin-ai/ai-engine`**: LLM prompts, persona builders, and streaming parser utilities.
+5. **`@fin-ai/ui`**: React component design system primitives with packaged styles.
 
 ## Architectural Boundary Diagram
 
@@ -28,15 +28,15 @@ graph TD
     end
 
     subgraph Core Domain Libraries
-        FE["@finai/finance-engine (Pure Math)"]
-        VAL["@finai/validation (Zod Schemas)"]
-        TYPES["@finai/shared-types (Interfaces & Enums)"]
+        FE["@fin-ai/finance-engine (Pure Math)"]
+        VAL["@fin-ai/validation (Zod Schemas)"]
+        TYPES["@fin-ai/shared-types (Interfaces & Enums)"]
     end
 
     subgraph Service & UI Packages
-        AI["@finai/ai-engine (LLM Personas & Prompts)"]
-        UI["@finai/ui (Design System Primitives)"]
-        DB["@finai/database (Prisma Client & Migrations)"]
+        AI["@fin-ai/ai-engine (LLM Personas & Prompts)"]
+        UI["@fin-ai/ui (Design System Primitives)"]
+        DB["@fin-ai/database (Prisma Client & Migrations)"]
     end
 
     WEB --> UI

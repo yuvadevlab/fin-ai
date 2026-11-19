@@ -101,7 +101,7 @@ This is not a component library. It is a **design language with architectural di
 
 5. **Storybook minimal** — Only one story (Button). No documentation for Typography, Layout, Form.
 
-6. **No accessibility tests** — No `vitest-axe` in design system (only in `@finai/ui`).
+6. **No accessibility tests** — No `vitest-axe` in design system (only in `@fin-ai/ui`).
 
 7. **No icon system** — FinAI uses `lucide-react` directly. No strategy documented.
 
@@ -117,7 +117,7 @@ This is not a component library. It is a **design language with architectural di
 **Package Manager:** pnpm
 **Frontend:** Next.js 15.x (App Router)
 **CSS Architecture:** **Platform Design Tokens & CSS Utilities**
-**Component package:** `@finai/ui` (private, workspace)
+**Component package:** `@fin-ai/ui` (private, workspace)
 
 #### FinAI Visual Language — Yuva Core Theme Seed
 
@@ -157,7 +157,7 @@ This is not a component library. It is a **design language with architectural di
 
 **Assessment:** No repeated semantic color arbitrary values found. All colors properly use CSS variables. Arbitrary values are minor layout/fine-tuning. No urgent remediation needed.
 
-#### FinAI `@finai/ui` Package
+#### FinAI `@fin-ai/ui` Package
 
 Private, workspace-local, not published.
 
@@ -175,9 +175,9 @@ _Domain components (FinAI-specific):_ StatCard, KPIGrid, MiniStat, AIInsightCard
 
 ## Architecture Problems Identified
 
-1. **Parallel component systems** — `@yuva-devlab/ui` and `@finai/ui` both implement Button, Input, Select, Checkbox, Radio, Switch, Textarea, Form with divergent APIs and styling mechanisms.
+1. **Parallel component systems** — `@yuva-devlab/ui` and `@fin-ai/ui` both implement Button, Input, Select, Checkbox, Radio, Switch, Textarea, Form with divergent APIs and styling mechanisms.
 
-2. **Styling mechanism incompatibility** — `@yuva-devlab/ui` uses Vanilla Extract. `@finai/ui` uses Platform CSS + CVA. FinAI cannot adopt `@yuva-devlab/ui` components without adding VE to its build.
+2. **Styling mechanism incompatibility** — `@yuva-devlab/ui` uses Vanilla Extract. `@fin-ai/ui` uses Platform CSS + CVA. FinAI cannot adopt `@yuva-devlab/ui` components without adding VE to its build.
 
 3. **Token system incompatibility** — `@yuva-devlab/tokens` emits `yd-color-*` variables. FinAI's theme uses `--primary`, `--background`, etc. No bridge exists today.
 
@@ -185,7 +185,7 @@ _Domain components (FinAI-specific):_ StatCard, KPIGrid, MiniStat, AIInsightCard
 
 5. **No `@yuva-devlab/tokens` package** — The critical missing bridge.
 
-6. **`@finai/ui` mixes generic and domain components** — Sidebar, AppShell are FinAI-specific. Table, Badge, Card are generic. MoneyDisplay, ScoreGauge are FinAI-domain. Boundary is not enforced by package structure.
+6. **`@fin-ai/ui` mixes generic and domain components** — Sidebar, AppShell are FinAI-specific. Table, Badge, Card are generic. MoneyDisplay, ScoreGauge are FinAI-domain. Boundary is not enforced by package structure.
 
 7. **Storybook minimal** — Will block documentation quality goals.
 
@@ -461,7 +461,7 @@ But values now come from Yuva tokens — not FinAI's manual OKLCH declarations.
 | Typography, Box, Flex, Grid, Container, Stack, Semantic HTML                        | REFACTOR in Design System            | `@yuva-devlab/components` |
 | Image, Divider                                                                      | KEEP (re-implement in Design System) | `@yuva-devlab/components` |
 
-### From `@finai/ui` (Generic components)
+### From `@fin-ai/ui` (Generic components)
 
 | Component                                                  | Action                            |
 | ---------------------------------------------------------- | --------------------------------- |
@@ -471,7 +471,7 @@ But values now come from Yuva tokens — not FinAI's manual OKLCH declarations.
 | Pagination, SearchBar, FilterChips, LoadingState           | MOVE to `@yuva-devlab/components` |
 | ConfirmDialog, MarkdownContent, ActivityStep, FormDialog   | MOVE to `@yuva-devlab/components` |
 
-### From `@finai/ui` (FinAI-specific — KEEP OUTSIDE)
+### From `@fin-ai/ui` (FinAI-specific — KEEP OUTSIDE)
 
 | Component                                    | Reason                              |
 | -------------------------------------------- | ----------------------------------- |
@@ -537,7 +537,7 @@ All animations wrapped in `@media (prefers-reduced-motion: no-preference)`.
 
 - `@yuva-devlab/components`: Platform utilities + CVA. No VE.
 - `@yuva-devlab/ui` (existing): Vanilla Extract. Preserved for backward compatibility.
-- `@finai/ui`: Design System + Radix. Status quo. Do not change.
+- `@fin-ai/ui`: Design System + Radix. Status quo. Do not change.
 - No `styled-components`, Emotion, or CSS Modules anywhere in design system.
 - `cn()` from `@yuva-devlab/utils` (clsx + clsx) for class composition.
 - No inline `style={}` with hardcoded values — always reference tokens.
@@ -622,9 +622,9 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 4. Migrate feedback components (Skeleton, LoadingState)
 5. Migrate overlays (Dialog, Sheet, Popover, Tooltip)
 6. Migrate data display (Table, Pagination)
-7. Clean up duplicate `@finai/ui` implementations
+7. Clean up duplicate `@fin-ai/ui` implementations
 
-**FinAI-specific components remain in `@finai/ui`** — Sidebar, AppShell, TopBar, domain display.
+**FinAI-specific components remain in `@fin-ai/ui`** — Sidebar, AppShell, TopBar, domain display.
 
 ---
 
@@ -647,47 +647,47 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 
 ## Component Status Matrix
 
-| Component                     | DS (`@yuva-devlab/ui`) | FinAI (`@finai/ui`) | Target                    | Status |
-| ----------------------------- | ---------------------- | ------------------- | ------------------------- | ------ |
-| Button                        | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Input                         | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Textarea                      | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Select                        | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Checkbox                      | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Radio                         | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Switch                        | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Slider                        | ✅ (VE)                | —                   | `@yuva-devlab/components` | TODO   |
-| NumberInput                   | ✅ (VE)                | —                   | `@yuva-devlab/components` | TODO   |
-| Form                          | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Typography                    | ✅ (VE)                | —                   | `@yuva-devlab/components` | TODO   |
-| Box/Flex/Grid/Container/Stack | ✅ (VE)                | —                   | `@yuva-devlab/components` | TODO   |
-| Card                          | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Badge                         | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Avatar                        | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Progress                      | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Skeleton                      | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Dialog                        | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| AlertDialog                   | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Sheet                         | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Popover                       | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Tooltip                       | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| DropdownMenu                  | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Table                         | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Label                         | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Separator/Divider             | ✅ (VE)                | ✅                  | `@yuva-devlab/components` | TODO   |
-| Pagination                    | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| SearchBar                     | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| FilterChips                   | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| LoadingState/EmptyState       | —                      | ✅                  | `@yuva-devlab/components` | CREATE |
-| ConfirmDialog                 | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| MarkdownContent               | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| ActivityStep                  | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| FormDialog                    | —                      | ✅                  | `@yuva-devlab/components` | TODO   |
-| Heading                       | —                      | —                   | `@yuva-devlab/components` | CREATE |
-| Alert/Banner                  | —                      | —                   | `@yuva-devlab/components` | CREATE |
-| Tabs                          | —                      | —                   | `@yuva-devlab/components` | CREATE |
-| Accordion                     | —                      | —                   | `@yuva-devlab/components` | CREATE |
-| Spinner                       | —                      | —                   | `@yuva-devlab/components` | CREATE |
+| Component                     | DS (`@yuva-devlab/ui`) | FinAI (`@fin-ai/ui`) | Target                    | Status |
+| ----------------------------- | ---------------------- | -------------------- | ------------------------- | ------ |
+| Button                        | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Input                         | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Textarea                      | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Select                        | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Checkbox                      | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Radio                         | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Switch                        | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Slider                        | ✅ (VE)                | —                    | `@yuva-devlab/components` | TODO   |
+| NumberInput                   | ✅ (VE)                | —                    | `@yuva-devlab/components` | TODO   |
+| Form                          | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Typography                    | ✅ (VE)                | —                    | `@yuva-devlab/components` | TODO   |
+| Box/Flex/Grid/Container/Stack | ✅ (VE)                | —                    | `@yuva-devlab/components` | TODO   |
+| Card                          | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Badge                         | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Avatar                        | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Progress                      | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Skeleton                      | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Dialog                        | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| AlertDialog                   | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Sheet                         | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Popover                       | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Tooltip                       | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| DropdownMenu                  | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Table                         | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Label                         | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Separator/Divider             | ✅ (VE)                | ✅                   | `@yuva-devlab/components` | TODO   |
+| Pagination                    | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| SearchBar                     | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| FilterChips                   | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| LoadingState/EmptyState       | —                      | ✅                   | `@yuva-devlab/components` | CREATE |
+| ConfirmDialog                 | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| MarkdownContent               | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| ActivityStep                  | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| FormDialog                    | —                      | ✅                   | `@yuva-devlab/components` | TODO   |
+| Heading                       | —                      | —                    | `@yuva-devlab/components` | CREATE |
+| Alert/Banner                  | —                      | —                    | `@yuva-devlab/components` | CREATE |
+| Tabs                          | —                      | —                    | `@yuva-devlab/components` | CREATE |
+| Accordion                     | —                      | —                    | `@yuva-devlab/components` | CREATE |
+| Spinner                       | —                      | —                    | `@yuva-devlab/components` | CREATE |
 
 ---
 
@@ -737,7 +737,7 @@ Registry: npm public (`@yuva-devlab` scope). Node ≥18 (ESM).
 ✅ Styled via Yuva tokens without business knowledge
 
 ❌ Contains FinAI domain terms (transactions, budgets, goals, health scores)
-❌ Imports `@finai/*` packages
+❌ Imports `@fin-ai/*` packages
 ❌ Requires FinAI API shapes or domain types
 ❌ Only makes sense within FinAI context
 

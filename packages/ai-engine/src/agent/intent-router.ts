@@ -14,7 +14,7 @@
  * write. Users can also force the agent loop manually via the UI toggle.
  */
 
-import { FINAI_CORE_PERSONA } from "@finai/prompts";
+import { FINAI_CORE_PERSONA } from "@fin-ai/prompts";
 
 export interface IntentAnalysisParams {
   question: string;

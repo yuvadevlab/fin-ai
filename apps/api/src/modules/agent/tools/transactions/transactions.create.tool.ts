@@ -1,14 +1,14 @@
 /**
  * @file apps/api/src/modules/agent/tools/transactions.create.tool.ts
  * @description Single transaction creation tool definition for FinAI agent.
- * @module @finai/api/agent/tools/transactions-create
+ * @module @fin-ai/api/agent/tools/transactions-create
  */
 
 import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import type { TransactionsService } from "@/modules/transactions/transactions.service";
-import { formatINR } from "@finai/finance-engine";
+import { formatINR } from "@fin-ai/finance-engine";
 import {
   AgentCardType,
   AgentToolName,
@@ -16,8 +16,8 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
 import { agentCreateTransactionSchema } from "../../transactions.agent-schemas";
 import { checkTransactionRefs, resolveTransactionRefs } from "../../entity-reference";
 import { resolveAgentTransactionDate } from "../../date-expression";

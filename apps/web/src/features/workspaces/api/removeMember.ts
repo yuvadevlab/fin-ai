@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS, type WorkspaceMember } from "@finai/shared-types";
+import { API_ENDPOINTS, type WorkspaceMember } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
-import { toast } from "@finai/ui";
+import { toast } from "@fin-ai/ui";
 import { workspaceMembersQueryKey } from "./getWorkspaceMembers";
 import { workspacesQueryKey } from "./getWorkspaces";
 
