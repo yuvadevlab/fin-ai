@@ -3,7 +3,7 @@ import { WorkspacesService } from "./services/workspaces.service";
 import { WorkspacesRepository } from "./repositories/workspaces.repository";
 import { BadRequestException } from "@nestjs/common";
 import { describe, it, expect, beforeEach, vi, Mock } from "vitest";
-import { WorkspaceType } from "@finai/database";
+import { WorkspaceType } from "@fin-ai/database";
 
 describe("WorkspacesService", () => {
   let service: WorkspacesService;

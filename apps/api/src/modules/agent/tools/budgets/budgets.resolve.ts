@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/agent/tools/budgets.resolve.ts
  * @description Category and budget reference resolution helper for FinAI agent.
- * @module @finai/api/agent/tools/budgets-resolve
+ * @module @fin-ai/api/agent/tools/budgets-resolve
  */
 
 import { BadRequestException } from "@nestjs/common";

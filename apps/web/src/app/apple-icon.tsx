@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/app/apple-icon.tsx
  * @description Dynamic Apple Touch Icon for FinAI.
- * @module @finai/web/app
+ * @module @fin-ai/web/app
  */
 
 import { ImageResponse } from "next/og";

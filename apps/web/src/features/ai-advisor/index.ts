@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/index.ts
  * @description Master barrel export for the AI Advisor feature module.
- * @module @finai/web/features/ai-advisor
+ * @module @fin-ai/web/features/ai-advisor
  */
 
 export * from "./components";

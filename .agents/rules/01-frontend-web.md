@@ -10,7 +10,7 @@
 
 # FinAI Frontend & Web Architecture Rules (`apps/web`)
 
-> **Scope**: Applies to `apps/web` (Next.js 15 App Router) and `@finai/ui`.
+> **Scope**: Applies to `apps/web` (Next.js 15 App Router) and `@fin-ai/ui`.
 
 ---
 
@@ -42,14 +42,14 @@ src/features/<feature-name>/components/
 
 1. Include `"use client"` at the top.
 2. Accept `values`, `errors`, and `onChange` props typed via interface.
-3. Define an array of `FormField` objects from `@finai/ui`.
+3. Define an array of `FormField` objects from `@fin-ai/ui`.
 4. Render fields using `<FormDialogField />`.
 
 ### Rule 2: Dialog Component (`<Entity>Dialog.tsx`)
 
 1. Support both controlled (`open`, `onOpenChange`) and uncontrolled state via fallback (`useState`).
 2. Retrieve workspace/user state via `useWorkspace()`.
-3. Import the Zod validation schema from `@finai/validation` and validate with `schema.safeParse()`.
+3. Import the Zod validation schema from `@fin-ai/validation` and validate with `schema.safeParse()`.
 4. Map validation issues to field error state:
    ```ts
    parseResult.error.issues.forEach((issue) => {
@@ -58,7 +58,7 @@ src/features/<feature-name>/components/
    });
    ```
 5. Clear field errors on `onChange` event.
-6. Wrap in `<FormDialog>` from `@finai/ui` and render root error alert when `errors.root` exists.
+6. Wrap in `<FormDialog>` from `@fin-ai/ui` and render root error alert when `errors.root` exists.
 
 ---
 
@@ -66,7 +66,7 @@ src/features/<feature-name>/components/
 
 1. **Location**: Place feature API hooks under `src/features/<feature-name>/api/`.
 2. **React Query**: Use `@tanstack/react-query` (`useQuery`, `useMutation`).
-3. **Centralized Query Keys**: Use `QUERY_KEYS` from `@finai/shared-types`. NEVER use inline raw string arrays:
+3. **Centralized Query Keys**: Use `QUERY_KEYS` from `@fin-ai/shared-types`. NEVER use inline raw string arrays:
    ```ts
    // CORRECT:
    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL });
@@ -74,7 +74,7 @@ src/features/<feature-name>/components/
    // FORBIDDEN:
    queryClient.invalidateQueries({ queryKey: ["transactions"] });
    ```
-4. **Centralized API Endpoints**: Use `API_ENDPOINTS` from `@finai/shared-types` or `API_ROUTES` from `@/lib/routes`. Never hardcode raw endpoint URLs.
+4. **Centralized API Endpoints**: Use `API_ENDPOINTS` from `@fin-ai/shared-types` or `API_ROUTES` from `@/lib/routes`. Never hardcode raw endpoint URLs.
 5. **Optimistic Updates**: Use optimistic updates only for simple toggle or deletion actions with immediate rollback on error.
 
 ---
@@ -115,4 +115,4 @@ src/features/<feature-name>/components/
    - Destructive / Error: `bg-destructive/15`, `text-destructive`
 2. **Icons**: Import icons exclusively from `lucide-react`.
 3. **Page Layouts**: Wrap every page view in `<PageContainer>` and use `<PageHeader>` for standard headers.
-4. **No Inline Graphic SVGs in Pages**: Complex graphic SVGs (gauges, progress dials) must live in `@finai/ui` as reusable, accessible components (with `role="progressbar"`, `aria-valuenow`, `aria-label`).
+4. **No Inline Graphic SVGs in Pages**: Complex graphic SVGs (gauges, progress dials) must live in `@fin-ai/ui` as reusable, accessible components (with `role="progressbar"`, `aria-valuenow`, `aria-label`).

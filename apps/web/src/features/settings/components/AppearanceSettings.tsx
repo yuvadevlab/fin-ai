@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FormDialogField, toast } from "@finai/ui";
+import { FormDialogField, toast } from "@fin-ai/ui";
 import { useAppearance } from "@/hooks";
 import type { AppearancePrefs } from "@/providers/appearance/AppearanceProvider";
 import { useProfile, useUpdateProfile } from "../api";

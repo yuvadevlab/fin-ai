@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { contributeSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { contributeSchema } from "@fin-ai/validation";
 import { useContributeGoal } from "../api";
 import { ContributeForm } from "./ContributeForm";
 import { UI_COPY } from "@/lib/ui-copy";

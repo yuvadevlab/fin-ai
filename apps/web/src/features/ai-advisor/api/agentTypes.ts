@@ -1,12 +1,12 @@
-import type { AgentCard } from "@finai/ai-engine";
-import type { AiProviderRole } from "@finai/shared-types";
+import type { AgentCard } from "@fin-ai/ai-engine";
+import type { AiProviderRole } from "@fin-ai/shared-types";
 import {
   AgentActivityKind,
   AgentActivityStatus,
   AgentChatRole,
   AgentConfirmationStatus,
   AgentRunLogLevel,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 
 export {
   AgentActivityKind,

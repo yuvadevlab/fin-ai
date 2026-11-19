@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { TransactionType } from "@finai/database";
-import type { CreateTransactionInput } from "@finai/validation";
+import { TransactionType } from "@fin-ai/database";
+import type { CreateTransactionInput } from "@fin-ai/validation";
 import { TransactionsRepository } from "../repositories";
 
 @Injectable()

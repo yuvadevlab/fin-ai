@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/workspace.enums.ts
  * @description Canonical enums for FinAI workspaces, roles, and invitations.
- * @module @finai/shared-types/workspace.enums
+ * @module @fin-ai/shared-types/workspace.enums
  */
 
 export const WorkspaceType = {

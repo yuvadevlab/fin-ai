@@ -1,6 +1,6 @@
-# @finai/api
+# @fin-ai/api
 
-`@finai/api` is the primary backend REST/GraphQL service for FinAI, built with NestJS 10, Node.js 24, Prisma ORM (`@finai/database`), Passport.js JWT authentication, and native Ollama AI integration.
+`@fin-ai/api` is the primary backend REST/GraphQL service for FinAI, built with NestJS 10, Node.js 24, Prisma ORM (`@fin-ai/database`), Passport.js JWT authentication, and native Ollama AI integration.
 
 ---
 
@@ -40,9 +40,9 @@ apps/api/
 
 ## Architecture & Core Features
 
-### 1. Database ORM (`@finai/database`)
+### 1. Database ORM (`@fin-ai/database`)
 
-The API uses Prisma Client generated from `@finai/database`. Data models include `Workspace`, `User`, `Account`, `Transaction`, `Budget`, `Investment`, and `Goal`.
+The API uses Prisma Client generated from `@fin-ai/database`. Data models include `Workspace`, `User`, `Account`, `Transaction`, `Budget`, `Investment`, and `Goal`.
 
 ### 2. Ollama AI Integration Engine
 
@@ -52,7 +52,7 @@ The AI Advisor module interacts with the host-native Ollama LLM service via HTTP
 http://host.docker.internal:11434
 ```
 
-It fetches transactions, budget adherence, and net worth calculations from `@finai/finance-engine`, constructs structured system prompts, and streams back tailored financial recommendations.
+It fetches transactions, budget adherence, and net worth calculations from `@fin-ai/finance-engine`, constructs structured system prompts, and streams back tailored financial recommendations.
 
 ### 3. Global Health Check Endpoint
 
@@ -82,11 +82,11 @@ Response: { "status": "ok", "timestamp": "2026-07-20T10:00:00Z" }
 
 ```bash
 # Start NestJS API in watch mode
-pnpm --filter @finai/api dev
+pnpm --filter @fin-ai/api dev
 
 # Build production bundle
-pnpm --filter @finai/api build
+pnpm --filter @fin-ai/api build
 
 # Run API unit tests
-pnpm --filter @finai/api test
+pnpm --filter @fin-ai/api test
 ```

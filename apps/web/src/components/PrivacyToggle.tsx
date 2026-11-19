@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@finai/ui";
+import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@fin-ai/ui";
 import { usePrivacyMode, useIsClient } from "@/hooks";
 
 interface PrivacyToggleProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MoneyDisplay, type MoneyDisplayProps } from "@finai/ui";
+import { MoneyDisplay, type MoneyDisplayProps } from "@fin-ai/ui";
 import { usePrivacyMode } from "@/hooks";
 
 export interface PrivacyMoneyProps extends MoneyDisplayProps {

@@ -1,12 +1,12 @@
 /**
  * @file apps/web/src/middleware.ts
  * @description Authentication edge middleware enforcing session checks and DevLab SSO redirect.
- * @module @finai/web/middleware
+ * @module @fin-ai/web/middleware
  */
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib/routes";
 import { isJwtExpired } from "@/lib/jwt";
 

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { Prisma, TransactionType } from "@finai/database";
-import type { TransactionFilterInput } from "@finai/validation";
+import { Prisma, TransactionType } from "@fin-ai/database";
+import type { TransactionFilterInput } from "@fin-ai/validation";
 import { assertOwnedReferences, applyTransactionImpact, type OwnedReferenceRefs } from "../utils";
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 

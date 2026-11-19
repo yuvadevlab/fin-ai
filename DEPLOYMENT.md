@@ -129,7 +129,7 @@ Deploy directly using the [render.yaml](file:///Users/yuvarajpattabi/Yuva/yuva-d
 1. Import the repository into Vercel.
 2. The project automatically uses [apps/web/vercel.json](file:///Users/yuvarajpattabi/Yuva/yuva-devlab/repos/finai/apps/web/vercel.json):
    - **Framework Preset**: `Next.js`
-   - **Build Command**: `pnpm --filter @finai/web... build`
+   - **Build Command**: `pnpm --filter @fin-ai/web... build`
    - **Install Command**: `pnpm install`
 3. Configure environment variables:
    - `NEXT_PUBLIC_API_URL`: Backend API base URL

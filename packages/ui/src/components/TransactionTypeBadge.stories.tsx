@@ -3,7 +3,7 @@ import { TransactionTypeBadge } from "./TransactionTypeBadge";
 
 /**
  * `TransactionTypeBadge` renders a coloured pill for the five
- * `TransactionType` values from `@finai/shared-types`.
+ * `TransactionType` values from `@fin-ai/shared-types`.
  *
  * | Type | Colour |
  * |---|---|

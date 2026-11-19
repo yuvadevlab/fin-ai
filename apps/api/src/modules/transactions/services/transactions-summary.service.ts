@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import type { TransactionFilterInput } from "@finai/validation";
+import type { TransactionFilterInput } from "@fin-ai/validation";
 import { TransactionsRepository } from "../repositories";
 
 export interface TransactionSummarizeFilter {
   dateFrom: string;
   dateTo: string;
   groupBy: "category" | "type";
-  type?: import("@finai/database").TransactionType;
+  type?: import("@fin-ai/database").TransactionType;
 }
 
 export interface TransactionSummaryItem {

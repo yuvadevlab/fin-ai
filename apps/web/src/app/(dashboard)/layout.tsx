@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { APP_ROUTES } from "@/lib";
-import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS } from "@fin-ai/shared-types";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { DashboardShell } from "@/features/dashboard/components";
 import { AuthProvider } from "@/providers";

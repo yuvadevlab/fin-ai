@@ -1,11 +1,11 @@
 /**
- * @finai/database — Seed Script
+ * @fin-ai/database — Seed Script
  *
  * Idempotent: uses upsert/createMany with skipDuplicates.
  * Safe to run multiple times — NEVER drops or truncates existing data.
  *
  * Usage (run manually from project root):
- *   pnpm --filter @finai/database db:seed
+ *   pnpm --filter @fin-ai/database db:seed
  */
 
 import fs from "node:fs";

@@ -1,4 +1,4 @@
-import { BULK_ITEM_PREFIX, ConfirmationRowLabel, TransactionType } from "@finai/shared-types";
+import { BULK_ITEM_PREFIX, ConfirmationRowLabel, TransactionType } from "@fin-ai/shared-types";
 
 export interface BulkTransactionItem {
   index: number;

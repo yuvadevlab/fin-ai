@@ -12,7 +12,7 @@ import {
   updateBudgetSchema,
   type CreateBudgetInput,
   type UpdateBudgetInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Budgets")
 @ApiBearerAuth()

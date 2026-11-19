@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import type { LlmToolDefinition } from "@finai/ai-engine";
+import type { LlmToolDefinition } from "@fin-ai/ai-engine";
 import type { AgentTool } from "./agent.types";
 
 /**

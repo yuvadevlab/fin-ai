@@ -13,8 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   cn,
-} from "@finai/ui";
-import { formatINR } from "@finai/finance-engine";
+} from "@fin-ai/ui";
+import { formatINR } from "@fin-ai/finance-engine";
 import { useIsClient } from "@/hooks";
 import { usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";

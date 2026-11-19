@@ -4,7 +4,7 @@ import type {
   CreateTransactionInput,
   UpdateTransactionInput,
   TransactionFilterInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 import { TransactionsRepository } from "../repositories";
 import { TransactionsMutationService } from "./transactions-mutation.service";
 import {

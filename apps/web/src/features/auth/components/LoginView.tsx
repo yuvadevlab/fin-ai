@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { DEVLAB_PORTAL_ROUTES } from "@/lib";
 
 /**

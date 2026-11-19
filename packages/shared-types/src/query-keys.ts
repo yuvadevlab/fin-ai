@@ -2,7 +2,7 @@
  * @file packages/shared-types/src/query-keys.ts
  * @description Centralized TanStack Query cache keys across web client applications.
  * Eliminates ad-hoc string array keys and provides unified invalidate/prefetch contracts.
- * @module @finai/shared-types/query-keys
+ * @module @fin-ai/shared-types/query-keys
  */
 
 /**

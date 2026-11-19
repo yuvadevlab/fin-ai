@@ -14,7 +14,7 @@ import {
   Button,
   toast,
   CHART_COLORS,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { PrivacyMoney } from "@/components";
 import { UI_COPY } from "@/lib/ui-copy";
 

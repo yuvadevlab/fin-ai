@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/lib/ui-copy/advisor.ts
  * @description Centralized UI copy, placeholders, and a11y text for FinAI Autonomous Advisor.
- * @module @finai/web/lib/ui-copy/advisor
+ * @module @fin-ai/web/lib/ui-copy/advisor
  */
 
 export const ADVISOR_COPY = {

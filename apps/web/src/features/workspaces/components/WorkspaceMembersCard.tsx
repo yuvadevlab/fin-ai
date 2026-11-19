@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { UserPlus, LogOut, Trash2, Crown, ShieldCheck, User2 } from "lucide-react";
-import { Button, Badge, Avatar, AvatarFallback, AvatarImage, ConfirmDialog } from "@finai/ui";
-import { WorkspaceRole, WorkspaceMember } from "@finai/shared-types";
+import { Button, Badge, Avatar, AvatarFallback, AvatarImage, ConfirmDialog } from "@fin-ai/ui";
+import { WorkspaceRole, WorkspaceMember } from "@fin-ai/shared-types";
 import { UI_COPY } from "@/lib";
 import { useWorkspaceMembers, useRemoveMember } from "../api";
 

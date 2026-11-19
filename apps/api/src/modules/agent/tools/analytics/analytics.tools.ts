@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { AnalyticsService } from "@/modules/analytics/analytics.service";
-import { formatINR, type Recommendation } from "@finai/finance-engine";
-import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
+import { formatINR, type Recommendation } from "@fin-ai/finance-engine";
+import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@fin-ai/ai-engine";
 
 /**
  * Read tools over the existing AnalyticsService. These surface the same
- * deterministic numbers the dashboard shows (computed by @finai/finance-engine),
+ * deterministic numbers the dashboard shows (computed by @fin-ai/finance-engine),
  * so the model grounds its advice in real KPIs instead of hallucinating them.
  */
 export function createAnalyticsTools(analyticsService: AnalyticsService) {

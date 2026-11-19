@@ -1,9 +1,9 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { prisma } from "@finai/database";
+import { prisma } from "@fin-ai/database";
 
 /**
- * NestJS wrapper around the shared Prisma client from `@finai/database`.
+ * NestJS wrapper around the shared Prisma client from `@fin-ai/database`.
  *
  * `onModuleInit` connects the connection pool when the NestJS app starts,
  * and `onModuleDestroy` disconnects it gracefully on shutdown. All domain

@@ -1,6 +1,6 @@
 import React from "react";
 import { Eye } from "lucide-react";
-import { Badge, cn } from "@finai/ui";
+import { Badge, cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export interface ReadOnlyWorkspaceBannerProps {

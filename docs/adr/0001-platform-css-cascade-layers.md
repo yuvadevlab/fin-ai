@@ -9,7 +9,7 @@ Accepted
 As the FinAI application evolved, styling was previously tightly coupled to build-time utility compiler toolchains. This introduced several engineering friction points:
 
 1. Slower continuous integration and hot-module reload times due to continuous scanning of large monorepo ASTs.
-2. Fragile CSS specificity conflicts between component libraries (`@finai/ui`), shared design system packages (`@yuva-devlab/ui`), and domain applications (`apps/web`).
+2. Fragile CSS specificity conflicts between component libraries (`@fin-ai/ui`), shared design system packages (`@yuva-devlab/ui`), and domain applications (`apps/web`).
 3. Build-time toolchain deprecation risks and breaking changes across framework major versions.
 
 ## Decision
@@ -21,7 +21,7 @@ We adopted a **Pure Platform CSS Architecture** governed by modern W3C standards
    @layer dl-reset, dl-tokens, dl-components, dl-layout, dl-utilities, dl-app;
    ```
 2. **Canonical Design Tokens:** Root tokens define semantic colors (`--primary`, `--background`, `--card`, `--border`, `--destructive`) and typography in OKLCH color spaces.
-3. **Encapsulated UI Packages:** `@finai/ui` exports pre-compiled stylesheets (`dist/ui.css`) and modular styles with clean semantic layers.
+3. **Encapsulated UI Packages:** `@fin-ai/ui` exports pre-compiled stylesheets (`dist/ui.css`) and modular styles with clean semantic layers.
 
 ## Consequences
 

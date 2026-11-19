@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/agent-runtime.enums.ts
  * @description Canonical runtime, event, stream, activity, and log enums for the AI Agent.
- * @module @finai/shared-types/agent-runtime-enums
+ * @module @fin-ai/shared-types/agent-runtime-enums
  */
 
 /** Provider-agnostic chat roles for LLMs */

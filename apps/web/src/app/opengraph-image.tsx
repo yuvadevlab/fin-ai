@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/app/opengraph-image.tsx
  * @description Dynamic Open Graph and Twitter preview image generator for FinAI.
- * @module @finai/web/app
+ * @module @fin-ai/web/app
  */
 
 import { ImageResponse } from "next/og";

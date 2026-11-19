@@ -3,12 +3,12 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/AdvisorHeader.tsx
  * @description Compact workspace header displaying agent branding and conversational action controls.
- * @module @finai/web/features/ai-advisor/components/AdvisorHeader
+ * @module @fin-ai/web/features/ai-advisor/components/AdvisorHeader
  */
 
 import { useState } from "react";
 import { History, Info, MessageSquarePlus, PanelRight, Sparkles } from "lucide-react";
-import { Button } from "@finai/ui";
+import { Button } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import { AdvisorGuideDialog } from "./AdvisorGuideDialog";
 

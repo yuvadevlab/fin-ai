@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS } from "@finai/shared-types";
-import { toast } from "@finai/ui";
+import { QUERY_KEYS } from "@fin-ai/shared-types";
+import { toast } from "@fin-ai/ui";
 import { useWorkspace } from "@/providers";
 import { UI_COPY } from "@/lib/ui-copy";
 import { confirmAgentAction, rejectAgentAction } from "./agentActions";

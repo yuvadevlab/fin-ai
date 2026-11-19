@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { Prisma } from "@finai/database";
+import { Prisma } from "@fin-ai/database";
 import {
   parseToolPlan,
   formatActionProposalMessage,
@@ -8,7 +8,7 @@ import {
   AGENT_MAX_ITERATIONS_MESSAGE,
   type LlmChatRequest,
   type AiProviderRole,
-} from "@finai/ai-engine";
+} from "@fin-ai/ai-engine";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { AgentModelFactory } from "./agent-model.factory";

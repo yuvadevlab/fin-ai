@@ -1,6 +1,6 @@
-import type { AgentCard } from "@finai/ai-engine";
-import { formatINR } from "@finai/finance-engine";
-import { AgentCardType } from "@finai/shared-types";
+import type { AgentCard } from "@fin-ai/ai-engine";
+import { formatINR } from "@fin-ai/finance-engine";
+import { AgentCardType } from "@fin-ai/shared-types";
 import type { PrismaService } from "@/modules/prisma/prisma.service";
 
 /**

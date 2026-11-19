@@ -12,7 +12,7 @@ Existing consumer financial applications (Mint, YNAB, Monarch, Copilot) are fund
 
 FinAI eliminates these failure modes through three architectural pillars:
 
-1. **Deterministic, Zero-Hallucination Math Core**: All financial figures, net worth calculations, runway projections, and amortization schedules are computed exclusively by `@finai/finance-engine`—a pure functional TypeScript library with **zero I/O, zero network dependencies, and 100% deterministic test coverage**.
+1. **Deterministic, Zero-Hallucination Math Core**: All financial figures, net worth calculations, runway projections, and amortization schedules are computed exclusively by `@fin-ai/finance-engine`—a pure functional TypeScript library with **zero I/O, zero network dependencies, and 100% deterministic test coverage**.
 2. **Local & Private Cognitive Advisory**: Powered by Ollama on-premise models and private DevLab inference rails, ensuring sensitive banking records and balances never leak to public model training corpora.
 3. **Mandatory Two-Phase Confirmation Protocol**: The AI agent is strictly restricted to read-only tools during conversation. Any state-mutating action (creating budgets, logging transactions, reallocating funds) requires an interactive 2-phase confirmation modal displaying an explicit financial impact preview before execution.
 
@@ -32,7 +32,7 @@ When standard Large Language Models calculate compound interest or loan amortiza
 In FinAI:
 
 - **LLMs never do math**: The LLM serves solely as an intent parser and conversational synthesizer.
-- **The Engine does the math**: When the user asks a financial question, the AI advisor calls verified, deterministic tools in `@finai/finance-engine` and incorporates the exact computed outputs into its narrative response.
+- **The Engine does the math**: When the user asks a financial question, the AI advisor calls verified, deterministic tools in `@fin-ai/finance-engine` and incorporates the exact computed outputs into its narrative response.
 
 ---
 
@@ -63,7 +63,7 @@ In FinAI:
 
 #### 1. Web Dashboard (`apps/web` — Port `3001`)
 
-- **Technology Stack**: Next.js 15 (App Router), React 19, Platform CSS Utilities, React Query v5, `@finai/ui`, `@yuva-devlab/tokens`.
+- **Technology Stack**: Next.js 15 (App Router), React 19, Platform CSS Utilities, React Query v5, `@fin-ai/ui`, `@yuva-devlab/tokens`.
 - **Purpose**: High-performance, responsive wealth management web application.
 - **Detailed Features**:
   - **Net Worth Command Center**: Real-time aggregation of liquid assets, investments, real estate, and liabilities with historical trend charting.
@@ -86,15 +86,15 @@ In FinAI:
 
 ### 2.2 Core Package Catalog
 
-| Package                     | Purpose & Core Invariants                                                                                                                                                                                                                                                        |
-| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`@finai/finance-engine`** | **The Pure Math Core**: Pure functional TypeScript. Zero I/O, zero network, zero dependencies. Implements net worth aggregation, cash flow formulas, debt amortization tables, emergency runway calculations, Sharpe ratio calculations, and retirement Monte Carlo simulations. |
-| **`@finai/ai-engine`**      | **Cognitive Advisory Harness**: Implements the ReAct (Reason + Act + Observe) advisory loop. Restricts the LLM to read-only tool calls (`get_accounts`, `get_transactions`, `get_budget_status`, `calculate_runway`).                                                            |
-| **`@finai/shared-types`**   | **Canonical Financial Enums**: Houses domain enums (`AccountType`, `TransactionCategory`, `BudgetPeriod`, `AdvisoryConfidence`, `LedgerEntryType`). Zero bare string literals allowed.                                                                                           |
-| **`@finai/constants`**      | **Domain Taxonomies**: Centralized currency codes (ISO 4217), category trees, default asset allocation weights, and benchmark risk-free rates.                                                                                                                                   |
-| **`@finai/database`**       | **Prisma Client & Migrations**: PostgreSQL schema definitions, migration scripts, and typed repository access layers.                                                                                                                                                            |
-| **`@finai/ui`**             | **Financial Component System**: Custom financial UI primitives including currency inputs, net worth trend badges, transaction rows, and balance chips.                                                                                                                           |
-| **`@finai/validation`**     | **Zod Schemas**: Strict runtime validation schemas for banking payloads, user input forms, and advisory tool arguments.                                                                                                                                                          |
+| Package                      | Purpose & Core Invariants                                                                                                                                                                                                                                                        |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`@fin-ai/finance-engine`** | **The Pure Math Core**: Pure functional TypeScript. Zero I/O, zero network, zero dependencies. Implements net worth aggregation, cash flow formulas, debt amortization tables, emergency runway calculations, Sharpe ratio calculations, and retirement Monte Carlo simulations. |
+| **`@fin-ai/ai-engine`**      | **Cognitive Advisory Harness**: Implements the ReAct (Reason + Act + Observe) advisory loop. Restricts the LLM to read-only tool calls (`get_accounts`, `get_transactions`, `get_budget_status`, `calculate_runway`).                                                            |
+| **`@fin-ai/shared-types`**   | **Canonical Financial Enums**: Houses domain enums (`AccountType`, `TransactionCategory`, `BudgetPeriod`, `AdvisoryConfidence`, `LedgerEntryType`). Zero bare string literals allowed.                                                                                           |
+| **`@fin-ai/constants`**      | **Domain Taxonomies**: Centralized currency codes (ISO 4217), category trees, default asset allocation weights, and benchmark risk-free rates.                                                                                                                                   |
+| **`@fin-ai/database`**       | **Prisma Client & Migrations**: PostgreSQL schema definitions, migration scripts, and typed repository access layers.                                                                                                                                                            |
+| **`@fin-ai/ui`**             | **Financial Component System**: Custom financial UI primitives including currency inputs, net worth trend badges, transaction rows, and balance chips.                                                                                                                           |
+| **`@fin-ai/validation`**     | **Zod Schemas**: Strict runtime validation schemas for banking payloads, user input forms, and advisory tool arguments.                                                                                                                                                          |
 
 ---
 
@@ -106,7 +106,7 @@ sequenceDiagram
     participant Client as FinAI Web (:3001)
     participant API as FinAI API (:4001)
     participant DP as DevLab Portal (:4000)
-    participant Engine as @finai/finance-engine
+    participant Engine as @fin-ai/finance-engine
     participant DL as DevLab Logs (:4003)
     participant IA as IncidentAI (:8001)
 
@@ -143,7 +143,7 @@ sequenceDiagram
 ### 4.1 Prime Non-Negotiable Invariants
 
 1. **Deterministic Math Core Purity**:
-   - Every financial calculation MUST reside in `@finai/finance-engine`.
+   - Every financial calculation MUST reside in `@fin-ai/finance-engine`.
    - The engine must NEVER make network calls, read environment variables, or access databases.
    - All monetary figures must be computed and stored as integer cents to avoid floating-point drift.
 2. **Mandatory Two-Phase Confirmation**:
@@ -152,7 +152,7 @@ sequenceDiagram
 3. **Hard 250-Line Maximum Rule**:
    - No code file across `apps/*` or `packages/*` may exceed 250 lines. Decompose early at 200 lines.
 4. **Zero Magic Strings & Canonical Enums**:
-   - All categories, account types, and ledger statuses must use canonical enums from `@finai/shared-types`.
+   - All categories, account types, and ledger statuses must use canonical enums from `@fin-ai/shared-types`.
 
 ---
 
@@ -201,7 +201,7 @@ pnpm typecheck
 ### 5.4 Testing Financial Math in the Pure Engine
 
 ```typescript
-import { calculateRunwayMonths, calculateNetWorth } from "@finai/finance-engine";
+import { calculateRunwayMonths, calculateNetWorth } from "@fin-ai/finance-engine";
 
 const netWorth = calculateNetWorth({
   assets: [

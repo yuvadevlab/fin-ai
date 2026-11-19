@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { WorkspacesRepository } from "../repositories/workspaces.repository";
-import { Workspace, WorkspaceRole, WorkspaceType } from "@finai/database";
-import { CreateWorkspaceInput, UpdateWorkspaceInput } from "@finai/validation";
+import { Workspace, WorkspaceRole, WorkspaceType } from "@fin-ai/database";
+import { CreateWorkspaceInput, UpdateWorkspaceInput } from "@fin-ai/validation";
 import { Logger } from "@yuva-devlab/logger";
 
 @Injectable()

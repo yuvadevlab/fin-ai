@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { FormDialog } from "@finai/ui";
-import { createBudgetSchema, updateBudgetSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { createBudgetSchema, updateBudgetSchema } from "@fin-ai/validation";
 import { useCategories } from "@/features/categories/api";
 import { CategoryDialog } from "@/features/categories/components/CategoryDialog";
 import { useCreateBudget, useUpdateBudget, type Budget } from "../api";

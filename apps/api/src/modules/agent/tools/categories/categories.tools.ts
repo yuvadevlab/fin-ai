@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { CategoriesService } from "@/modules/categories/categories.service";
-import type { Category } from "@finai/shared-types";
+import type { Category } from "@fin-ai/shared-types";
 import {
   AgentCardType,
   AgentToolName,
@@ -9,9 +9,9 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { createCategorySchema, updateCategorySchema } from "@finai/validation";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
+import { createCategorySchema, updateCategorySchema } from "@fin-ai/validation";
 import { scoreEntityMatch } from "../../entity-reference";
 import { TOOL_MESSAGES } from "../tool-messages.constants";
 

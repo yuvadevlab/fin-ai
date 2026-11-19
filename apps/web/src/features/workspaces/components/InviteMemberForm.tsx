@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FormDialogField, FormField } from "@finai/ui";
-import { WorkspaceRole } from "@finai/shared-types";
+import { FormDialogField, FormField } from "@fin-ai/ui";
+import { WorkspaceRole } from "@fin-ai/shared-types";
 import { UI_COPY } from "@/lib";
 
 export interface InviteMemberFormProps {

@@ -2,7 +2,7 @@
  * Budget calculations — pure functions.
  */
 
-import type { BudgetStatus } from "@finai/shared-types";
+import type { BudgetStatus } from "@fin-ai/shared-types";
 
 /**
  * Budget consumption as a percentage of the limit.

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
-import { toast } from "@finai/ui";
+import { toast } from "@fin-ai/ui";
 
 export function useDeleteCategory() {
   const queryClient = useQueryClient();

@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { Prisma } from "@finai/database";
-import { type CreateCategoryInput, type UpdateCategoryInput } from "@finai/validation";
+import { Prisma } from "@fin-ai/database";
+import { type CreateCategoryInput, type UpdateCategoryInput } from "@fin-ai/validation";
 import { CategorySeedService } from "./category-seed.service";
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 

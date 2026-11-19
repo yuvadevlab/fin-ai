@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog, toast } from "@finai/ui";
+import { FormDialog, toast } from "@fin-ai/ui";
 import { format } from "date-fns";
 import { useCreateBulkTransactions } from "../api";
 import { useInlineEntityCreation } from "../hooks";
-import { TransactionKind, TransactionType } from "@finai/shared-types";
+import { TransactionKind, TransactionType } from "@fin-ai/shared-types";
 import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils";
 import { BulkTransactionForm, type BulkRow } from "./BulkTransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";

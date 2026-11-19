@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { SearchService } from "@/modules/search/search.service";
-import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
+import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@fin-ai/ai-engine";
 
 /**
  * Cross-entity search — also the entity resolver behind vague references:

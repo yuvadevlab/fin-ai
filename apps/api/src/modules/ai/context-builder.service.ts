@@ -1,13 +1,13 @@
 /**
  * @file apps/api/src/modules/ai/context-builder.service.ts
  * @description Builds a comprehensive text snapshot of the user's financial life for the LLM's system prompt.
- * @module @finai/api/ai/context-builder
+ * @module @fin-ai/api/ai/context-builder
  */
 
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { TransactionType } from "@finai/shared-types";
+import { TransactionType } from "@fin-ai/shared-types";
 import { formatFinanceContextMarkdown } from "./context-formatters";
 import { resolveUserScope } from "@/common/utils/workspace.util";
 

@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/lib/ui-copy/common.ts
  * @description Universal, reusable action labels, status badges, and accessibility text.
- * @module @finai/web/lib/ui-copy/common
+ * @module @fin-ai/web/lib/ui-copy/common
  */
 
 export const COMMON_COPY = {

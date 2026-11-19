@@ -2,10 +2,10 @@
 
 import React from "react";
 import { Users, Check, X, Mail } from "lucide-react";
-import { Button, Badge } from "@finai/ui";
+import { Button, Badge } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import { useMyInvitations, useRespondInvitation } from "../api";
-import { WorkspaceRole, InvitationAction } from "@finai/shared-types";
+import { WorkspaceRole, InvitationAction } from "@fin-ai/shared-types";
 
 interface WorkspaceInvitationCardProps {
   className?: string;

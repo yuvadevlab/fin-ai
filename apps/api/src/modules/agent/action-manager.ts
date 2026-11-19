@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { AgentActionStatus, Prisma } from "@finai/database";
+import { AgentActionStatus, Prisma } from "@fin-ai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
 import { ToolRegistry } from "./tool-registry";
 import { AuditService } from "./audit.service";
-import type { AgentCard } from "@finai/ai-engine";
+import type { AgentCard } from "@fin-ai/ai-engine";
 
 /**
  * How long a patched (unconfirmed) action stays valid. Matches the propose

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { CreateInvestmentInput } from "@finai/validation";
-import { calculateAssetAllocation, calculatePortfolioValue } from "@finai/finance-engine";
-import { AssetClass, Prisma } from "@finai/database";
+import { CreateInvestmentInput } from "@fin-ai/validation";
+import { calculateAssetAllocation, calculatePortfolioValue } from "@fin-ai/finance-engine";
+import { AssetClass, Prisma } from "@fin-ai/database";
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
 /**

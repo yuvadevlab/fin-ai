@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { createTransactionSchema } from "@finai/validation";
-import { TransactionType } from "@finai/shared-types";
+import { createTransactionSchema } from "@fin-ai/validation";
+import { TransactionType } from "@fin-ai/shared-types";
 import { serverTodayISO } from "./date.utils";
 import { parseAgentDateExpression } from "./date-expression";
 

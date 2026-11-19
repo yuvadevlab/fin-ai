@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ContentCard, Progress, cn } from "@finai/ui";
+import { ContentCard, Progress, cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export interface HealthMetricCardProps {

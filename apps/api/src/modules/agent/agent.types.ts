@@ -1,5 +1,5 @@
-import type { AgentCard, AgentStreamEvent } from "@finai/ai-engine";
-import { ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
+import type { AgentCard, AgentStreamEvent } from "@fin-ai/ai-engine";
+import { ToolAccessLevel, ToolConfirmationType } from "@fin-ai/shared-types";
 import type { ValidationWarning } from "./tool-factory";
 
 export interface AgentWorkspaceContext {

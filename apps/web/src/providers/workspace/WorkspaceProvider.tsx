@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { StorageKey, WorkspaceType, QUERY_KEYS } from "@finai/shared-types";
+import { StorageKey, WorkspaceType, QUERY_KEYS } from "@fin-ai/shared-types";
 import { useWorkspaces } from "@/features/workspaces/api";
 import { WorkspaceContext } from "./workspace-context";
 

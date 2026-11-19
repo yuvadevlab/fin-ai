@@ -5,7 +5,7 @@ import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { UsersService } from "./users.service";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Logger } from "@yuva-devlab/logger";
-import { updateProfileSchema, type UpdateProfileInput } from "@finai/validation";
+import { updateProfileSchema, type UpdateProfileInput } from "@fin-ai/validation";
 
 @ApiTags("Users")
 @ApiBearerAuth()

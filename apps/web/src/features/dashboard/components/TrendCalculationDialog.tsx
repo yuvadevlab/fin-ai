@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export type TrendGuideType = "expense" | "savings";

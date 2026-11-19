@@ -1,5 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
-import { Prisma, TransactionType } from "@finai/database";
+import { Prisma, TransactionType } from "@fin-ai/database";
 import { getTransactionImpact } from "./balance-impact.utils";
 
 export interface OwnedReferenceRefs {

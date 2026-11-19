@@ -2,7 +2,7 @@ import {
   AgentConfirmationStatus,
   ConfirmationRowLabel,
   TransactionType,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 
 export const STATUS_META: Record<AgentConfirmationStatus, { label: string; className: string }> = {
   [AgentConfirmationStatus.PENDING]: {

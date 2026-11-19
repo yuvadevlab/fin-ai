@@ -1,10 +1,10 @@
 /**
  * @file packages/ai-engine/src/agent/tool-descriptors.labels.ts
  * @description Centralized execution labels and confirmation titles for FinAI agent tools.
- * @module @finai/ai-engine/agent/tool-descriptors-labels
+ * @module @fin-ai/ai-engine/agent/tool-descriptors-labels
  */
 
-import { AgentToolName } from "@finai/shared-types";
+import { AgentToolName } from "@fin-ai/shared-types";
 
 /** User-facing execution status labels streamed during agent tool execution */
 export const AGENT_TOOL_LABELS: Record<string, string> = {

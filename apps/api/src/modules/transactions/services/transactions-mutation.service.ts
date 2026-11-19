@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { TransactionType } from "@finai/database";
-import type { CreateTransactionInput, UpdateTransactionInput } from "@finai/validation";
+import { TransactionType } from "@fin-ai/database";
+import type { CreateTransactionInput, UpdateTransactionInput } from "@fin-ai/validation";
 import { TransactionsRepository } from "../repositories";
 import { TransactionsBulkService } from "./transactions-bulk.service";
 

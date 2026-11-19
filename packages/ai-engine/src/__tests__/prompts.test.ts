@@ -6,7 +6,7 @@ import {
   buildEmojiSuggestionUserPrompt,
   buildTitleGenerationPrompt,
   sanitizeConversationTitle,
-} from "@finai/prompts";
+} from "@fin-ai/prompts";
 import { extractFollowUpQuestions } from "../extract-follow-ups";
 
 describe("AI Engine (Unit Tests)", () => {

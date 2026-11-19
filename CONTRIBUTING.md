@@ -105,9 +105,9 @@ pnpm build
 
 When contributing to FinAI, please adhere to our core engineering invariants:
 
-1. **Zero Side-Effects in Finance Engine:** `@finai/finance-engine` is a pure mathematical library. It must never perform network I/O or mutate external state.
-2. **Centralized Schemas:** All domain validation schemas must reside in `@finai/validation` using Zod `.safeParse()`.
-3. **Design System Tokens Exclusively:** Use semantic platform tokens (`bg-card`, `bg-background`, `border-border`, `text-primary`, etc.) from `@finai/ui` instead of ad-hoc hex values.
+1. **Zero Side-Effects in Finance Engine:** `@fin-ai/finance-engine` is a pure mathematical library. It must never perform network I/O or mutate external state.
+2. **Centralized Schemas:** All domain validation schemas must reside in `@fin-ai/validation` using Zod `.safeParse()`.
+3. **Design System Tokens Exclusively:** Use semantic platform tokens (`bg-card`, `bg-background`, `border-border`, `text-primary`, etc.) from `@fin-ai/ui` instead of ad-hoc hex values.
 4. **2-File Modal Pattern:** Interactive modal workflows must separate presentation (`<Entity>Form.tsx`) from orchestration/mutations (`<Entity>Dialog.tsx`).
 5. **No Secret Commits:** Never commit `.env`, API keys, private certificates, or database credentials.
 

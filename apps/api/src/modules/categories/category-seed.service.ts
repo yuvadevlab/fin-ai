@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/categories/category-seed.service.ts
  * @description Auto-seeding helper routines for default category groups and categories.
- * @module @finai/api/modules/categories/category-seed.service
+ * @module @fin-ai/api/modules/categories/category-seed.service
  */
 
 import { Injectable } from "@nestjs/common";

@@ -1,12 +1,12 @@
 /**
  * @file apps/api/src/config/api-config.ts
  * @description Configuration loader parsing and validating process.env into strongly-typed ApiConfig.
- * @module @finai/api/config
+ * @module @fin-ai/api/config
  */
 
 import path from "node:path";
 import dotenv from "dotenv";
-import { DEVLAB_CONFIG } from "@finai/shared-types";
+import { DEVLAB_CONFIG } from "@fin-ai/shared-types";
 import { ApiConfigSchema, type ApiConfig } from "./api-config.schema";
 
 let cachedConfig: ApiConfig | null = null;

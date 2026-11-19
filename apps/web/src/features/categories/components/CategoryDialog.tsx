@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { createCategorySchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { createCategorySchema } from "@fin-ai/validation";
 import { useCreateCategory, useUpdateCategory, Category, useCategoryGroups } from "../api";
 import { CategoryForm } from "./CategoryForm";
 import { UI_COPY } from "@/lib/ui-copy";

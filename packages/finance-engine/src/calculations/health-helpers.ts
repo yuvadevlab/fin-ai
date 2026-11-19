@@ -1,7 +1,7 @@
 /**
  * @file packages/finance-engine/src/calculations/health-helpers.ts
  * @description Helper functions for financial health scoring.
- * @module @finai/finance-engine/calculations
+ * @module @fin-ai/finance-engine/calculations
  */
 
 import {
@@ -10,7 +10,7 @@ import {
   type HealthMetric,
   type HealthMetricKey,
   type HealthMetricUnit,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 
 export type ComponentScore = HealthMetric;
 

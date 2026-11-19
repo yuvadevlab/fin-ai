@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AppShell, Sidebar, TopBar, Sheet, SheetContent, SheetTitle } from "@finai/ui";
+import { AppShell, Sidebar, TopBar, Sheet, SheetContent, SheetTitle } from "@fin-ai/ui";
 import { TransactionDialog } from "@/features/transactions/components";
 import { SearchDropdown } from "@/features/search/components/SearchDropdown";
 import { AppearanceSync, useWorkspace } from "@/providers";

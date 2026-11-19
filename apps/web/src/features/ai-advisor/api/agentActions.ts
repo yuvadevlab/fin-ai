@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib";
-import { AgentConfirmationStatus, API_ENDPOINTS, SEARCH_PARAMS } from "@finai/shared-types";
+import { AgentConfirmationStatus, API_ENDPOINTS, SEARCH_PARAMS } from "@fin-ai/shared-types";
 
 /**
  * Response shape returned by POST `/agent/actions/:id/confirm`.

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
-import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label, cn } from "@finai/ui";
+import { Button, Popover, PopoverContent, PopoverTrigger, Input, Label, cn } from "@fin-ai/ui";
 import { format } from "date-fns";
 import { getPresetDateRanges, PresetDateRangeKeys } from "@/lib/dateCycle";
 import { UI_COPY } from "@/lib/ui-copy";

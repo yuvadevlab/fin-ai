@@ -1,6 +1,6 @@
-# @finai/web
+# @fin-ai/web
 
-`@finai/web` is the user-facing web application for FinAI, built with Next.js 15 (App Router), React 19, Platform CSS, `@finai/ui`, `@finai/validation`, and `@tanstack/react-query`.
+`@fin-ai/web` is the user-facing web application for FinAI, built with Next.js 15 (App Router), React 19, Platform CSS, `@fin-ai/ui`, `@fin-ai/validation`, and `@tanstack/react-query`.
 
 ---
 
@@ -58,7 +58,7 @@ All data entry forms follow a clean, standardized 2-file pattern:
 ### Example Form Implementation (`AccountForm.tsx`)
 
 ```tsx
-import { FormDialogField, FormField } from "@finai/ui";
+import { FormDialogField, FormField } from "@fin-ai/ui";
 
 export function AccountForm({ values, errors, onChange }: AccountFormProps) {
   const fields: FormField[] = [
@@ -101,10 +101,10 @@ This application is configured for minimal production Docker containerization vi
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: [
-    "@finai/ui",
-    "@finai/finance-engine",
-    "@finai/validation",
-    "@finai/shared-types",
+    "@fin-ai/ui",
+    "@fin-ai/finance-engine",
+    "@fin-ai/validation",
+    "@fin-ai/shared-types",
   ],
 };
 ```
@@ -115,8 +115,8 @@ const nextConfig: NextConfig = {
 
 ```bash
 # Start development server on port 3001
-pnpm --filter @finai/web dev
+pnpm --filter @fin-ai/web dev
 
 # Build standalone production bundle
-pnpm --filter @finai/web build
+pnpm --filter @fin-ai/web build
 ```

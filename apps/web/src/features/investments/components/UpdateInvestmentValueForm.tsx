@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FormDialogField, FormField } from "@finai/ui";
+import { FormDialogField, FormField } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 export interface UpdateInvestmentValueFormProps {

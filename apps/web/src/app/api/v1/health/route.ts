@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/app/api/v1/health/route.ts
  * @description Health probe route handler for FinAI Web frontend.
- * @module @finai/web/api/v1/health
+ * @module @fin-ai/web/api/v1/health
  */
 
 import { NextResponse } from "next/server";

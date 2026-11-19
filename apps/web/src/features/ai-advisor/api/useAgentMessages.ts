@@ -63,7 +63,7 @@ export function useAgentMessages() {
   );
 
   const updateConfirmationCard = useCallback(
-    (actionId: string, card: import("@finai/ai-engine").AgentCard, tool?: string) => {
+    (actionId: string, card: import("@fin-ai/ai-engine").AgentCard, tool?: string) => {
       setMessages((prev) => updateConfirmationCardReducer(prev, actionId, card, tool));
     },
     [],

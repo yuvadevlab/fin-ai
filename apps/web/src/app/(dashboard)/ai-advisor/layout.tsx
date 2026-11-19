@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/app/(dashboard)/ai-advisor/layout.tsx
  * @description Persistent dashboard layout wrapping AI Advisor routes with AgentChatProvider.
- * @module @finai/web/app/(dashboard)/ai-advisor/layout
+ * @module @fin-ai/web/app/(dashboard)/ai-advisor/layout
  */
 
 import type { Metadata } from "next";

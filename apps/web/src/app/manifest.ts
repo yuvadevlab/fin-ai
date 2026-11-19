@@ -1,7 +1,7 @@
 /**
  * @file apps/web/src/app/manifest.ts
  * @description Dynamic Web App Manifest configuration for FinAI.
- * @module @finai/web/app
+ * @module @fin-ai/web/app
  */
 
 import type { MetadataRoute } from "next";

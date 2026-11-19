@@ -1,4 +1,4 @@
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { APP_ID } from "./app-constants";
 
 /**

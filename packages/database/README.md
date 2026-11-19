@@ -1,6 +1,6 @@
-# @finai/database
+# @fin-ai/database
 
-`@finai/database` manages the PostgreSQL schema definitions, Prisma ORM Client generation, database migration scripts, and seed data for the FinAI ecosystem.
+`@fin-ai/database` manages the PostgreSQL schema definitions, Prisma ORM Client generation, database migration scripts, and seed data for the FinAI ecosystem.
 
 ---
 
@@ -48,7 +48,7 @@ pnpm db:migrate
 pnpm db:seed
 
 # Validate Prisma schema syntax
-pnpm --filter @finai/database db:validate
+pnpm --filter @fin-ai/database db:validate
 ```
 
 ---

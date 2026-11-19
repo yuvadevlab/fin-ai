@@ -2,7 +2,7 @@
  * Cash flow calculations — pure functions.
  */
 
-import { type CashFlowDataPoint, TransactionType } from "@finai/shared-types";
+import { type CashFlowDataPoint, TransactionType } from "@fin-ai/shared-types";
 
 /**
  * Build a monthly income-vs-expense series for the dashboard cash-flow chart.

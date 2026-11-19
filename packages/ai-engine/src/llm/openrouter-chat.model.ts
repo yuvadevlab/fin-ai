@@ -18,7 +18,7 @@ import {
   type LlmToolDefinition,
   type OpenAiStyleToolCall,
 } from "./types";
-import { AiProvider } from "@finai/shared-types";
+import { AiProvider } from "@fin-ai/shared-types";
 
 interface OpenRouterStreamChunk {
   id?: string;

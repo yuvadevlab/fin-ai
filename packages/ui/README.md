@@ -1,6 +1,6 @@
-# @finai/ui
+# @fin-ai/ui
 
-`@finai/ui` is the shared React component library for FinAI, built on top of `@yuva-devlab/ui` primitives, DevLab Design Tokens, Lucide icons, and Recharts.
+`@fin-ai/ui` is the shared React component library for FinAI, built on top of `@yuva-devlab/ui` primitives, DevLab Design Tokens, Lucide icons, and Recharts.
 
 ---
 
@@ -31,7 +31,7 @@ packages/ui/
 Standardized modal component wrapping forms with title, description, submit button with loading spinner, and cancel handler.
 
 ```tsx
-import { FormDialog } from "@finai/ui";
+import { FormDialog } from "@fin-ai/ui";
 
 <FormDialog
   open={open}
@@ -51,7 +51,7 @@ import { FormDialog } from "@finai/ui";
 Generic field renderer supporting `"text"`, `"number"`, `"select"`, `"textarea"`, and `"date"`, mapping field validation errors automatically.
 
 ```tsx
-import { FormDialogField } from "@finai/ui";
+import { FormDialogField } from "@fin-ai/ui";
 
 <FormDialogField
   field={{
@@ -72,5 +72,5 @@ import { FormDialogField } from "@finai/ui";
 
 ```bash
 # Build UI assets & CSS using Vite / tsup
-pnpm --filter @finai/ui build
+pnpm --filter @fin-ai/ui build
 ```

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { Button, ConfirmDialog } from "@finai/ui";
+import { Button, ConfirmDialog } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 
 interface DeleteTransactionButtonProps {

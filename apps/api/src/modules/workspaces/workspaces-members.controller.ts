@@ -7,8 +7,8 @@ import { WorkspacesMembersService } from "./services/workspaces-members.service"
 import {
   updateWorkspaceMemberRoleSchema,
   type UpdateWorkspaceMemberRoleInput,
-} from "@finai/validation";
-import { WorkspaceRole } from "@finai/database";
+} from "@fin-ai/validation";
+import { WorkspaceRole } from "@fin-ai/database";
 import { Logger } from "@yuva-devlab/logger";
 
 @ApiTags("Workspaces Members")

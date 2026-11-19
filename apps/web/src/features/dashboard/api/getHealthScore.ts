@@ -1,5 +1,5 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS, type HealthScore } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS, type HealthScore } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
 

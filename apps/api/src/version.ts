@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/version.ts
  * @description Dynamic application version and build metadata for FinAI API.
- * @module @finai/api/version
+ * @module @fin-ai/api/version
  */
 
 import pkg from "../package.json";

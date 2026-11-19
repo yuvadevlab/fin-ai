@@ -6,7 +6,7 @@ import { TooltipProvider, Toaster } from "@yuva-devlab/ui";
 import "./storybook.css";
 
 /**
- * Global Storybook preview configuration for @finai/ui.
+ * Global Storybook preview configuration for @fin-ai/ui.
  *
  * Decorators:
  * - Wraps every story in TooltipProvider (required by Radix tooltips).

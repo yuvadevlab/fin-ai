@@ -230,22 +230,22 @@ importers:
 
   apps/api:
     dependencies:
-      '@finai/ai-engine':
+      '@fin-ai/ai-engine':
         specifier: workspace:*
         version: link:../../packages/ai-engine
-      '@finai/database':
+      '@fin-ai/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@finai/finance-engine':
+      '@fin-ai/finance-engine':
         specifier: workspace:*
         version: link:../../packages/finance-engine
-      '@finai/prompts':
+      '@fin-ai/prompts':
         specifier: workspace:*
         version: link:../../packages/prompts
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
-      '@finai/validation':
+      '@fin-ai/validation':
         specifier: workspace:*
         version: link:../../packages/validation
       '@nestjs/common':
@@ -348,19 +348,19 @@ importers:
 
   apps/web:
     dependencies:
-      '@finai/ai-engine':
+      '@fin-ai/ai-engine':
         specifier: workspace:*
         version: link:../../packages/ai-engine
-      '@finai/finance-engine':
+      '@fin-ai/finance-engine':
         specifier: workspace:*
         version: link:../../packages/finance-engine
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
-      '@finai/ui':
+      '@fin-ai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@finai/validation':
+      '@fin-ai/validation':
         specifier: workspace:*
         version: link:../../packages/validation
       '@fontsource-variable/inter':
@@ -478,10 +478,10 @@ importers:
 
   packages/ai-engine:
     dependencies:
-      '@finai/prompts':
+      '@fin-ai/prompts':
         specifier: workspace:*
         version: link:../prompts
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/ai-client':
@@ -540,7 +540,7 @@ importers:
 
   packages/finance-engine:
     dependencies:
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
     devDependencies:
@@ -556,7 +556,7 @@ importers:
 
   packages/prompts:
     dependencies:
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
     devDependencies:
@@ -581,10 +581,10 @@ importers:
 
   packages/ui:
     dependencies:
-      '@finai/finance-engine':
+      '@fin-ai/finance-engine':
         specifier: workspace:*
         version: link:../finance-engine
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/tokens':
@@ -681,7 +681,7 @@ importers:
 
   packages/validation:
     dependencies:
-      '@finai/shared-types':
+      '@fin-ai/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       zod:

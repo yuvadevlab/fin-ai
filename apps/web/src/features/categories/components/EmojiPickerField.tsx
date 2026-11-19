@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@finai/ui";
-import { Button } from "@finai/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@fin-ai/ui";
+import { Button } from "@fin-ai/ui";
 import { Smile } from "lucide-react";
 import { useTheme } from "@/hooks";
 

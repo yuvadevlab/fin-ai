@@ -1,7 +1,7 @@
 // Re-export canonical DevLab universal tool primitives
 export { defineTool as defineUniversalTool, UniversalTool } from "@yuva-devlab/agent-core";
 
-import type { AgentCard } from "@finai/ai-engine";
+import type { AgentCard } from "@fin-ai/ai-engine";
 import type { AgentContext, AgentTool, ConfirmationPolicy, ToolAccess } from "./agent.types";
 import { AccountsService } from "@/modules/accounts/accounts.service";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";

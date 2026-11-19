@@ -1,6 +1,6 @@
 "use client";
 
-import { FormDialogField, FormField, cn } from "@finai/ui";
+import { FormDialogField, FormField, cn } from "@fin-ai/ui";
 import { Star } from "lucide-react";
 import { UI_COPY } from "@/lib/ui-copy";
 

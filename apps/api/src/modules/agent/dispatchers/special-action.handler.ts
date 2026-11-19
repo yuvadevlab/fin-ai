@@ -1,5 +1,5 @@
 import { Logger } from "@yuva-devlab/logger";
-import type { AgentCard, LlmToolCall } from "@finai/ai-engine";
+import type { AgentCard, LlmToolCall } from "@fin-ai/ai-engine";
 import type { AgentEventEmitter } from "../agent.types";
 import type { AuditService } from "../audit.service";
 
