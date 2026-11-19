@@ -1,0 +1,175 @@
+/**
+ * @file packages/ui/src/styles/search-dropdown.css
+ * @description Search dropdown floating panel, sections, and item components.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: strictly under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Search Dropdown Floating Panel ────────────────────────────────────── */
+  .fn-search-dropdown {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 8px);
+    z-index: 50;
+    max-height: 26.25rem;
+    overflow-y: auto;
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: color-mix(in srgb, var(--background) 95%, transparent);
+    box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+    backdrop-filter: blur(12px);
+  }
+
+  .fn-search-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 0.5rem 0.75rem;
+    transition: background-color 150ms ease;
+    text-decoration: none;
+    color: var(--foreground);
+  }
+
+  .fn-search-item:hover {
+    background-color: var(--secondary);
+  }
+
+  .fn-search-icon-badge {
+    display: flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+
+  /* ── Search Dropdown Sections & Items ──────────────────────────────────── */
+  .fn-search-skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .fn-search-skeleton-item {
+    background-color: var(--muted);
+    height: 2.5rem;
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border-radius: var(--radius-lg, 0.5rem);
+  }
+
+  .fn-search-empty-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding-block: 2.5rem;
+    text-align: center;
+  }
+
+  .fn-search-empty-icon {
+    color: var(--muted-foreground);
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .fn-search-empty-text {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .fn-search-section {
+    padding: 0.5rem;
+  }
+
+  .fn-search-section.has-border {
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+
+  .fn-search-section-title {
+    color: var(--muted-foreground);
+    margin-bottom: 0.25rem;
+    padding-inline: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .fn-search-item-info {
+    min-width: 0;
+    flex: 1 1 0%;
+  }
+
+  .fn-search-item-title {
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-search-item-meta {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .fn-search-item-meta.is-capitalize {
+    text-transform: capitalize;
+  }
+
+  .fn-search-amount {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .fn-search-amount.is-expense {
+    color: var(--destructive);
+  }
+
+  .fn-search-amount.is-income {
+    color: var(--primary);
+  }
+
+  .fn-search-goal-progress {
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fn-search-goal-bar {
+    background-color: var(--border);
+    height: 0.25rem;
+    flex: 1 1 0%;
+    overflow: hidden;
+    border-radius: 9999px;
+  }
+
+  .fn-search-goal-fill {
+    background-color: var(--primary);
+    height: 100%;
+    border-radius: 9999px;
+  }
+
+  .fn-search-goal-pct {
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+  }
+
+  .fn-search-arrow-icon {
+    color: var(--muted-foreground);
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+}

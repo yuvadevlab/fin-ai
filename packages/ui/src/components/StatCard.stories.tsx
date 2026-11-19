@@ -64,8 +64,17 @@ export const WithChildren: Story = {
     trend: { kind: "up", value: "+3%" },
     hint: "of income",
     children: (
-      <div className="text-primary mt-2 flex items-center gap-1 text-xs">
-        <TrendingUp className="size-3" />
+      <div
+        style={{
+          color: "var(--primary)",
+          marginTop: "0.5rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.25rem",
+          fontSize: "0.75rem",
+        }}
+      >
+        <TrendingUp className="fn-icon-xs" />
         On track for your goal
       </div>
     ),

@@ -1,0 +1,160 @@
+/**
+ * @file packages/ui/src/styles/workspace-members.css
+ * @description Workspace member list cards, items, role badges, and leave actions.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Workspace Members ─────────────────────────────────────────────────── */
+  .fn-workspace-members-card {
+    background-color: var(--card);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    overflow: hidden;
+    border-radius: var(--radius-2xl, 1rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-workspace-members-header {
+    border-block-end: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4, 1rem) var(--space-5, 1.25rem);
+  }
+
+  .fn-workspace-members-title {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-workspace-members-desc {
+    color: var(--muted-foreground);
+    margin-block-start: 0.125rem;
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-workspace-members-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fn-workspace-member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3, 0.75rem);
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+    border-block-end: 1px solid var(--border);
+    transition: background-color var(--duration-fast, 150ms) ease;
+  }
+
+  @media (min-width: 640px) {
+    .fn-workspace-member-item {
+      padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
+    }
+  }
+
+  .fn-workspace-member-item:hover {
+    background-color: color-mix(in srgb, var(--muted) 30%, transparent);
+  }
+
+  .fn-workspace-member-info {
+    display: flex;
+    min-inline-size: 0;
+    flex: 1;
+    align-items: center;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-workspace-member-avatar {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    flex-shrink: 0;
+    border: 1px solid var(--background);
+  }
+
+  .fn-workspace-member-avatar-fallback {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  .fn-workspace-member-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+  }
+
+  .fn-workspace-member-name {
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .fn-workspace-member-self-badge {
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    font-weight: 400;
+  }
+
+  .fn-workspace-member-email {
+    color: var(--muted-foreground);
+    margin-block-start: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-workspace-member-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+  }
+
+  .fn-workspace-member-role-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+    border-radius: var(--radius-full, 9999px);
+    padding: 0.125rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .fn-workspace-member-remove-btn {
+    color: var(--muted-foreground);
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    border-radius: var(--radius-lg, 0.5rem);
+    transition: all var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-workspace-member-remove-btn:hover {
+    background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+    color: var(--destructive);
+  }
+
+  .fn-workspace-members-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-block-start: 1px solid var(--border);
+    padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
+  }
+}

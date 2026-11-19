@@ -15,13 +15,13 @@ describe("UI Component Library (Unit Tests)", () => {
     it("should apply destructive styling for negative values", () => {
       render(<MoneyDisplay value={-500} />);
       const element = screen.getByText(/-₹\s?500/);
-      expect(element).toHaveClass("text-destructive");
+      expect(element).toHaveClass("is-negative");
     });
 
     it("should apply primary styling for positive values when showSign is true", () => {
       render(<MoneyDisplay value={1000} showSign />);
       const element = screen.getByText(/\+\s?₹\s?1,000/);
-      expect(element).toHaveClass("text-primary");
+      expect(element).toHaveClass("is-positive");
     });
 
     it("should mask value and provide screen-reader text when masked is true", () => {
@@ -51,13 +51,13 @@ describe("UI Component Library (Unit Tests)", () => {
       // The color is applied to the circle and the rating.
       // We'll check the rating text color.
       rerender(<ScoreGauge score={85} showRating rating="Excellent" />);
-      expect(screen.getByText("Excellent")).toHaveClass("text-primary");
+      expect(screen.getByText("Excellent")).toHaveClass("finai-score-gauge--excellent");
 
       rerender(<ScoreGauge score={70} showRating rating="Good" />);
-      expect(screen.getByText("Good")).toHaveClass("text-amber-500");
+      expect(screen.getByText("Good")).toHaveClass("finai-score-gauge--good");
 
       rerender(<ScoreGauge score={40} showRating rating="Poor" />);
-      expect(screen.getByText("Poor")).toHaveClass("text-destructive");
+      expect(screen.getByText("Poor")).toHaveClass("finai-score-gauge--poor");
     });
 
     it("should have correct accessibility attributes", () => {

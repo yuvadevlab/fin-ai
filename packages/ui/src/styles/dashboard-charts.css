@@ -1,0 +1,105 @@
+/**
+ * @file packages/ui/src/styles/dashboard-charts.css
+ * @description Chart breakdowns, category lists, trend guide cards, and cashflow select.
+ * Architecture: W3C Cascade Layer @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Category Breakdown List ───────────────────────────────────────────── */
+  .fn-category-breakdown-list {
+    max-height: 7rem;
+    overflow-y: auto;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.625rem;
+    padding-right: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fn-category-breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  /* ── Health Card Metrics ───────────────────────────────────────────────── */
+  .fn-health-metrics-list {
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .fn-health-metric-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .fn-health-metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  /* ── Trend Guide Cards ─────────────────────────────────────────────────── */
+  .fn-trend-guide-card {
+    border-radius: var(--radius-lg, 0.5rem);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    padding: 0.875rem;
+  }
+
+  .fn-trend-guide-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .fn-trend-guide-badge {
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  /* ── Cash Flow Range Select Trigger ─────────────────────────────────────── */
+  .fn-cashflow-range-select {
+    width: 9.5rem;
+    min-width: 9.5rem;
+    height: 2rem;
+    font-size: var(--text-body-sm, 0.875rem);
+    font-weight: 500;
+  }
+
+  /* ── Chart Cards and Action Containers ──────────────────────────────────── */
+  .fn-dashboard-chart-col {
+    min-width: 0;
+  }
+
+  .fn-dashboard-chart-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .fn-info-btn-action {
+    margin-right: -0.25rem;
+  }
+
+  .fn-header-action-btn {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  }
+}

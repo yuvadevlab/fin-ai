@@ -1,0 +1,80 @@
+/**
+ * @file packages/ui/src/styles/health-guide.css
+ * @description Health guide dialog styles.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Health Guide Dialog ───────────────────────────────────────────────── */
+  .fn-health-guide-item {
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: 0.875rem;
+  }
+
+  .fn-health-guide-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .fn-health-guide-label {
+    color: var(--foreground);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .fn-health-guide-target {
+    color: var(--primary);
+    flex-shrink: 0;
+    text-align: end;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+  }
+
+  .fn-health-guide-explanation {
+    color: var(--muted-foreground);
+    margin-block-start: 0.375rem;
+    font-size: var(--text-xs, 0.75rem);
+    line-height: 1.25rem;
+    margin-block-end: 0;
+  }
+
+  .fn-health-guide-counts {
+    color: var(--muted-foreground);
+    border-block-start: 1px solid var(--border);
+    margin-block-start: 0.625rem;
+    padding-block-start: 0.5rem;
+    font-size: var(--text-xs, 0.75rem);
+    line-height: 1.25rem;
+    margin-block-end: 0;
+  }
+
+  .fn-health-guide-improvement {
+    color: var(--foreground);
+    background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+    margin-block-start: 0.625rem;
+    border-radius: var(--radius-md, 0.375rem);
+    padding: var(--space-2-5, 0.625rem);
+    font-size: var(--text-xs, 0.75rem);
+    margin-block-end: 0;
+  }
+
+  .fn-health-guide-footer-text {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs, 0.75rem);
+    line-height: 1.25rem;
+    margin: 0;
+  }
+
+  .fn-font-semibold {
+    font-weight: 600;
+  }
+
+  .fn-dialog-footer--start {
+    justify-content: flex-start;
+  }
+}

@@ -26,12 +26,12 @@ export function AdvisorMobileContextSheet({
 }: AdvisorMobileContextSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-85 overflow-y-auto sm:max-w-md">
+      <SheetContent side="right" className="fn-advisor-mobile-sheet">
         <SheetHeader>
           <SheetTitle>{UI_COPY.ADVISOR.CONTEXT.TITLE}</SheetTitle>
           <SheetDescription>{UI_COPY.ADVISOR.CONTEXT.DESCRIPTION}</SheetDescription>
         </SheetHeader>
-        <div className="mt-4">
+        <div className="fn-advisor-mobile-sheet-body">
           <ContextPanel
             onQuickAction={onQuickAction}
             isStreaming={isStreaming}

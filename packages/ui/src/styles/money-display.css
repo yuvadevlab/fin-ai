@@ -1,0 +1,25 @@
+/**
+ * @file packages/ui/src/styles/money-display.css
+ * @description Semantic formatting for currency, tabular values, and privacy masking.
+ * Architecture: W3C Cascade Layer @layer dl-components
+ */
+
+@layer dl-components {
+  .fn-tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fn-money-display {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+
+  .fn-money-display.is-negative {
+    color: var(--destructive);
+  }
+
+  .fn-money-display.is-positive {
+    color: var(--primary);
+  }
+}

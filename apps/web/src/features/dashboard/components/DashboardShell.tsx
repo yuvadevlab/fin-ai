@@ -92,7 +92,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {/* Mobile Navigation Drawer */}
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetContent side="left" className="fn-mobile-drawer">
-            <SheetTitle className="sr-only">{UI_COPY.COMMON.ACTIONS.NAVIGATION_MENU}</SheetTitle>
+            <SheetTitle className="dl-sr-only">{UI_COPY.COMMON.ACTIONS.NAVIGATION_MENU}</SheetTitle>
             <Sidebar
               pathname={pathname}
               LinkComponent={CustomLinkComponent}

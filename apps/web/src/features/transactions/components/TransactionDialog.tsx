@@ -14,6 +14,7 @@ import {
 import { TransactionForm } from "./TransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
 import { BulkTransactionDialog } from "./BulkTransactionDialog";
+import { UI_COPY } from "@/lib/ui-copy";
 
 export interface TransactionDialogProps {
   trigger?: React.ReactNode;
@@ -125,12 +126,11 @@ export function TransactionDialog({
     setIsBulkOpen(true);
   };
 
-  const title = mode === "add" ? "Add Transaction" : "Edit Transaction";
+  const title = mode === "add" ? UI_COPY.TRANSACTIONS.ADD_TITLE : UI_COPY.TRANSACTIONS.EDIT_TITLE;
   const description =
-    mode === "add"
-      ? "Log an expense, income, transfer, investment, or goal."
-      : "Update transaction details.";
-  const submitLabel = mode === "add" ? "Save Transaction" : "Update Transaction";
+    mode === "add" ? UI_COPY.TRANSACTIONS.ADD_DESCRIPTION : UI_COPY.TRANSACTIONS.EDIT_DESCRIPTION;
+  const submitLabel =
+    mode === "add" ? UI_COPY.TRANSACTIONS.SAVE_LABEL : UI_COPY.TRANSACTIONS.UPDATE_LABEL;
 
   return (
     <>
@@ -142,29 +142,19 @@ export function TransactionDialog({
         description={description}
         submitLabel={submitLabel}
         loading={isSaving}
-        className="sm:max-w-lg"
+        className="fn-dialog-content--single"
         onCancel={() => setOpen?.(false)}
         onSubmit={handleSubmit}
       >
         {mode === "add" && (
-          <div className="bg-secondary/50 mb-3 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs sm:mb-4 sm:flex-row sm:items-center sm:justify-between sm:p-3">
-            <span className="text-muted-foreground font-medium">
-              Have multiple transactions or an Excel sheet?
-            </span>
-            <button
-              type="button"
-              onClick={handleSwitchToBulk}
-              className="text-primary shrink-0 cursor-pointer text-left font-bold hover:underline sm:text-right"
-            >
-              Switch to Bulk Mode →
+          <div className="fn-tx-bulk-banner">
+            <span className="fn-tx-bulk-banner-text">{UI_COPY.TRANSACTIONS.BULK_PROMPT}</span>
+            <button type="button" onClick={handleSwitchToBulk} className="fn-tx-bulk-banner-btn">
+              {UI_COPY.TRANSACTIONS.SWITCH_TO_BULK}
             </button>
           </div>
         )}
-        {errors.root && (
-          <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-            {errors.root}
-          </div>
-        )}
+        {errors.root && <div className="fn-form-error-banner">{errors.root}</div>}
         <TransactionForm
           values={values}
           errors={errors}

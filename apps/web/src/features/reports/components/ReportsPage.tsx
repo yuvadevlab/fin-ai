@@ -63,21 +63,21 @@ export function ReportsPage() {
         title={UI_COPY.REPORTS.REPORT_TITLE(monthLabel)}
         description={UI_COPY.REPORTS.DESCRIPTION}
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="fn-report-actions">
             <Button
               variant="outline"
               size="sm"
-              className="cursor-pointer gap-1.5"
+              className="fn-report-action-btn"
               onClick={() => toast.success(UI_COPY.REPORTS.PDF_STARTED)}
             >
-              <FileText className="size-4" /> {UI_COPY.REPORTS.EXPORT_PDF}
+              <FileText className="fn-icon-md" /> {UI_COPY.REPORTS.EXPORT_PDF}
             </Button>
             <Button
               size="sm"
-              className="cursor-pointer gap-1.5"
+              className="fn-report-action-btn"
               onClick={() => toast.success(UI_COPY.REPORTS.CSV_READY)}
             >
-              <Download className="size-4" /> {UI_COPY.REPORTS.EXPORT_CSV}
+              <Download className="fn-icon-md" /> {UI_COPY.REPORTS.EXPORT_CSV}
             </Button>
           </div>
         }
@@ -123,30 +123,27 @@ export function ReportsPage() {
         />
       </KPIGrid>
 
-      <ContentCard className="w-full">
+      <ContentCard>
         <SectionHeader title={UI_COPY.REPORTS.CASH_FLOW} />
         <CashFlowChart data={monthlyCashFlow} />
       </ContentCard>
 
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+      <div className="fn-reports-grid">
         <ContentCard>
           <SectionHeader title={UI_COPY.REPORTS.TOP_CATEGORIES} />
-          <ul className="mt-4 max-h-55 space-y-3.5 overflow-y-auto">
+          <ul className="fn-report-category-list">
             {categoryBreakdown.map((c, i) => (
-              <li
-                key={c.categoryId ?? c.name}
-                className="flex items-center justify-between text-sm"
-              >
-                <span className="text-muted-foreground flex items-center gap-2">
+              <li key={c.categoryId ?? c.name} className="fn-report-category-item">
+                <span className="fn-report-category-label">
                   <span
-                    className="size-2 animate-pulse rounded-full"
+                    className="fn-report-category-dot"
                     style={{
                       background: CHART_COLORS[i % CHART_COLORS.length],
                     }}
                   />
                   {c.name}
                 </span>
-                <PrivacyMoney value={c.total} className="font-semibold" />
+                <PrivacyMoney value={c.total} className="fn-report-category-value" />
               </li>
             ))}
           </ul>
@@ -154,7 +151,7 @@ export function ReportsPage() {
 
         <ContentCard>
           <SectionHeader title={UI_COPY.REPORTS.EXPENSE_SPLIT} />
-          <div className="flex h-55 w-full items-center justify-center">
+          <div className="fn-report-pie-container">
             <CategoryPie data={categoryBreakdown.map((c) => ({ name: c.name, value: c.total }))} />
           </div>
         </ContentCard>

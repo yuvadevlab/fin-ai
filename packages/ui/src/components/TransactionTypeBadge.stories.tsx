@@ -50,7 +50,7 @@ export const Goal: Story = {
 /** All types side-by-side for design review. */
 export const AllTypes: Story = {
   render: () => (
-    <div className="flex flex-wrap items-center gap-2">
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.5rem" }}>
       <TransactionTypeBadge type="INCOME" />
       <TransactionTypeBadge type="EXPENSE" />
       <TransactionTypeBadge type="TRANSFER" />

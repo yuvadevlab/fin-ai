@@ -27,30 +27,27 @@ export function HealthGuideDialog({ open, onOpenChange }: HealthGuideDialogProps
           <DialogDescription>{UI_COPY.HEALTH.GUIDE_DESCRIPTION}</DialogDescription>
         </DialogHeader>
 
-        <DialogBody className="space-y-3">
+        <DialogBody className="fn-form-body">
           {HEALTH_GUIDE.map((item) => (
-            <div key={item.label} className="border-border bg-card rounded-lg border p-3.5">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-foreground text-sm font-bold">{item.label}</p>
-                <span className="text-primary shrink-0 text-right text-xs font-semibold">
-                  {item.target}
-                </span>
+            <div key={item.label} className="fn-health-guide-item">
+              <div className="fn-health-guide-header">
+                <p className="fn-health-guide-label">{item.label}</p>
+                <span className="fn-health-guide-target">{item.target}</span>
               </div>
-              <p className="text-muted-foreground mt-1.5 text-xs leading-5">{item.explanation}</p>
-              <p className="text-muted-foreground border-border mt-2.5 border-t pt-2 text-xs leading-5">
-                <span className="text-foreground font-semibold">{UI_COPY.HEALTH.WHAT_COUNTS}</span>{" "}
-                {item.counts}
+              <p className="fn-health-guide-explanation">{item.explanation}</p>
+              <p className="fn-health-guide-counts">
+                <span className="fn-font-semibold">{UI_COPY.HEALTH.WHAT_COUNTS}</span> {item.counts}
               </p>
-              <p className="text-foreground bg-muted/40 mt-2.5 rounded-md p-2.5 text-xs">
-                <span className="font-semibold">{UI_COPY.HEALTH.IMPROVE_IT}</span>{" "}
+              <p className="fn-health-guide-improvement">
+                <span className="fn-font-semibold">{UI_COPY.HEALTH.IMPROVE_IT}</span>{" "}
                 {item.improvement}
               </p>
             </div>
           ))}
         </DialogBody>
 
-        <DialogFooter className="justify-start">
-          <p className="text-muted-foreground text-xs leading-5">{UI_COPY.HEALTH.GUIDE_FOOTER}</p>
+        <DialogFooter className="fn-dialog-footer--start">
+          <p className="fn-health-guide-footer-text">{UI_COPY.HEALTH.GUIDE_FOOTER}</p>
         </DialogFooter>
       </DialogContent>
     </Dialog>

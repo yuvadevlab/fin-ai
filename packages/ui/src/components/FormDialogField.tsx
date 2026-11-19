@@ -11,6 +11,7 @@ import {
   SelectValue,
   Textarea,
 } from "@yuva-devlab/ui";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface BaseField {
   name: string;
@@ -56,12 +57,14 @@ export interface FormDialogFieldProps {
 }
 
 export function FormDialogField({ field, value, onChange, error }: FormDialogFieldProps) {
+  const formCopy = UI_COPY_CONSTANTS.FORM_DIALOG;
+
   return (
-    <div className="space-y-2">
+    <div className="fn-form-dialog-field">
       <Label htmlFor={field.name}>
         {field.label}
 
-        {field.required && <span className="text-destructive ml-1">*</span>}
+        {field.required && <span className="fn-required-indicator">*</span>}
       </Label>
 
       {field.type === "textarea" ? (
@@ -82,10 +85,10 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
             options={field.options}
             value={value}
             onChange={(val) => onChange?.(field.name, val)}
-            placeholder={field.placeholder ?? "Select an option"}
-            searchPlaceholder={field.searchPlaceholder ?? `Search ${field.label.toLowerCase()}...`}
+            placeholder={field.placeholder ?? formCopy.SELECT_OPTION_PLACEHOLDER}
+            searchPlaceholder={field.searchPlaceholder ?? formCopy.SEARCH_PLACEHOLDER(field.label)}
             onAddNew={field.onAddNew}
-            addNewLabel={field.addNewLabel ?? `Add new ${field.label.toLowerCase()}`}
+            addNewLabel={field.addNewLabel ?? formCopy.ADD_NEW_LABEL(field.label)}
           />
         ) : (
           <Select
@@ -95,7 +98,7 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
             onValueChange={(val) => onChange?.(field.name, val)}
           >
             <SelectTrigger id={field.id || field.name}>
-              <SelectValue placeholder={field.placeholder ?? "Select an option"} />
+              <SelectValue placeholder={field.placeholder ?? formCopy.SELECT_OPTION_PLACEHOLDER} />
             </SelectTrigger>
 
             <SelectContent>
@@ -110,7 +113,7 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
       ) : field.type === "date" ? (
         <DatePicker
           value={value}
-          placeholder={field.placeholder || "Pick a date"}
+          placeholder={field.placeholder || formCopy.PICK_DATE_PLACEHOLDER}
           onChange={(date) => onChange?.(field.name, date)}
         />
       ) : (
@@ -126,7 +129,7 @@ export function FormDialogField({ field, value, onChange, error }: FormDialogFie
         />
       )}
 
-      {error ? <p className="text-destructive text-sm">{error}</p> : null}
+      {error ? <p className="fn-field-error">{error}</p> : null}
     </div>
   );
 }

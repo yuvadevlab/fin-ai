@@ -65,7 +65,7 @@ export function CategoryForm({
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="fn-category-form">
       {fields.map((field) => (
         <FormDialogField
           key={field.name}
@@ -76,24 +76,22 @@ export function CategoryForm({
         />
       ))}
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="text-md leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            {UI_COPY.CATEGORIES.ICON_LABEL}
-          </Label>
+      <div className="fn-category-icon-group">
+        <div className="fn-category-icon-header">
+          <Label className="fn-category-icon-label">{UI_COPY.CATEGORIES.ICON_LABEL}</Label>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1 px-2 text-xs"
+            className="fn-category-suggest-btn"
             onClick={handleAiSuggest}
             disabled={isSuggesting}
           >
-            <Sparkles className="size-3" />
-            {isSuggesting ? "Suggesting..." : "AI Suggest"}
+            <Sparkles className="fn-category-suggest-icon" />
+            {isSuggesting ? UI_COPY.CATEGORIES.AI_SUGGESTING : UI_COPY.CATEGORIES.AI_SUGGEST}
           </Button>
         </div>
         <EmojiPickerField value={values["icon"] ?? ""} onChange={(val) => onChange("icon", val)} />
-        {errors["icon"] && <p className="text-destructive text-sm">{errors["icon"]}</p>}
+        {errors["icon"] && <p className="fn-form-banner-error">{errors["icon"]}</p>}
       </div>
     </div>
   );

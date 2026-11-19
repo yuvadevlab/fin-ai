@@ -76,8 +76,8 @@ export function BudgetsPage() {
         description={UI_COPY.BUDGETS.PAGE_DESCRIPTION}
         actions={
           isReadOnly ? undefined : (
-            <Button size="sm" onClick={handleOpenCreateBudget} className="cursor-pointer gap-1.5">
-              <Plus className="size-4" /> {UI_COPY.BUDGETS.NEW_BUDGET}
+            <Button size="sm" onClick={handleOpenCreateBudget} className="fn-header-action-btn">
+              <Plus className="fn-icon-md" /> {UI_COPY.BUDGETS.NEW_BUDGET}
             </Button>
           )
         }
@@ -88,19 +88,13 @@ export function BudgetsPage() {
       {budgets.length === 0 ? (
         <div className="fn-entity-empty">
           <div className="fn-entity-empty-icon">
-            <PiggyBank className="text-muted-foreground size-6" />
+            <PiggyBank className="fn-entity-empty-icon-svg" />
           </div>
-          <h3 className="text-foreground text-base font-semibold">{UI_COPY.BUDGETS.EMPTY_TITLE}</h3>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            {UI_COPY.BUDGETS.EMPTY_DESCRIPTION}
-          </p>
+          <h3 className="fn-entity-empty-title">{UI_COPY.BUDGETS.EMPTY_TITLE}</h3>
+          <p className="fn-entity-empty-desc">{UI_COPY.BUDGETS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
-            <Button
-              size="sm"
-              onClick={handleOpenCreateBudget}
-              className="mt-5 cursor-pointer gap-1.5"
-            >
-              <Plus className="size-4" /> {UI_COPY.BUDGETS.CREATE_FIRST}
+            <Button size="sm" onClick={handleOpenCreateBudget} className="fn-entity-empty-btn">
+              <Plus className="fn-icon-md" /> {UI_COPY.BUDGETS.CREATE_FIRST}
             </Button>
           )}
         </div>
@@ -125,11 +119,7 @@ export function BudgetsPage() {
                   : UI_COPY.BUDGETS.FULLY_SPENT_REMAINING
                 : `${formattedDiff} ${UI_COPY.BUDGETS.REMAINING_THIS_MONTH}`;
 
-            const progressColorClass = isOver
-              ? "[&>div]:bg-destructive"
-              : isAtLimit || isWarn
-                ? "[&>div]:bg-amber-500"
-                : "";
+            const progressColorClass = isOver ? "is-over" : isAtLimit || isWarn ? "is-warn" : "";
 
             return (
               <ProgressCard
@@ -149,25 +139,25 @@ export function BudgetsPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="text-muted-foreground hover:text-foreground size-8 cursor-pointer"
+                          className="fn-goal-menu-trigger"
                           aria-label={UI_COPY.BUDGETS.ACTIONS_FOR(name)}
                         >
-                          <MoreVertical className="size-4" />
+                          <MoreVertical className="fn-icon-md" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36">
+                      <DropdownMenuContent align="end" className="fn-goal-menu-content">
                         <DropdownMenuItem
                           onClick={() => handleOpenEditBudget(b)}
-                          className="cursor-pointer"
+                          className="fn-goal-menu-item"
                         >
-                          <Pencil className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.EDIT}
+                          <Pencil className="fn-goal-menu-icon" /> {UI_COPY.COMMON.ACTIONS.EDIT}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleOpenDeleteBudget(b)}
-                          className="text-destructive cursor-pointer"
+                          className="fn-goal-menu-item-destructive"
                         >
-                          <Trash2 className="mr-2 size-3.5" /> {UI_COPY.COMMON.ACTIONS.DELETE}
+                          <Trash2 className="fn-goal-menu-icon" /> {UI_COPY.COMMON.ACTIONS.DELETE}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

@@ -76,7 +76,17 @@ export const Pending: Story = {
 /** Sequence showing multiple steps in a process timeline. */
 export const TimelineSequence: Story = {
   render: () => (
-    <ul className="w-full max-w-md space-y-1">
+    <ul
+      style={{
+        width: "100%",
+        maxWidth: "28rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.25rem",
+        listStyle: "none",
+        padding: 0,
+      }}
+    >
       <ActivityStep
         step={{
           id: "1",

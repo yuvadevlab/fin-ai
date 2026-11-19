@@ -1,0 +1,170 @@
+/**
+ * @file packages/ui/src/styles/workspace-switcher.css
+ * @description Workspace switcher button, menu, and item styles in TopBar.
+ * Architecture: Governed strictly under @layer dl-components (Rule 4: under 250 lines).
+ */
+
+@layer dl-components {
+  /* ── Workspace Switcher (Header) ────────────────────────────────────────── */
+  .fn-workspace-switcher-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+    height: 2rem;
+    min-inline-size: 0;
+    border-radius: var(--radius-xl, 0.75rem);
+    padding-inline: 0.5rem;
+    text-align: start;
+    font-size: var(--text-xs, 0.75rem);
+    cursor: pointer;
+  }
+
+  @media (min-width: 640px) {
+    .fn-workspace-switcher-trigger {
+      height: 2.25rem;
+      gap: var(--space-2, 0.5rem);
+      padding-inline: 0.625rem;
+      font-size: var(--text-sm, 0.875rem);
+    }
+  }
+
+  .fn-workspace-switcher-icon {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+    display: flex;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg, 0.5rem);
+  }
+
+  .fn-workspace-switcher-label-wrap {
+    display: flex;
+    min-inline-size: 0;
+    flex-direction: column;
+    text-align: start;
+  }
+
+  .fn-workspace-switcher-row {
+    display: flex;
+    min-inline-size: 0;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+  }
+
+  .fn-workspace-switcher-name {
+    color: var(--foreground);
+    max-inline-size: 4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  @media (min-width: 640px) {
+    .fn-workspace-switcher-name {
+      max-inline-size: 9rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .fn-workspace-switcher-name {
+      max-inline-size: 11rem;
+    }
+  }
+
+  .fn-workspace-switcher-badge {
+    display: none;
+    font-size: 0.625rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-workspace-switcher-badge {
+      display: inline-flex;
+    }
+  }
+
+  .fn-workspace-switcher-chevron {
+    color: var(--muted-foreground);
+    margin-inline-start: auto;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .fn-workspace-switcher-menu {
+    inline-size: 16rem;
+    padding: 0.375rem;
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  }
+
+  .fn-workspace-switcher-group-label {
+    color: var(--muted-foreground);
+    padding: 0.375rem 0.5rem;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
+  }
+
+  .fn-workspace-switcher-item {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .fn-workspace-switcher-item-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-workspace-switcher-item-name {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+  }
+
+  .fn-workspace-switcher-item-meta {
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+  }
+
+  .fn-workspace-switcher-sep {
+    margin-block: 0.25rem;
+  }
+
+  .fn-workspace-switcher-action-item {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: var(--space-2, 0.5rem);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+  }
+
+  .fn-workspace-switcher-settings-item {
+    color: var(--muted-foreground);
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+    border-radius: var(--radius-lg, 0.5rem);
+    padding: var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .fn-icon--primary {
+    color: var(--primary);
+  }
+
+  .fn-icon--muted {
+    color: var(--muted-foreground);
+  }
+}

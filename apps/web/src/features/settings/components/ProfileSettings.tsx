@@ -9,11 +9,7 @@ export function ProfileSettings() {
   const { data: profile, isLoading } = useProfile();
 
   if (isLoading || !profile) {
-    return (
-      <div className="text-muted-foreground py-4 text-center text-sm">
-        {UI_COPY.SETTINGS.LOADING_PROFILE}
-      </div>
-    );
+    return <div className="fn-settings-loading">{UI_COPY.SETTINGS.LOADING_PROFILE}</div>;
   }
 
   return <ProfileForm profile={profile} />;
@@ -49,7 +45,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="fn-settings-form-stack">
       <FormDialogField
         field={{
           type: "text",
@@ -84,7 +80,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
       />
 
       <Button
-        className="mt-4 w-full cursor-pointer"
+        className="fn-settings-save-btn"
         onClick={handleSave}
         disabled={updateProfile.isPending}
       >

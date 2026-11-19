@@ -16,23 +16,23 @@ export interface BulkConfirmationCardItemProps {
 
 const TYPE_STYLES: Record<string, { badge: string; modifier: string }> = {
   [TransactionType.INCOME]: {
-    badge: "text-primary bg-primary/10 border-primary/20",
+    badge: "fn-status-executed",
     modifier: "fn-bulk-card--income",
   },
   [TransactionType.EXPENSE]: {
-    badge: "text-destructive bg-destructive/10 border-destructive/20",
+    badge: "fn-status-failed",
     modifier: "fn-bulk-card--expense",
   },
   [TransactionType.TRANSFER]: {
-    badge: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+    badge: "fn-status-pending",
     modifier: "fn-bulk-card--transfer",
   },
   [TransactionType.INVESTMENT]: {
-    badge: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+    badge: "fn-status-executed",
     modifier: "fn-bulk-card--investment",
   },
   [TransactionType.GOAL]: {
-    badge: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
+    badge: "fn-status-pending",
     modifier: "fn-bulk-card--goal",
   },
 };
@@ -65,43 +65,43 @@ export function BulkConfirmationCardItem({
         <span className={cn("fn-bulk-card-badge", typeStyle.badge)}>{item.type}</span>
       </div>
 
-      <div className="mt-2.5">
+      <div className="fn-bulk-card-amount-wrap">
         <p className="fn-bulk-card-amount">{maskAmount(item.amount)}</p>
       </div>
 
-      <div className="mt-2.5 space-y-1.5 text-xs">
-        <div className="flex items-center gap-2">
-          <Tag className="text-muted-foreground size-3.5 shrink-0" />
-          <span className="bg-secondary text-secondary-foreground max-w-44 truncate rounded-full px-2 py-0.5 text-[11px] font-medium">
-            {item.category}
-          </span>
+      <div className="fn-bulk-card-meta-list">
+        <div className="fn-bulk-card-meta-row">
+          <Tag className="fn-bulk-card-meta-icon" />
+          <span className="fn-bulk-card-category-pill">{item.category}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <CreditCard className="text-muted-foreground size-3.5 shrink-0" />
-          <span className="text-muted-foreground truncate">{mask(item.account)}</span>
+        <div className="fn-bulk-card-meta-row">
+          <CreditCard className="fn-bulk-card-meta-icon" />
+          <span className="fn-bulk-card-meta-text">{mask(item.account)}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="text-muted-foreground size-3.5 shrink-0" />
-          <span className="text-muted-foreground truncate">{item.date}</span>
+        <div className="fn-bulk-card-meta-row">
+          <Calendar className="fn-bulk-card-meta-icon" />
+          <span className="fn-bulk-card-meta-text">{item.date}</span>
         </div>
         {item.notes && (
-          <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground size-3.5 shrink-0" />
-            <span className="text-muted-foreground truncate italic">"{item.notes}"</span>
+          <div className="fn-bulk-card-meta-row">
+            <FileText className="fn-bulk-card-meta-icon" />
+            <span className="fn-bulk-card-meta-text">"{item.notes}"</span>
           </div>
         )}
       </div>
 
       {/* Status badge — only shown for resolved items */}
       {itemStatus !== AgentConfirmationStatus.PENDING && (
-        <div className="border-border/40 mt-3 flex items-center border-t pt-2.5">
+        <div className="fn-bulk-card-footer">
           {itemStatus === AgentConfirmationStatus.EXECUTED ? (
-            <span className="border-primary/20 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
-              <Check className="size-3" /> {UI_COPY.ADVISOR.CONFIRMATION_STATUS.RECORDED}
+            <span className="fn-bulk-card-status--executed">
+              <Check className="fn-bulk-card-status-icon" />{" "}
+              {UI_COPY.ADVISOR.CONFIRMATION_STATUS.RECORDED}
             </span>
           ) : (
-            <span className="border-border/60 bg-muted/40 text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium">
-              <X className="size-3" /> {UI_COPY.ADVISOR.CONFIRMATION_STATUS.CANCELLED}
+            <span className="fn-bulk-card-status--rejected">
+              <X className="fn-bulk-card-status-icon" />{" "}
+              {UI_COPY.ADVISOR.CONFIRMATION_STATUS.CANCELLED}
             </span>
           )}
         </div>

@@ -39,18 +39,16 @@ export function QuickActions({
           onClick={() => onSelect(action.message)}
           className={cn(
             variant === "chips" ? "fn-quick-actions-chip" : "fn-quick-actions-card",
-            disabled && "pointer-events-none opacity-50",
+            disabled && "is-disabled",
           )}
         >
           <span
             className={
-              variant === "chips"
-                ? "inline-flex items-center gap-1.5"
-                : "fn-quick-actions-card-title"
+              variant === "chips" ? "fn-quick-actions-chip-content" : "fn-quick-actions-card-title"
             }
           >
             <action.icon
-              className={cn(variant === "chips" ? "size-3.5" : "fn-quick-actions-card-icon")}
+              className={cn(variant === "chips" ? "fn-icon-sm" : "fn-quick-actions-card-icon")}
               aria-hidden="true"
             />
             <span>{action.label}</span>

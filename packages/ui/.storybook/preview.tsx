@@ -21,7 +21,7 @@ function FinAIProviderWrapper({ children, theme }: { children: React.ReactNode; 
 
   return (
     <TooltipProvider>
-      <div className="font-sans antialiased">{children}</div>
+      <div className="fn-app-body">{children}</div>
       <Toaster />
     </TooltipProvider>
   );

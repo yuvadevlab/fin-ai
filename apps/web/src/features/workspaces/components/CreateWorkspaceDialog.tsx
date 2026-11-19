@@ -64,7 +64,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
       setOpen(false);
       setValues({ name: "", type: WorkspaceType.SHARED });
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "Failed to create workspace";
+      const errorMsg = err instanceof Error ? err.message : UI_COPY.WORKSPACES.CREATE_ERROR;
       setErrors({ root: errorMsg });
     }
   };
@@ -80,11 +80,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange, trigger }: CreateWor
       onSubmit={handleSubmit}
       trigger={trigger}
     >
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive rounded-lg p-3 text-sm">
-          {errors.root}
-        </div>
-      )}
+      {errors.root && <div className="fn-form-error-banner">{errors.root}</div>}
       <CreateWorkspaceForm values={values} errors={errors} onChange={handleChange} />
     </FormDialog>
   );

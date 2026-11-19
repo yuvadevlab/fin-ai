@@ -34,18 +34,16 @@ export function FinancialSnapshot() {
   const budgetCount = budgets?.length;
 
   return (
-    <div className="space-y-3">
+    <div className="fn-snapshot">
       <SnapshotStat
         label={UI_COPY.ADVISOR.SNAPSHOT.CASH_AVAILABLE}
         value={cashAvailable}
         loading={!accounts}
-        className="text-2xl"
+        className="fn-snapshot-stat-val"
       />
-      <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
-        <p className="text-muted-foreground mb-1.5 text-[11px] font-semibold tracking-wider uppercase">
-          {UI_COPY.ADVISOR.SNAPSHOT.THIS_MONTH}
-        </p>
-        <div className="space-y-1">
+      <div className="fn-snapshot-card">
+        <p className="fn-snapshot-card-title">{UI_COPY.ADVISOR.SNAPSHOT.THIS_MONTH}</p>
+        <div className="fn-snapshot-rows">
           <SnapshotRow
             label={UI_COPY.ADVISOR.SNAPSHOT.INCOME}
             value={stats?.monthlyIncome}
@@ -64,26 +62,19 @@ export function FinancialSnapshot() {
           />
         </div>
       </div>
-      <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
-        <p className="text-muted-foreground mb-1.5 text-[11px] font-semibold tracking-wider uppercase">
-          {UI_COPY.ADVISOR.SNAPSHOT.NET_WORTH}
-        </p>
+      <div className="fn-snapshot-card">
+        <p className="fn-snapshot-card-title">{UI_COPY.ADVISOR.SNAPSHOT.NET_WORTH}</p>
         {hasStats ? (
-          <PrivacyMoney value={stats?.netWorth ?? 0} className="text-foreground text-lg" />
+          <PrivacyMoney value={stats?.netWorth ?? 0} className="fn-snapshot-net-worth" />
         ) : (
-          <div
-            className="bg-foreground/10 mt-1 h-6 w-28 animate-pulse rounded-md"
-            aria-hidden="true"
-          />
+          <div className="fn-snapshot-pulse-md" aria-hidden="true" />
         )}
       </div>
 
       {/* Current context counts */}
-      <div className="bg-foreground/2 border-border/60 rounded-lg border px-3 py-2">
-        <p className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wider uppercase">
-          {UI_COPY.ADVISOR.SNAPSHOT.CURRENT_CONTEXT}
-        </p>
-        <ul className="space-y-1.5 text-xs">
+      <div className="fn-snapshot-card">
+        <p className="fn-snapshot-card-title">{UI_COPY.ADVISOR.SNAPSHOT.CURRENT_CONTEXT}</p>
+        <ul className="fn-snapshot-context-list">
           <ContextCount
             icon={Landmark}
             label={UI_COPY.ADVISOR.SNAPSHOT.ACCOUNTS}
@@ -97,9 +88,9 @@ export function FinancialSnapshot() {
           <ContextCount icon={PiggyBank} label={UI_COPY.ADVISOR.SNAPSHOT.GOALS} value={goalCount} />
         </ul>
         {accounts && (
-          <p className="text-muted-foreground border-border/50 mt-2 border-t pt-1.5 text-[11px]">
+          <p className="fn-snapshot-default-account">
             {UI_COPY.ADVISOR.SNAPSHOT.DEFAULT_ACCOUNT}{" "}
-            <span className="text-foreground font-medium">
+            <span className="fn-snapshot-default-name">
               {accounts.find((a) => a.isDefault)?.name ?? UI_COPY.ADVISOR.SNAPSHOT.NONE_SET}
             </span>
           </p>
@@ -122,16 +113,11 @@ function SnapshotStat({
 }) {
   return (
     <div>
-      <p className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
-        {label}
-      </p>
+      <p className="fn-snapshot-card-title">{label}</p>
       {loading ? (
-        <div
-          className="bg-foreground/10 mt-1 h-7 w-28 animate-pulse rounded-md"
-          aria-hidden="true"
-        />
+        <div className="fn-snapshot-pulse-lg" aria-hidden="true" />
       ) : (
-        <PrivacyMoney value={value} className={cn("text-foreground", className)} />
+        <PrivacyMoney value={value} className={cn("fn-snapshot-row-val", className)} />
       )}
     </div>
   );
@@ -149,20 +135,20 @@ function SnapshotRow({
   emphasis?: "positive" | "negative";
 }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground text-xs">{label}</span>
+    <div className="fn-snapshot-row">
+      <span className="fn-snapshot-row-label">{label}</span>
       {hasData ? (
         <PrivacyMoney
           value={value ?? 0}
           showSign={emphasis !== undefined}
           className={cn(
-            "text-xs",
-            emphasis === "negative" && "text-destructive",
-            emphasis === "positive" && "text-primary",
+            "fn-snapshot-row-val",
+            emphasis === "negative" && "is-negative",
+            emphasis === "positive" && "is-positive",
           )}
         />
       ) : (
-        <span className="text-muted-foreground text-xs">—</span>
+        <span className="fn-snapshot-empty-val">—</span>
       )}
     </div>
   );
@@ -178,15 +164,15 @@ function ContextCount({
   value: number | undefined;
 }) {
   return (
-    <li className="flex items-center justify-between">
-      <span className="text-muted-foreground inline-flex items-center gap-1.5">
-        <Icon className="size-3.5" aria-hidden="true" />
+    <li className="fn-snapshot-context-item">
+      <span className="fn-snapshot-context-label">
+        <Icon className="fn-snapshot-context-icon" aria-hidden="true" />
         {label}
       </span>
       {value !== undefined ? (
-        <span className="text-foreground font-semibold tabular-nums">{value}</span>
+        <span className="fn-snapshot-context-val">{value}</span>
       ) : (
-        <span className="text-muted-foreground">—</span>
+        <span className="fn-snapshot-empty-val">—</span>
       )}
     </li>
   );

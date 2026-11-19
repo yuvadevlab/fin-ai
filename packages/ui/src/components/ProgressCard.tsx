@@ -2,6 +2,7 @@ import React from "react";
 import { Progress } from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
 import { ContentCard } from "./ContentCard";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface ProgressCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -53,35 +54,35 @@ export function ProgressCard({
       });
 
   return (
-    <ContentCard className={cn("p-4 sm:p-5", className)} {...props}>
-      <div className="flex items-start justify-between">
+    <ContentCard className={cn("finai-progress-card", className)} {...props}>
+      <div className="finai-progress-card-top">
         <div>
-          <p className="text-base font-semibold">{title}</p>
-          {subtitle && <p className="text-muted-foreground mt-1 text-xs">{subtitle}</p>}
+          <p className="finai-progress-card-title">{title}</p>
+          {subtitle && <p className="finai-progress-card-sub">{subtitle}</p>}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="finai-progress-card-badges">
           {statusBadge}
           {actions}
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-1 sm:mt-5">
-        <span className="text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
+      <div className="finai-progress-card-values">
+        <span className="finai-progress-card-val">
           {unit}
           {formattedValue}
         </span>
-        <span className="text-muted-foreground text-xs sm:text-sm">
-          of {unit}
+        <span className="finai-progress-card-target">
+          {UI_COPY_CONSTANTS.PROGRESS_CARD.OF} {unit}
           {formattedTarget}
         </span>
       </div>
       <Progress
         value={Math.min(percentage, 100)}
-        className={cn("mt-3 h-1.5", progressColorClass)}
+        className={cn("finai-progress-card-bar", progressColorClass)}
       />
       {(footerLeft || footerRight) && (
-        <div className="text-muted-foreground mt-4 flex items-center justify-between text-xs">
+        <div className="finai-progress-card-footer">
           <span>{footerLeft}</span>
-          <span className="font-semibold">{footerRight}</span>
+          <span className="finai-progress-card-footer-right">{footerRight}</span>
         </div>
       )}
     </ContentCard>

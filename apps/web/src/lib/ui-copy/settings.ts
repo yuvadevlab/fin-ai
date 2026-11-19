@@ -48,4 +48,8 @@ export const SETTINGS_COPY = {
   CURRENCY_LABEL: "Currency",
   INR_CURRENCY: "INR (₹)",
   CLOSE: "Close",
+  MANAGE_CATEGORIES: "Manage Categories",
+  APPEARANCE_SAVING: "Saving appearance...",
+  APPEARANCE_UPDATED: "Appearance updated!",
+  APPEARANCE_UPDATE_FAILED: "Failed to update appearance",
 } as const;

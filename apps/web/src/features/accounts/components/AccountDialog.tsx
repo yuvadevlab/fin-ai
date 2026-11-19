@@ -149,12 +149,8 @@ export function AccountDialog({
       onCancel={() => setOpen?.(false)}
       onSubmit={handleSubmit}
     >
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive mb-4 rounded-lg p-3 text-sm font-medium">
-          {errors.root}
-        </div>
-      )}
-      <div className="space-y-4">
+      {errors.root && <div className="fn-form-banner-error">{errors.root}</div>}
+      <div className="fn-form-fields-container">
         <AccountForm
           values={values}
           errors={errors}

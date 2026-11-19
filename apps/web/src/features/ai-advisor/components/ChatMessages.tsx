@@ -61,7 +61,7 @@ export function ChatMessages({
               /* User message — right-aligned bubble */
               <div className="fn-chat-user-row">
                 <div className="fn-chat-user-avatar">
-                  <User className="size-4" aria-hidden="true" />
+                  <User className="fn-icon-md" aria-hidden="true" />
                 </div>
                 <div className="fn-chat-user-bubble">
                   <p className="fn-chat-user-text">{message.text}</p>

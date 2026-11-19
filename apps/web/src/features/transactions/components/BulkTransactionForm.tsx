@@ -58,51 +58,45 @@ export function BulkTransactionForm({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="fn-form-body">
       <input
         ref={fileInputRef}
         type="file"
         accept=".xlsx, .xls, .csv"
         onChange={handleFileChange}
-        className="hidden"
+        className="dl-sr-only"
       />
 
       {/* Top summary & toolbar bar */}
-      <div className="bg-secondary/40 border-border/80 flex flex-col gap-3 rounded-2xl border p-3.5 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
-            <Sparkles className="size-4 shrink-0" />
+      <div className="fn-bulk-summary-bar">
+        <div className="fn-bulk-summary-header">
+          <div className="fn-bulk-summary-icon">
+            <Sparkles className="fn-notifications-action-icon" />
           </div>
           <div>
-            <h4 className="text-foreground text-xs font-bold tracking-wider uppercase">
-              {UI_COPY.TRANSACTIONS.IMPORT.QUEUE_TITLE}
-            </h4>
-            <p className="text-muted-foreground text-[11px]">
+            <h4 className="fn-bulk-summary-title">{UI_COPY.TRANSACTIONS.IMPORT.QUEUE_TITLE}</h4>
+            <p className="fn-bulk-summary-count">
               {UI_COPY.TRANSACTIONS.IMPORT.READY_COUNT(rows.length)}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
-          <div className="ml-2 flex items-center gap-3 text-right">
-            <span className="text-muted-foreground block text-[10px] font-semibold tracking-wider uppercase">
-              {UI_COPY.TRANSACTIONS.IMPORT.BATCH_TOTAL}
-            </span>
-            <span className="text-foreground font-mono text-sm font-extrabold">
-              {formatINR(totalAmount)}
-            </span>
+        <div className="fn-bulk-summary-actions">
+          <div className="fn-bulk-total-box">
+            <span className="fn-bulk-total-label">{UI_COPY.TRANSACTIONS.IMPORT.BATCH_TOTAL}</span>
+            <span className="fn-bulk-total-value">{formatINR(totalAmount)}</span>
           </div>
 
-          <div className="flex gap-3">
+          <div className="fn-bulk-btn-group">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onDownloadTemplate}
-              className="border-border hover:bg-secondary h-8 cursor-pointer gap-1.5 text-xs font-medium"
+              className="fn-bulk-template-btn"
               title={UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_TITLE}
             >
-              <Download className="text-primary size-3.5" />{" "}
+              <Download className="fn-notifications-action-icon fn-icon--primary" />{" "}
               {UI_COPY.TRANSACTIONS.IMPORT.TEMPLATE_BUTTON}
             </Button>
 
@@ -111,23 +105,20 @@ export function BulkTransactionForm({
               variant="default"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-8 cursor-pointer gap-1.5 text-xs font-semibold"
+              className="fn-bulk-upload-btn"
               title={UI_COPY.TRANSACTIONS.IMPORT.UPLOAD_TITLE}
             >
-              <Upload className="size-3.5" /> {UI_COPY.TRANSACTIONS.IMPORT.UPLOAD_BUTTON}
+              <Upload className="fn-notifications-action-icon" />{" "}
+              {UI_COPY.TRANSACTIONS.IMPORT.UPLOAD_BUTTON}
             </Button>
           </div>
         </div>
       </div>
 
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive border-destructive/20 rounded-xl border p-3 text-xs font-semibold">
-          {errors.root}
-        </div>
-      )}
+      {errors.root && <div className="fn-form-error-banner">{errors.root}</div>}
 
       {/* Responsive card stack — one card per transaction entry */}
-      <div className="border-border/80 bg-secondary/20 max-h-[50vh] space-y-3 overflow-y-auto rounded-2xl border p-3 shadow-xs">
+      <div className="fn-bulk-rows-container">
         {rows.map((row, idx) => (
           <BulkTransactionRow
             key={row.id}
@@ -146,13 +137,8 @@ export function BulkTransactionForm({
       </div>
 
       {/* Add Row Button */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onAddRow}
-        className="border-border/80 hover:border-primary hover:bg-secondary/50 h-10 w-full cursor-pointer gap-2 rounded-xl border-dashed text-xs font-semibold"
-      >
-        <Plus className="size-4" /> {UI_COPY.TRANSACTIONS.IMPORT.ADD_ENTRY}
+      <Button type="button" variant="outline" onClick={onAddRow} className="fn-bulk-add-row-btn">
+        <Plus className="fn-notifications-action-icon" /> {UI_COPY.TRANSACTIONS.IMPORT.ADD_ENTRY}
       </Button>
     </div>
   );

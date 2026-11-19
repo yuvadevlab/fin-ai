@@ -8,10 +8,7 @@ interface SectionHeaderProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 export function SectionHeader({ title, className, ...props }: SectionHeaderProps) {
   return (
-    <h3
-      className={cn("text-foreground mb-4 text-sm font-semibold tracking-tight", className)}
-      {...props}
-    >
+    <h3 className={cn("finai-section-header", className)} {...props}>
       {title}
     </h3>
   );

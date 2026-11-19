@@ -1,38 +1,16 @@
 import Link from "next/link";
+import { COMMON_COPY } from "@/lib/ui-copy/common";
 
 /**
  * Root 404 Page Component for FinAI Web.
  */
 export default function NotFound() {
   return (
-    <main
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        gap: "1rem",
-        padding: "2rem",
-        textAlign: "center",
-      }}
-    >
-      <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>404 - Page Not Found</h1>
-      <p style={{ color: "var(--muted-foreground, #6b7280)" }}>
-        The requested financial resource or page could not be found.
-      </p>
-      <Link
-        href="/"
-        style={{
-          padding: "0.5rem 1rem",
-          borderRadius: "0.375rem",
-          backgroundColor: "var(--primary, #0f172a)",
-          color: "var(--primary-foreground, #ffffff)",
-          textDecoration: "none",
-          fontWeight: 500,
-        }}
-      >
-        Return to Dashboard
+    <main className="fn-not-found-main">
+      <h1 className="fn-not-found-title">{COMMON_COPY.NOT_FOUND.TITLE}</h1>
+      <p className="fn-not-found-desc">{COMMON_COPY.NOT_FOUND.DESC}</p>
+      <Link href="/" className="fn-not-found-btn">
+        {COMMON_COPY.NOT_FOUND.RETURN_HOME}
       </Link>
     </main>
   );

@@ -5,7 +5,12 @@
  * @module @fin-ai/web/lib/routes
  */
 
-import { API_ENDPOINTS, DEVLAB_CONFIG } from "@fin-ai/shared-types";
+import {
+  API_ENDPOINTS,
+  DEVLAB_CONFIG,
+  AuthQueryParamKey,
+  type AuthPrompt,
+} from "@fin-ai/shared-types";
 import { DEVLAB_PORTAL_WEB_URL, APP_ID } from "./app-constants";
 
 /** Client-side Next.js route paths */
@@ -34,7 +39,7 @@ export const APP_ROUTES = {
 export interface DevLabPortalLoginOptions {
   redirectUrl?: string;
   error?: string;
-  prompt?: "login" | "select_account" | "consent";
+  prompt?: AuthPrompt;
 }
 
 /** DevLab Central Portal SSO route builders and canonical destinations */
@@ -42,7 +47,7 @@ export const DEVLAB_PORTAL_ROUTES = {
   LOGIN: (redirectUrlOrOptions?: string | DevLabPortalLoginOptions) => {
     let redirectUrl: string | undefined;
     let error: string | undefined;
-    let prompt: string | undefined;
+    let prompt: AuthPrompt | undefined;
 
     if (typeof redirectUrlOrOptions === "object" && redirectUrlOrOptions !== null) {
       redirectUrl = redirectUrlOrOptions.redirectUrl;
@@ -52,33 +57,34 @@ export const DEVLAB_PORTAL_ROUTES = {
       redirectUrl = redirectUrlOrOptions;
     }
 
-    const base = `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.LOGIN}?app=${encodeURIComponent(APP_ID)}`;
-    try {
-      const url = new URL(base);
-      if (redirectUrl) {
-        url.searchParams.set("redirect", redirectUrl);
-      }
-      if (error) {
-        url.searchParams.set("error", error);
-      }
-      if (prompt) {
-        url.searchParams.set("prompt", prompt);
-      }
-      return url.toString();
-    } catch {
-      let result = base;
-      if (redirectUrl) result += `&redirect=${encodeURIComponent(redirectUrl)}`;
-      if (error) result += `&error=${encodeURIComponent(error)}`;
-      if (prompt) result += `&prompt=${encodeURIComponent(prompt)}`;
-      return result;
+    const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.LOGIN}`);
+    url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
+    if (redirectUrl) {
+      url.searchParams.set(AuthQueryParamKey.REDIRECT, redirectUrl);
     }
+    if (error) {
+      url.searchParams.set(AuthQueryParamKey.ERROR, error);
+    }
+    if (prompt) {
+      url.searchParams.set(AuthQueryParamKey.PROMPT, prompt);
+    }
+    return url.toString();
   },
-  REGISTER: () =>
-    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.REGISTER}?app=${encodeURIComponent(APP_ID)}`,
-  FORGOT_PASSWORD: () =>
-    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.FORGOT_PASSWORD}?app=${encodeURIComponent(APP_ID)}`,
-  RESET_PASSWORD: () =>
-    `${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.RESET_PASSWORD}?app=${encodeURIComponent(APP_ID)}`,
+  REGISTER: () => {
+    const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.REGISTER}`);
+    url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
+    return url.toString();
+  },
+  FORGOT_PASSWORD: () => {
+    const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.FORGOT_PASSWORD}`);
+    url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
+    return url.toString();
+  },
+  RESET_PASSWORD: () => {
+    const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.RESET_PASSWORD}`);
+    url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
+    return url.toString();
+  },
 } as const;
 
 /** Backend API route paths consumed by apiClient and fetch */

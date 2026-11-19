@@ -42,7 +42,7 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
       })),
       {
         categoryId: "other-categories",
-        name: `Other (${sorted.length - 3} more)`,
+        name: UI_COPY.CATEGORIES.OTHER_COUNT(sorted.length - 3),
         total: otherTotal,
         percentage: total > 0 ? Math.round((otherTotal / total) * 100) : 0,
       },
@@ -58,47 +58,45 @@ export function DashboardCategoryCard({ categoryBreakdown }: DashboardCategoryCa
   return (
     <ChartCard
       title={UI_COPY.DASHBOARD.CATEGORY_ALLOCATION}
-      className="flex h-full flex-col justify-between"
+      className="fn-category-chart-card"
       hint={
-        <Link
-          href={APP_ROUTES.CATEGORIES}
-          className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
-        >
-          View all <ArrowUpRight className="size-3" aria-hidden="true" />
+        <Link href={APP_ROUTES.CATEGORIES} className="fn-category-view-all-link">
+          {UI_COPY.DASHBOARD.PORTFOLIO.VIEW_ALL}{" "}
+          <ArrowUpRight className="fn-category-view-all-icon" aria-hidden="true" />
         </Link>
       }
     >
       {pieData.length > 0 && totalExpense > 0 ? (
-        <div className="space-y-4">
+        <div className="fn-category-chart-content">
           <CategoryPie data={pieData} />
 
           {/* Compact, fixed-height scrollable category breakdown */}
           <div className="fn-category-breakdown-list">
             {displayCategories.map((c, i) => (
               <div key={c.categoryId ?? c.name} className="fn-category-breakdown-item">
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="fn-category-row-label-wrap">
                   <span
-                    className="size-2 shrink-0 rounded-full"
+                    className="fn-category-row-dot"
                     style={{
                       background: CHART_COLORS[i % CHART_COLORS.length],
                     }}
                     aria-hidden="true"
                   />
-                  <span className="text-foreground truncate font-medium">{c.name}</span>
-                  <span className="text-muted-foreground/80 text-[10px]">({c.percentage}%)</span>
+                  <span className="fn-category-row-name">{c.name}</span>
+                  <span className="fn-category-row-pct">({c.percentage}%)</span>
                 </div>
-                <PrivacyMoney value={c.total} className="text-foreground shrink-0 font-semibold" />
+                <PrivacyMoney value={c.total} className="fn-category-row-amount" />
               </div>
             ))}
           </div>
         </div>
       ) : (
-        <div className="text-muted-foreground flex flex-col items-center justify-center py-10 text-center">
-          <div className="bg-secondary/60 mb-3 flex size-12 items-center justify-center rounded-full">
-            <PieIcon className="text-muted-foreground/60 size-6" aria-hidden="true" />
+        <div className="fn-category-empty-state">
+          <div className="fn-category-empty-icon-wrap">
+            <PieIcon className="fn-category-empty-icon" aria-hidden="true" />
           </div>
-          <p className="text-xs font-medium">{UI_COPY.DASHBOARD.CATEGORY_CARD.EMPTY_TITLE}</p>
-          <p className="text-muted-foreground/70 mt-0.5 text-[11px]">
+          <p className="fn-category-empty-title">{UI_COPY.DASHBOARD.CATEGORY_CARD.EMPTY_TITLE}</p>
+          <p className="fn-category-empty-desc">
             {UI_COPY.DASHBOARD.CATEGORY_CARD.EMPTY_DESCRIPTION}
           </p>
         </div>

@@ -27,7 +27,7 @@ function StatusIcon({ status }: { status: AgentActivityStatus }) {
   if (status === AgentActivityStatus.RUNNING) {
     return (
       <Loader2
-        className="fn-timeline-header-icon fn-timeline-header-icon--streaming animate-spin"
+        className="fn-timeline-header-icon fn-timeline-header-icon--streaming fn-icon-spin"
         aria-hidden="true"
       />
     );
@@ -39,7 +39,7 @@ function StatusIcon({ status }: { status: AgentActivityStatus }) {
   }
   return (
     <Circle
-      className="fn-timeline-header-icon fn-timeline-header-icon--muted opacity-50"
+      className="fn-timeline-header-icon fn-timeline-header-icon--pending"
       aria-hidden="true"
     />
   );

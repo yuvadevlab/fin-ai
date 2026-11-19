@@ -28,7 +28,7 @@ function StorybookWrapper({ children, theme }: { children: React.ReactNode; them
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="font-sans antialiased">{children}</div>
+        <div className="fn-app-body">{children}</div>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

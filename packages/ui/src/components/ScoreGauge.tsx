@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface ScoreGaugeProps extends React.HTMLAttributes<HTMLDivElement> {
   score: number;
@@ -16,7 +17,7 @@ export function ScoreGauge({
   maxScore = 100,
   size = 160,
   strokeWidth = 10,
-  label = "out of 100",
+  label = UI_COPY_CONSTANTS.SCORE_GAUGE.DEFAULT_LABEL,
   rating,
   showRating = false,
   className,
@@ -31,23 +32,23 @@ export function ScoreGauge({
   const strokeDashoffset = circumference - normalizedPercentage * circumference;
 
   const getScoreColor = (val: number) => {
-    if (val >= 80) return "text-primary stroke-primary";
-    if (val >= 60) return "text-amber-500 stroke-amber-500";
-    return "text-destructive stroke-destructive";
+    if (val >= 80) return "finai-score-gauge--excellent";
+    if (val >= 60) return "finai-score-gauge--good";
+    return "finai-score-gauge--poor";
   };
 
   return (
     <div
-      className={cn("flex flex-col items-center justify-center text-center", className)}
+      className={cn("finai-score-gauge", className)}
       role="progressbar"
       aria-valuenow={clampedScore}
       aria-valuemin={0}
       aria-valuemax={maxScore}
-      aria-label={`Score: ${clampedScore} ${label}`}
+      aria-label={`${UI_COPY_CONSTANTS.SCORE_GAUGE.SCORE_PREFIX} ${clampedScore} ${label}`}
       {...props}
     >
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg viewBox="0 0 120 120" className="size-full -rotate-90" aria-hidden="true">
+      <div className="finai-score-gauge-ring-wrap" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 120 120" className="finai-score-gauge-svg" aria-hidden="true">
           {/* Track background circle */}
           <circle
             cx="60"
@@ -68,24 +69,19 @@ export function ScoreGauge({
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            className={cn(
-              "transition-[stroke-dashoffset] duration-800 ease-out",
-              getScoreColor(clampedScore),
-            )}
+            className={cn("finai-score-gauge-arc", getScoreColor(clampedScore))}
           />
         </svg>
 
         {/* Center label */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-foreground text-4xl font-bold tracking-tight">{clampedScore}</span>
-          <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
-            {label}
-          </span>
+        <div className="finai-score-gauge-center">
+          <span className="finai-score-gauge-value">{clampedScore}</span>
+          <span className="finai-score-gauge-label">{label}</span>
         </div>
       </div>
 
       {showRating && rating && (
-        <p className={cn("mt-4 text-sm font-bold", getScoreColor(clampedScore))}>{rating}</p>
+        <p className={cn("finai-score-gauge-rating", getScoreColor(clampedScore))}>{rating}</p>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import React from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@yuva-devlab/ui";
 import { cn } from "../lib/utils";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 interface AIInsightCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   title?: React.ReactNode;
@@ -16,7 +17,7 @@ interface AIInsightCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
 export function AIInsightCard({
   title,
   body,
-  cta = "Review details",
+  cta = UI_COPY_CONSTANTS.AI_INSIGHT_CARD.CTA,
   variant = "dark",
   onCtaClick,
   ctaWrapper,
@@ -24,15 +25,14 @@ export function AIInsightCard({
   className,
   ...props
 }: AIInsightCardProps) {
+  const isDark = variant === "dark";
+
   const button = cta ? (
     <Button
-      variant={variant === "dark" ? "secondary" : "default"}
+      variant={isDark ? "secondary" : "default"}
       size="sm"
       onClick={onCtaClick}
-      className={cn(
-        "mt-5 w-full rounded-lg font-medium",
-        variant === "dark" && "bg-zinc-800 text-white ring-1 ring-white/5 hover:bg-zinc-700",
-      )}
+      className={cn("fn-ai-insight-cta", isDark && "fn-ai-insight-cta--dark")}
     >
       {cta}
     </Button>
@@ -41,26 +41,22 @@ export function AIInsightCard({
   return (
     <div
       className={cn(
-        "hover:shadow-primary/5 hover:scale-1.01 rounded-2xl p-6 shadow-md transition-all duration-300 hover:shadow-lg",
-        variant === "dark"
-          ? "bg-linear-to-br from-zinc-900 to-zinc-950 text-zinc-100 ring-1 shadow-black/20 ring-zinc-800/60"
-          : "from-background via-accent/20 to-accent/40 text-foreground ring-border/60 bg-linear-to-br shadow-sm ring-1",
+        "fn-ai-insight-card",
+        isDark ? "fn-ai-insight-card--dark" : "fn-ai-insight-card--light",
         className,
       )}
       {...props}
     >
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="from-primary shadow-primary/20 flex size-6.5 items-center justify-center rounded-full bg-linear-to-tr to-indigo-500 shadow-md">
-          <Sparkles className="text-primary-foreground size-3.5 animate-pulse" />
+      <div className="fn-ai-insight-header">
+        <div className="fn-ai-insight-icon-box">
+          <Sparkles className="fn-ai-insight-icon" />
         </div>
-        <h3 className="from-primary bg-linear-to-r via-indigo-400 to-violet-500 bg-clip-text text-sm font-semibold tracking-wide text-transparent">
-          AI Insight
-        </h3>
+        <h3 className="fn-ai-insight-title">{UI_COPY_CONSTANTS.AI_INSIGHT_CARD.TITLE}</h3>
         {title && (
           <span
             className={cn(
-              "ml-auto font-mono text-[9px] font-medium tracking-widest uppercase",
-              variant === "dark" ? "text-zinc-500" : "text-muted-foreground",
+              "fn-ai-insight-badge",
+              isDark ? "fn-ai-insight-badge--dark" : "fn-ai-insight-badge--light",
             )}
           >
             {title}
@@ -69,8 +65,8 @@ export function AIInsightCard({
       </div>
       <p
         className={cn(
-          "text-[13px] leading-relaxed font-normal text-pretty",
-          variant === "dark" ? "text-zinc-300" : "text-foreground/90",
+          "fn-ai-insight-body",
+          isDark ? "fn-ai-insight-body--dark" : "fn-ai-insight-body--light",
         )}
       >
         {body}

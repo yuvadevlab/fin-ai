@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@fin-ai/ui";
 import { Button } from "@fin-ai/ui";
 import { Smile } from "lucide-react";
 import { useTheme } from "@/hooks";
+import { UI_COPY } from "@/lib/ui-copy";
 
 interface EmojiPickerFieldProps {
   value: string;
@@ -25,12 +26,9 @@ export function EmojiPickerField({ value, onChange }: EmojiPickerFieldProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-10 w-full justify-start text-left font-normal hover:bg-transparent"
-        >
-          <span className="text-muted-foreground mr-2 text-sm">{value || "Select emoji"}</span>
-          <Smile className="ml-auto size-4 opacity-50" />
+        <Button variant="outline" className="fn-emoji-picker-btn">
+          <span className="fn-emoji-picker-val">{value || UI_COPY.CATEGORIES.SELECT_EMOJI}</span>
+          <Smile className="fn-emoji-picker-icon" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -38,9 +36,9 @@ export function EmojiPickerField({ value, onChange }: EmojiPickerFieldProps) {
         sideOffset={4}
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
-        className="w-auto border-none p-0 shadow-2xl"
+        className="fn-emoji-picker-popover"
       >
-        <div onWheel={(e) => e.stopPropagation()} className="overscroll-contain">
+        <div onWheel={(e) => e.stopPropagation()} className="fn-emoji-picker-wrap">
           <EmojiPicker
             theme={theme as Theme}
             onEmojiClick={onEmojiClick}

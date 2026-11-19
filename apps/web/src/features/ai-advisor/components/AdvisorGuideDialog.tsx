@@ -37,7 +37,7 @@ export function AdvisorGuideDialog({ open, onOpenChange }: AdvisorGuideDialogPro
         <DialogHeader>
           <div className="fn-guide-header">
             <div className="fn-guide-header-icon">
-              <Sparkles className="size-4" aria-hidden="true" />
+              <Sparkles className="fn-icon-md" aria-hidden="true" />
             </div>
             <DialogTitle>{UI_COPY.ADVISOR.GUIDE.TITLE}</DialogTitle>
           </div>
@@ -69,7 +69,7 @@ export function AdvisorGuideDialog({ open, onOpenChange }: AdvisorGuideDialogPro
               <div className="fn-guide-tip">
                 <HelpCircle className="fn-guide-tip-icon" aria-hidden="true" />
                 <p className="fn-guide-tip-text">
-                  <span className="font-semibold">{UI_COPY.ADVISOR.GUIDE.PRO_TIP}</span>{" "}
+                  <span className="fn-guide-tip-strong">{UI_COPY.ADVISOR.GUIDE.PRO_TIP}</span>{" "}
                   {section.tips}
                 </p>
               </div>

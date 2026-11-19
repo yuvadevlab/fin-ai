@@ -6,6 +6,7 @@
  */
 
 import { COMMON_COPY } from "./common";
+import { AUTH_COPY } from "./auth";
 import { ADVISOR_COPY } from "./advisor";
 import { ACCOUNTS_COPY } from "./accounts";
 import { BUDGETS_COPY } from "./budgets";
@@ -22,6 +23,7 @@ import { TRANSACTIONS_COPY } from "./transactions";
 import { WORKSPACES_COPY } from "./workspaces";
 
 export * from "./common";
+export * from "./auth";
 export * from "./advisor";
 export * from "./accounts";
 export * from "./budgets";
@@ -43,6 +45,7 @@ export * from "./workspaces";
  */
 export const UI_COPY = {
   COMMON: COMMON_COPY,
+  AUTH: AUTH_COPY,
   ADVISOR: ADVISOR_COPY,
   ACCOUNTS: ACCOUNTS_COPY,
   BUDGETS: BUDGETS_COPY,

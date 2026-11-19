@@ -31,6 +31,13 @@
     color: var(--primary);
   }
 
+  .fn-advisor-composer-pending-text {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .fn-advisor-composer-form {
     display: flex;
     align-items: flex-end;

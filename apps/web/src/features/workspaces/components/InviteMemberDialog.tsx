@@ -70,7 +70,7 @@ export function InviteMemberDialog({
       setOpen(false);
       setValues({ email: "", role: WorkspaceRole.MEMBER });
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "Failed to invite member";
+      const errorMsg = err instanceof Error ? err.message : UI_COPY.WORKSPACES.INVITE_ERROR;
       setErrors({ root: errorMsg });
     }
   };
@@ -86,11 +86,7 @@ export function InviteMemberDialog({
       onSubmit={handleSubmit}
       trigger={trigger}
     >
-      {errors.root && (
-        <div className="bg-destructive/15 text-destructive rounded-lg p-3 text-sm">
-          {errors.root}
-        </div>
-      )}
+      {errors.root && <div className="fn-form-error-banner">{errors.root}</div>}
       <InviteMemberForm values={values} errors={errors} onChange={handleChange} />
     </FormDialog>
   );

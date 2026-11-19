@@ -178,61 +178,26 @@ export default function OpenGraphImage(): ImageResponse {
         </p>
 
         {/* Feature Pills */}
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            marginTop: "12px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 20px",
-              borderRadius: "12px",
-              background: "rgba(6, 19, 13, 0.8)",
-              border: "1px solid rgba(16, 185, 129, 0.3)",
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#e2e8f0",
-            }}
-          >
-            <span>🤖 AI Financial Advisor</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 20px",
-              borderRadius: "12px",
-              background: "rgba(6, 19, 13, 0.8)",
-              border: "1px solid rgba(16, 185, 129, 0.3)",
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#e2e8f0",
-            }}
-          >
-            <span>📊 Real-Time Analytics</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 20px",
-              borderRadius: "12px",
-              background: "rgba(6, 19, 13, 0.8)",
-              border: "1px solid rgba(16, 185, 129, 0.3)",
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#e2e8f0",
-            }}
-          >
-            <span>🎯 Smart Goals</span>
-          </div>
+        <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
+          {["🤖 AI Financial Advisor", "📊 Real-Time Analytics", "🎯 Smart Goals"].map((label) => (
+            <div
+              key={label}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                borderRadius: "12px",
+                background: "rgba(6, 19, 13, 0.8)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                fontSize: "16px",
+                fontWeight: 600,
+                color: "#e2e8f0",
+              }}
+            >
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
 

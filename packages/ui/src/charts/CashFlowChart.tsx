@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { formatCurrencyShort } from "@fin-ai/finance-engine";
 import { axisProps, tooltipStyle } from "./chart-theme";
+import { UI_COPY_CONSTANTS } from "../constants/ui-copy.constants";
 
 export interface CashFlowDataPoint {
   month: string;
@@ -22,21 +23,26 @@ interface CashFlowChartProps {
 }
 
 export function CashFlowChart({ data }: CashFlowChartProps) {
+  const copy = UI_COPY_CONSTANTS.CHARTS;
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="fn-chart-container">
       {/* Legend Indicator */}
-      <div className="text-muted-foreground mb-2 flex flex-wrap items-center justify-start gap-2.5 pr-2 text-[11px] font-medium sm:justify-end sm:gap-3.5">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="bg-primary size-2 rounded-full" aria-hidden="true" />
-          Income
+      <div className="fn-chart-legend">
+        <span className="fn-chart-legend-item">
+          <span className="fn-chart-legend-dot fn-chart-legend-dot--income" aria-hidden="true" />
+          {copy.INCOME}
         </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="bg-destructive size-2 rounded-full" aria-hidden="true" />
-          Expense
+        <span className="fn-chart-legend-item">
+          <span className="fn-chart-legend-dot fn-chart-legend-dot--expense" aria-hidden="true" />
+          {copy.EXPENSE}
         </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-blue-500" aria-hidden="true" />
-          Investment
+        <span className="fn-chart-legend-item">
+          <span
+            className="fn-chart-legend-dot fn-chart-legend-dot--investment"
+            aria-hidden="true"
+          />
+          {copy.INVESTMENT}
         </span>
       </div>
 

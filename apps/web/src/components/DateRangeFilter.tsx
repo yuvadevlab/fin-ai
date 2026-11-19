@@ -30,7 +30,7 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
     onRangeChangeRef.current = onRangeChange;
   });
 
-  // Trigger default (This Month) on mount
+  // Trigger default on mount
   useEffect(() => {
     onRangeChangeRef.current({
       startDate: presets.LAST_30_DAYS.startDate,
@@ -71,16 +71,16 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className={cn("fn-date-filter-trigger", className)}>
-          <CalendarIcon className="text-primary size-4 shrink-0" />
-          <span className="max-w-50 truncate">{currentLabel}</span>
-          <ChevronDown className="ml-auto size-3.5 shrink-0 opacity-60" />
+          <CalendarIcon className="fn-date-filter-calendar-icon" />
+          <span className="fn-date-filter-label">{currentLabel}</span>
+          <ChevronDown className="fn-date-filter-chevron" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="fn-date-filter-popover space-y-3" align="end">
-        <div className="text-muted-foreground px-1 text-xs font-semibold tracking-wider uppercase">
+      <PopoverContent className="fn-date-filter-popover" align="end">
+        <div className="fn-date-filter-heading">
           {UI_COPY.DASHBOARD.DATE_RANGE.SELECT_DATE_RANGE}
         </div>
-        <div className="space-y-1">
+        <div className="fn-date-filter-presets">
           {Object.entries(presets).map(([key, item]) => (
             <button
               key={key}
@@ -92,35 +92,33 @@ export function DateRangeFilter({ onRangeChange, className }: DateRangeFilterPro
           ))}
         </div>
 
-        <div className="border-border space-y-2 border-t pt-3">
-          <div className="text-muted-foreground px-1 text-xs font-semibold">
-            {UI_COPY.DASHBOARD.DATE_RANGE.CUSTOM}
-          </div>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="fn-date-filter-custom-section">
+          <div className="fn-date-filter-custom-heading">{UI_COPY.DASHBOARD.DATE_RANGE.CUSTOM}</div>
+          <div className="fn-date-filter-grid">
             <div>
-              <Label className="text-muted-foreground text-[10px]">
+              <Label className="fn-date-filter-field-label">
                 {UI_COPY.DASHBOARD.DATE_RANGE.FROM}
               </Label>
               <Input
                 type="date"
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className="h-8 font-mono text-xs"
+                className="fn-date-filter-input"
               />
             </div>
             <div>
-              <Label className="text-muted-foreground text-[10px]">
+              <Label className="fn-date-filter-field-label">
                 {UI_COPY.DASHBOARD.DATE_RANGE.TO}
               </Label>
               <Input
                 type="date"
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className="h-8 font-mono text-xs"
+                className="fn-date-filter-input"
               />
             </div>
           </div>
-          <Button size="sm" onClick={handleCustomApply} className="mt-1 h-8 w-full text-xs">
+          <Button size="sm" onClick={handleCustomApply} className="fn-date-filter-submit">
             {UI_COPY.DASHBOARD.DATE_RANGE.APPLY_CUSTOM_RANGE}
           </Button>
         </div>

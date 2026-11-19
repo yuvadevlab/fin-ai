@@ -91,6 +91,15 @@
     color: #e4e4e7;
   }
 
+  .fn-console-copy-icon {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .fn-console-copy-icon.is-copied {
+    color: var(--primary);
+  }
+
   .fn-console-stream {
     max-block-size: 14rem;
     min-block-size: 6rem;

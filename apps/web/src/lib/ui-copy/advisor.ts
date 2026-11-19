@@ -77,11 +77,16 @@ export const ADVISOR_COPY = {
     ALL_RECORDED: "✓ All recorded",
     RESOLVED_COUNTS: (executed: number, rejected: number): string =>
       `✓ ${executed} recorded, ${rejected} cancelled`,
+    FOOTER_HINT: "Review each item before confirming. Actions directly affect your accounts.",
   },
   CONFIRMATION_STATUS: {
     EXECUTING: "Executing…",
     RECORDED: "Recorded",
     CANCELLED: "Cancelled",
+  },
+  CONFIRMATION: {
+    DEPENDENCY_NOTICE: "Confirm the previous action first — this action depends on it.",
+    PENDING_NOTICE: "This action has NOT happened yet — confirm to execute.",
   },
   ACTIVITY_CHIP: {
     FINISHED: (tool: string): string => `${tool} finished`,

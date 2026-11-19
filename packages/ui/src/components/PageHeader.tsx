@@ -9,28 +9,12 @@ interface PageHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "ti
 
 export function PageHeader({ title, description, actions, className, ...props }: PageHeaderProps) {
   return (
-    <div
-      className={cn(
-        "border-border/10 flex flex-col items-start justify-between gap-3 border-b pb-3 sm:flex-row sm:items-end sm:gap-4",
-        className,
-      )}
-      {...props}
-    >
-      <div className="space-y-1">
-        <h1 className="text-foreground text-xl font-bold tracking-tight text-balance sm:text-2xl">
-          {title}
-        </h1>
-        {description && (
-          <p className="text-muted-foreground max-w-[60ch] text-xs text-pretty sm:text-sm">
-            {description}
-          </p>
-        )}
+    <div className={cn("finai-page-header", className)} {...props}>
+      <div className="finai-page-header-title-wrap">
+        <h1 className="finai-page-header-title">{title}</h1>
+        {description && <p className="finai-page-header-desc">{description}</p>}
       </div>
-      {actions && (
-        <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto sm:justify-end">
-          {actions}
-        </div>
-      )}
+      {actions && <div className="finai-page-header-actions">{actions}</div>}
     </div>
   );
 }

@@ -91,7 +91,7 @@ export function AgentRun({
         <div className="fn-chat-error">
           <div className="fn-chat-error-layout">
             <AlertTriangle className="fn-chat-error-icon" aria-hidden="true" />
-            <div className="min-w-0">
+            <div className="fn-chat-error-body">
               <p className="fn-chat-error-title">{UI_COPY.ADVISOR.ERROR_TITLE}</p>
               <p className="fn-chat-error-message">{error}</p>
               <p className="fn-chat-error-description">{UI_COPY.ADVISOR.ERROR_DESCRIPTION}</p>

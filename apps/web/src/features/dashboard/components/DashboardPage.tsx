@@ -71,8 +71,8 @@ export function DashboardPage() {
           isReadOnly ? undefined : (
             <TransactionDialog
               trigger={
-                <Button size="sm" className="cursor-pointer gap-1.5 rounded-lg shadow-sm">
-                  <Plus className="size-4" aria-hidden="true" />{" "}
+                <Button size="sm" className="fn-header-action-btn">
+                  <Plus className="fn-icon-md" aria-hidden="true" />{" "}
                   {UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
                 </Button>
               }
@@ -89,14 +89,14 @@ export function DashboardPage() {
 
       {/* Row 1: Primary Overview — Cash Flow Chart (2 cols) + Financial Health (1 col) */}
       <div className="fn-dashboard-hero-grid">
-        <div className="min-w-0">
+        <div className="fn-dashboard-chart-col">
           <ChartCard
             title={UI_COPY.DASHBOARD.PAGE.MONTHLY_CASH_FLOW}
             action={
               <Select value={cashFlowRange} onValueChange={setCashFlowRange}>
                 <SelectTrigger
                   id="cashflow-range-trigger"
-                  className="fn-cashflow-range-select cursor-pointer"
+                  className="fn-cashflow-range-select"
                   aria-label={UI_COPY.DASHBOARD.CASH_FLOW.RANGE_LABEL}
                 >
                   <SelectValue placeholder={UI_COPY.DASHBOARD.CASH_FLOW.PERIOD_PLACEHOLDER} />
@@ -114,13 +114,13 @@ export function DashboardPage() {
                 </SelectContent>
               </Select>
             }
-            className="flex h-full flex-col justify-between"
+            className="fn-dashboard-chart-card"
           >
             <CashFlowChart data={monthlyCashFlow} />
           </ChartCard>
         </div>
 
-        <div className="min-w-0">
+        <div className="fn-dashboard-chart-col">
           <DashboardHealthCard />
         </div>
       </div>
@@ -132,13 +132,13 @@ export function DashboardPage() {
           hint={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT}
           action={
             <InfoButton
-              className="-mr-1"
+              className="fn-info-btn-action"
               aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_EXPENSE}
               tooltip={UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}
               onClick={() => setTrendGuide("expense")}
             />
           }
-          className="flex h-full flex-col justify-between"
+          className="fn-dashboard-chart-card"
         >
           <ExpenseBarChart data={expenseData} />
         </ChartCard>
@@ -148,13 +148,13 @@ export function DashboardPage() {
           hint={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND_HINT}
           action={
             <InfoButton
-              className="-mr-1"
+              className="fn-info-btn-action"
               aria-label={UI_COPY.DASHBOARD.PAGE.LEARN_SAVINGS}
               tooltip={UI_COPY.DASHBOARD.PAGE.LEARN_CALCULATION}
               onClick={() => setTrendGuide("savings")}
             />
           }
-          className="flex h-full flex-col justify-between"
+          className="fn-dashboard-chart-card"
         >
           <TrendLine data={savingsTrend} />
         </ChartCard>

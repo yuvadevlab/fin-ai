@@ -1,0 +1,96 @@
+/**
+ * @file packages/ui/src/styles/pagination.css
+ * @description Semantic styling for Table Pagination controls.
+ * Pure platform CSS encapsulated under @layer dl-components.
+ * @module @fin-ai/ui/styles/pagination
+ */
+
+@layer dl-components {
+  .finai-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+    padding-block: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .finai-pagination {
+      gap: 1rem;
+      padding-inline: 1.5rem;
+      padding-block: 0.875rem;
+    }
+  }
+
+  .finai-pagination-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .finai-pagination-info {
+    font-weight: 500;
+  }
+
+  .finai-pagination-current {
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .finai-pagination-items-total {
+    margin-left: 0.25rem;
+    font-weight: 400;
+    color: var(--muted-foreground);
+  }
+
+  .finai-pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .finai-pagination-size-label {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .finai-pagination-size-label {
+      display: inline;
+    }
+  }
+
+  .finai-pagination-size-trigger {
+    height: 2rem;
+    width: 4.375rem;
+    font-size: 0.75rem;
+  }
+
+  .finai-pagination-size-item {
+    font-size: 0.75rem;
+  }
+
+  .finai-pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .finai-pagination-btn {
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding-inline: 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .finai-pagination-btn-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}

@@ -60,4 +60,46 @@
   .fn-auth-button:hover {
     background-color: color-mix(in srgb, var(--primary) 90%, black);
   }
+
+  .fn-auth-title {
+    color: var(--foreground);
+    font-size: var(--text-xl, 1.25rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+
+  .fn-auth-desc {
+    color: var(--muted-foreground);
+    font-size: var(--text-sm, 0.875rem);
+    margin-top: var(--space-2, 0.5rem);
+    margin-bottom: 0;
+  }
+
+  .fn-auth-actions {
+    margin-top: var(--space-6, 1.5rem);
+  }
+
+  .fn-auth-spinner {
+    width: 2rem;
+    height: 2rem;
+    animation: fn-auth-spin 1s linear infinite;
+  }
+
+  .fn-auth-spinner-track {
+    opacity: 0.25;
+  }
+
+  .fn-auth-spinner-head {
+    opacity: 0.75;
+  }
+
+  @keyframes fn-auth-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }

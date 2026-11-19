@@ -51,24 +51,20 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
       <ContentCard className="fn-summary-stat-card">
         <div>
           <div className="fn-summary-stat-header">
-            <div className="flex items-center gap-2">
+            <div className="fn-stat-pillar-info">
               <div className="fn-summary-stat-icon">
-                <TrendingUp className="size-4" />
+                <TrendingUp className="fn-notifications-action-icon" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">
-                  {UI_COPY.DASHBOARD.PORTFOLIO.TITLE}
-                </p>
-                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
+                <p className="fn-stat-pillar-title">{UI_COPY.DASHBOARD.PORTFOLIO.TITLE}</p>
+                <p suppressHydrationWarning className="fn-stat-pillar-sub">
                   {UI_COPY.DASHBOARD.PORTFOLIO.ACTIVE_HOLDINGS(investmentsCount)}
                 </p>
               </div>
             </div>
-            <Link
-              href={APP_ROUTES.INVESTMENTS}
-              className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
-            >
-              {UI_COPY.DASHBOARD.PORTFOLIO.VIEW_ALL} <ArrowUpRight className="size-3" />
+            <Link href={APP_ROUTES.INVESTMENTS} className="fn-category-view-all-link">
+              {UI_COPY.DASHBOARD.PORTFOLIO.VIEW_ALL}{" "}
+              <ArrowUpRight className="fn-category-view-all-icon" />
             </Link>
           </div>
 
@@ -76,7 +72,7 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
             <p className="fn-summary-stat-value">
               <PrivacyMoney value={portfolioValue} />
             </p>
-            <p className="text-muted-foreground mt-1 text-xs">
+            <p className="fn-stat-pillar-invested">
               {UI_COPY.DASHBOARD.PORTFOLIO.INVESTED_PREFIX} <PrivacyMoney value={totalInvested} /> ·{" "}
               {investmentsCount} {UI_COPY.DASHBOARD.PORTFOLIO.HOLDINGS}
             </p>
@@ -86,13 +82,13 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
         <div className="fn-summary-stat-footer">
           <span>{UI_COPY.DASHBOARD.PORTFOLIO.TOTAL_RETURNS}</span>
           <span
-            className={`flex items-center gap-1 font-semibold ${
-              totalReturns >= 0 ? "text-primary" : "text-destructive"
+            className={`fn-stat-pillar-return ${
+              totalReturns >= 0 ? "fn-score--high" : "fn-score--low"
             }`}
           >
             {totalReturns >= 0 ? "+" : ""}
             <PrivacyMoney value={totalReturns} />
-            <span className="text-[11px] font-normal">
+            <span className="fn-stat-pillar-pct">
               ({totalReturns >= 0 ? "+" : ""}
               {returnPercentage}%)
             </span>
@@ -104,40 +100,33 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
       <ContentCard className="fn-summary-stat-card">
         <div>
           <div className="fn-summary-stat-header">
-            <div className="flex items-center gap-2">
+            <div className="fn-stat-pillar-info">
               <div className="fn-summary-stat-icon">
-                <ShieldCheck className="size-4" />
+                <ShieldCheck className="fn-notifications-action-icon" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">
-                  {UI_COPY.DASHBOARD.BUDGET.TITLE}
-                </p>
-                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
+                <p className="fn-stat-pillar-title">{UI_COPY.DASHBOARD.BUDGET.TITLE}</p>
+                <p suppressHydrationWarning className="fn-stat-pillar-sub">
                   {UI_COPY.DASHBOARD.BUDGET.CAP_UTILIZED(budgetSummary.usagePercentage)}
                 </p>
               </div>
             </div>
-            <Link
-              href={APP_ROUTES.BUDGETS}
-              className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
-            >
-              {UI_COPY.DASHBOARD.BUDGET.MANAGE} <ArrowUpRight className="size-3" />
+            <Link href={APP_ROUTES.BUDGETS} className="fn-category-view-all-link">
+              {UI_COPY.DASHBOARD.BUDGET.MANAGE}{" "}
+              <ArrowUpRight className="fn-category-view-all-icon" />
             </Link>
           </div>
 
           <div className="fn-summary-stat-body">
-            <div className="flex items-baseline justify-between">
+            <div className="fn-stat-pillar-baseline">
               <p className="fn-summary-stat-value">
                 <PrivacyMoney value={budgetSummary.totalSpent} />
               </p>
-              <span className="text-muted-foreground text-xs">
+              <span className="fn-stat-pillar-limit">
                 {UI_COPY.DASHBOARD.BUDGET.OF} <PrivacyMoney value={budgetSummary.totalLimit} />
               </span>
             </div>
-            <Progress
-              value={budgetSummary.usagePercentage}
-              className={`mt-2 h-1.5 ${budgetSummary.usagePercentage > 100 ? "[&>div]:bg-destructive" : budgetSummary.usagePercentage > 85 ? "[&>div]:bg-warning" : ""}`}
-            />
+            <Progress value={budgetSummary.usagePercentage} className="fn-health-progress-bar" />
           </div>
         </div>
 
@@ -151,43 +140,39 @@ export function DashboardSummaryStats({ stats }: DashboardSummaryStatsProps) {
       <ContentCard className="fn-summary-stat-card">
         <div>
           <div className="fn-summary-stat-header">
-            <div className="flex items-center gap-2">
+            <div className="fn-stat-pillar-info">
               <div className="fn-summary-stat-icon fn-summary-stat-icon--alt">
-                <Target className="size-4" />
+                <Target className="fn-notifications-action-icon" />
               </div>
               <div>
-                <p className="text-foreground text-xs font-semibold">
-                  {UI_COPY.DASHBOARD.GOALS.TITLE}
-                </p>
-                <p suppressHydrationWarning className="text-muted-foreground text-[10px]">
+                <p className="fn-stat-pillar-title">{UI_COPY.DASHBOARD.GOALS.TITLE}</p>
+                <p suppressHydrationWarning className="fn-stat-pillar-sub">
                   {UI_COPY.DASHBOARD.GOALS.TARGETS_TRACKING(stats?.goalCount ?? 0)}
                 </p>
               </div>
             </div>
-            <Link
-              href={APP_ROUTES.GOALS}
-              className="text-primary hover:text-primary/80 inline-flex items-center gap-0.5 text-xs font-semibold"
-            >
-              {UI_COPY.DASHBOARD.GOALS.VIEW_GOALS} <ArrowUpRight className="size-3" />
+            <Link href={APP_ROUTES.GOALS} className="fn-category-view-all-link">
+              {UI_COPY.DASHBOARD.GOALS.VIEW_GOALS}{" "}
+              <ArrowUpRight className="fn-category-view-all-icon" />
             </Link>
           </div>
 
           <div className="fn-summary-stat-body">
-            <div className="flex items-baseline justify-between">
+            <div className="fn-stat-pillar-baseline">
               <p className="fn-summary-stat-value">
                 <PrivacyMoney value={goalsSummary.totalCurrent} />
               </p>
-              <span className="text-primary text-xs font-semibold">
+              <span className="fn-stat-pillar-funded">
                 {goalsSummary.progressPercentage}% {UI_COPY.DASHBOARD.GOALS.FUNDED}
               </span>
             </div>
-            <Progress value={goalsSummary.progressPercentage} className="mt-2 h-1.5" />
+            <Progress value={goalsSummary.progressPercentage} className="fn-health-progress-bar" />
           </div>
         </div>
 
         <div className="fn-summary-stat-footer">
           <span>{UI_COPY.DASHBOARD.GOALS.TARGET_TOTAL}</span>
-          <span className="text-foreground font-semibold">
+          <span className="fn-font-semibold">
             <PrivacyMoney value={goalsSummary.totalTarget} />
           </span>
         </div>

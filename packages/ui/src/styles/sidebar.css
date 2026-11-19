@@ -1,0 +1,159 @@
+/**
+ * @file packages/ui/src/styles/sidebar.css
+ * @description Semantic component styles for FinAI Sidebar navigation shell.
+ * Pure platform CSS encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ * @module @fin-ai/ui/styles/sidebar
+ */
+
+@layer dl-components {
+  /* ── Sidebar Layout Elements ───────────────────────────────────────────── */
+  .fn-sidebar-header {
+    padding: 1.5rem;
+  }
+
+  .fn-sidebar-header--collapsed {
+    padding: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .fn-sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding-inline: 1rem;
+  }
+
+  .fn-sidebar-nav--collapsed {
+    padding-inline: 0.5rem;
+  }
+
+  .fn-sidebar-nav-heading {
+    margin-bottom: 0.5rem;
+    padding-inline: 0.75rem;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+  }
+
+  .fn-sidebar-legal-wrap {
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    padding-inline: 0.75rem;
+    padding-block: 0.5rem;
+  }
+
+  .fn-sidebar-collapse-wrap {
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    padding: 0.5rem;
+  }
+
+  .fn-sidebar-collapse-btn {
+    width: 100%;
+    cursor: pointer;
+    border-radius: var(--radius-lg, 0.5rem);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    justify-content: flex-start;
+    gap: 0.625rem;
+    padding-inline: 0.75rem;
+    padding-block: 0.5rem;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .fn-sidebar-collapse-btn:hover {
+    color: var(--foreground);
+  }
+
+  .fn-sidebar-collapse-btn--rail {
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* ── Sidebar Nav Groups & Links ────────────────────────────────────────── */
+  .fn-sidebar-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .fn-sidebar-nav-group--advanced {
+    padding-top: 1rem;
+  }
+
+  .fn-sidebar-nav-group--advanced.is-expanded {
+    padding-top: 1.5rem;
+  }
+
+  .fn-sidebar-separator {
+    margin-block: 0.5rem;
+    opacity: 0.5;
+  }
+
+  .fn-sidebar-collapse-text {
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .fn-sidebar-tooltip-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .fn-sidebar-tooltip-desc {
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+    margin: 0;
+  }
+
+  .fn-sidebar-link {
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-lg, 0.5rem);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 150ms ease;
+    outline: none;
+    gap: 0.75rem;
+    padding-inline: 0.75rem;
+    padding-block: 0.5rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+
+  .fn-sidebar-link:hover {
+    background-color: var(--secondary);
+    color: var(--foreground);
+  }
+
+  .fn-sidebar-link.is-active {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  }
+
+  .fn-sidebar-link.is-rail {
+    margin-inline: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .fn-sidebar-link-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .fn-sidebar-link-icon.is-active {
+    color: var(--primary);
+  }
+}

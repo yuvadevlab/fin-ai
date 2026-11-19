@@ -87,8 +87,11 @@ export function DashboardKpiCards({ stats }: DashboardKpiCardsProps) {
             : UI_COPY.DASHBOARD.KPI.LAST_MONTH
         }
       >
-        <div className="bg-border/60 ml-auto h-1 w-16 shrink-0 overflow-hidden rounded-full">
-          <div className="bg-primary h-full" style={{ width: `${Math.min(100, savingsRate)}%` }} />
+        <div className="fn-kpi-savings-bar">
+          <div
+            className="fn-kpi-savings-fill"
+            style={{ width: `${Math.min(100, savingsRate)}%` }}
+          />
         </div>
       </StatCard>
     </KPIGrid>
