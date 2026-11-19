@@ -1,6 +1,6 @@
-# @finai/ai-engine
+# @fin-ai/ai-engine
 
-`@finai/ai-engine` is the centralized LLM orchestration and prompt engineering package for the FinAI ecosystem. It encapsulates system personas, structured prompt factories, domain safety guardrails, Ollama NDJSON streaming clients, and ReAct agent planning abstractions.
+`@fin-ai/ai-engine` is the centralized LLM orchestration and prompt engineering package for the FinAI ecosystem. It encapsulates system personas, structured prompt factories, domain safety guardrails, Ollama NDJSON streaming clients, and ReAct agent planning abstractions.
 
 It contains **zero database access or HTTP server code**, operating as a pure library consumed by `apps/api` and offline evaluation harnesses.
 
@@ -59,11 +59,11 @@ Defines the financial advisor persona with strict compliance rules:
 
 ```bash
 # Typecheck package
-pnpm --filter @finai/ai-engine typecheck
+pnpm --filter @fin-ai/ai-engine typecheck
 
 # Run unit tests
-pnpm --filter @finai/ai-engine test
+pnpm --filter @fin-ai/ai-engine test
 
 # Build package dist
-pnpm --filter @finai/ai-engine build
+pnpm --filter @fin-ai/ai-engine build
 ```

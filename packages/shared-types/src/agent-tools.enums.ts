@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/agent-tools.enums.ts
  * @description Canonical tool names, LLM providers, and capabilities for the FinAI autonomous agent runtime.
- * @module @finai/shared-types/agent-tools
+ * @module @fin-ai/shared-types/agent-tools
  */
 
 /** Canonical tool identifiers dispatched by the FinAI agent tool orchestrator */

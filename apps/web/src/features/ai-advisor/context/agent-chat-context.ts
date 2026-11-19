@@ -3,7 +3,7 @@
 /**
  * @file apps/web/src/features/ai-advisor/context/agent-chat-context.ts
  * @description React Context definition for sharing conversational agent state across components.
- * @module @finai/web/features/ai-advisor/context/agent-chat-context
+ * @module @fin-ai/web/features/ai-advisor/context/agent-chat-context
  */
 
 import { createContext } from "react";

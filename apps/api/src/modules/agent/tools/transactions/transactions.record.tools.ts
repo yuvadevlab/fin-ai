@@ -2,7 +2,7 @@
  * @file apps/api/src/modules/agent/tools/transactions.record.tools.ts
  * @description Transaction "record" write tools (create + bulkCreate).
  * Decomposed into dedicated files to strictly follow the monorepo line limit rule.
- * @module @finai/api/agent/tools/transactions-record
+ * @module @fin-ai/api/agent/tools/transactions-record
  */
 
 import type { AccountsService } from "@/modules/accounts/accounts.service";

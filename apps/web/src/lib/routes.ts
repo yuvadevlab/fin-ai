@@ -2,10 +2,10 @@
  * @file apps/web/src/lib/routes.ts
  * @description Centralized application and API route path catalog.
  * Eliminates hardcoded URL string literals and deep path strings across pages and hooks.
- * @module @finai/web/lib/routes
+ * @module @fin-ai/web/lib/routes
  */
 
-import { API_ENDPOINTS, DEVLAB_CONFIG } from "@finai/shared-types";
+import { API_ENDPOINTS, DEVLAB_CONFIG } from "@fin-ai/shared-types";
 import { DEVLAB_PORTAL_WEB_URL, APP_ID } from "./app-constants";
 
 /** Client-side Next.js route paths */

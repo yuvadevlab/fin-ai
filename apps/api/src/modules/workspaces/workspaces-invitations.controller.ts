@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
 import { CurrentUser } from "@/common/decorators/current-user.decorator";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { WorkspacesInvitationsService } from "./services/workspaces-invitations.service";
-import { inviteWorkspaceMemberSchema, type InviteWorkspaceMemberInput } from "@finai/validation";
+import { inviteWorkspaceMemberSchema, type InviteWorkspaceMemberInput } from "@fin-ai/validation";
 import { Logger } from "@yuva-devlab/logger";
 
 @ApiTags("Workspaces Invitations")

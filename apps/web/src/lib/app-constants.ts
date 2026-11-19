@@ -1,10 +1,10 @@
 /**
  * @file apps/web/src/lib/app-constants.ts
  * @description Centralized application constants, identifiers, and operational defaults.
- * @module @finai/web/lib/app-constants
+ * @module @fin-ai/web/lib/app-constants
  */
 
-import { DEVLAB_CONFIG } from "@finai/shared-types";
+import { DEVLAB_CONFIG } from "@fin-ai/shared-types";
 
 /** Application platform identifier consumed by DevLab auth and telemetry */
 export const APP_ID = process.env.NEXT_PUBLIC_APP_ID || DEVLAB_CONFIG.APP_ID;

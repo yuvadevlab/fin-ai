@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { Workspace, WorkspaceType, WorkspaceRole, InvitationStatus } from "@finai/database";
+import { Workspace, WorkspaceType, WorkspaceRole, InvitationStatus } from "@fin-ai/database";
 import { WorkspacesMembersRepository } from "./workspaces-members.repository";
 import { WorkspacesInvitationsRepository } from "./workspaces-invitations.repository";
 

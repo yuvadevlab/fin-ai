@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, X, RefreshCw, ExternalLink, ChevronDown } from "lucide-react";
-import { cn, MarkdownContent } from "@finai/ui";
+import { cn, MarkdownContent } from "@fin-ai/ui";
 import { useAiInsight, type InsightPage } from "@/features/ai-advisor";
 import { FEATURE_FLAGS, APP_ROUTES } from "@/lib";
 import { UI_COPY } from "@/lib/ui-copy";

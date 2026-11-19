@@ -3,12 +3,12 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/AdvisorComposer.tsx
  * @description Sticky conversational input station with natural language editing and action triggers.
- * @module @finai/web/features/ai-advisor/components/AdvisorComposer
+ * @module @fin-ai/web/features/ai-advisor/components/AdvisorComposer
  */
 
 import { useEffect, useRef, useState } from "react";
 import { PencilRuler, Send, Square } from "lucide-react";
-import { Button, cn } from "@finai/ui";
+import { Button, cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import { type AgentConfirmation, type AgentActivity, deriveRunState } from "@/features/ai-advisor";
 

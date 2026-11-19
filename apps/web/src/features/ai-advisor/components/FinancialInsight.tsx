@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { extractFinancialInsight } from "../utils/financialInsight";
 
 interface FinancialInsightProps {

@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import type { LlmToolCall } from "@finai/ai-engine";
-import { formatToolInvalidArgumentMessage } from "@finai/ai-engine";
+import type { LlmToolCall } from "@fin-ai/ai-engine";
+import { formatToolInvalidArgumentMessage } from "@fin-ai/ai-engine";
 import { ToolRegistry } from "../tool-registry";
 import { AgentActionService } from "../action.service";
 import { AuditService } from "../audit.service";
@@ -9,7 +9,7 @@ import { EntityMemoryService } from "../entity-memory";
 import { extractEntitiesFromInput, extractEntitiesFromOutput } from "../entity-extractor";
 import { handleSpecialAction } from "./special-action.handler";
 import type { AgentContext, AgentEventEmitter } from "../agent.types";
-import { ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
+import { ToolAccessLevel, ToolConfirmationType } from "@fin-ai/shared-types";
 
 /**
  * Validates and executes a single tool call surfaced by the model.

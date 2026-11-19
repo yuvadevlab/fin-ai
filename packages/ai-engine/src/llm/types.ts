@@ -6,7 +6,7 @@
  * and Google AI Studio.
  */
 
-import { LlmRole, LlmStreamEventType } from "@finai/shared-types";
+import { LlmRole, LlmStreamEventType } from "@fin-ai/shared-types";
 
 export { LlmRole, LlmStreamEventType };
 

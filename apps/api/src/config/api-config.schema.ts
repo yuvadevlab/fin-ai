@@ -1,11 +1,11 @@
 /**
  * @file apps/api/src/config/api-config.schema.ts
  * @description Zod validation schema for FinAI API environment configuration.
- * @module @finai/api/config
+ * @module @fin-ai/api/config
  */
 
 import { z } from "zod";
-import { AiProvider, DEVLAB_CONFIG } from "@finai/shared-types";
+import { AiProvider, DEVLAB_CONFIG } from "@fin-ai/shared-types";
 
 /**
  * Zod schema validating backend runtime configuration.

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { WorkspacesRepository } from "../repositories/workspaces.repository";
 import { NotificationsService } from "@/modules/notifications/services/notifications.service";
-import { NotificationType, WorkspaceRole, WorkspaceType } from "@finai/database";
+import { NotificationType, WorkspaceRole, WorkspaceType } from "@fin-ai/database";
 import { Logger } from "@yuva-devlab/logger";
 
 @Injectable()

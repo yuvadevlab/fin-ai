@@ -1,6 +1,6 @@
-# @finai/validation
+# @fin-ai/validation
 
-`@finai/validation` contains all Zod data validation schemas used for client-side form validation and server-side request DTO verification in FinAI.
+`@fin-ai/validation` contains all Zod data validation schemas used for client-side form validation and server-side request DTO verification in FinAI.
 
 ---
 
@@ -39,7 +39,7 @@ export const createTransactionSchema = z.object({
 ## Safe Parsing & Error Mapping in Forms
 
 ```ts
-import { createAccountSchema } from "@finai/validation";
+import { createAccountSchema } from "@fin-ai/validation";
 
 const parseResult = createAccountSchema.safeParse(formData);
 
@@ -59,5 +59,5 @@ if (!parseResult.success) {
 
 ```bash
 # Compile TS declarations and distribution files
-pnpm --filter @finai/validation build
+pnpm --filter @fin-ai/validation build
 ```

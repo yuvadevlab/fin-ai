@@ -1,6 +1,6 @@
-# @finai/shared-types
+# @fin-ai/shared-types
 
-`@finai/shared-types` houses all shared TypeScript types, interfaces, enums, data contracts, and API payload definitions used across `@finai/api`, `@finai/web`, `@finai/finance-engine`, and `@finai/validation`.
+`@fin-ai/shared-types` houses all shared TypeScript types, interfaces, enums, data contracts, and API payload definitions used across `@fin-ai/api`, `@fin-ai/web`, `@fin-ai/finance-engine`, and `@fin-ai/validation`.
 
 ---
 
@@ -49,5 +49,5 @@ export interface HealthMetric {
 
 ```bash
 # Build TypeScript declarations (.d.ts) and ESM/CJS bundles using tsup
-pnpm --filter @finai/shared-types build
+pnpm --filter @fin-ai/shared-types build
 ```

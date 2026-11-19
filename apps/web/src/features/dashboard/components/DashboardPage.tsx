@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
   InfoButton,
-} from "@finai/ui";
-import { calculateNetCashFlow } from "@finai/finance-engine";
+} from "@fin-ai/ui";
+import { calculateNetCashFlow } from "@fin-ai/finance-engine";
 import { TransactionDialog } from "@/features/transactions/components";
 import { useCategoryBreakdown, useDashboardStats, useMonthlyAnalytics } from "../api";
 import { DashboardKpiCards } from "./DashboardKpiCards";

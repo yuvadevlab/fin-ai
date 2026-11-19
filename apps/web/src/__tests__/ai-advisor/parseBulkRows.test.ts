@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BULK_ITEM_PREFIX, ConfirmationRowLabel, TransactionType } from "@finai/shared-types";
+import { BULK_ITEM_PREFIX, ConfirmationRowLabel, TransactionType } from "@fin-ai/shared-types";
 import { parseBulkRows } from "../../features/ai-advisor/utils/parseBulkRows";
 
 describe("parseBulkRows", () => {

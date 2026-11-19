@@ -2,7 +2,7 @@
 
 import React, { useCallback, useState, useMemo } from "react";
 import { DevLabAuthProvider } from "@yuva-devlab/auth-client";
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { APP_ID, APP_ROUTES, DEVLAB_PORTAL_WEB_URL, DEVLAB_PORTAL_API_URL } from "@/lib";
 import { AuthContext, type AuthContextValue, type AuthUser } from "./auth-context";
 

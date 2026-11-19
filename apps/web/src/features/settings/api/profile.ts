@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
-import { StorageKey, API_ENDPOINTS, QUERY_KEYS, type UserPreferences } from "@finai/shared-types";
+import { StorageKey, API_ENDPOINTS, QUERY_KEYS, type UserPreferences } from "@fin-ai/shared-types";
 
 export interface UserProfile {
   id: string;

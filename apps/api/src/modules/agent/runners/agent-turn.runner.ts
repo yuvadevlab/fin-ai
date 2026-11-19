@@ -5,7 +5,7 @@ import {
   type ChatModel,
   type LlmChatRequest,
   type LlmToolCall,
-} from "@finai/ai-engine";
+} from "@fin-ai/ai-engine";
 import type { AgentEventEmitter } from "../agent.types";
 
 export interface ModelTurnResult {

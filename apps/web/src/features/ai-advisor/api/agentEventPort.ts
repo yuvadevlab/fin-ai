@@ -1,11 +1,11 @@
 /**
  * @file apps/web/src/features/ai-advisor/api/agentEventPort.ts
  * @description Event port contracts, logging utilities, and step keys for the SSE event loop.
- * @module @finai/web/features/ai-advisor/api/agentEventPort
+ * @module @fin-ai/web/features/ai-advisor/api/agentEventPort
  */
 
-import type { AgentCard } from "@finai/ai-engine";
-import type { AgentConfirmationStatus, AgentRunLogLevel } from "@finai/shared-types";
+import type { AgentCard } from "@fin-ai/ai-engine";
+import type { AgentConfirmationStatus, AgentRunLogLevel } from "@fin-ai/shared-types";
 import type {
   AgentActivity,
   AgentConfirmation,

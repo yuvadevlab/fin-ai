@@ -1,5 +1,5 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { formatCurrencyShort } from "@finai/finance-engine";
+import { formatCurrencyShort } from "@fin-ai/finance-engine";
 import { PIE_COLORS, tooltipStyle } from "./chart-theme";
 
 interface CategoryPieDataPoint {

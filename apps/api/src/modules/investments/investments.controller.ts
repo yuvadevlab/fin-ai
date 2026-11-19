@@ -12,7 +12,7 @@ import {
   updateInvestmentValueSchema,
   type CreateInvestmentInput,
   type UpdateInvestmentValueInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Investments")
 @ApiBearerAuth()

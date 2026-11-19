@@ -1,4 +1,4 @@
-import type { AgentCard } from "@finai/ai-engine";
+import type { AgentCard } from "@fin-ai/ai-engine";
 import type { PrismaService } from "@/modules/prisma/prisma.service";
 import type { ToolRegistry } from "../tool-registry";
 import { enrichCardWithEntityNames } from "../card-enricher";

@@ -12,7 +12,7 @@ import {
   updateAccountSchema,
   type CreateAccountInput,
   type UpdateAccountInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Accounts")
 @ApiBearerAuth()

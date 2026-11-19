@@ -3,11 +3,11 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/EmptyState.tsx
  * @description Landing view for empty AI Advisor conversations with quick action prompt triggers.
- * @module @finai/web/features/ai-advisor/components/EmptyState
+ * @module @fin-ai/web/features/ai-advisor/components/EmptyState
  */
 
 import { ArrowRight, Sparkles } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import { QUICK_ACTIONS } from "@/features/ai-advisor";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { FormDialog } from "@finai/ui";
+import { FormDialog } from "@fin-ai/ui";
 import { useAccounts } from "@/features/accounts/api";
 import { useCategories } from "@/features/categories/api";
 import { useInvestments } from "@/features/investments/api";

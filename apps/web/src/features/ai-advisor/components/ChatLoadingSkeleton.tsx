@@ -3,10 +3,10 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/ChatLoadingSkeleton.tsx
  * @description Non-intrusive loading placeholder rendered exclusively on cold conversation loads.
- * @module @finai/web/features/ai-advisor/components/ChatLoadingSkeleton
+ * @module @fin-ai/web/features/ai-advisor/components/ChatLoadingSkeleton
  */
 
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 
 /** Props configuration for the {@link ChatLoadingSkeleton} component */

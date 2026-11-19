@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib/ui-copy";
 import type { AgentActivity } from "../api";
 

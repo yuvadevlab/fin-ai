@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/agent/tools/transactions.date-label.ts
  * @description Format card-safe date label for transaction confirmation cards.
- * @module @finai/api/agent/tools/transactions-date-label
+ * @module @fin-ai/api/agent/tools/transactions-date-label
  */
 
 import { resolveAgentTransactionDate } from "../../date-expression";

@@ -1,6 +1,6 @@
 /**
  * Standard agent user-facing messages and templates.
- * Centralized in @finai/ai-engine so that prompt and agent response contracts
+ * Centralized in @fin-ai/ai-engine so that prompt and agent response contracts
  * remain consistent across the monorepo without inline prompt strings in API services.
  */
 

@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetFooter,
   Button,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { ProfileSettings } from "./ProfileSettings";
 import { AppearanceSettings } from "./AppearanceSettings";
 import { WorkspaceSettings } from "@/features/workspaces/components";

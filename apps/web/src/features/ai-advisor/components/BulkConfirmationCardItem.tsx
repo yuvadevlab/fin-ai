@@ -1,10 +1,10 @@
 "use client";
 
 import { Calendar, Check, CreditCard, FileText, Tag, X } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";
-import { AgentConfirmationStatus, TransactionType } from "@finai/shared-types";
+import { AgentConfirmationStatus, TransactionType } from "@fin-ai/shared-types";
 import type { BulkTransactionItem } from "../utils/parseBulkRows";
 
 export interface BulkConfirmationCardItemProps {

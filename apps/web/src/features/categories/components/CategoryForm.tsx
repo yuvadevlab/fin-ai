@@ -1,8 +1,8 @@
 "use client";
 
-import { FormDialogField, FormField, Label, toast } from "@finai/ui";
+import { FormDialogField, FormField, Label, toast } from "@fin-ai/ui";
 import { EmojiPickerField } from "./EmojiPickerField";
-import { Button } from "@finai/ui";
+import { Button } from "@fin-ai/ui";
 import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useSuggestEmoji } from "../api";

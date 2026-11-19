@@ -1,6 +1,6 @@
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { UserPreferences } from "@finai/shared-types";
-import { Prisma } from "@finai/database";
+import { UserPreferences } from "@fin-ai/shared-types";
+import { Prisma } from "@fin-ai/database";
 import { Logger } from "@yuva-devlab/logger";
 
 const logger = new Logger("AccountPreferencesHelper");

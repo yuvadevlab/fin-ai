@@ -3,11 +3,11 @@
 /**
  * @file apps/web/src/features/ai-advisor/components/ContextPanel.tsx
  * @description Docked sidebar panel displaying portfolio snapshot, quick prompts, and action reviews.
- * @module @finai/web/features/ai-advisor/components/ContextPanel
+ * @module @fin-ai/web/features/ai-advisor/components/ContextPanel
  */
 
 import { Bot, Loader2, ShieldCheck } from "lucide-react";
-import { cn } from "@finai/ui";
+import { cn } from "@fin-ai/ui";
 import { UI_COPY } from "@/lib";
 import {
   type AgentActivity,

@@ -13,7 +13,7 @@ import {
   CHART_COLORS,
   cn,
   Button,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { PrivacyMoney, ReadOnlyWorkspaceBanner } from "@/components";
 
 import { useInvestments, Investment } from "../api";

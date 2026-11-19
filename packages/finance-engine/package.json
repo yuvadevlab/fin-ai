@@ -1,5 +1,5 @@
 {
-  "name": "@finai/finance-engine",
+  "name": "@fin-ai/finance-engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@finai/shared-types": "workspace:*"
+    "@fin-ai/shared-types": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

@@ -1,5 +1,5 @@
 {
-  "name": "@finai/prompts",
+  "name": "@fin-ai/prompts",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@finai/shared-types": "workspace:*"
+    "@fin-ai/shared-types": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

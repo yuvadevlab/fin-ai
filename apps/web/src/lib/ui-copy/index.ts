@@ -2,7 +2,7 @@
  * @file apps/web/src/lib/ui-copy/index.ts
  * @description Centralized, modular UI copy dictionary catalog.
  * Eliminates raw string literals, hardcoded placeholders, and ad-hoc a11y texts in JSX.
- * @module @finai/web/lib/ui-copy
+ * @module @fin-ai/web/lib/ui-copy
  */
 
 import { COMMON_COPY } from "./common";

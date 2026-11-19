@@ -29,8 +29,8 @@ graph TD
 
     subgraph AI & Domain Compute
         LLM["Ollama / Cloud LLM Engine (:11434)"]
-        FinanceEngine["@finai/finance-engine (Pure Math)"]
-        AIEngine["@finai/ai-engine (ReAct Agent Loop)"]
+        FinanceEngine["@fin-ai/finance-engine (Pure Math)"]
+        AIEngine["@fin-ai/ai-engine (ReAct Agent Loop)"]
     end
 
     subgraph Persistence Layer
@@ -70,8 +70,8 @@ graph TD
 Before writing or modifying code in FinAI, review the official [**`FinAI Coding Standards & Agent Guidelines`**](.agents/AGENTS.md):
 
 - 📐 **2-File Feature Modal Pattern**: `<Entity>Form.tsx` (pure presentation using `<FormDialogField>`) + `<Entity>Dialog.tsx` (Zod `safeParse()` validation, React Query mutations).
-- 🧮 **Pure Finance Engine**: `@finai/finance-engine` MUST contain **zero side-effects and zero I/O**.
-- ✅ **Centralized Validation**: ALL validation schemas MUST reside in `@finai/validation` and use `.safeParse()`.
+- 🧮 **Pure Finance Engine**: `@fin-ai/finance-engine` MUST contain **zero side-effects and zero I/O**.
+- ✅ **Centralized Validation**: ALL validation schemas MUST reside in `@fin-ai/validation` and use `.safeParse()`.
 - 🔄 **State & Cache**: Feature hooks under `src/features/<name>/api/` using `@tanstack/react-query` with automatic `invalidateQueries()`.
 - 🎨 **Styling**: Semantic design system color tokens (`bg-card`, `bg-background`, `border-border`, `text-destructive`) and Lucide icons.
 
@@ -82,7 +82,7 @@ Before writing or modifying code in FinAI, review the official [**`FinAI Coding 
 This monorepo follows a strict modular architecture governed by topic-specific rulebooks:
 
 - 🏛️ **[`00-core-invariants.md`](.agents/rules/00-core-invariants.md)**: Monorepo package boundaries, hard 250-line rule, and database seed safeguards.
-- 💻 **[`01-frontend-web.md`](.agents/rules/01-frontend-web.md)**: 2-file modal pattern, React Query caching, design system semantic tokens, and `@finai/ui`.
+- 💻 **[`01-frontend-web.md`](.agents/rules/01-frontend-web.md)**: 2-file modal pattern, React Query caching, design system semantic tokens, and `@fin-ai/ui`.
 - ⚙️ **[`02-backend-api.md`](.agents/rules/02-backend-api.md)**: 5-layer NestJS architecture, controller/service contracts, and repository patterns.
 - 🤖 **[`03-ai-advisor.md`](.agents/rules/03-ai-advisor.md)**: ReAct agent loop, tool manifests, financial personas, and 2-phase write confirmations.
 - 🧪 **[`04-testing-standards.md`](.agents/rules/04-testing-standards.md)**: Vitest unit testing, Playwright E2E, mock contracts, and zero test side-effects.
@@ -95,7 +95,7 @@ Click any link below to navigate to the standalone documentation for that applic
 
 ### Applications (`apps/`)
 
-- 📱 **[`apps/web`](apps/web/README.md)**: Next.js 15 App Router frontend application with `@finai/ui` primitives, React Query, and standalone Docker optimization.
+- 📱 **[`apps/web`](apps/web/README.md)**: Next.js 15 App Router frontend application with `@fin-ai/ui` primitives, React Query, and standalone Docker optimization.
 - ⚙️ **[`apps/api`](apps/api/README.md)**: NestJS 10 REST API backend service with Prisma ORM, Passport.js JWT authentication, and native Windows Ollama LLM integration.
 
 ### Packages (`packages/`)

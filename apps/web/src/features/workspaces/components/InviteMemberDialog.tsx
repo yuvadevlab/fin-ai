@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { WorkspaceRole } from "@finai/shared-types";
-import { inviteWorkspaceMemberSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { WorkspaceRole } from "@fin-ai/shared-types";
+import { inviteWorkspaceMemberSchema } from "@fin-ai/validation";
 import { UI_COPY } from "@/lib";
 import { useInviteMember } from "../api";
 import { InviteMemberForm } from "./InviteMemberForm";

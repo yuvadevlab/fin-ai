@@ -8,14 +8,14 @@ import { AiModelService } from "@/modules/ai/ai-model.service";
 import { ContextBuilderService } from "@/modules/ai/context-builder.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
-import { agentChatSchema, type AgentChatInput } from "@finai/validation";
+import { agentChatSchema, type AgentChatInput } from "@fin-ai/validation";
 import {
   buildAdvisorSystemPrompt,
   buildInsightSystemPrompt,
   buildPageInsightUserPrompt,
   buildEmojiSuggestionUserPrompt,
   EMOJI_SUGGESTION_SYSTEM_PROMPT,
-} from "@finai/prompts";
+} from "@fin-ai/prompts";
 /**
  * Legacy AI Advisor controller (read-only, chat + page insights).
  *

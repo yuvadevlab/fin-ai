@@ -35,12 +35,12 @@ finai/
 
 ### Strict Placement Rules
 
-- **Shared Constants & Types (`@finai/shared-types`)**: ANY constants, DTO shapes, Enums (`AccountType`, `TransactionType`, `GoalType`), `QUERY_KEYS`, `API_ENDPOINTS`, `SEARCH_PARAMS`, or TypeScript interfaces shared across apps or packages MUST reside in `@finai/shared-types`. **NEVER duplicate types or constants across apps or packages**.
-- **Financial Math (`@finai/finance-engine`)**: ALL financial calculation logic (Health Score, Net Worth, Cash Flow, Savings Rate, Budget Usage, Portfolio Asset Allocation, Goal Projections) MUST reside in `@finai/finance-engine`. **MUST contain zero side-effects, zero I/O, zero database access, and zero HTTP calls**.
-- **AI Prompts & Templates (`@finai/prompts`)**: ALL system personas, prompt templates, and prompt builder factory functions MUST reside in `@finai/prompts`. API services must never define inline prompt strings.
-- **AI Runtime & Agent Loop (`@finai/ai-engine`)**: LLM provider adapters, agent orchestrator, tool descriptors, and stream events MUST reside in `@finai/ai-engine`.
-- **Validation Schemas (`@finai/validation`)**: ALL Zod schemas for forms and API validation MUST reside in `@finai/validation`. Never define inline Zod schemas in web components or backend route handlers.
-- **UI Design System (`@finai/ui`)**: Reusable presentation components, dialog primitives, gauges, and form fields MUST live in `@finai/ui`.
+- **Shared Constants & Types (`@fin-ai/shared-types`)**: ANY constants, DTO shapes, Enums (`AccountType`, `TransactionType`, `GoalType`), `QUERY_KEYS`, `API_ENDPOINTS`, `SEARCH_PARAMS`, or TypeScript interfaces shared across apps or packages MUST reside in `@fin-ai/shared-types`. **NEVER duplicate types or constants across apps or packages**.
+- **Financial Math (`@fin-ai/finance-engine`)**: ALL financial calculation logic (Health Score, Net Worth, Cash Flow, Savings Rate, Budget Usage, Portfolio Asset Allocation, Goal Projections) MUST reside in `@fin-ai/finance-engine`. **MUST contain zero side-effects, zero I/O, zero database access, and zero HTTP calls**.
+- **AI Prompts & Templates (`@fin-ai/prompts`)**: ALL system personas, prompt templates, and prompt builder factory functions MUST reside in `@fin-ai/prompts`. API services must never define inline prompt strings.
+- **AI Runtime & Agent Loop (`@fin-ai/ai-engine`)**: LLM provider adapters, agent orchestrator, tool descriptors, and stream events MUST reside in `@fin-ai/ai-engine`.
+- **Validation Schemas (`@fin-ai/validation`)**: ALL Zod schemas for forms and API validation MUST reside in `@fin-ai/validation`. Never define inline Zod schemas in web components or backend route handlers.
+- **UI Design System (`@fin-ai/ui`)**: Reusable presentation components, dialog primitives, gauges, and form fields MUST live in `@fin-ai/ui`.
 
 ---
 
@@ -58,12 +58,12 @@ finai/
 
 1. **No Raw String/Number Literals**:
    - **Route Paths**: Use `APP_ROUTES` and `API_ROUTES` from `@/lib/routes.ts`. Never write `"/ai-advisor"` or `"/ai-advisor/${id}"`.
-   - **API Endpoints**: Use `API_ENDPOINTS` from `@finai/shared-types`. Single source of truth for both client and server contracts.
-   - **React Query Keys**: Use `QUERY_KEYS` from `@finai/shared-types`. Always use `as const` tuples (`readonly (readonly unknown[])[]`). Never use raw string arrays like `["accounts"]`.
+   - **API Endpoints**: Use `API_ENDPOINTS` from `@fin-ai/shared-types`. Single source of truth for both client and server contracts.
+   - **React Query Keys**: Use `QUERY_KEYS` from `@fin-ai/shared-types`. Always use `as const` tuples (`readonly (readonly unknown[])[]`). Never use raw string arrays like `["accounts"]`.
    - **UI Copy Dictionaries**: Use `UI_COPY` from `@/lib/ui-copy/`. Zero hardcoded user-facing strings in UI components.
-   - **Enums**: Use canonical enums from `@finai/shared-types` (e.g. `AgentStreamEventType`, `AgentMode`, `ExecutionPhase`, `PhaseStatus`, `AccountType`, `StorageKey`, `SEARCH_PARAMS`).
+   - **Enums**: Use canonical enums from `@fin-ai/shared-types` (e.g. `AgentStreamEventType`, `AgentMode`, `ExecutionPhase`, `PhaseStatus`, `AccountType`, `StorageKey`, `SEARCH_PARAMS`).
    - **Enums Over Raw String Unions**: Prefer TypeScript `enum`s or `as const` object dictionaries with mapped types over raw string literal unions (`"dev" | "prod"`). Updating an underlying string value only requires modifying the enum definition.
-   - **URL Query Parameters**: Never hardcode raw query parameter strings or fragments like `"?redirect="` or `searchParams.get("token")`. Use `SEARCH_PARAMS` from `@finai/shared-types` and construct URLs via `URLSearchParams`.
+   - **URL Query Parameters**: Never hardcode raw query parameter strings or fragments like `"?redirect="` or `searchParams.get("token")`. Use `SEARCH_PARAMS` from `@fin-ai/shared-types` and construct URLs via `URLSearchParams`.
    - **Environment Isolation**: Consumer apps manage their own environment variables (e.g. `process.env.NEXT_PUBLIC_*`) and pass them explicitly to shared NPM packages via props or configuration parameters. Shared NPM packages must never implicitly read environment variables.
 
 ---
@@ -87,7 +87,7 @@ finai/
 
 1. If seed data is missing or stale, **inform the user** and provide the command for them to run manually:
    ```bash
-   pnpm --filter @finai/database db:seed
+   pnpm --filter @fin-ai/database db:seed
    ```
 2. **Never auto-seed** during migrations, schema updates, or test scripts.
 3. **Never delete or truncate** existing records. The seed script uses `upsert` exclusively.
@@ -109,12 +109,12 @@ finai/
 
 Before completing any task, verify:
 
-- [ ] Shared types, endpoints, and query keys reside in `@finai/shared-types` (no duplicates).
-- [ ] Zod schemas reside in `@finai/validation` (no inline schemas).
-- [ ] Financial calculations reside in `@finai/finance-engine` (pure functions, zero I/O).
+- [ ] Shared types, endpoints, and query keys reside in `@fin-ai/shared-types` (no duplicates).
+- [ ] Zod schemas reside in `@fin-ai/validation` (no inline schemas).
+- [ ] Financial calculations reside in `@fin-ai/finance-engine` (pure functions, zero I/O).
 - [ ] Zero hardcoded route strings, query keys, or UI text (use `APP_ROUTES`, `QUERY_KEYS`, `UI_COPY`).
 - [ ] Log levels strictly limited to `.info`, `.warn`, `.error` with `[methodName]` formatting.
 - [ ] No file exceeds 250 lines of code (split proactively at 200 lines).
-- [ ] Typechecks pass: `pnpm --filter @finai/api typecheck` and `pnpm --filter @finai/web typecheck`.
+- [ ] Typechecks pass: `pnpm --filter @fin-ai/api typecheck` and `pnpm --filter @fin-ai/web typecheck`.
 - [ ] Full monorepo build passes: `pnpm build`.
 - [ ] No database seed commands were executed automatically.

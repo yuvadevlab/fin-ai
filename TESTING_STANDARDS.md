@@ -6,13 +6,13 @@ To maintain a robust and scalable codebase, the following testing layers MUST be
 
 ### 10.1 Pure Calculation & Logic Tests (`Vitest`)
 
-- **Finance Engine (`@finai/finance-engine`)**: Pure mathematical tests. Zero I/O.
-- **Validation (`@finai/validation`)**: Zod schema tests. Verify both positive and negative boundary cases using `.safeParse()`.
-- **AI Engine (`@finai/ai-engine`)**: Prompt building and parsing logic tests.
+- **Finance Engine (`@fin-ai/finance-engine`)**: Pure mathematical tests. Zero I/O.
+- **Validation (`@fin-ai/validation`)**: Zod schema tests. Verify both positive and negative boundary cases using `.safeParse()`.
+- **AI Engine (`@fin-ai/ai-engine`)**: Prompt building and parsing logic tests.
 
 ### 10.2 UI Component Tests (`Vitest` + `React Testing Library`)
 
-- **Design System (`@finai/ui`)**: Test accessible rendering, styling tokens, and basic interactions in JSDOM.
+- **Design System (`@fin-ai/ui`)**: Test accessible rendering, styling tokens, and basic interactions in JSDOM.
 - **Web Components (`apps/web`)**: Test feature-specific components, mocking Next.js navigation and browser APIs (ResizeObserver, etc.).
 
 ### 10.3 Backend API Tests (`Vitest` + `@nestjs/testing`)

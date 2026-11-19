@@ -1,5 +1,5 @@
 {
-  "name": "@finai/validation",
+  "name": "@fin-ai/validation",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@finai/shared-types": "workspace:*",
+    "@fin-ai/shared-types": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {

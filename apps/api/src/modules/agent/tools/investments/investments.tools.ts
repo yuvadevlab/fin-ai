@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { InvestmentsService } from "@/modules/investments/investments.service";
-import { createInvestmentSchema, updateInvestmentValueSchema } from "@finai/validation";
-import { formatINR } from "@finai/finance-engine";
+import { createInvestmentSchema, updateInvestmentValueSchema } from "@fin-ai/validation";
+import { formatINR } from "@fin-ai/finance-engine";
 import {
   AgentCardType,
   AgentToolName,
@@ -10,8 +10,8 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
 
 const INVALIDATES_INVESTMENT_WRITES = [
   ToolInvalidationTag.INVESTMENTS,

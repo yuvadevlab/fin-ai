@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
-import { CreateCategoryInput } from "@finai/validation";
-import { toast } from "@finai/ui";
+import { CreateCategoryInput } from "@fin-ai/validation";
+import { toast } from "@fin-ai/ui";
 import { Category } from "./getCategories";
 
 export function useCreateCategory() {

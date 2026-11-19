@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { WorkspaceType } from "@finai/shared-types";
-import { createWorkspaceSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { WorkspaceType } from "@fin-ai/shared-types";
+import { createWorkspaceSchema } from "@fin-ai/validation";
 import { UI_COPY } from "@/lib";
 import { useCreateWorkspace } from "../api";
 import { useWorkspace } from "@/providers";

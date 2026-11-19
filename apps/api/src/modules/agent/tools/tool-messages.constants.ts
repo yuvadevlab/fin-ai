@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/agent/tools/tool-messages.constants.ts
  * @description Standardized summary messages and templates for FinAI agent tools.
- * @module @finai/api/agent/tools/messages
+ * @module @fin-ai/api/agent/tools/messages
  */
 
 export const TOOL_MESSAGES = {

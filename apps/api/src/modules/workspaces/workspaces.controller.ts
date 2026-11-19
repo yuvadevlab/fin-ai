@@ -19,7 +19,7 @@ import {
   updateWorkspaceSchema,
   type CreateWorkspaceInput,
   type UpdateWorkspaceInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 import { Logger } from "@yuva-devlab/logger";
 
 @ApiTags("Workspaces")

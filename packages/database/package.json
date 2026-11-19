@@ -1,5 +1,5 @@
 {
-  "name": "@finai/database",
+  "name": "@fin-ai/database",
   "version": "0.1.0",
   "private": true,
   "type": "module",

@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/endpoints.ts
  * @description Single source of truth for REST API endpoint URIs across frontend and backend.
- * @module @finai/shared-types/endpoints
+ * @module @fin-ai/shared-types/endpoints
  */
 
 /**

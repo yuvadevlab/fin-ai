@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { KPIGrid, StatCard } from "@finai/ui";
-import { calculateSavingsRate, formatINR } from "@finai/finance-engine";
+import { KPIGrid, StatCard } from "@fin-ai/ui";
+import { calculateSavingsRate, formatINR } from "@fin-ai/finance-engine";
 import { PrivacyMoney } from "@/components";
 import type { DashboardStats } from "../api";
 import { UI_COPY } from "@/lib/ui-copy";

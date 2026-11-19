@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialogField, Button, toast } from "@finai/ui";
+import { FormDialogField, Button, toast } from "@fin-ai/ui";
 import { useProfile, useUpdateProfile, type UserProfile } from "../api";
 import { UI_COPY } from "@/lib/ui-copy";
 

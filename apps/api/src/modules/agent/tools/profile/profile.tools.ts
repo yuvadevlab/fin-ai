@@ -2,7 +2,7 @@ import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { UsersService } from "@/modules/auth/users.service";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
-import type { User } from "@finai/shared-types";
+import type { User } from "@fin-ai/shared-types";
 import {
   AgentCardType,
   AgentToolName,
@@ -10,9 +10,9 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { updateProfileSchema } from "@finai/validation";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
+import { updateProfileSchema } from "@fin-ai/validation";
 import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 const INVALIDATES_PROFILE_WRITES = [ToolInvalidationTag.USER_PROFILE, ToolInvalidationTag.ACCOUNTS];

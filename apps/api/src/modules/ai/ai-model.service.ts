@@ -1,7 +1,7 @@
 /**
  * Provider-agnostic AI model service.
  *
- * Wraps the {@link ChatModel} abstraction from `@finai/ai-engine` and
+ * Wraps the {@link ChatModel} abstraction from `@fin-ai/ai-engine` and
  * adapts it to the SSE streaming and simple chat patterns used by the
  * legacy AI Advisor controller.
  *
@@ -16,7 +16,7 @@ import {
   type ChatModel,
   type LlmChatRequest,
   type LlmMessage,
-} from "@finai/ai-engine";
+} from "@fin-ai/ai-engine";
 import { Response } from "express";
 
 export interface AiModelStreamOptions {

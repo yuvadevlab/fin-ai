@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { AnalyticsService } from "@/modules/analytics/analytics.service";
-import { formatINR } from "@finai/finance-engine";
-import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@finai/ai-engine";
+import { formatINR } from "@fin-ai/finance-engine";
+import { AgentToolName, ToolAccessLevel, ToolConfirmationType } from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@fin-ai/ai-engine";
 
 /**
  * Insight tools: computed guidance beyond raw KPIs. Kept separate from

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { createAccountSchema, updateAccountSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { createAccountSchema, updateAccountSchema } from "@fin-ai/validation";
 import { useCreateAccount, useUpdateAccount, useAccounts, Account } from "../api";
 import { AccountForm } from "./AccountForm";
 import { UI_COPY } from "@/lib/ui-copy";

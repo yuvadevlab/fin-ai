@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Toaster } from "@finai/ui";
+import { Toaster } from "@fin-ai/ui";
 import { QueryProvider } from "./query/QueryProvider";
 import { AuthProvider } from "./auth/AuthProvider";
 import { AppearanceProvider } from "./appearance/AppearanceProvider";

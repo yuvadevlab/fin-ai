@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { AgentStreamEvent } from "@finai/ai-engine";
+import type { AgentStreamEvent } from "@fin-ai/ai-engine";
 import {
   handleAgentStreamEvent,
   phaseKey,

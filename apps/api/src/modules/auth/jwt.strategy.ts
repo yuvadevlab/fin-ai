@@ -4,7 +4,7 @@
  * 1. RS256 SSO tokens issued by DevLab Gateway with JWKS verification.
  * 2. HS256 tokens issued locally by FinAI API with symmetric secret verification.
  * Supports Just-In-Time (JIT) provisioning for SSO users with default category seeding.
- * @module @finai/api/auth
+ * @module @fin-ai/api/auth
  */
 
 import { Injectable, UnauthorizedException } from "@nestjs/common";

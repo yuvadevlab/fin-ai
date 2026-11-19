@@ -1,8 +1,8 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { serverFetch } from "@/lib/server-fetch";
-import { TransactionFilterInput } from "@finai/validation";
-import { TransactionType, API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { TransactionFilterInput } from "@fin-ai/validation";
+import { TransactionType, API_ENDPOINTS, QUERY_KEYS } from "@fin-ai/shared-types";
 
 export interface Transaction {
   id: string;

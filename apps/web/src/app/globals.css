@@ -1,12 +1,12 @@
 /**
  * @file apps/web/src/app/globals.css
  * @description Master application stylesheet for FinAI Web.
- * Imports self-hosted typography fonts and the pure platform @finai/ui styles.
+ * Imports self-hosted typography fonts and the pure platform @fin-ai/ui styles.
  */
 
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
-@import "@finai/ui/styles.css";
+@import "@fin-ai/ui/styles.css";
 
 :root,
 html,

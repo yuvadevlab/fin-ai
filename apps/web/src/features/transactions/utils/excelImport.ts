@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api-client";
-import { StorageKey, API_ENDPOINTS, TransactionKind } from "@finai/shared-types";
+import { StorageKey, API_ENDPOINTS, TransactionKind } from "@fin-ai/shared-types";
 import { BulkRow } from "@/features/transactions/components/BulkTransactionForm";
 
 export interface SelectOption {

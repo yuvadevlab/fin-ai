@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormDialog } from "@finai/ui";
-import { createInvestmentSchema } from "@finai/validation";
+import { FormDialog } from "@fin-ai/ui";
+import { createInvestmentSchema } from "@fin-ai/validation";
 import { useCreateInvestment, type Investment } from "../api";
 import { InvestmentForm } from "./InvestmentForm";
 import { UI_COPY } from "@/lib/ui-copy";

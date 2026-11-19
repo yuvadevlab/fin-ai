@@ -1,5 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
-import { AgentActionStatus, Prisma } from "@finai/database";
+import { AgentActionStatus, Prisma } from "@fin-ai/database";
 import type { PrismaService } from "@/modules/prisma/prisma.service";
 import type { ToolRegistry } from "./tool-registry";
 import type { AuditService } from "./audit.service";

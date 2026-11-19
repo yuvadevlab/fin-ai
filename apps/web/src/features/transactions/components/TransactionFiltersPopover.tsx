@@ -13,7 +13,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import { Filter } from "lucide-react";
 import { UI_COPY } from "@/lib/ui-copy";
 

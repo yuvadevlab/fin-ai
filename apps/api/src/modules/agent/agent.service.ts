@@ -2,14 +2,14 @@
  * @file apps/api/src/modules/agent/agent.service.ts
  * @description Autonomous Financial Agent Orchestration Service.
  * Coordinates conversation state, dynamic system prompts, tool execution, and SSE streaming.
- * @module @finai/api/modules/agent/agent.service
+ * @module @fin-ai/api/modules/agent/agent.service
  */
 
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { randomUUID } from "crypto";
-import { LlmConnectionError } from "@finai/ai-engine";
-import type { AgentChatInput } from "@finai/validation";
+import { LlmConnectionError } from "@fin-ai/ai-engine";
+import type { AgentChatInput } from "@fin-ai/validation";
 import { AccountsService } from "@/modules/accounts/accounts.service";
 import { AnalyticsService } from "@/modules/analytics/analytics.service";
 import { SearchService } from "@/modules/search/search.service";
@@ -25,7 +25,7 @@ import { AgentActionService } from "./action.service";
 import { ActionManager } from "./action-manager";
 import { AgentOrchestratorService } from "./runners";
 import { buildAgentTools } from "./tool-factory";
-import { AgentStreamEventType, AgentMode, ExecutionPhase, PhaseStatus } from "@finai/shared-types";
+import { AgentStreamEventType, AgentMode, ExecutionPhase, PhaseStatus } from "@fin-ai/shared-types";
 import { AgentTitleService } from "./agent-title.service";
 import { AgentRequestBuilderService } from "./services/agent-request-builder.service";
 import type { AgentEventEmitter, AgentWorkspaceContext } from "./agent.types";

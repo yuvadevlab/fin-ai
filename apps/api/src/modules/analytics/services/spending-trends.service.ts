@@ -7,8 +7,8 @@ import {
   calculateSavingsRate,
   generateRecommendations,
   calculateSafeToSpend,
-} from "@finai/finance-engine";
-import { TransactionType, GoalType } from "@finai/database";
+} from "@fin-ai/finance-engine";
+import { TransactionType, GoalType } from "@fin-ai/database";
 import { AnalyticsRepository } from "../repositories";
 
 /**

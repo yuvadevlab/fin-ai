@@ -8,7 +8,7 @@
  * A write action inserts confirmation_required instead of executing, and the
  * confirm/reject endpoints reply with action_result.
  */
-import { AgentCardType, AgentMode } from "@finai/shared-types";
+import { AgentCardType, AgentMode } from "@fin-ai/shared-types";
 
 export interface AgentCard {
   /** Card kind — drives which UI component renders it. */

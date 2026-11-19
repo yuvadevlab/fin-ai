@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AiProvider, AiProviderRole } from "@finai/shared-types";
+import { AiProvider, AiProviderRole } from "@fin-ai/shared-types";
 import { resolveAiProvider, createChatModel } from "../llm/provider-factory";
 
 describe("provider-factory role resolution", () => {

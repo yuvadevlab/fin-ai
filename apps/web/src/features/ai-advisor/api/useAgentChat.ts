@@ -3,12 +3,12 @@
 /**
  * @file apps/web/src/features/ai-advisor/api/useAgentChat.ts
  * @description Primary client hook managing SSE streaming, tool action approvals, and zero-latency caching.
- * @module @finai/web/features/ai-advisor/api/useAgentChat
+ * @module @fin-ai/web/features/ai-advisor/api/useAgentChat
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { StorageKey, QUERY_KEYS } from "@finai/shared-types";
+import { StorageKey, QUERY_KEYS } from "@fin-ai/shared-types";
 import { APP_ROUTES } from "@/lib";
 import { type AgentEventPort } from "./agentEventHandlers";
 import { streamAgentChat } from "./agentChatStreamer";

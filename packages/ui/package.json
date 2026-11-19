@@ -1,5 +1,5 @@
 {
-  "name": "@finai/ui",
+  "name": "@fin-ai/ui",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -36,8 +36,8 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@finai/finance-engine": "workspace:*",
-    "@finai/shared-types": "workspace:*",
+    "@fin-ai/finance-engine": "workspace:*",
+    "@fin-ai/shared-types": "workspace:*",
     "@yuva-devlab/tokens": "^2.1.2",
     "@yuva-devlab/ui": "^3.0.2",
     "clsx": "^2.1.1",

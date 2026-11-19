@@ -3,10 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
   transpilePackages: [
-    "@finai/ui",
-    "@finai/finance-engine",
-    "@finai/validation",
-    "@finai/shared-types",
+    "@fin-ai/ui",
+    "@fin-ai/finance-engine",
+    "@fin-ai/validation",
+    "@fin-ai/shared-types",
     "@yuva-devlab/auth-client",
   ],
   webpack: (config, { isServer }) => {

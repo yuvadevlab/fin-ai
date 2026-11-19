@@ -1,4 +1,4 @@
-import { AgentChatRole, AgentConfirmationStatus } from "@finai/shared-types";
+import { AgentChatRole, AgentConfirmationStatus } from "@fin-ai/shared-types";
 import type {
   AgentActivity,
   AgentChatMessage,
@@ -118,7 +118,7 @@ export function updateConfirmationStatusReducer(
 export function updateConfirmationCardReducer(
   prev: AgentChatMessage[],
   actionId: string,
-  card: import("@finai/ai-engine").AgentCard,
+  card: import("@fin-ai/ai-engine").AgentCard,
   tool?: string,
 ): AgentChatMessage[] {
   if (prev.length === 0) return prev;

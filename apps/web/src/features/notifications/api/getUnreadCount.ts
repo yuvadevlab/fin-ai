@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { API_ENDPOINTS, QUERY_KEYS } from "@finai/shared-types";
+import { API_ENDPOINTS, QUERY_KEYS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 
 export const unreadNotificationsCountQueryKey = () => QUERY_KEYS.NOTIFICATIONS.UNREAD_COUNT;

@@ -14,14 +14,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "@finai/ui";
+} from "@fin-ai/ui";
 import {
   formatINR,
   calculateBudgetStatus,
   calculateBudgetUsage,
   calculateBudgetRemaining,
-} from "@finai/finance-engine";
-import { BudgetStatus } from "@finai/shared-types";
+} from "@fin-ai/finance-engine";
+import { BudgetStatus } from "@fin-ai/shared-types";
 import { usePrivacyMode } from "@/hooks";
 import { useWorkspace } from "@/providers";
 import { useBudgets, useDeleteBudget, type Budget } from "../api";

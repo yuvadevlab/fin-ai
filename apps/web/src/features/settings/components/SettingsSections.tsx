@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { APP_ROUTES } from "@/lib";
-import { Button, Input, Label, Switch, Badge, toast } from "@finai/ui";
+import { Button, Input, Label, Switch, Badge, toast } from "@fin-ai/ui";
 import { type Category } from "@/features/categories";
 import { UI_COPY } from "@/lib/ui-copy";
 

@@ -1,7 +1,7 @@
 /**
  * @file packages/shared-types/src/workspace.models.ts
  * @description Interface contracts for workspaces, members, and invitations.
- * @module @finai/shared-types/workspace.models
+ * @module @fin-ai/shared-types/workspace.models
  */
 
 import type { User } from "./models";

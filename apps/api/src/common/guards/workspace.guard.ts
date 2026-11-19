@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { WorkspacesService } from "@/modules/workspaces/services/workspaces.service";
-import { WorkspaceRole, WorkspaceType } from "@finai/database";
+import { WorkspaceRole, WorkspaceType } from "@fin-ai/database";
 import { Logger } from "@yuva-devlab/logger";
 
 @Injectable()

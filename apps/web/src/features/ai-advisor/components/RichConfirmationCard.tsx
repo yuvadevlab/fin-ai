@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Loader2, ShieldAlert, X } from "lucide-react";
-import { Button, cn } from "@finai/ui";
+import { Button, cn } from "@fin-ai/ui";
 import { usePrivacyMode } from "@/hooks";
 import { useWorkspace } from "@/providers";
 import type { AgentConfirmation } from "../api/agentTypes";
@@ -10,7 +10,7 @@ import {
   AgentConfirmationStatus,
   AgentToolName,
   ConfirmationRowLabel,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 import { partitionRows } from "../utils/partitionRows";
 import { formatConfirmationLabel } from "../utils/confirmationDisplay";
 import { getTransactionTypeAccent, STATUS_META } from "../utils/confirmationCardStyles";

@@ -14,7 +14,7 @@ import {
   type CreateGoalInput,
   type UpdateGoalInput,
   type ContributeAmountInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Goals")
 @ApiBearerAuth()

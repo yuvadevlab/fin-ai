@@ -1,10 +1,10 @@
-import type { AgentStreamEvent } from "@finai/ai-engine";
+import type { AgentStreamEvent } from "@fin-ai/ai-engine";
 import {
   AgentActivityKind,
   AgentActivityStatus,
   AgentConfirmationStatus,
   AgentRunLogLevel,
-} from "@finai/shared-types";
+} from "@fin-ai/shared-types";
 import type { AgentActivity } from "./agentTypes";
 import {
   AgentEventPort,

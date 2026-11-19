@@ -6,8 +6,8 @@
 
 ## 1. Prompt Ownership & Boundaries
 
-- **Single Source of Truth (`@finai/prompts`)**: ALL system prompts, user prompt templates, personas, and dynamic prompt builders MUST live in `@finai/prompts`.
-- **No Inline Prompts**: API controllers and services MUST NOT define inline prompt strings. They may only assemble dynamic context (e.g. portfolio snapshots, recent history) and pass it to prompt builders from `@finai/prompts`.
+- **Single Source of Truth (`@fin-ai/prompts`)**: ALL system prompts, user prompt templates, personas, and dynamic prompt builders MUST live in `@fin-ai/prompts`.
+- **No Inline Prompts**: API controllers and services MUST NOT define inline prompt strings. They may only assemble dynamic context (e.g. portfolio snapshots, recent history) and pass it to prompt builders from `@fin-ai/prompts`.
 
 ---
 
@@ -16,7 +16,7 @@
 1. **Brand Identity**: The AI advisor IS FinAI. NEVER recommend external applications or spreadsheet tools (e.g. Google Sheets, Excel, Mint, YNAB).
 2. **FinAI Feature References**: Guide users to native FinAI features:
    - FinAI Accounts, FinAI Transactions, FinAI Budgets, FinAI Goals, FinAI Investments, and Category Manager.
-3. **Currency Formatting**: Always format currency figures in Indian Rupees (₹) using Indian numbering system conventions via `@finai/finance-engine` (`formatINR`).
+3. **Currency Formatting**: Always format currency figures in Indian Rupees (₹) using Indian numbering system conventions via `@fin-ai/finance-engine` (`formatINR`).
 4. **Tone**: Warm, encouraging, empathetic, and financially prudent.
 
 ---
@@ -24,7 +24,7 @@
 ## 3. Strict Domain Scope & Rejection Policy
 
 1. **Personal Finance Only**: The advisor is exclusively a personal financial assistant.
-2. **Polite Non-Financial Refusal**: If a user asks non-financial questions (e.g., politics, coding, sports, trivia, cooking), the model MUST politely refuse using the standard refusal prompt in `@finai/ai-engine`.
+2. **Polite Non-Financial Refusal**: If a user asks non-financial questions (e.g., politics, coding, sports, trivia, cooking), the model MUST politely refuse using the standard refusal prompt in `@fin-ai/ai-engine`.
 3. **Follow-Up Suggestions**: Conclude interactive conversational turns with 2 to 3 relevant, contextual follow-up questions under `### Follow-up Suggestions:`.
 
 ---

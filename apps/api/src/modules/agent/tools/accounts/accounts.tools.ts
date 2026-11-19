@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineTool } from "../../tool-factory";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
-import type { Account } from "@finai/shared-types";
+import type { Account } from "@fin-ai/shared-types";
 import {
   AgentCardType,
   AgentToolName,
@@ -9,10 +9,10 @@ import {
   ToolAccessLevel,
   ToolConfirmationType,
   ToolInvalidationTag,
-} from "@finai/shared-types";
-import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@finai/ai-engine";
-import { createAccountSchema, updateAccountSchema } from "@finai/validation";
-import { formatINR } from "@finai/finance-engine";
+} from "@fin-ai/shared-types";
+import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
+import { createAccountSchema, updateAccountSchema } from "@fin-ai/validation";
+import { formatINR } from "@fin-ai/finance-engine";
 import { TOOL_MESSAGES } from "../tool-messages.constants";
 
 /**

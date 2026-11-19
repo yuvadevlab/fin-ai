@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { clientTransactionSchema } from "@finai/validation";
-import { TransactionType, TransactionKind } from "@finai/shared-types";
+import { clientTransactionSchema } from "@fin-ai/validation";
+import { TransactionType, TransactionKind } from "@fin-ai/shared-types";
 import { useCreateTransaction, useUpdateTransaction } from "../api";
 
 export interface TransactionInitialValues {

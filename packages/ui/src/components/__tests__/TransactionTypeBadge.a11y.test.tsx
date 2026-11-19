@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { axe } from "vitest-axe";
 import { TransactionTypeBadge } from "../TransactionTypeBadge";
-import type { TransactionType } from "@finai/shared-types";
+import type { TransactionType } from "@fin-ai/shared-types";
 
 describe("TransactionTypeBadge A11y", () => {
   const types: TransactionType[] = ["INCOME", "EXPENSE", "TRANSFER", "INVESTMENT", "GOAL"];

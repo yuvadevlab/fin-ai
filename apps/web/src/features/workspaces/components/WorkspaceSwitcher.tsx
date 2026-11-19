@@ -12,8 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@finai/ui";
-import { WorkspaceRole, WorkspaceType } from "@finai/shared-types";
+} from "@fin-ai/ui";
+import { WorkspaceRole, WorkspaceType } from "@fin-ai/shared-types";
 import { UI_COPY, APP_ROUTES } from "@/lib";
 import { useWorkspace } from "@/providers";
 import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog";

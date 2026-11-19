@@ -18,7 +18,7 @@ import {
   type LlmToolCall,
   type LlmToolDefinition,
 } from "./types";
-import { AiProvider } from "@finai/shared-types";
+import { AiProvider } from "@fin-ai/shared-types";
 
 interface OllamaToolCallFunction {
   name: string;

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { calculateCashFlow, calculateNetWorth, calculateSavingsRate } from "@finai/finance-engine";
+import { calculateCashFlow, calculateNetWorth, calculateSavingsRate } from "@fin-ai/finance-engine";
 import { AnalyticsRepository } from "../repositories";
 
 /**

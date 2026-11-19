@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_ENDPOINTS } from "@finai/shared-types";
+import { API_ENDPOINTS } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib/api-client";
 import { Account, accountsQueryKey } from "./getAccounts";
-import { UpdateAccountInput } from "@finai/validation";
+import { UpdateAccountInput } from "@fin-ai/validation";
 
 async function updateAccount(id: string, input: UpdateAccountInput): Promise<Account> {
   return apiClient.patch<Account>(API_ENDPOINTS.ACCOUNTS.DETAIL(id), input);

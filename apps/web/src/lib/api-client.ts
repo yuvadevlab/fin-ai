@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StorageKey } from "@finai/shared-types";
+import { StorageKey } from "@fin-ai/shared-types";
 import { APP_ROUTES } from "./routes";
 import { DEFAULT_API_BASE_URL } from "./app-constants";
 import { isJwtExpired } from "./jwt";

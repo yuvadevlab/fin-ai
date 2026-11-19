@@ -1,10 +1,10 @@
 /**
  * @file apps/api/src/modules/ai/context-formatters.ts
  * @description Formats financial data snapshots into structured text context for the LLM.
- * @module @finai/api/ai/context-formatters
+ * @module @fin-ai/api/ai/context-formatters
  */
 
-import { formatINR } from "@finai/finance-engine";
+import { formatINR } from "@fin-ai/finance-engine";
 
 export interface FinanceContextData {
   todayStr: string;

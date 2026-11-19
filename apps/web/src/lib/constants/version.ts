@@ -2,7 +2,7 @@
  * @file apps/web/src/lib/constants/version.ts
  * @description Dynamic application version and build metadata for FinAI Web.
  * Implements Big Tech hybrid SemVer + Git SHA observability without hardcoded strings.
- * @module @finai/web/lib/constants/version
+ * @module @fin-ai/web/lib/constants/version
  */
 
 import pkg from "../../../package.json";

@@ -28,13 +28,13 @@ apps/api/src/modules/<feature>/
 
 ### Layer Responsibilities & Rules
 
-| Layer                                 | Allowed                                                          | Forbidden                                         |
-| :------------------------------------ | :--------------------------------------------------------------- | :------------------------------------------------ |
-| **1. Routes** (`*.controller.ts`)     | Status codes, `@UseGuards()`, `@CurrentUser()`, calling services | Direct Prisma queries, business calculations      |
-| **2. DTOs** (`dto/`)                  | Re-exporting Zod types (`@finai/validation`) & shared interfaces | Runtime business logic, database queries          |
-| **3. Repositories** (`repositories/`) | Prisma client queries, ordering, relations, pagination           | HTTP request context, Excel generation, LLM calls |
-| **4. Services** (`services/`)         | Co-ordinating repositories, business checks, atomic workflows    | Raw SQL queries, presentation formatting          |
-| **5. Utils** (`utils/`)               | Pure formulas, string parsers, formatters, pure transformations  | Database access, HTTP calls, NestJS DI state      |
+| Layer                                 | Allowed                                                           | Forbidden                                         |
+| :------------------------------------ | :---------------------------------------------------------------- | :------------------------------------------------ |
+| **1. Routes** (`*.controller.ts`)     | Status codes, `@UseGuards()`, `@CurrentUser()`, calling services  | Direct Prisma queries, business calculations      |
+| **2. DTOs** (`dto/`)                  | Re-exporting Zod types (`@fin-ai/validation`) & shared interfaces | Runtime business logic, database queries          |
+| **3. Repositories** (`repositories/`) | Prisma client queries, ordering, relations, pagination            | HTTP request context, Excel generation, LLM calls |
+| **4. Services** (`services/`)         | Co-ordinating repositories, business checks, atomic workflows     | Raw SQL queries, presentation formatting          |
+| **5. Utils** (`utils/`)               | Pure formulas, string parsers, formatters, pure transformations   | Database access, HTTP calls, NestJS DI state      |
 
 ---
 
@@ -80,4 +80,4 @@ apps/api/src/modules/<feature>/
    - SSE and agent stream events MUST use `AgentStreamEventType` (e.g. `AgentStreamEventType.RUN`, `AgentStreamEventType.DONE`, `AgentStreamEventType.ERROR`).
    - Agent modes, execution phases, and phase statuses MUST use `AgentMode`, `ExecutionPhase`, `PhaseStatus`.
 2. **API Endpoint Constants**:
-   - Reference `API_ENDPOINTS` from `@finai/shared-types` rather than hardcoded endpoint strings in controller tests, route handlers, or client wrappers.
+   - Reference `API_ENDPOINTS` from `@fin-ai/shared-types` rather than hardcoded endpoint strings in controller tests, route handlers, or client wrappers.

@@ -1,14 +1,14 @@
 /**
  * @file apps/api/src/modules/agent/agent-title.service.ts
  * @description Asynchronous LLM title generation service for new conversation threads.
- * @module @finai/api/modules/agent/agent-title.service
+ * @module @fin-ai/api/modules/agent/agent-title.service
  */
 
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { buildTitleGenerationPrompt, sanitizeConversationTitle } from "@finai/prompts";
+import { buildTitleGenerationPrompt, sanitizeConversationTitle } from "@fin-ai/prompts";
 import { ConversationService } from "@/modules/ai/conversation.service";
-import { AgentStreamEventType } from "@finai/shared-types";
+import { AgentStreamEventType } from "@fin-ai/shared-types";
 import { AgentModelFactory } from "./runners";
 import type { AgentEventEmitter } from "./agent.types";
 

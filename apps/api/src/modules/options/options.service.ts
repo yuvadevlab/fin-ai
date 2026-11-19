@@ -1,7 +1,7 @@
 /**
  * @file apps/api/src/modules/options/options.service.ts
  * @description Dynamic database-backed reference options and application performance configuration service.
- * @module @finai/api/modules/options/options.service
+ * @module @fin-ai/api/modules/options/options.service
  */
 
 import { Injectable } from "@nestjs/common";

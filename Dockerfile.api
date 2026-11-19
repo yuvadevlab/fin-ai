@@ -46,7 +46,7 @@ COPY apps/api ./apps/api
 RUN pnpm db:generate
 
 # Build the API and all internal workspace dependencies
-RUN pnpm --filter @finai/api... build
+RUN pnpm --filter @fin-ai/api... build
 
 # ─── Stage 3: Production Runner ───────────────────────────────────────────────
 FROM node:24-alpine AS runner

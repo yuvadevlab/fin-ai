@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { NotificationsRepository } from "../repositories/notifications.repository";
-import { NotificationType, Prisma } from "@finai/database";
+import { NotificationType, Prisma } from "@fin-ai/database";
 import { Logger } from "@yuva-devlab/logger";
 
 @Injectable()

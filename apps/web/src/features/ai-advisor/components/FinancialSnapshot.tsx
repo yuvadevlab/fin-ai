@@ -1,8 +1,8 @@
 "use client";
 
 import { Landmark, PiggyBank, ListChecks } from "lucide-react";
-import { cn } from "@finai/ui";
-import { AccountType } from "@finai/shared-types";
+import { cn } from "@fin-ai/ui";
+import { AccountType } from "@fin-ai/shared-types";
 import { PrivacyMoney } from "@/components";
 import { UI_COPY } from "@/lib";
 import { useAccounts } from "@/features/accounts/api/getAccounts";

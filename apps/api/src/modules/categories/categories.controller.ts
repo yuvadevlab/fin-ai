@@ -12,7 +12,7 @@ import {
   updateCategorySchema,
   type CreateCategoryInput,
   type UpdateCategoryInput,
-} from "@finai/validation";
+} from "@fin-ai/validation";
 
 @ApiTags("Categories")
 @ApiBearerAuth()
