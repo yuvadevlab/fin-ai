@@ -96,12 +96,12 @@
     border-inline-start: 4px solid var(--destructive);
   }
   .fn-tx-accent-transfer {
-    border-inline-start: 4px solid #f59e0b;
+    border-inline-start: 4px solid var(--warning);
   }
   .fn-tx-accent-investment {
-    border-inline-start: 4px solid #3b82f6;
+    border-inline-start: 4px solid var(--info);
   }
   .fn-tx-accent-goal {
-    border-inline-start: 4px solid #a855f7;
+    border-inline-start: 4px solid var(--chart-1, oklch(0.65 0.2 300));
   }
 }

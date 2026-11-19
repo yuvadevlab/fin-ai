@@ -164,6 +164,7 @@ settings:
 
 overrides:
   react-resizable-panels: 4.12.4
+  '@yuva-devlab/ai-client': link:../devlab-shared/packages/ai-client
 
 importers:
 
@@ -175,6 +176,9 @@ importers:
       '@neon/env':
         specifier: ^2.1.3
         version: 2.1.3
+      '@yuva-devlab/ai-client':
+        specifier: link:../devlab-shared/packages/ai-client
+        version: link:../devlab-shared/packages/ai-client
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.1
@@ -485,8 +489,8 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/ai-client':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: link:../../../devlab-shared/packages/ai-client
+        version: link:../../../devlab-shared/packages/ai-client
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -4654,9 +4658,6 @@ packages:
   '@yuva-devlab/agent-core@0.2.2':
     resolution: {integrity: sha512-QtlD55t10Hfm5bDXKGPFigafx97Ooi2P7lL5mNu/c54Ci9XfxQpIRQcfy9FlvkmRzQt78dijvA7BcI0sRH+30Q==}
 
-  '@yuva-devlab/ai-client@0.2.2':
-    resolution: {integrity: sha512-SZz9njJ4yPLb2lcU1QZzAQy48D5VxYSUuVa0plCWR5yfaQINq5ZzwV+OgisH3M2Lbyk3KWBxA1Q5eJhUiePzOg==}
-
   '@yuva-devlab/auth-client@1.3.0':
     resolution: {integrity: sha512-XCaYq9kQydfESy+JBz+TLOW8MLcYpJZAWH0d6ebcpnxsJd+1yGMlDdWWwoVNAlpXjMBOk824xkJukjHJ3CbPlg==}
     peerDependencies:
@@ -4671,9 +4672,6 @@ packages:
 
   '@yuva-devlab/logger@1.3.1':
     resolution: {integrity: sha512-cppWT5HUoIi6cZG6zhJC0HhEFjbdZyz5014cT24WP9hbDcNF0Be4VcI9A7Z4QbJFMlhSHkQxQzXt6k2ZRlR2OQ==}
-
-  '@yuva-devlab/resilience@0.2.0':
-    resolution: {integrity: sha512-aVNCG6GZHMfVWKcs5vxXe86kKxeYWnd1iaZZSPd/3zqQYHsxIyZHLl+6bWCZ9ldnzb5PkmwIElGGDABUnDwGgg==}
 
   '@yuva-devlab/tokens@2.1.2':
     resolution: {integrity: sha512-3iSZb/zBCvDHA+YjRXNchsVw31fPv1xhJ1uAeHhva3We8taUasPyQrZH7E9ouRXTCMSROIuTCFq2DpwccTGwqA==}
@@ -13614,13 +13612,6 @@ snapshots:
       '@yuva-devlab/logger': 1.3.1
       zod: 3.25.76
 
-  '@yuva-devlab/ai-client@0.2.2':
-    dependencies:
-      '@yuva-devlab/errors': 0.2.0
-      '@yuva-devlab/logger': 1.3.1
-      '@yuva-devlab/resilience': 0.2.0
-      zod: 3.25.76
-
   '@yuva-devlab/auth-client@1.3.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@yuva-devlab/errors': 0.2.0
@@ -13638,10 +13629,6 @@ snapshots:
   '@yuva-devlab/errors@0.2.0': {}
 
   '@yuva-devlab/logger@1.3.1': {}
-
-  '@yuva-devlab/resilience@0.2.0':
-    dependencies:
-      '@yuva-devlab/errors': 0.2.0
 
   '@yuva-devlab/tokens@2.1.2': {}
 

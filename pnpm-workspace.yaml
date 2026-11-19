@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 
 overrides:
+  "@yuva-devlab/ai-client": link:../devlab-shared/packages/ai-client
   # Pin react-resizable-panels — v4.21.0 has a bundling bug where it tries
   # to import 'Activity' from 'react', which does not exist in React 19.
   react-resizable-panels: "4.12.4"
@@ -25,5 +26,5 @@ minimumReleaseAgeExclude:
   - "@yuva-devlab/logger@1.1.0 || 1.2.0 || 1.3.0 || 1.3.1"
   - "@yuva-devlab/tokens@1.1.0 || 1.1.1 || 1.3.0 || 2.1.0 || 2.1.1 || 2.1.2"
   - "@yuva-devlab/errors@0.2.0"
-  - "@yuva-devlab/ai-client@0.2.0 || 0.2.1 || 0.2.2"
+  - "@yuva-devlab/ai-client@0.2.0 || 0.2.1 || 0.2.2 || 0.2.5 || 0.2.6"
   - "@yuva-devlab/agent-core@0.2.0 || 0.2.1 || 0.2.2"

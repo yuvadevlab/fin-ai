@@ -7,50 +7,55 @@ import {
 export const STATUS_META: Record<AgentConfirmationStatus, { label: string; className: string }> = {
   [AgentConfirmationStatus.PENDING]: {
     label: "Awaiting your approval",
-    className: "text-primary bg-primary/10 border-primary/20",
+    className: "fn-confirm-card-status-badge--pending",
   },
   [AgentConfirmationStatus.EXECUTED]: {
     label: "Confirmed & executed",
-    className: "text-primary bg-primary/10 border-primary/20",
+    className: "fn-confirm-card-status-badge--executed",
   },
   [AgentConfirmationStatus.REJECTED]: {
     label: "Rejected",
-    className: "text-muted-foreground bg-muted/40 border-border/60",
+    className: "fn-confirm-card-status-badge--rejected",
   },
   [AgentConfirmationStatus.FAILED]: {
     label: "Failed to execute",
-    className: "text-destructive bg-destructive/10 border-destructive/20",
+    className: "fn-confirm-card-status-badge--failed",
   },
 };
 
 export const TRANSACTION_TYPE_ACCENTS: Record<
   string,
-  { border: string; icon: string; badge: string }
+  { card: string; border: string; icon: string; badge: string }
 > = {
   [TransactionType.INCOME]: {
-    border: "border-l-4 border-l-primary",
-    icon: "text-primary",
-    badge: "text-primary bg-primary/10 border-primary/20",
+    card: "fn-confirm-card--income",
+    border: "fn-confirm-card--income",
+    icon: "fn-confirm-card-icon--income",
+    badge: "fn-confirm-card-type-badge--income",
   },
   [TransactionType.EXPENSE]: {
-    border: "border-l-4 border-l-destructive",
-    icon: "text-destructive",
-    badge: "text-destructive bg-destructive/10 border-destructive/20",
+    card: "fn-confirm-card--expense",
+    border: "fn-confirm-card--expense",
+    icon: "fn-confirm-card-icon--expense",
+    badge: "fn-confirm-card-type-badge--expense",
   },
   [TransactionType.TRANSFER]: {
-    border: "border-l-4 border-l-amber-500",
-    icon: "text-amber-500",
-    badge: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+    card: "fn-confirm-card--transfer",
+    border: "fn-confirm-card--transfer",
+    icon: "fn-confirm-card-icon--transfer",
+    badge: "fn-confirm-card-type-badge--transfer",
   },
   [TransactionType.INVESTMENT]: {
-    border: "border-l-4 border-l-blue-500",
-    icon: "text-blue-500",
-    badge: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
+    card: "fn-confirm-card--investment",
+    border: "fn-confirm-card--investment",
+    icon: "fn-confirm-card-icon--investment",
+    badge: "fn-confirm-card-type-badge--investment",
   },
   [TransactionType.GOAL]: {
-    border: "border-l-4 border-l-purple-500",
-    icon: "text-purple-500",
-    badge: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
+    card: "fn-confirm-card--goal",
+    border: "fn-confirm-card--goal",
+    icon: "fn-confirm-card-icon--goal",
+    badge: "fn-confirm-card-type-badge--goal",
   },
 };
 

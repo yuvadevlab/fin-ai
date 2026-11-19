@@ -41,6 +41,16 @@ interface OpenRouterStreamChunk {
   };
 }
 
+/** Normalize tool name to OpenAPI spec (alphanumeric and underscores only) */
+function sanitizeToolName(name: string): string {
+  return name.replace(/\./g, "_");
+}
+
+/** Restore canonical tool name from OpenAPI normalized string */
+function restoreToolName(name: string): string {
+  return name.replace(/_/g, ".");
+}
+
 /** Convert tool calls that arrived in a single chunk into neutral LlmToolCall[] */
 function toToolCalls(chunk: OpenRouterStreamChunk): LlmToolCall[] {
   const calls: LlmToolCall[] = [];
@@ -48,7 +58,7 @@ function toToolCalls(chunk: OpenRouterStreamChunk): LlmToolCall[] {
     for (const tc of choice.delta?.tool_calls ?? []) {
       calls.push({
         id: tc.id ?? `call_${tc.index ?? 0}`,
-        name: tc.function?.name ?? "",
+        name: restoreToolName(tc.function?.name ?? ""),
         arguments: tc.function?.arguments ?? "",
       });
     }
@@ -60,7 +70,11 @@ function toToolCalls(chunk: OpenRouterStreamChunk): LlmToolCall[] {
 function toOpenAiTools(tools: LlmToolDefinition[]) {
   return tools.map((t) => ({
     type: "function" as const,
-    function: { name: t.name, description: t.description, parameters: t.parameters },
+    function: {
+      name: sanitizeToolName(t.name),
+      description: t.description,
+      parameters: t.parameters,
+    },
   }));
 }
 
@@ -193,7 +207,7 @@ export class OpenRouterChatModel implements ChatModel {
     const message = data.choices?.[0]?.message;
     const toolCalls: LlmToolCall[] = (message?.tool_calls ?? []).map((tc) => ({
       id: tc.id ?? "",
-      name: tc.function?.name ?? "",
+      name: restoreToolName(tc.function?.name ?? ""),
       arguments:
         typeof tc.function?.arguments === "string"
           ? tc.function.arguments

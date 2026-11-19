@@ -64,7 +64,7 @@ export function RichConfirmationCard({
   const meta = isExecuting
     ? {
         label: UI_COPY.ADVISOR.CONFIRMATION_STATUS.EXECUTING,
-        className: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+        className: "fn-confirm-card-status-badge--executing",
       }
     : STATUS_META[status];
 
@@ -85,7 +85,11 @@ export function RichConfirmationCard({
     <div className={cn("fn-confirm-card", typeAccent?.border)}>
       {/* Header */}
       <div className="fn-confirm-card-header">
-        <ShieldAlert className={cn("fn-confirm-card-icon", typeAccent?.icon)} aria-hidden="true" />
+        <ShieldAlert
+          size={16}
+          className={cn("fn-confirm-card-icon", typeAccent?.icon)}
+          aria-hidden="true"
+        />
         <p className="fn-confirm-card-title">{card.title}</p>
         <span className={cn("fn-confirm-card-status-badge", meta.className)}>
           {isExecuting ? (

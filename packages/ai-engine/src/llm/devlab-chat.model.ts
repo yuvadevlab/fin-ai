@@ -12,6 +12,7 @@ import {
   type LlmRole,
   type LlmStreamEvent,
   LLM_RETRY_CONFIG,
+  extractDynamicRetryDelayMs,
   isTransientLlmError,
 } from "./types";
 
@@ -92,7 +93,7 @@ export class DevLabChatModel implements ChatModel {
       } catch (err) {
         attempt++;
         if (attempt <= LLM_RETRY_CONFIG.MAX_RETRIES && isTransientLlmError(err)) {
-          const delayMs = attempt * LLM_RETRY_CONFIG.BACKOFF_BASE_MS;
+          const delayMs = extractDynamicRetryDelayMs(err, attempt);
           await new Promise((resolve) => setTimeout(resolve, delayMs));
           continue;
         }
@@ -136,7 +137,7 @@ export class DevLabChatModel implements ChatModel {
       } catch (err) {
         attempt++;
         if (attempt <= LLM_RETRY_CONFIG.MAX_RETRIES && isTransientLlmError(err)) {
-          const delayMs = attempt * LLM_RETRY_CONFIG.BACKOFF_BASE_MS;
+          const delayMs = extractDynamicRetryDelayMs(err, attempt);
           await new Promise((resolve) => setTimeout(resolve, delayMs));
           continue;
         }
