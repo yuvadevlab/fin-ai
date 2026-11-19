@@ -107,3 +107,40 @@ export class LlmConnectionError extends Error {
     this.name = "LlmConnectionError";
   }
 }
+
+/**
+ * Canonical HTTP status codes and socket error markers that signify transient LLM failures.
+ * Adheres to Rule 7: Enums over raw string unions.
+ */
+export enum TransientLlmErrorCode {
+  SERVICE_UNAVAILABLE = "503",
+  BAD_GATEWAY = "502",
+  GATEWAY_TIMEOUT = "504",
+  TOO_MANY_REQUESTS = "429",
+  TIMEOUT = "timeout",
+  CONN_RESET = "ECONNRESET",
+}
+
+/** Array of all canonical transient error markers for introspection. */
+export const TRANSIENT_LLM_ERROR_CODES: readonly TransientLlmErrorCode[] =
+  Object.values(TransientLlmErrorCode);
+
+/** Operational retry configuration for LLM provider adapters. */
+export const LLM_RETRY_CONFIG = {
+  MAX_RETRIES: 2,
+  BACKOFF_BASE_MS: 800,
+  TIMEOUT_MS: 30_000,
+  TEMPERATURE: 0.7,
+} as const;
+
+/**
+ * Evaluates whether an error object signals a transient failure suitable for exponential retry.
+ *
+ * @param err - Unknown error object caught during model inference
+ * @returns True if error is an Error instance containing any transient error code
+ */
+export function isTransientLlmError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const message = err.message.toLowerCase();
+  return TRANSIENT_LLM_ERROR_CODES.some((code) => message.includes(code.toLowerCase()));
+}

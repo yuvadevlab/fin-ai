@@ -42,6 +42,7 @@ export const UI_COPY_CONSTANTS = {
     NAV_ARIA: "Sidebar navigation",
     MAIN_NAV_ARIA: "Main Navigation",
     OVERVIEW_HEADING: "Overview",
+    INTELLIGENCE_HEADING: "Intelligence",
     COLLAPSE_ARIA: "Collapse sidebar (Cmd+B)",
     EXPAND_ARIA: "Expand sidebar (Cmd+B)",
     COLLAPSE_TEXT: "Collapse Sidebar",

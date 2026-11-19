@@ -29,17 +29,17 @@
   }
 
   .fn-sidebar-ai-card-wrap {
-    padding: 1rem;
+    padding: 0.5rem 0.75rem;
   }
 
   .fn-sidebar-ai-card {
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: var(--radius-2xl, 1rem);
+    border-radius: var(--radius-xl, 0.75rem);
     border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
     background-color: color-mix(in srgb, var(--secondary) 30%, transparent);
-    padding: 0.875rem;
+    padding: 0.625rem 0.75rem;
     transition: all 150ms ease;
     text-decoration: none;
   }

@@ -116,7 +116,7 @@ export function Sidebar({
       >
         {/* Header / Brand */}
         <div className={cn("fn-sidebar-header", isRail && "fn-sidebar-header--collapsed")}>
-          <FinAILogo compact showName={!isRail} markClassName="size-8" />
+          <FinAILogo compact showName={!isRail} />
         </div>
 
         {/* Navigation Links */}
@@ -154,7 +154,7 @@ export function Sidebar({
             >
               {!isRail ? (
                 <div className="fn-sidebar-nav-heading" id="nav-intelligence-heading">
-                  Intelligence
+                  {copy.INTELLIGENCE_HEADING}
                 </div>
               ) : (
                 <Separator className="fn-sidebar-separator" />
