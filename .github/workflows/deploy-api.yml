@@ -30,8 +30,10 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (!contains(github.event.head_commit.message, 'sync/main-to-dev') &&
-       !contains(github.event.head_commit.message, 'reverse merge main into dev') &&
-       !contains(github.event.head_commit.message, 'chore(sync):'))
+       !contains(github.event.head_commit.message, 'reverse merge') &&
+       !contains(github.event.head_commit.message, 'merge main into dev') &&
+       !contains(github.event.head_commit.message, 'Merge branch ''main'' into dev') &&
+       !contains(github.event.head_commit.message, 'chore(sync)'))
     uses: yuvadevlab/.github/.github/workflows/reusable-ci.yml@main
     with:
       node-version: "24"
@@ -40,6 +42,13 @@ jobs:
   deploy:
     name: 🚢 Deploy to Cloud Run
     needs: [validate]
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!contains(github.event.head_commit.message, 'sync/main-to-dev') &&
+       !contains(github.event.head_commit.message, 'reverse merge') &&
+       !contains(github.event.head_commit.message, 'merge main into dev') &&
+       !contains(github.event.head_commit.message, 'Merge branch ''main'' into dev') &&
+       !contains(github.event.head_commit.message, 'chore(sync)'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
