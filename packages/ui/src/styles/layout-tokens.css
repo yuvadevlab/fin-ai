@@ -31,7 +31,7 @@
     --sidebar-header-height: 3.5rem;
 
     /* ── Sidebar Dimensions ───────────────────────────────────────────────── */
-    --sidebar-width: 16rem; /* 256px */
+    --sidebar-width: 15rem; /* 240px */
     --sidebar-width-collapsed: 4.5rem; /* 72px */
     --sidebar-padding-x: 0.75rem;
     --sidebar-padding-y: 1rem;
