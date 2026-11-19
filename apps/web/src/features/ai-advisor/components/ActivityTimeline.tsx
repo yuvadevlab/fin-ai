@@ -122,7 +122,7 @@ export function ActivityTimeline({
         </span>
         {isStreaming && !expanded && (
           <Loader2
-            className="fn-timeline-header-icon fn-timeline-header-icon--streaming animate-spin"
+            className="fn-timeline-header-icon fn-timeline-header-icon--streaming fn-icon-spin"
             aria-hidden="true"
           />
         )}

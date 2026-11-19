@@ -20,11 +20,11 @@ export function MaskedValue({
   ...props
 }: MaskedValueProps) {
   return (
-    <span data-privacy-sensitive className={cn("tabular-nums", className)} {...props}>
+    <span data-privacy-sensitive className={cn("fn-tabular-nums", className)} {...props}>
       {prefix}
       {masked ? (
         <>
-          <span className="sr-only">{UI_COPY_CONSTANTS.MASKED_VALUE.HIDDEN_ARIA}</span>
+          <span className="dl-sr-only">{UI_COPY_CONSTANTS.MASKED_VALUE.HIDDEN_ARIA}</span>
           <span aria-hidden="true">{maskPlaceholder}</span>
         </>
       ) : (

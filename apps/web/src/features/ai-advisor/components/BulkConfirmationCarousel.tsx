@@ -128,7 +128,7 @@ export function BulkConfirmationCarousel({
                 onClick={handlePrev}
                 aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.PREVIOUS}
               >
-                <ChevronLeft className="size-4" />
+                <ChevronLeft className="fn-icon-md" />
               </Button>
               <span className="fn-bulk-confirm-nav-counter">{visibleRangeLabel}</span>
               <Button
@@ -139,7 +139,7 @@ export function BulkConfirmationCarousel({
                 onClick={handleNext}
                 aria-label={UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.NEXT}
               >
-                <ChevronRight className="size-4" />
+                <ChevronRight className="fn-icon-md" />
               </Button>
             </div>
           )}
@@ -153,9 +153,9 @@ export function BulkConfirmationCarousel({
                 onClick={handleConfirmAll}
               >
                 {isExecuting ? (
-                  <Loader2 className="size-3.5 animate-spin" />
+                  <Loader2 className="fn-icon-sm fn-icon-spin" />
                 ) : (
-                  <Check className="size-3.5" />
+                  <Check className="fn-icon-sm" />
                 )}
                 {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CONFIRM_ALL(pendingCount)}
               </Button>
@@ -166,7 +166,7 @@ export function BulkConfirmationCarousel({
                 disabled={disabled || isExecuting}
                 onClick={handleRejectAll}
               >
-                <X className="size-3.5" />
+                <X className="fn-icon-sm" />
                 {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_ALL}
               </Button>
             </div>

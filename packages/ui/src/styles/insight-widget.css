@@ -25,6 +25,26 @@
     }
   }
 
+  .fn-insight-trigger-wrap {
+    pointer-events: auto;
+  }
+
+  .fn-insight-trigger-icon {
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+    transition: transform 300ms ease;
+  }
+
+  .fn-insight-trigger-icon.is-primary {
+    color: var(--primary);
+  }
+
+  .fn-insight-trigger-icon.is-open {
+    color: var(--primary-foreground);
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   /* Floating Action Trigger Pill (Icon by default, expands on hover) */
   .fn-insight-trigger {
     position: relative;

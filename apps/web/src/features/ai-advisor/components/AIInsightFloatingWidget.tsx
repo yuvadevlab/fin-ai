@@ -76,15 +76,7 @@ export function AIInsightFloatingWidget() {
   return (
     <div className="fn-insight-widget-root">
       {/* Expanded flyout panel — opens directly above the trigger button */}
-      <div
-        className={cn(
-          "fn-insight-window",
-          isOpen
-            ? "mb-1 max-h-115 translate-y-0 opacity-100"
-            : "pointer-events-none max-h-0 translate-y-3 opacity-0",
-        )}
-        aria-hidden={!isOpen}
-      >
+      <div className={cn("fn-insight-window", isOpen && "is-open")} aria-hidden={!isOpen}>
         {/* Panel header with glacier knife-shine effect */}
         <div className="fn-insight-header">
           <div className="fn-insight-header-content">
@@ -127,7 +119,7 @@ export function AIInsightFloatingWidget() {
               <span>{UI_COPY.ADVISOR.WIDGET.ANALYZING(pageTitle)}</span>
             </div>
           ) : text ? (
-            <MarkdownContent content={text} className="text-[13px]">
+            <MarkdownContent content={text} className="fn-insight-prose">
               {isStreaming && <span className="fn-insight-cursor">▍</span>}
             </MarkdownContent>
           ) : (
@@ -136,7 +128,7 @@ export function AIInsightFloatingWidget() {
                 {UI_COPY.ADVISOR.WIDGET.READY_DESCRIPTION(pageTitle)}
               </p>
               <button onClick={handleGenerate} className="fn-insight-generate-btn">
-                <Sparkles className="fn-insight-header-sparkle" />
+                <Sparkles className="fn-insight-btn-icon" />
                 {UI_COPY.ADVISOR.WIDGET.GENERATE}
               </button>
             </div>
@@ -151,7 +143,7 @@ export function AIInsightFloatingWidget() {
               className="fn-insight-footer-link"
               onClick={() => setIsOpen(false)}
             >
-              <ExternalLink className="fn-insight-header-sparkle" />
+              <ExternalLink className="fn-insight-footer-icon" />
               {UI_COPY.ADVISOR.WIDGET.ASK_IN_CHAT}
             </Link>
             <span className="fn-insight-footer-brand">{UI_COPY.ADVISOR.WIDGET.BRAND}</span>
@@ -160,7 +152,7 @@ export function AIInsightFloatingWidget() {
       </div>
 
       {/* FAB trigger button — spacious pill with icon + title */}
-      <div className="pointer-events-auto">
+      <div className="fn-insight-trigger-wrap">
         <button
           onClick={handleToggle}
           aria-label={isOpen ? UI_COPY.ADVISOR.WIDGET.CLOSE : UI_COPY.ADVISOR.WIDGET.OPEN}
@@ -168,10 +160,7 @@ export function AIInsightFloatingWidget() {
           className={cn("fn-insight-trigger", isOpen && "is-open")}
         >
           <Sparkles
-            className={cn(
-              "size-4 shrink-0 transition-transform duration-300",
-              isOpen ? "text-primary-foreground animate-pulse" : "text-primary",
-            )}
+            className={cn("fn-insight-trigger-icon", isOpen ? "is-open" : "is-primary")}
             aria-hidden="true"
           />
 
@@ -186,7 +175,7 @@ export function AIInsightFloatingWidget() {
 
           {isOpen && (
             <span className="fn-insight-trigger-close" aria-hidden="true">
-              <X className="size-3.5 shrink-0" />
+              <X className="fn-icon-sm" />
             </span>
           )}
         </button>

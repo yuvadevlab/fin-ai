@@ -205,10 +205,10 @@ export function Sidebar({
                   aria-expanded={!isRail}
                 >
                   {isRail ? (
-                    <PanelLeft className="size-4 shrink-0" aria-hidden="true" />
+                    <PanelLeft className="fn-icon-md" aria-hidden="true" />
                   ) : (
                     <>
-                      <PanelLeftClose className="size-4 shrink-0" aria-hidden="true" />
+                      <PanelLeftClose className="fn-icon-md" aria-hidden="true" />
                       <span>{copy.COLLAPSE_TEXT}</span>
                     </>
                   )}

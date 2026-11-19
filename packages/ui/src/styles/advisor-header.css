@@ -137,4 +137,10 @@
       line-height: 1rem;
     }
   }
+
+  @media (min-width: 1024px) {
+    .fn-advisor-header-btn--mobile-context {
+      display: none !important;
+    }
+  }
 }

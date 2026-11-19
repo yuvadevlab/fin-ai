@@ -129,7 +129,7 @@ export function InvestmentsPage() {
                   className="fn-investment-update-btn"
                   title={UI_COPY.INVESTMENTS.UPDATE_MARKET_VALUE}
                 >
-                  <Pencil className="size-3.5" />
+                  <Pencil className="fn-icon-sm" />
                 </Button>
               }
             />
@@ -151,7 +151,7 @@ export function InvestmentsPage() {
             <InvestmentDialog
               trigger={
                 <Button size="sm" className="fn-header-action-btn">
-                  <Plus className="size-4" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
+                  <Plus className="fn-icon-md" /> {UI_COPY.INVESTMENTS.TRACK_INVESTMENT}
                 </Button>
               }
             />

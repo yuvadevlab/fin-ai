@@ -72,7 +72,7 @@ export function GoalsPage() {
         actions={
           isReadOnly ? undefined : (
             <Button size="sm" onClick={handleOpenCreateGoal} className="fn-header-action-btn">
-              <Plus className="size-4" /> {UI_COPY.GOALS.NEW_GOAL}
+              <Plus className="fn-icon-md" /> {UI_COPY.GOALS.NEW_GOAL}
             </Button>
           )
         }
@@ -89,7 +89,7 @@ export function GoalsPage() {
           <p className="fn-entity-empty-desc">{UI_COPY.GOALS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
             <Button size="sm" onClick={handleOpenCreateGoal} className="fn-entity-empty-btn">
-              <Plus className="size-4" /> {UI_COPY.GOALS.CREATE_FIRST}
+              <Plus className="fn-icon-md" /> {UI_COPY.GOALS.CREATE_FIRST}
             </Button>
           )}
         </div>
@@ -135,7 +135,7 @@ export function GoalsPage() {
                           className="fn-goal-menu-trigger"
                           aria-label={UI_COPY.GOALS.ACTIONS_FOR(g.name)}
                         >
-                          <MoreVertical className="size-4" />
+                          <MoreVertical className="fn-icon-md" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="fn-goal-menu-content">

@@ -23,7 +23,7 @@ type Story = StoryObj<typeof MiniStat>;
 /** Standard display with icon and positive sub-label. */
 export const Default: Story = {
   args: {
-    icon: <Wallet className="size-5" />,
+    icon: <Wallet className="fn-icon-lg" />,
   },
 };
 

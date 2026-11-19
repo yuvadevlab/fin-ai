@@ -32,9 +32,9 @@ export function ScoreGauge({
   const strokeDashoffset = circumference - normalizedPercentage * circumference;
 
   const getScoreColor = (val: number) => {
-    if (val >= 80) return "text-primary stroke-primary";
-    if (val >= 60) return "text-amber-500 stroke-amber-500";
-    return "text-destructive stroke-destructive";
+    if (val >= 80) return "finai-score-gauge--excellent";
+    if (val >= 60) return "finai-score-gauge--good";
+    return "finai-score-gauge--poor";
   };
 
   return (
@@ -47,7 +47,7 @@ export function ScoreGauge({
       aria-label={`${UI_COPY_CONSTANTS.SCORE_GAUGE.SCORE_PREFIX} ${clampedScore} ${label}`}
       {...props}
     >
-      <div className="relative" style={{ width: size, height: size }}>
+      <div className="finai-score-gauge-ring-wrap" style={{ width: size, height: size }}>
         <svg viewBox="0 0 120 120" className="finai-score-gauge-svg" aria-hidden="true">
           {/* Track background circle */}
           <circle
@@ -69,10 +69,7 @@ export function ScoreGauge({
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            className={cn(
-              "transition-[stroke-dashoffset] duration-800 ease-out",
-              getScoreColor(clampedScore),
-            )}
+            className={cn("finai-score-gauge-arc", getScoreColor(clampedScore))}
           />
         </svg>
 

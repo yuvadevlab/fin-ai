@@ -151,6 +151,29 @@
     text-align: center;
   }
 
+  .finai-score-gauge-ring-wrap {
+    position: relative;
+  }
+
+  .finai-score-gauge-arc {
+    transition: stroke-dashoffset 800ms ease-out;
+  }
+
+  .finai-score-gauge--excellent {
+    color: var(--primary);
+    stroke: var(--primary);
+  }
+
+  .finai-score-gauge--good {
+    color: var(--warning, #f59e0b);
+    stroke: var(--warning, #f59e0b);
+  }
+
+  .finai-score-gauge--poor {
+    color: var(--destructive);
+    stroke: var(--destructive);
+  }
+
   .finai-score-gauge-svg {
     width: 100%;
     height: 100%;

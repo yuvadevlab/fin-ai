@@ -53,7 +53,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               className="fn-search-item"
             >
               <span className="fn-search-icon-badge">
-                <Receipt className="size-3.5" />
+                <Receipt className="fn-icon-sm" />
               </span>
               <div className="fn-search-item-info">
                 <p className="fn-search-item-title">{t.notes ?? t.categoryName}</p>
@@ -88,7 +88,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
               className="fn-search-item"
             >
               <span className="fn-search-icon-badge">
-                <Wallet className="size-3.5" />
+                <Wallet className="fn-icon-sm" />
               </span>
               <div className="fn-search-item-info">
                 <p className="fn-search-item-title">{a.name}</p>
@@ -117,7 +117,7 @@ export function SearchDropdown({ query, onClose }: SearchDropdownProps) {
             return (
               <Link key={g.id} href={APP_ROUTES.GOALS} onClick={onClose} className="fn-search-item">
                 <span className="fn-search-icon-badge">
-                  <Target className="size-3.5" />
+                  <Target className="fn-icon-sm" />
                 </span>
                 <div className="fn-search-item-info">
                   <p className="fn-search-item-title">{g.name}</p>

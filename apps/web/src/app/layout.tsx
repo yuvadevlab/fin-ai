@@ -84,7 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
          */}
         <script dangerouslySetInnerHTML={{ __html: appearanceScript }} />
       </head>
-      <body className="font-sans antialiased">
+      <body className="fn-app-body">
         {/*
          * Skip-to-content link — visually hidden until focused via Tab key.
          * Allows keyboard-only and screen-reader users to bypass the sidebar

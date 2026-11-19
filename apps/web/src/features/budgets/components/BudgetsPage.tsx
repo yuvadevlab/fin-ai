@@ -77,7 +77,7 @@ export function BudgetsPage() {
         actions={
           isReadOnly ? undefined : (
             <Button size="sm" onClick={handleOpenCreateBudget} className="fn-header-action-btn">
-              <Plus className="size-4" /> {UI_COPY.BUDGETS.NEW_BUDGET}
+              <Plus className="fn-icon-md" /> {UI_COPY.BUDGETS.NEW_BUDGET}
             </Button>
           )
         }
@@ -94,7 +94,7 @@ export function BudgetsPage() {
           <p className="fn-entity-empty-desc">{UI_COPY.BUDGETS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
             <Button size="sm" onClick={handleOpenCreateBudget} className="fn-entity-empty-btn">
-              <Plus className="size-4" /> {UI_COPY.BUDGETS.CREATE_FIRST}
+              <Plus className="fn-icon-md" /> {UI_COPY.BUDGETS.CREATE_FIRST}
             </Button>
           )}
         </div>
@@ -142,7 +142,7 @@ export function BudgetsPage() {
                           className="fn-goal-menu-trigger"
                           aria-label={UI_COPY.BUDGETS.ACTIONS_FOR(name)}
                         >
-                          <MoreVertical className="size-4" />
+                          <MoreVertical className="fn-icon-md" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="fn-goal-menu-content">

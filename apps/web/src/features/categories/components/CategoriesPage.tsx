@@ -97,7 +97,7 @@ export function CategoriesPage() {
         actions={
           isReadOnly ? undefined : (
             <Button size="sm" onClick={handleOpenAddCategory} className="fn-header-action-btn">
-              <Plus className="size-4" /> {UI_COPY.CATEGORIES.ADD}
+              <Plus className="fn-icon-md" /> {UI_COPY.CATEGORIES.ADD}
             </Button>
           )
         }
@@ -142,7 +142,7 @@ export function CategoriesPage() {
                               className="fn-category-menu-trigger"
                               aria-label={UI_COPY.CATEGORIES.ACTIONS_FOR(cat.name)}
                             >
-                              <MoreVertical className="size-4" />
+                              <MoreVertical className="fn-icon-md" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="fn-category-menu-content">

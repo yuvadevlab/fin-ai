@@ -44,7 +44,7 @@ export function AdvisorHeader({
         {/* Brand identity */}
         <div className="fn-advisor-header-brand">
           <div className="fn-advisor-header-icon-box">
-            <Sparkles className="size-4 shrink-0" aria-hidden="true" />
+            <Sparkles className="fn-icon-md" aria-hidden="true" />
           </div>
           <div className="fn-advisor-header-titles">
             <h1 className="fn-advisor-header-title">{UI_COPY.ADVISOR.HEADER.TITLE}</h1>
@@ -63,7 +63,7 @@ export function AdvisorHeader({
             aria-label={UI_COPY.ADVISOR.HEADER.GUIDE_BUTTON}
             title={UI_COPY.ADVISOR.HEADER.GUIDE_BUTTON}
           >
-            <Info className="size-3.5 shrink-0" />
+            <Info className="fn-icon-sm" />
           </Button>
 
           {/* Context toggle — mobile & tablet viewports */}
@@ -71,11 +71,11 @@ export function AdvisorHeader({
             variant="ghost"
             size="sm"
             onClick={onOpenContext}
-            className="fn-advisor-header-btn lg:hidden"
+            className="fn-advisor-header-btn fn-advisor-header-btn--mobile-context"
             aria-label={UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
             title={UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
           >
-            <PanelRight className="size-3.5 shrink-0" />
+            <PanelRight className="fn-icon-sm" />
             <span className="fn-advisor-header-btn-label">
               {UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
             </span>
@@ -90,7 +90,7 @@ export function AdvisorHeader({
             aria-label={UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
             title={UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
           >
-            <History className="size-3.5 shrink-0" />
+            <History className="fn-icon-sm" />
             <span className="fn-advisor-header-btn-label">
               {UI_COPY.ADVISOR.HEADER.HISTORY_BUTTON}
             </span>
@@ -106,7 +106,7 @@ export function AdvisorHeader({
             aria-label={UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
             title={UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
           >
-            <MessageSquarePlus className="size-3.5 shrink-0" />
+            <MessageSquarePlus className="fn-icon-sm" />
             <span className="fn-advisor-header-btn-label">
               {UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON}
             </span>

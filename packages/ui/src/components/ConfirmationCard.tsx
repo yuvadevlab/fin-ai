@@ -162,7 +162,7 @@ export function ConfirmationCard({
               disabled={disabled}
               onClick={() => onConfirm(confirmation.actionId)}
             >
-              <Check className="size-3.5" />
+              <Check className="fn-icon-sm" />
               {copy.CONFIRM_BTN}
             </Button>
             <Button
@@ -171,7 +171,7 @@ export function ConfirmationCard({
               className="fn-confirm-btn"
               onClick={() => onReject(confirmation.actionId)}
             >
-              <X className="size-3.5" />
+              <X className="fn-icon-sm" />
               {copy.CANCEL_BTN}
             </Button>
           </div>

@@ -70,14 +70,14 @@ export function ReportsPage() {
               className="fn-report-action-btn"
               onClick={() => toast.success(UI_COPY.REPORTS.PDF_STARTED)}
             >
-              <FileText className="size-4" /> {UI_COPY.REPORTS.EXPORT_PDF}
+              <FileText className="fn-icon-md" /> {UI_COPY.REPORTS.EXPORT_PDF}
             </Button>
             <Button
               size="sm"
               className="fn-report-action-btn"
               onClick={() => toast.success(UI_COPY.REPORTS.CSV_READY)}
             >
-              <Download className="size-4" /> {UI_COPY.REPORTS.EXPORT_CSV}
+              <Download className="fn-icon-md" /> {UI_COPY.REPORTS.EXPORT_CSV}
             </Button>
           </div>
         }

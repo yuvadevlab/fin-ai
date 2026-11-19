@@ -29,7 +29,7 @@ export function EmptyState({ onSelect, className }: EmptyStateProps) {
       {/* Hero identity */}
       <div className="fn-empty-state-hero">
         <div className="fn-empty-state-icon">
-          <Sparkles className="size-7" aria-hidden="true" />
+          <Sparkles className="fn-icon-2xl" aria-hidden="true" />
         </div>
         <h2 className="fn-empty-state-title">{UI_COPY.ADVISOR.EMPTY_STATE.TITLE}</h2>
         <p className="fn-empty-state-subtitle">{UI_COPY.ADVISOR.EMPTY_STATE.SUBTITLE}</p>

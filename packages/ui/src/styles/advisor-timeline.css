@@ -52,6 +52,11 @@
     color: var(--muted-foreground);
   }
 
+  .fn-timeline-header-icon--pending {
+    color: var(--muted-foreground);
+    opacity: 0.5;
+  }
+
   .fn-timeline-header-content {
     min-inline-size: 0;
     flex: 1;

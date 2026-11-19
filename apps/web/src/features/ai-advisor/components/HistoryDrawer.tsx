@@ -117,7 +117,7 @@ export function HistoryDrawer({
                     title={UI_COPY.ADVISOR.DRAWER.DELETE_TOOLTIP}
                   >
                     <Trash2 className="fn-history-delete-icon" />
-                    <span className="sr-only">{UI_COPY.ADVISOR.DRAWER.DELETE_A11Y}</span>
+                    <span className="dl-sr-only">{UI_COPY.ADVISOR.DRAWER.DELETE_A11Y}</span>
                   </Button>
                 )}
               </div>

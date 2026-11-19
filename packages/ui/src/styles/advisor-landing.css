@@ -180,6 +180,18 @@
     color: var(--foreground);
   }
 
+  .fn-quick-actions-chip.is-disabled,
+  .fn-quick-actions-card.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .fn-quick-actions-chip-content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5, 0.375rem);
+  }
+
   .fn-quick-actions-card-title {
     display: inline-flex;
     align-items: center;

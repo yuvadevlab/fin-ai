@@ -74,7 +74,7 @@ export const WithChildren: Story = {
           fontSize: "0.75rem",
         }}
       >
-        <TrendingUp className="size-3" />
+        <TrendingUp className="fn-icon-xs" />
         On track for your goal
       </div>
     ),

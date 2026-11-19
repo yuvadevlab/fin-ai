@@ -97,7 +97,7 @@ export function TopBar({
                 className="fn-topbar-search-clear-btn"
                 aria-label={copy.CLEAR_SEARCH_ARIA}
               >
-                <X className="size-3" />
+                <X className="fn-icon-xs" />
               </button>
             )}
           </div>
@@ -123,7 +123,7 @@ export function TopBar({
                   aria-label={copy.OPEN_MENU_ARIA}
                   aria-haspopup="dialog"
                 >
-                  <Menu className="size-4 sm:size-5" aria-hidden="true" />
+                  <Menu className="fn-icon-md" aria-hidden="true" />
                 </Button>
               </div>
             )}
@@ -139,9 +139,9 @@ export function TopBar({
                 aria-expanded={!isSidebarCollapsed}
               >
                 {isSidebarCollapsed ? (
-                  <PanelLeft className="size-4" aria-hidden="true" />
+                  <PanelLeft className="fn-icon-md" aria-hidden="true" />
                 ) : (
-                  <PanelLeftClose className="size-4" aria-hidden="true" />
+                  <PanelLeftClose className="fn-icon-md" aria-hidden="true" />
                 )}
               </Button>
             )}
@@ -176,7 +176,7 @@ export function TopBar({
                         className="fn-topbar-search-clear-btn"
                         aria-label={copy.CLEAR_SEARCH_ARIA}
                       >
-                        <X className="size-3" />
+                        <X className="fn-icon-xs" />
                       </button>
                     )}
                   </div>
@@ -188,7 +188,7 @@ export function TopBar({
                   className="fn-topbar-search-mobile-btn"
                   aria-label={copy.SEARCH_ARIA}
                 >
-                  <Search className="size-4" aria-hidden="true" />
+                  <Search className="fn-icon-md" aria-hidden="true" />
                 </Button>
               </>
             )}
@@ -203,7 +203,7 @@ export function TopBar({
                   hasNotifications ? copy.NOTIFICATIONS_UNREAD_ARIA : copy.NOTIFICATIONS_ARIA
                 }
               >
-                <Bell className="size-4" aria-hidden="true" />
+                <Bell className="fn-icon-md" aria-hidden="true" />
                 {hasNotifications && <span className="fn-topbar-notif-badge" aria-hidden="true" />}
               </Button>
             )}
@@ -211,10 +211,10 @@ export function TopBar({
               <Button
                 size="sm"
                 onClick={onAddTransactionClick}
-                className="fn-topbar-add-tx-btn cursor-pointer shadow-sm"
+                className="fn-topbar-add-tx-btn"
                 aria-label={addTransactionLabel}
               >
-                <Plus className="size-4 shrink-0" aria-hidden="true" />
+                <Plus className="fn-icon-md" aria-hidden="true" />
                 <span className="fn-topbar-add-tx-text">{addTransactionLabel}</span>
               </Button>
             )}

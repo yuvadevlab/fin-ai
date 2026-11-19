@@ -48,7 +48,7 @@ export function MarkdownContent({
         remarkPlugins={[remarkGfm]}
         components={{
           table: ({ children }) => (
-            <div className="overflow-x-auto">
+            <div className="fn-chat-prose-table-wrap">
               <table>{children}</table>
             </div>
           ),

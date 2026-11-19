@@ -90,7 +90,7 @@ export function AccountsPage() {
         actions={
           isReadOnly ? undefined : (
             <Button size="sm" onClick={handleOpenAddAccount} className="fn-header-action-btn">
-              <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
+              <Plus className="fn-icon-md" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
             </Button>
           )
         }
@@ -107,7 +107,7 @@ export function AccountsPage() {
           <p className="fn-entity-empty-desc">{UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
             <Button size="sm" onClick={handleOpenAddAccount} className="fn-entity-empty-btn">
-              <Plus className="size-4" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
+              <Plus className="fn-icon-md" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
             </Button>
           )}
         </div>
@@ -143,7 +143,7 @@ export function AccountsPage() {
                         className="fn-account-menu-trigger"
                         aria-label={`Actions for ${a.name}`}
                       >
-                        <MoreVertical className="size-4" />
+                        <MoreVertical className="fn-icon-md" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="fn-account-menu-content">

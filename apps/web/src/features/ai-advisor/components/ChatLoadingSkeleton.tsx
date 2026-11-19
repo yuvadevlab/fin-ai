@@ -56,7 +56,7 @@ export function ChatLoadingSkeleton({ className }: ChatLoadingSkeletonProps) {
           <div className="fn-chat-skeleton-line is-width-65" />
         </div>
       </div>
-      <span className="sr-only">{UI_COPY.ADVISOR.SKELETON.SR_TEXT}</span>
+      <span className="dl-sr-only">{UI_COPY.ADVISOR.SKELETON.SR_TEXT}</span>
     </div>
   );
 }

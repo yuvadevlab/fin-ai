@@ -71,7 +71,7 @@ export function AdvisorComposer({
       {/* Pending-action helper strip — editing is natural language */}
       {editingPending && (
         <p className="fn-advisor-composer-pending" role="note">
-          <PencilRuler className="size-3.5 shrink-0" aria-hidden="true" />
+          <PencilRuler className="fn-icon-sm" aria-hidden="true" />
           <span className="fn-advisor-composer-pending-text">
             {UI_COPY.ADVISOR.COMPOSER.PENDING_PREFIX} {pendingConfirmation?.card.title ?? "action"}{" "}
             {UI_COPY.ADVISOR.COMPOSER.PENDING_SUFFIX}
@@ -116,7 +116,7 @@ export function AdvisorComposer({
             onClick={onStop}
             title={UI_COPY.ADVISOR.COMPOSER.STOP_A11Y}
           >
-            <Square className="size-4" />
+            <Square className="fn-icon-md" />
           </Button>
         ) : (
           <Button
@@ -126,7 +126,7 @@ export function AdvisorComposer({
             disabled={!value.trim()}
             title={UI_COPY.ADVISOR.COMPOSER.SEND_A11Y}
           >
-            <Send className="size-4" />
+            <Send className="fn-icon-md" />
           </Button>
         )}
       </form>

@@ -84,6 +84,17 @@
     transform: scale(0.96);
   }
 
+  .fn-insight-btn-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+    color: currentColor;
+  }
+
+  .fn-insight-prose {
+    font-size: 0.8125rem;
+  }
+
   .fn-insight-footer {
     display: flex;
     align-items: center;
@@ -102,6 +113,13 @@
     font-weight: 500;
     text-decoration: none;
     transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-insight-footer-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    flex-shrink: 0;
+    color: currentColor;
   }
 
   .fn-insight-footer-link:hover {

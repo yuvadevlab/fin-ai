@@ -16,6 +16,8 @@
 @import "./styles/reset.css";
 @import "./styles/layout-tokens.css";
 @import "./styles/common.css";
+@import "./styles/icons.css";
+@import "./styles/money-display.css";
 @import "./styles/layouts.css";
 @import "./styles/cards.css";
 @import "./styles/progress-card.css";

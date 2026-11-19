@@ -40,7 +40,7 @@ export function MoneyDisplay({
         .find((p) => p.type === "currency")?.value || "₹";
     displayContent = (
       <>
-        <span className="sr-only">{UI_COPY_CONSTANTS.MONEY_DISPLAY.HIDDEN_ARIA}</span>
+        <span className="dl-sr-only">{UI_COPY_CONSTANTS.MONEY_DISPLAY.HIDDEN_ARIA}</span>
         <span aria-hidden="true">
           {sign}
           {symbol}&nbsp;{maskPlaceholder}
@@ -61,12 +61,9 @@ export function MoneyDisplay({
       data-privacy-sensitive
       suppressHydrationWarning
       className={cn(
-        "font-semibold tabular-nums",
-        isNegative
-          ? "text-destructive"
-          : showSign && isPositive
-            ? "text-primary"
-            : "text-foreground",
+        "fn-money-display",
+        isNegative && "is-negative",
+        showSign && isPositive && "is-positive",
         className,
       )}
       {...props}

@@ -72,7 +72,7 @@ export function DashboardPage() {
             <TransactionDialog
               trigger={
                 <Button size="sm" className="fn-header-action-btn">
-                  <Plus className="size-4" aria-hidden="true" />{" "}
+                  <Plus className="fn-icon-md" aria-hidden="true" />{" "}
                   {UI_COPY.DASHBOARD.PAGE.ADD_TRANSACTION}
                 </Button>
               }
@@ -96,7 +96,7 @@ export function DashboardPage() {
               <Select value={cashFlowRange} onValueChange={setCashFlowRange}>
                 <SelectTrigger
                   id="cashflow-range-trigger"
-                  className="fn-cashflow-range-select cursor-pointer"
+                  className="fn-cashflow-range-select"
                   aria-label={UI_COPY.DASHBOARD.CASH_FLOW.RANGE_LABEL}
                 >
                   <SelectValue placeholder={UI_COPY.DASHBOARD.CASH_FLOW.PERIOD_PLACEHOLDER} />

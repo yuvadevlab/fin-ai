@@ -143,12 +143,12 @@ export function RichConfirmationCard({
             >
               {isExecuting ? (
                 <>
-                  <Loader2 className="size-3.5 animate-spin" />
+                  <Loader2 className="fn-icon-sm fn-icon-spin" />
                   Confirming…
                 </>
               ) : (
                 <>
-                  <Check className="size-3.5" />
+                  <Check className="fn-icon-sm" />
                   Confirm
                 </>
               )}
@@ -160,7 +160,7 @@ export function RichConfirmationCard({
               disabled={disabled || isExecuting}
               onClick={() => onReject(confirmation.actionId)}
             >
-              <X className="size-3.5" />
+              <X className="fn-icon-sm" />
               Cancel
             </Button>
           </div>
