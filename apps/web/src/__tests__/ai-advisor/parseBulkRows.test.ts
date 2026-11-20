@@ -48,6 +48,33 @@ describe("parseBulkRows", () => {
     expect(result.items[2]?.type).toBe(TransactionType.INCOME);
   });
 
+  it("parses single transaction rows into a single BulkTransactionItem", () => {
+    const singleRows: [string, string][] = [
+      [ConfirmationRowLabel.TYPE, TransactionType.EXPENSE],
+      [ConfirmationRowLabel.AMOUNT, "₹250.00"],
+      [ConfirmationRowLabel.DATE, "2026-09-14 (today)"],
+      [ConfirmationRowLabel.ACCOUNT, "SBI Primary"],
+      [ConfirmationRowLabel.CATEGORY, "Groceries"],
+      [ConfirmationRowLabel.NOTES, "Weekly snacks and fruit"],
+    ];
+
+    const result = parseBulkRows(singleRows);
+
+    expect(result.count).toBe(1);
+    expect(result.total).toBe("₹250.00");
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toEqual({
+      index: 0,
+      type: TransactionType.EXPENSE,
+      amount: "₹250.00",
+      date: "2026-09-14 (today)",
+      account: "SBI Primary",
+      category: "Groceries",
+      toAccount: undefined,
+      notes: "Weekly snacks and fruit",
+    });
+  });
+
   it("handles empty rows gracefully", () => {
     const result = parseBulkRows([]);
     expect(result.count).toBe(0);

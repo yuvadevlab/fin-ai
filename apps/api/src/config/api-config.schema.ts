@@ -75,6 +75,12 @@ export const ApiConfigSchema = z.object({
   googleAiStudioApiKey: z.string().optional(),
   googleAiStudioModel: z.string().optional(),
 
+  /** Cline configuration */
+  clineBaseUrl: z.string().default("https://api.cline.bot/api/v1"),
+  clineApiPath: z.string().default("/chat/completions"),
+  clineApiKey: z.string().optional(),
+  clineModel: z.string().optional(),
+
   /** Master switch for application logging */
   logEnabled: z.boolean().default(true),
 

@@ -121,6 +121,7 @@ export function BulkConfirmationCarousel({
           {scrollState.hasOverflow && (
             <div className="fn-bulk-confirm-carousel-nav">
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="fn-bulk-confirm-nav-btn"
@@ -132,6 +133,7 @@ export function BulkConfirmationCarousel({
               </Button>
               <span className="fn-bulk-confirm-nav-counter">{visibleRangeLabel}</span>
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="fn-bulk-confirm-nav-btn"
@@ -147,6 +149,7 @@ export function BulkConfirmationCarousel({
           {!isAllResolved ? (
             <div className="fn-bulk-confirm-bulk-actions">
               <Button
+                type="button"
                 size="sm"
                 className="fn-bulk-confirm-all-btn"
                 disabled={disabled || isExecuting || isReadOnly}
@@ -160,6 +163,7 @@ export function BulkConfirmationCarousel({
                 {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CONFIRM_ALL(pendingCount)}
               </Button>
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 className="fn-bulk-cancel-all-btn"
@@ -167,7 +171,9 @@ export function BulkConfirmationCarousel({
                 onClick={handleRejectAll}
               >
                 <X className="fn-icon-sm" />
-                {UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_ALL}
+                {items.length === 1
+                  ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_SINGLE
+                  : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_ALL}
               </Button>
             </div>
           ) : (
@@ -179,12 +185,14 @@ export function BulkConfirmationCarousel({
             >
               {rejectedCount === items.length
                 ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCELLED
-                : executedCount === items.length
-                  ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.ALL_RECORDED
-                  : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.RESOLVED_COUNTS(
-                      executedCount,
-                      rejectedCount,
-                    )}
+                : items.length === 1
+                  ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.SINGLE_RECORDED
+                  : executedCount === items.length
+                    ? UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.ALL_RECORDED
+                    : UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.RESOLVED_COUNTS(
+                        executedCount,
+                        rejectedCount,
+                      )}
             </span>
           )}
         </div>

@@ -107,3 +107,82 @@ export class LlmConnectionError extends Error {
     this.name = "LlmConnectionError";
   }
 }
+
+/**
+ * Canonical HTTP status codes and socket error markers that signify transient LLM failures.
+ * Adheres to Rule 7: Enums over raw string unions.
+ */
+export enum TransientLlmErrorCode {
+  SERVICE_UNAVAILABLE = "503",
+  BAD_GATEWAY = "502",
+  GATEWAY_TIMEOUT = "504",
+  TOO_MANY_REQUESTS = "429",
+  TIMEOUT = "timeout",
+  CONN_RESET = "ECONNRESET",
+}
+
+/** Array of all canonical transient error markers for introspection. */
+export const TRANSIENT_LLM_ERROR_CODES: readonly TransientLlmErrorCode[] =
+  Object.values(TransientLlmErrorCode);
+
+/** Operational retry configuration for LLM provider adapters. */
+export const LLM_RETRY_CONFIG = {
+  MAX_RETRIES: 2,
+  BACKOFF_BASE_MS: 800,
+  TIMEOUT_MS: 30_000,
+  TEMPERATURE: 0.7,
+} as const;
+
+/**
+ * Evaluates whether an error object signals a transient failure suitable for exponential retry.
+ *
+ * @param err - Unknown error object caught during model inference
+ * @returns True if error is an Error instance containing any transient error code
+ */
+export function isTransientLlmError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const message = err.message.toLowerCase();
+  return TRANSIENT_LLM_ERROR_CODES.some((code) => message.includes(code.toLowerCase()));
+}
+
+/**
+ * Dynamically resolves retry delay in milliseconds from API response headers,
+ * error payloads ("try again in X.Xs", "retry-after: X"), or exponential backoff with jitter.
+ *
+ * @param err - Error instance caught during inference
+ * @param attempt - 1-based attempt counter
+ * @returns Delay duration in milliseconds
+ */
+export function extractDynamicRetryDelayMs(
+  err: unknown,
+  attempt: number,
+  baseMs: number = LLM_RETRY_CONFIG.BACKOFF_BASE_MS,
+): number {
+  if (err instanceof Error) {
+    // 1. Check for API response text: "try again in X.Xs" or "try again in Xms"
+    const retryInMatch = err.message.match(/try again in\s+([\d.]+)\s*(s|ms|m)?/i);
+    if (retryInMatch) {
+      const val = parseFloat(retryInMatch[1]);
+      const unit = (retryInMatch[2] ?? "s").toLowerCase();
+      if (!isNaN(val)) {
+        const ms = unit === "ms" ? val : unit === "m" ? val * 60_000 : val * 1_000;
+        return Math.ceil(ms) + 250;
+      }
+    }
+
+    // 2. Check for standard "retry-after: X" header pattern (seconds or ms)
+    const retryAfterMatch = err.message.match(/retry[-_]after[:\s]+([\d.]+)\s*(s|ms)?/i);
+    if (retryAfterMatch) {
+      const val = parseFloat(retryAfterMatch[1]);
+      const unit = (retryAfterMatch[2] ?? "s").toLowerCase();
+      if (!isNaN(val)) {
+        const ms = unit === "ms" ? val : val * 1_000;
+        return Math.ceil(ms) + 250;
+      }
+    }
+  }
+
+  // 3. Fallback: Exponential backoff with random jitter
+  const jitter = Math.floor(Math.random() * 250);
+  return baseMs * Math.pow(2, attempt) + jitter;
+}

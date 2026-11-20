@@ -21,12 +21,14 @@
   }
 
   .fn-bulk-card {
+    --card-accent: var(--primary);
     min-inline-size: 15rem;
     flex: 1;
     flex-shrink: 0;
     scroll-snap-align: start;
     border-radius: var(--radius-xl, 0.75rem);
     border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    border-inline-start: 4px solid var(--card-accent);
     background-color: var(--card);
     padding: var(--space-3-5, 0.875rem);
     box-shadow: var(--shadow-xs, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
@@ -42,23 +44,23 @@
   }
 
   .fn-bulk-card--income {
-    border-inline-start: 4px solid var(--primary);
+    --card-accent: var(--primary);
   }
 
   .fn-bulk-card--expense {
-    border-inline-start: 4px solid var(--destructive);
+    --card-accent: var(--destructive);
   }
 
   .fn-bulk-card--transfer {
-    border-inline-start: 4px solid #f59e0b;
+    --card-accent: var(--warning);
   }
 
   .fn-bulk-card--investment {
-    border-inline-start: 4px solid #3b82f6;
+    --card-accent: var(--info);
   }
 
   .fn-bulk-card--goal {
-    border-inline-start: 4px solid #a855f7;
+    --card-accent: var(--chart-1, oklch(0.65 0.2 300));
   }
 
   .fn-bulk-card--rejected {

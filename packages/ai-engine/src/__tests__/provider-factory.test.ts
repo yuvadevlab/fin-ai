@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { AiProvider, AiProviderRole } from "@fin-ai/shared-types";
 import { resolveAiProvider, createChatModel } from "../llm/provider-factory";
+import {
+  TransientLlmErrorCode,
+  isTransientLlmError,
+  TRANSIENT_LLM_ERROR_CODES,
+} from "../llm/types";
 
 describe("provider-factory role resolution", () => {
   it("resolves role-specific provider when set", () => {
@@ -100,5 +105,22 @@ describe("provider-factory role resolution", () => {
     const model = createChatModel(AiProvider.OLLAMA, env);
     expect(model.provider).toBe(AiProvider.OLLAMA);
     expect(model.model).toBe("qwen3:8b");
+  });
+
+  it("identifies transient LLM errors from canonical error codes", () => {
+    expect(isTransientLlmError(new Error("Gemini streaming error HTTP 503"))).toBe(true);
+    expect(isTransientLlmError(new Error("HTTP 502 Bad Gateway"))).toBe(true);
+    expect(isTransientLlmError(new Error("Request timeout exceeded"))).toBe(true);
+    expect(isTransientLlmError(new Error("read ECONNRESET"))).toBe(true);
+    expect(isTransientLlmError(new Error("Rate limit 429"))).toBe(true);
+    expect(isTransientLlmError(new Error("HTTP 504 Gateway Timeout"))).toBe(true);
+
+    expect(isTransientLlmError(new Error("HTTP 401 Unauthorized"))).toBe(false);
+    expect(isTransientLlmError(new Error("Invalid JSON parameter"))).toBe(false);
+    expect(isTransientLlmError(null)).toBe(false);
+    expect(isTransientLlmError("string error")).toBe(false);
+
+    expect(TRANSIENT_LLM_ERROR_CODES).toContain(TransientLlmErrorCode.SERVICE_UNAVAILABLE);
+    expect(TRANSIENT_LLM_ERROR_CODES).toContain(TransientLlmErrorCode.TOO_MANY_REQUESTS);
   });
 });

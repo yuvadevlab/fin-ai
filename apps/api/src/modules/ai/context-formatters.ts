@@ -41,6 +41,7 @@ export interface FinanceContextData {
     notes?: string | null;
     category?: { name: string } | null;
   }[];
+  maxRecentTxns?: number;
 }
 
 export function formatFinanceContextMarkdown(data: FinanceContextData): string {
@@ -63,7 +64,11 @@ export function formatFinanceContextMarkdown(data: FinanceContextData): string {
     goals,
     investments,
     recentTxns,
+    maxRecentTxns,
   } = data;
+
+  const limit = maxRecentTxns ?? 30;
+  const displayTxns = recentTxns.slice(0, limit);
 
   const lines = [
     `FINANCIAL SNAPSHOT (Real-time data as of today, ${todayStr}):`,
@@ -139,11 +144,10 @@ export function formatFinanceContextMarkdown(data: FinanceContextData): string {
           })
           .join("\n"),
     ``,
-    `### Granular Recent Transactions (Latest ${recentTxns.length})`,
-    recentTxns.length === 0
+    `### Granular Recent Transactions (Latest ${displayTxns.length})`,
+    displayTxns.length === 0
       ? `- No recent transactions.`
-      : recentTxns
-          .slice(0, 30)
+      : displayTxns
           .map(
             (t) =>
               `- ${new Date(t.date).toISOString().slice(0, 10)} | [${t.type}] | ${t.category?.name ?? "General"} | ${formatINR(t.amount)}${t.notes ? ` ("${t.notes}")` : ""}`,

@@ -5,12 +5,15 @@
  */
 
 import { MessageRole, type ILLMProvider, type AIMessage } from "@yuva-devlab/ai-client";
-import type {
-  ChatModel,
-  LlmChatRequest,
-  LlmCompleteResult,
-  LlmRole,
-  LlmStreamEvent,
+import {
+  type ChatModel,
+  type LlmChatRequest,
+  type LlmCompleteResult,
+  type LlmRole,
+  type LlmStreamEvent,
+  LLM_RETRY_CONFIG,
+  extractDynamicRetryDelayMs,
+  isTransientLlmError,
 } from "./types";
 
 /**
@@ -57,7 +60,7 @@ export class DevLabChatModel implements ChatModel {
   }
 
   /**
-   * Executes a full blocking completion request.
+   * Executes a full blocking completion request with exponential backoff on transient errors.
    *
    * @param request - FinAI chat request containing messages and optional tool descriptors
    * @returns Complete model completion result
@@ -69,24 +72,38 @@ export class DevLabChatModel implements ChatModel {
       content: m.content,
     }));
 
-    const response = await this.client.complete({
-      model: this.model,
-      messages,
-      temperature: 0.7,
-      responseFormat: "text",
-      timeoutMs: 30_000,
-    });
+    let attempt = 0;
 
-    return {
-      content: response.text,
-      toolCalls: [],
-      tokensIn: response.usage?.promptTokens,
-      tokensOut: response.usage?.completionTokens,
-    };
+    while (true) {
+      try {
+        const response = await this.client.complete({
+          model: this.model,
+          messages,
+          temperature: LLM_RETRY_CONFIG.TEMPERATURE,
+          responseFormat: "text",
+          timeoutMs: LLM_RETRY_CONFIG.TIMEOUT_MS,
+        });
+
+        return {
+          content: response.text,
+          toolCalls: [],
+          tokensIn: response.usage?.promptTokens,
+          tokensOut: response.usage?.completionTokens,
+        };
+      } catch (err) {
+        attempt++;
+        if (attempt <= LLM_RETRY_CONFIG.MAX_RETRIES && isTransientLlmError(err)) {
+          const delayMs = extractDynamicRetryDelayMs(err, attempt);
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          continue;
+        }
+        throw err;
+      }
+    }
   }
 
   /**
-   * Executes a streaming completion yielding token deltas in real-time.
+   * Executes a streaming completion yielding token deltas in real-time with transient retry.
    *
    * @param request - FinAI chat request
    * @returns Async iterable yielding LlmStreamEvent chunks
@@ -97,20 +114,35 @@ export class DevLabChatModel implements ChatModel {
       content: m.content,
     }));
 
-    for await (const chunk of this.client.stream({
-      model: this.model,
-      messages,
-      temperature: 0.7,
-      responseFormat: "text",
-      timeoutMs: 30_000,
-    })) {
-      // Yield text delta if present in chunk
-      if (chunk.delta) {
-        yield { type: "text-delta", text: chunk.delta };
+    let attempt = 0;
+
+    while (true) {
+      try {
+        for await (const chunk of this.client.stream({
+          model: this.model,
+          messages,
+          temperature: LLM_RETRY_CONFIG.TEMPERATURE,
+          responseFormat: "text",
+          timeoutMs: LLM_RETRY_CONFIG.TIMEOUT_MS,
+        })) {
+          // Yield text delta if present in chunk
+          if (chunk.delta) {
+            yield { type: "text-delta", text: chunk.delta };
+          }
+        }
+
+        // Terminal completion event
+        yield { type: "done" };
+        return;
+      } catch (err) {
+        attempt++;
+        if (attempt <= LLM_RETRY_CONFIG.MAX_RETRIES && isTransientLlmError(err)) {
+          const delayMs = extractDynamicRetryDelayMs(err, attempt);
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          continue;
+        }
+        throw err;
       }
     }
-
-    // Terminal completion event
-    yield { type: "done" };
   }
 }

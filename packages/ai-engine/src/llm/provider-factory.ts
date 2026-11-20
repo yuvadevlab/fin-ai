@@ -27,6 +27,7 @@
 
 import type { ChatModel } from "./types";
 import {
+  ClineAdapter,
   GroqAdapter,
   GoogleAdapter,
   OllamaAdapter as DevLabOllamaAdapter,
@@ -60,6 +61,10 @@ const PROVIDER_ENV_KEYS: Record<AiProvider, { envKey: string; envModel: string }
   [AiProvider.OLLAMA]: {
     envKey: "OLLAMA_API_KEY",
     envModel: "OLLAMA_MODEL",
+  },
+  [AiProvider.CLINE]: {
+    envKey: "CLINE_API_KEY",
+    envModel: "CLINE_MODEL",
   },
 };
 
@@ -184,6 +189,14 @@ export function createChatModel(
     }
     case AiProvider.OLLAMA:
       return new DevLabChatModel(provider, model, new DevLabOllamaAdapter({ baseUrl }));
+    case AiProvider.CLINE: {
+      const normalizedBaseUrl = baseUrl.replace(/\/+$/, "");
+      return new DevLabChatModel(
+        provider,
+        model,
+        new ClineAdapter({ apiKey: apiKey ?? "", baseUrl: normalizedBaseUrl, defaultModel: model }),
+      );
+    }
     default:
       throw new Error(`Unknown AI provider: ${provider}`);
   }

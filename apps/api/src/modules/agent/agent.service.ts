@@ -121,11 +121,6 @@ export class AgentService {
     );
     emit({ type: AgentStreamEventType.CONVERSATION, conversationId });
 
-    // Non-blocking fast model summary title generation for new threads
-    if (isNewConversation) {
-      this.titleService.generateTitleAsync(conversationId, input.question, emit);
-    }
-
     try {
       // 1. Record incoming user turn to database
       await this.conversationService.addMessage(conversationId, "user", input.question);
@@ -164,6 +159,12 @@ export class AgentService {
         memberUserIds: wsContext?.memberUserIds,
         isWorkspaceReadOnly: wsContext?.isReadOnly,
       });
+
+      // 4. Non-blocking fast model summary title generation for new threads, run AFTER orchestrator finishes
+      // so it never competes for model rate limits or concurrency.
+      if (isNewConversation) {
+        this.titleService.generateTitleAsync(conversationId, input.question, emit);
+      }
     } catch (error) {
       this.logger.error(
         `[chat] Agent run ${runId.slice(0, 8)} failed: ${(error as Error).message}`,

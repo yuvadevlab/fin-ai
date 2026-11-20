@@ -78,4 +78,24 @@ describe("parseToolPlan", () => {
   it("returns null for invalid JSON inside the block", () => {
     expect(parseToolPlan(`${TOOL_PLAN_OPEN}not json${TOOL_PLAN_CLOSE}`)).toBeNull();
   });
+
+  it("parses Qwen / ChatML <tool_call> <function> format correctly", () => {
+    const raw = `<tool_call> <function>{"name": "categories.resolve", "arguments": {"query": "curd dairy"}} </function> </tool_call>`;
+    const calls = parseToolPlan(raw);
+    expect(calls).toHaveLength(1);
+    expect(calls![0].name).toBe("categories.resolve");
+    expect(JSON.parse(calls![0].arguments)).toEqual({ query: "curd dairy" });
+  });
+
+  it("suppresses Qwen <tool_call> block across chunks", () => {
+    const filter = new ToolPlanStreamFilter();
+    expect(filter.push("Analyzing: ")).toBe("Analyzing: ");
+    expect(
+      filter.push(
+        `<tool_call> <function>{"name": "categories.resolve", "arguments": {"query": "curd"}} </function> </tool_call>`,
+      ),
+    ).toBe("");
+    expect(filter.push("Found it.")).toBe("Found it.");
+    expect(filter.flush()).toBe("");
+  });
 });
