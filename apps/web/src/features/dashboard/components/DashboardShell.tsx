@@ -11,6 +11,7 @@ import { FEATURE_FLAGS } from "@/lib/app-constants";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
 import { PrivacyToggle } from "@/components/PrivacyToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSidebarState } from "@/hooks";
 import { AIInsightFloatingWidget } from "@/features/ai-advisor/components";
 import { WorkspaceSwitcher } from "@/features/workspaces/components";
@@ -68,6 +69,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     () => (
       <TopBar
         actions={<PrivacyToggle />}
+        themeToggle={<ThemeToggle />}
         onMenuClick={() => setIsMobileMenuOpen(true)}
         onToggleSidebar={toggleCollapse}
         isSidebarCollapsed={isCollapsed}
