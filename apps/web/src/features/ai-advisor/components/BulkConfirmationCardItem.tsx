@@ -16,23 +16,23 @@ export interface BulkConfirmationCardItemProps {
 
 const TYPE_STYLES: Record<string, { badge: string; modifier: string }> = {
   [TransactionType.INCOME]: {
-    badge: "fn-status-executed",
+    badge: "fn-confirm-card-type-badge--income",
     modifier: "fn-bulk-card--income",
   },
   [TransactionType.EXPENSE]: {
-    badge: "fn-status-failed",
+    badge: "fn-confirm-card-type-badge--expense",
     modifier: "fn-bulk-card--expense",
   },
   [TransactionType.TRANSFER]: {
-    badge: "fn-status-pending",
+    badge: "fn-confirm-card-type-badge--transfer",
     modifier: "fn-bulk-card--transfer",
   },
   [TransactionType.INVESTMENT]: {
-    badge: "fn-status-executed",
+    badge: "fn-confirm-card-type-badge--investment",
     modifier: "fn-bulk-card--investment",
   },
   [TransactionType.GOAL]: {
-    badge: "fn-status-pending",
+    badge: "fn-confirm-card-type-badge--goal",
     modifier: "fn-bulk-card--goal",
   },
 };

@@ -30,7 +30,7 @@ export const PAGE_FLAGS = {
 export const FEATURE_FLAGS = {
   ACCOUNTS: process.env.NEXT_PUBLIC_FEATURE_ACCOUNTS !== "false",
   AI_ADVISOR: process.env.NEXT_PUBLIC_FEATURE_AI_ADVISOR !== "false",
-  AI_INSIGHT: process.env.NEXT_PUBLIC_FEATURE_AI_INSIGHT === "true",
+  AI_INSIGHT: process.env.NEXT_PUBLIC_FEATURE_AI_INSIGHT !== "false",
   BUDGETS: process.env.NEXT_PUBLIC_FEATURE_BUDGETS !== "false",
   SHARED_WORKSPACE: process.env.NEXT_PUBLIC_FEATURE_SHARED_WORKSPACE !== "false",
   GOALS: process.env.NEXT_PUBLIC_FEATURE_GOALS !== "false",

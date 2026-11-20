@@ -90,6 +90,7 @@ export const AiProvider = {
   GROQ: "groq",
   GOOGLE_AI_STUDIO: "google-ai-studio",
   OLLAMA: "ollama",
+  CLINE: "cline",
 } as const;
 
 export type AiProvider = (typeof AiProvider)[keyof typeof AiProvider];

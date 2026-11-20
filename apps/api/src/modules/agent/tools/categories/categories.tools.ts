@@ -57,22 +57,26 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       confirmation: ToolConfirmationType.NONE,
       label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_RESOLVE],
       schema: z.object({
-        name: z.string().min(1, "Category name is required").max(100),
+        name: z.string().optional().describe("Category name or keyword to resolve"),
+        query: z.string().optional().describe("Fuzzy search term for category matching"),
       }),
       execute: async (input, ctx) => {
+        const query = (input.name ?? input.query ?? "").trim();
+        if (!query) {
+          throw new Error("Category name or query is required");
+        }
         const categories = await categoriesService.getCategories(
           ctx.userId,
           ctx.workspaceId,
           ctx.memberUserIds,
         );
-        const query = input.name.trim();
         const matches = categories
           .map((c) => ({ category: c, score: scoreEntityMatch(c.name, query) }))
           .filter((m) => m.score > 0)
           .sort((a, b) => b.score - a.score)
           .slice(0, 5)
           .map((m) => m.category);
-        return { query: input.name, matches };
+        return { query, matches };
       },
       summarize: (output) => {
         const { matches } = output as { query: string; matches: Category[] };

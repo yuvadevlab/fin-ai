@@ -485,8 +485,8 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/ai-client':
-        specifier: ^0.2.2
-        version: 0.2.2
+        specifier: ^0.3.0
+        version: 0.3.0
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -4654,8 +4654,8 @@ packages:
   '@yuva-devlab/agent-core@0.2.2':
     resolution: {integrity: sha512-QtlD55t10Hfm5bDXKGPFigafx97Ooi2P7lL5mNu/c54Ci9XfxQpIRQcfy9FlvkmRzQt78dijvA7BcI0sRH+30Q==}
 
-  '@yuva-devlab/ai-client@0.2.2':
-    resolution: {integrity: sha512-SZz9njJ4yPLb2lcU1QZzAQy48D5VxYSUuVa0plCWR5yfaQINq5ZzwV+OgisH3M2Lbyk3KWBxA1Q5eJhUiePzOg==}
+  '@yuva-devlab/ai-client@0.3.0':
+    resolution: {integrity: sha512-/czP9rJBj50aF5Wn6MoxtUCA1g6i72Lz0qSxNZEy597Iwdgr2D5LcFswK52fGx0VCP9uFmQlhUw+58k3AtoLBw==}
 
   '@yuva-devlab/auth-client@1.3.0':
     resolution: {integrity: sha512-XCaYq9kQydfESy+JBz+TLOW8MLcYpJZAWH0d6ebcpnxsJd+1yGMlDdWWwoVNAlpXjMBOk824xkJukjHJ3CbPlg==}
@@ -4672,8 +4672,11 @@ packages:
   '@yuva-devlab/logger@1.3.1':
     resolution: {integrity: sha512-cppWT5HUoIi6cZG6zhJC0HhEFjbdZyz5014cT24WP9hbDcNF0Be4VcI9A7Z4QbJFMlhSHkQxQzXt6k2ZRlR2OQ==}
 
-  '@yuva-devlab/resilience@0.2.0':
-    resolution: {integrity: sha512-aVNCG6GZHMfVWKcs5vxXe86kKxeYWnd1iaZZSPd/3zqQYHsxIyZHLl+6bWCZ9ldnzb5PkmwIElGGDABUnDwGgg==}
+  '@yuva-devlab/logger@1.3.3':
+    resolution: {integrity: sha512-uXFLJcqXE7ivcWkPUhG7KWeHTkMar0EN7tCUnQ0bPkxWQsNWLWgEcAx5iBMKLG7ylI/CoAp4IFoTua3z4/HIug==}
+
+  '@yuva-devlab/resilience@0.2.1':
+    resolution: {integrity: sha512-cm+LRXs8D65HxvKPUIbb1WCxTPwx+lVUKbP36WV0d3KZR+ZINklpaWxz4OYR1R+fmeculhhNGRtHa3KuT6sD6g==}
 
   '@yuva-devlab/tokens@2.1.2':
     resolution: {integrity: sha512-3iSZb/zBCvDHA+YjRXNchsVw31fPv1xhJ1uAeHhva3We8taUasPyQrZH7E9ouRXTCMSROIuTCFq2DpwccTGwqA==}
@@ -13614,11 +13617,11 @@ snapshots:
       '@yuva-devlab/logger': 1.3.1
       zod: 3.25.76
 
-  '@yuva-devlab/ai-client@0.2.2':
+  '@yuva-devlab/ai-client@0.3.0':
     dependencies:
       '@yuva-devlab/errors': 0.2.0
-      '@yuva-devlab/logger': 1.3.1
-      '@yuva-devlab/resilience': 0.2.0
+      '@yuva-devlab/logger': 1.3.3
+      '@yuva-devlab/resilience': 0.2.1
       zod: 3.25.76
 
   '@yuva-devlab/auth-client@1.3.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
@@ -13639,7 +13642,9 @@ snapshots:
 
   '@yuva-devlab/logger@1.3.1': {}
 
-  '@yuva-devlab/resilience@0.2.0':
+  '@yuva-devlab/logger@1.3.3': {}
+
+  '@yuva-devlab/resilience@0.2.1':
     dependencies:
       '@yuva-devlab/errors': 0.2.0
 

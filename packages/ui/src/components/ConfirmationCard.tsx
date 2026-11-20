@@ -113,7 +113,7 @@ export function ConfirmationCard({
     <div className="fn-confirm-card">
       {/* Header */}
       <div className="fn-confirm-card-header">
-        <ShieldAlert className="fn-confirm-card-icon" aria-hidden="true" />
+        <ShieldAlert size={16} className="fn-confirm-card-icon" aria-hidden="true" />
         <p className="fn-confirm-card-title">{title}</p>
         <span className={cn("fn-confirm-card-status-badge", meta.className)}>
           {pending && <span className="fn-confirm-pulse-dot" />}

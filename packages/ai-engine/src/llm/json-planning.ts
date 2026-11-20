@@ -11,6 +11,8 @@ import type { LlmToolCall } from "./types";
 
 export const TOOL_PLAN_OPEN = "<tool_plan>";
 export const TOOL_PLAN_CLOSE = "</tool_plan>";
+export const TOOL_CALL_OPEN = "<tool_call>";
+export const TOOL_CALL_CLOSE = "</tool_call>";
 
 /** System-prompt suffix that teaches the model the tool-plan contract. */
 export function buildToolPlanInstructions(toolNames: string[]): string {
@@ -42,65 +44,137 @@ const toolPlanSchema = z.object({
     .min(1),
 });
 
-function extractPlanBlock(content: string): string | null {
-  const open = content.lastIndexOf(TOOL_PLAN_OPEN);
+function extractPlanBlock(content: string, openTag: string, closeTag: string): string | null {
+  const open = content.lastIndexOf(openTag);
   if (open === -1) return null;
-  const close = content.indexOf(TOOL_PLAN_CLOSE, open);
+  const close = content.indexOf(closeTag, open);
   if (close === -1) return null;
-  return content.slice(open + TOOL_PLAN_OPEN.length, close).trim();
+  return content.slice(open + openTag.length, close).trim();
 }
 
 /**
- * Parse a <tool_plan> block from model output.
+ * Parse a <tool_plan> or <tool_call> block from model output.
  * Returns null when the output contains no valid plan (i.e. it is a prose answer).
  */
 export function parseToolPlan(content: string): LlmToolCall[] | null {
-  if (!content || !content.includes(TOOL_PLAN_OPEN)) return null;
+  if (!content) return null;
 
-  const block = extractPlanBlock(content);
-  if (!block) return null;
+  const toolCalls: LlmToolCall[] = [];
 
-  // Tolerate markdown code fences around the JSON.
-  const jsonText = block
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(jsonText);
-  } catch {
-    return null;
+  // 1. Try standard <tool_plan> block
+  if (content.includes(TOOL_PLAN_OPEN)) {
+    const block = extractPlanBlock(content, TOOL_PLAN_OPEN, TOOL_PLAN_CLOSE);
+    if (block) {
+      const jsonText = block
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+      try {
+        const parsed = JSON.parse(jsonText);
+        const result = toolPlanSchema.safeParse(parsed);
+        if (result.success) {
+          for (let i = 0; i < result.data.tool_calls.length; i++) {
+            const call = result.data.tool_calls[i];
+            toolCalls.push({
+              id: `plan_${toolCalls.length + 1}`,
+              name: call.name,
+              arguments:
+                typeof call.arguments === "string"
+                  ? call.arguments
+                  : JSON.stringify(call.arguments ?? {}),
+            });
+          }
+        }
+      } catch {
+        // Ignore JSON parse errors for non-matching candidate blocks
+      }
+    }
   }
 
-  const result = toolPlanSchema.safeParse(parsed);
-  if (!result.success) return null;
+  // 2. Try <tool_call> block (Qwen / ChatML format)
+  const toolCallRegex = /<tool_call>([\s\S]*?)<\/tool_call>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = toolCallRegex.exec(content)) !== null) {
+    let block = match[1].trim();
+    // Strip <function> ... </function> if present
+    const fnMatch = /<function>([\s\S]*?)<\/function>/i.exec(block);
+    if (fnMatch) {
+      block = fnMatch[1].trim();
+    }
+    block = block
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
 
-  return result.data.tool_calls.map((call, index) => ({
-    id: `plan_${index + 1}`,
-    name: call.name,
-    arguments: JSON.stringify(call.arguments ?? {}),
-  }));
+    try {
+      const parsed = JSON.parse(block) as Record<string, unknown>;
+      if (parsed && typeof parsed === "object") {
+        if ("name" in parsed && typeof parsed.name === "string") {
+          const rawArgs = parsed.arguments;
+          toolCalls.push({
+            id: `plan_${toolCalls.length + 1}`,
+            name: parsed.name,
+            arguments: typeof rawArgs === "string" ? rawArgs : JSON.stringify(rawArgs ?? {}),
+          });
+        } else if ("tool_calls" in parsed && Array.isArray(parsed.tool_calls)) {
+          for (const call of parsed.tool_calls as Array<{ name?: string; arguments?: unknown }>) {
+            if (call.name) {
+              toolCalls.push({
+                id: `plan_${toolCalls.length + 1}`,
+                name: call.name,
+                arguments:
+                  typeof call.arguments === "string"
+                    ? call.arguments
+                    : JSON.stringify(call.arguments ?? {}),
+              });
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore JSON parse errors for non-matching candidate blocks
+    }
+  }
+
+  return toolCalls.length > 0 ? toolCalls : null;
 }
 
 /**
- * Streaming filter that hides <tool_plan>…</tool_plan> blocks (and partial
- * opening tags) from the user-visible token stream while still allowing the
- * orchestrator to accumulate the full raw output separately.
+ * Streaming filter that hides <tool_plan>…</tool_plan> and <tool_call>…</tool_call>
+ * blocks (and partial opening tags) from the user-visible token stream while still
+ * allowing the orchestrator to accumulate the full raw output separately.
  */
 export class ToolPlanStreamFilter {
   private buffer = "";
-  private suppressing = false;
+  private suppressingTag: string | null = null;
 
   push(text: string): string {
     this.buffer += text;
     let visible = "";
 
     for (;;) {
-      if (!this.suppressing) {
-        const open = this.buffer.indexOf(TOOL_PLAN_OPEN);
-        if (open === -1) {
-          const keep = partialSuffixLength(this.buffer, TOOL_PLAN_OPEN);
+      if (!this.suppressingTag) {
+        const planIdx = this.buffer.indexOf(TOOL_PLAN_OPEN);
+        const callIdx = this.buffer.indexOf(TOOL_CALL_OPEN);
+
+        let firstIdx = -1;
+        let matchOpen = "";
+        let matchClose = "";
+
+        if (planIdx !== -1 && (callIdx === -1 || planIdx < callIdx)) {
+          firstIdx = planIdx;
+          matchOpen = TOOL_PLAN_OPEN;
+          matchClose = TOOL_PLAN_CLOSE;
+        } else if (callIdx !== -1) {
+          firstIdx = callIdx;
+          matchOpen = TOOL_CALL_OPEN;
+          matchClose = TOOL_CALL_CLOSE;
+        }
+
+        if (firstIdx === -1) {
+          const keepPlan = partialSuffixLength(this.buffer, TOOL_PLAN_OPEN);
+          const keepCall = partialSuffixLength(this.buffer, TOOL_CALL_OPEN);
+          const keep = Math.max(keepPlan, keepCall);
           const emitLength = this.buffer.length - keep;
           if (emitLength > 0) {
             visible += this.buffer.slice(0, emitLength);
@@ -108,25 +182,26 @@ export class ToolPlanStreamFilter {
           }
           return visible;
         }
-        visible += this.buffer.slice(0, open);
-        this.buffer = this.buffer.slice(open + TOOL_PLAN_OPEN.length);
-        this.suppressing = true;
+
+        visible += this.buffer.slice(0, firstIdx);
+        this.buffer = this.buffer.slice(firstIdx + matchOpen.length);
+        this.suppressingTag = matchClose;
       } else {
-        const close = this.buffer.indexOf(TOOL_PLAN_CLOSE);
+        const close = this.buffer.indexOf(this.suppressingTag);
         if (close === -1) {
-          const keep = partialSuffixLength(this.buffer, TOOL_PLAN_CLOSE);
+          const keep = partialSuffixLength(this.buffer, this.suppressingTag);
           this.buffer = this.buffer.slice(this.buffer.length - keep);
           return visible;
         }
-        this.buffer = this.buffer.slice(close + TOOL_PLAN_CLOSE.length);
-        this.suppressing = false;
+        this.buffer = this.buffer.slice(close + this.suppressingTag.length);
+        this.suppressingTag = null;
       }
     }
   }
 
   /** Emit any remaining buffered text at end of stream. */
   flush(): string {
-    if (this.suppressing) {
+    if (this.suppressingTag) {
       this.buffer = "";
       return "";
     }

@@ -7,107 +7,135 @@
 @layer dl-components {
   /* ── Confirmation Card ── */
   .fn-confirm-card {
+    --card-accent: var(--primary);
     border-radius: var(--radius-xl, 0.75rem);
     border: 1px solid var(--border);
     background-color: var(--card);
     box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    border-inline-start: 4px solid var(--card-accent);
+    overflow: hidden;
     transition: all 150ms ease;
   }
 
   .fn-confirm-card--income {
-    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+    --card-accent: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
   }
 
   .fn-confirm-card--expense {
-    border-color: color-mix(in srgb, var(--destructive) 30%, transparent);
+    --card-accent: var(--destructive);
+    border-color: color-mix(in srgb, var(--destructive) 30%, var(--border));
   }
 
   .fn-confirm-card--transfer {
-    border-color: color-mix(in srgb, #f59e0b 30%, transparent);
+    --card-accent: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 30%, var(--border));
   }
 
   .fn-confirm-card--investment {
-    border-color: color-mix(in srgb, #3b82f6 30%, transparent);
+    --card-accent: var(--info);
+    border-color: color-mix(in srgb, var(--info) 30%, var(--border));
   }
 
   .fn-confirm-card--goal {
-    border-color: color-mix(in srgb, #a855f7 30%, transparent);
+    --card-accent: var(--chart-1, oklch(0.65 0.2 300));
+    border-color: color-mix(in srgb, var(--chart-1, oklch(0.65 0.2 300)) 30%, var(--border));
   }
 
   .fn-confirm-card-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3, 0.75rem);
-    padding: var(--space-3-5, 0.875rem);
+    gap: var(--space-2-5, 0.625rem);
+    padding: var(--space-2-5, 0.625rem) var(--space-3-5, 0.875rem);
   }
 
   .fn-confirm-card-icon {
-    display: flex;
-    inline-size: 2rem;
-    block-size: 2rem;
+    width: 1rem;
+    height: 1rem;
+    inline-size: 1rem;
+    block-size: 1rem;
     flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-lg, 0.5rem);
+    color: var(--card-accent, var(--primary));
+  }
+
+  .fn-confirm-card-icon--income {
     color: var(--primary);
+  }
+  .fn-confirm-card-icon--expense {
+    color: var(--destructive);
+  }
+  .fn-confirm-card-icon--transfer {
+    color: var(--warning);
+  }
+  .fn-confirm-card-icon--investment {
+    color: var(--info);
+  }
+  .fn-confirm-card-icon--goal {
+    color: var(--chart-1, oklch(0.65 0.2 300));
   }
 
   .fn-confirm-card-title {
+    flex: 1;
     font-size: var(--text-sm, 0.875rem);
     font-weight: 600;
     color: var(--foreground);
-    margin-block-start: 0;
-    margin-block-end: 0.125rem;
+    margin: 0;
   }
 
   .fn-confirm-card-status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--space-1, 0.25rem);
     border-radius: var(--radius-full, 9999px);
+    border: 1px solid transparent;
     padding: 0.125rem 0.5rem;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.025em;
+    font-size: 0.6875rem;
+    font-weight: 500;
   }
 
   .fn-confirm-card-status-badge--pending {
-    background-color: color-mix(in srgb, #f59e0b 15%, transparent);
-    color: #f59e0b;
-    border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+    background-color: color-mix(in srgb, var(--warning) 10%, transparent);
+    color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 20%, transparent);
   }
 
   .fn-confirm-card-status-badge--executed {
-    background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
     color: var(--primary);
-    border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
   }
 
   .fn-confirm-card-status-badge--rejected {
     background-color: color-mix(in srgb, var(--muted) 40%, transparent);
     color: var(--muted-foreground);
-    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    border-color: color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  .fn-confirm-card-status-badge--failed {
+    background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+    color: var(--destructive);
+    border-color: color-mix(in srgb, var(--destructive) 20%, transparent);
   }
 
   .fn-confirm-card-status-badge--executing {
-    background-color: color-mix(in srgb, var(--primary) 15%, transparent);
-    color: var(--primary);
-    border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+    background-color: color-mix(in srgb, var(--warning) 10%, transparent);
+    color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 20%, transparent);
   }
 
   .fn-confirm-card-details {
     border-block-start: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-    padding: var(--space-2-5, 0.625rem) var(--space-3-5, 0.875rem);
-    font-size: var(--text-xs, 0.75rem);
+    overflow: hidden;
   }
 
   .fn-confirm-card-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2, 0.5rem);
-    padding-block: 0.125rem;
+    gap: var(--space-3, 0.75rem);
+    padding: var(--space-1-5, 0.375rem) var(--space-3, 0.75rem);
+    background-color: color-mix(in srgb, var(--foreground) 2%, transparent);
+    border-block-end: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
   }
 
   .fn-confirm-card-row:last-child {
@@ -115,27 +143,32 @@
   }
 
   .fn-confirm-card-key {
+    font-size: var(--text-xs, 0.75rem);
     color: var(--muted-foreground);
-    font-weight: 500;
   }
 
   .fn-confirm-card-val {
-    font-weight: 600;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 500;
     color: var(--foreground);
-    text-align: end;
-    font-variant-numeric: tabular-nums;
+    max-inline-size: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .fn-confirm-card-actions {
-    border-block-start: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5, 0.375rem);
     padding: var(--space-2-5, 0.625rem) var(--space-3-5, 0.875rem);
   }
 
   .fn-confirm-card-notice {
-    font-size: 11px;
+    font-size: 0.6875rem;
+    font-weight: 500;
     color: var(--muted-foreground);
-    margin-block-start: 0;
-    margin-block-end: var(--space-2, 0.5rem);
+    margin: 0;
   }
 
   .fn-confirm-card-notice--error {
@@ -151,7 +184,7 @@
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: var(--space-1-5, 0.375rem);
   }
 
   .fn-confirm-loader {
@@ -164,15 +197,45 @@
   }
 
   .fn-confirm-card-type-badge {
-    border-radius: 9999px;
-    border-width: 1px;
-    border-style: solid;
-    padding-inline: 0.5rem;
-    padding-block: 0.125rem;
-    font-size: 10px;
+    border-radius: var(--radius-full, 9999px);
+    border: 1px solid color-mix(in srgb, var(--card-accent, var(--primary)) 20%, transparent);
+    padding: 0.125rem 0.5rem;
+    font-size: 0.625rem;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    color: var(--card-accent, var(--primary));
+    background-color: color-mix(in srgb, var(--card-accent, var(--primary)) 10%, transparent);
+  }
+
+  .fn-confirm-card-type-badge--income {
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
+  .fn-confirm-card-type-badge--expense {
+    color: var(--destructive);
+    background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+    border-color: color-mix(in srgb, var(--destructive) 20%, transparent);
+  }
+
+  .fn-confirm-card-type-badge--transfer {
+    color: var(--warning);
+    background-color: color-mix(in srgb, var(--warning) 10%, transparent);
+    border-color: color-mix(in srgb, var(--warning) 20%, transparent);
+  }
+
+  .fn-confirm-card-type-badge--investment {
+    color: var(--info);
+    background-color: color-mix(in srgb, var(--info) 10%, transparent);
+    border-color: color-mix(in srgb, var(--info) 20%, transparent);
+  }
+
+  .fn-confirm-card-type-badge--goal {
+    color: var(--chart-1, oklch(0.65 0.2 300));
+    background-color: color-mix(in srgb, var(--chart-1, oklch(0.65 0.2 300)) 10%, transparent);
+    border-color: color-mix(in srgb, var(--chart-1, oklch(0.65 0.2 300)) 20%, transparent);
   }
 
   .fn-confirm-pulse-dot {
@@ -182,6 +245,6 @@
     block-size: 0.375rem;
     border-radius: var(--radius-full, 9999px);
     background-color: currentColor;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: dl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }

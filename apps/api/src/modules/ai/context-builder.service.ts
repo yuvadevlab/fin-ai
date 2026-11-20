@@ -24,10 +24,12 @@ export class ContextBuilderService {
     userId: string,
     workspaceId?: string,
     memberUserIds?: string[],
+    options?: { maxRecentTxns?: number },
   ): Promise<string> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const userScope = resolveUserScope(userId, memberUserIds);
+    const maxRecentTxns = options?.maxRecentTxns ?? 30;
 
     const [accounts, monthTxns, recentTxns, budgets, goals, investments, categories] =
       await Promise.all([
@@ -43,7 +45,7 @@ export class ContextBuilderService {
           where: { userId: userScope },
           include: { category: { select: { name: true, group: true } } },
           orderBy: { date: "desc" },
-          take: 40,
+          take: maxRecentTxns,
         }),
         this.prisma.client.budget.findMany({
           where: { userId: userScope },
@@ -115,6 +117,7 @@ export class ContextBuilderService {
       goals,
       investments,
       recentTxns,
+      maxRecentTxns,
     });
 
     this.logger.info(
