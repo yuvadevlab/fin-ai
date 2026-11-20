@@ -33,7 +33,10 @@ export function ThemeToggle({
     : UI_COPY.COMMON.A11Y.SWITCH_TO_DARK;
 
   const handleToggle = () => {
-    apply({ theme: isDark ? "Light" : "Dark" });
+    const currentlyDark =
+      document.documentElement.classList.contains("dark") ||
+      document.documentElement.getAttribute("data-theme") === "finai-dark";
+    apply({ theme: currentlyDark ? "Light" : "Dark" });
   };
 
   return (

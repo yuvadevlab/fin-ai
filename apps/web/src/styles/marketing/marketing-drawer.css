@@ -1,0 +1,87 @@
+/**
+ * @file apps/web/src/styles/marketing/marketing-drawer.css
+ * @description Mobile navigation drawer styles for the public marketing shell.
+ * Encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ * @module @fin-ai/web/styles/marketing/drawer
+ */
+
+@layer dl-components {
+  /* ── Mobile Navigation Drawer ────────────────────────────────────────────── */
+  .fn-mkt-drawer {
+    width: min(85vw, 22rem) !important;
+    background-color: var(--card) !important;
+    border-right: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+    padding: 1.5rem !important;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  }
+
+  .fn-mkt-drawer-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-top: 0.5rem;
+  }
+
+  .fn-mkt-drawer-header {
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fn-mkt-drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    flex: 1;
+  }
+
+  .fn-mkt-drawer-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--foreground);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast, 150ms) ease,
+      color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-drawer-link:hover {
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+  }
+
+  .fn-mkt-drawer-link-arrow {
+    color: var(--muted-foreground);
+    transition:
+      transform var(--duration-fast, 150ms) ease,
+      color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-drawer-link:hover .fn-mkt-drawer-link-arrow {
+    color: var(--primary);
+    transform: translateX(2px);
+  }
+
+  .fn-mkt-drawer-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    margin-top: auto;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  .fn-mkt-drawer-footer > * {
+    width: 100% !important;
+  }
+}

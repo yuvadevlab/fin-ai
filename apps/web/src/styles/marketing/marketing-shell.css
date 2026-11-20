@@ -1,0 +1,233 @@
+/**
+ * @file apps/web/src/styles/marketing/marketing-shell.css
+ * @description Semantic shell, layout, header, and footer styles for FinAI public marketing pages.
+ * Encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ * @module @fin-ai/web/styles/marketing/shell
+ */
+
+@layer dl-components {
+  .fn-mkt-page {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: clip;
+    width: 100%;
+  }
+
+  .fn-mkt-container {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+  }
+
+  .fn-mkt-section-bordered {
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+
+  .fn-mkt-btn-arrow {
+    margin-left: 0.5rem;
+    width: var(--icon-sm, 1rem);
+    height: var(--icon-sm, 1rem);
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .fn-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border-width: 0 !important;
+  }
+
+  /* ── Public Navigation Header ─────────────────────────────────────────── */
+  .fn-mkt-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: color-mix(in srgb, var(--background) 80%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    transition: background-color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+  }
+
+  .fn-mkt-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fn-mkt-mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .fn-mkt-mobile-menu-btn {
+      display: none !important;
+    }
+  }
+
+  .fn-mkt-nav-links {
+    display: none;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .fn-mkt-nav-links {
+      display: flex;
+    }
+  }
+
+  .fn-mkt-sign-in-btn {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .fn-mkt-sign-in-btn {
+      display: inline-flex;
+    }
+  }
+
+  .fn-mkt-nav-link {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-nav-link:hover {
+    color: var(--foreground);
+  }
+
+  .fn-mkt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* ── Badge Pill ─────────────────────────────────────────────────────────── */
+  .fn-mkt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full, 9999px);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+    color: var(--primary);
+    border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  }
+
+  /* ── Public Footer ─────────────────────────────────────────────────────── */
+  .fn-mkt-footer {
+    width: 100%;
+    border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: color-mix(in srgb, var(--background) 95%, black);
+    padding-block: 4rem 2rem;
+    margin-top: auto;
+  }
+
+  .fn-mkt-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-mkt-footer-grid {
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    }
+  }
+
+  .fn-mkt-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .fn-mkt-footer-desc {
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    max-width: 20rem;
+    margin: 0;
+  }
+
+  .fn-mkt-footer-heading {
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+  }
+
+  .fn-mkt-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .fn-mkt-footer-link {
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-footer-link:hover {
+    color: var(--foreground);
+  }
+
+  .fn-mkt-footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--muted-foreground);
+  }
+
+  @media (min-width: 768px) {
+    .fn-mkt-footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .fn-mkt-footer-disclaimer {
+    max-width: 42rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}

@@ -117,7 +117,7 @@ export function Sidebar({
         {/* Header / Brand */}
         <div className={cn("fn-sidebar-header", isRail && "fn-sidebar-header--collapsed")}>
           <Link
-            href="/"
+            href="/dashboard"
             onClick={onNavigate}
             aria-label={copy.BRAND_HOME_ARIA}
             className="fn-sidebar-brand-link"

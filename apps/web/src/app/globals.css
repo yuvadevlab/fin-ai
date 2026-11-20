@@ -7,6 +7,14 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
 @import "@fin-ai/ui/styles.css";
+@import "../styles/marketing/marketing-shell.css";
+@import "../styles/marketing/marketing-hero.css";
+@import "../styles/marketing/marketing-preview.css";
+@import "../styles/marketing/marketing-sections.css";
+@import "../styles/marketing/marketing-faq-cta.css";
+@import "../styles/marketing/marketing-blog.css";
+@import "../styles/marketing/marketing-drawer.css";
+@import "../styles/marketing/marketing-legal.css";
 
 :root,
 html,
@@ -15,6 +23,25 @@ body,
 [data-theme="finai"] {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+html {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+/* Guard: Fixed viewport constraint applied only when the desktop app shell is mounted */
+html:has(.finai-app-shell),
+body:has(.finai-app-shell) {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* ── Calendar Navigation Stacking Fix ─────────────────────────────────────── */
