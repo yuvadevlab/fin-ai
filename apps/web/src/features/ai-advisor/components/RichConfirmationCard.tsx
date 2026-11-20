@@ -40,14 +40,19 @@ export function RichConfirmationCard({
   const { isPrivacyMode } = usePrivacyMode();
   const { isReadOnly } = useWorkspace();
 
-  const isBulk =
+  const isTransactionConfirmation =
     confirmation.card.type === AgentCardType.BULK_CONFIRMATION ||
     confirmation.tool === AgentToolName.TRANSACTIONS_BULK_CREATE ||
+    confirmation.tool === AgentToolName.TRANSACTIONS_CREATE ||
     confirmation.card.rows?.some(
-      ([k]) => k === ConfirmationRowLabel.BULK_COUNT || k === "__bulk_count__",
+      ([k]) =>
+        k === ConfirmationRowLabel.BULK_COUNT ||
+        k === "__bulk_count__" ||
+        k.toLowerCase() === "amount" ||
+        k === ConfirmationRowLabel.AMOUNT,
     );
 
-  if (isBulk) {
+  if (isTransactionConfirmation) {
     return (
       <BulkConfirmationCarousel
         confirmation={confirmation}
