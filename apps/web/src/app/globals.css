@@ -14,7 +14,9 @@
 @import "../styles/marketing/marketing-faq-cta.css";
 @import "../styles/marketing/marketing-blog.css";
 @import "../styles/marketing/marketing-drawer.css";
+@import "../styles/marketing/marketing-footer.css";
 @import "../styles/marketing/marketing-legal.css";
+@import "../styles/marketing/marketing-modal.css";
 
 :root,
 html,
@@ -68,4 +70,16 @@ body:has(.finai-app-shell) {
   pointer-events: auto !important;
   position: relative !important;
   z-index: 10 !important;
+}
+
+/* ── Popovers & DatePickers Stacking Layering Over Dialogs ─────────────────── */
+.dl-popover,
+.dl-date-picker-content,
+.dl-select-content,
+.dl-searchable-select-content,
+[data-radix-popper-content-wrapper]:has(.dl-popover),
+[data-radix-popper-content-wrapper]:has(.dl-date-picker-content),
+[data-radix-popper-content-wrapper]:has(.dl-select-content),
+[data-radix-popper-content-wrapper]:has(.dl-searchable-select-content) {
+  z-index: var(--z-popover, 70) !important;
 }

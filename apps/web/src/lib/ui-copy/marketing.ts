@@ -16,10 +16,12 @@ export const MARKETING_COPY = {
     BLOG: "Blog",
     ABOUT: "About",
     SIGN_IN: "Sign In",
-    GET_STARTED: "Get Started Free",
+    GET_STARTED: "Request Early Access",
     DASHBOARD_CTA: "Open Dashboard",
     ARIA_NAV: "Main public navigation",
     ARIA_MOBILE_MENU: "Toggle mobile navigation",
+    SKIP_TO_CONTENT: "Skip to main content",
+    THEME_LABEL: "Appearance",
   },
   HERO: {
     BADGE: "Autonomous Financial Intelligence",
@@ -27,13 +29,9 @@ export const MARKETING_COPY = {
     HEADLINE_ACCENT: "Agentic AI Intelligence",
     SUBTITLE:
       "Automate expense classification, build adaptive budgets, simulate multi-year wealth growth, and consult an always-on AI financial co-pilot powered by Google Gemini.",
-    CTA_PRIMARY: "Start Free with DevLab",
+    CTA_PRIMARY: "Request Early Access",
     CTA_SECONDARY: "Explore Capabilities",
-    TRUST_PILLS: [
-      "Zero Data Selling",
-      "AES-256 Workspace Encryption",
-      "Real-Time Gemini AI Insights",
-    ],
+    TRUST_PILLS: ["Zero Data Selling", "AES-256 Workspace Encryption", "Real-Time AI Insights"],
   },
   PREVIEW: {
     BADGE: "Unified Financial Workspace",
@@ -95,6 +93,7 @@ export const MARKETING_COPY = {
         href: "/about",
       },
     ],
+    EXPLORE_ACTION: "Explore capability",
   },
   HOW_IT_WORKS: {
     BADGE: "Workflow",
@@ -175,8 +174,8 @@ export const MARKETING_COPY = {
   CTA_BANNER: {
     TITLE: "Ready to Take Complete Control of Your Financial Future?",
     SUBTITLE:
-      "Join thousands of mindful individuals building long-term wealth with agentic financial intelligence. Free forever with Yuva DevLab.",
-    PRIMARY_BTN: "Get Started Free",
+      "Join thoughtful individuals building long-term wealth with agentic financial intelligence. Secure your private beta invitation today.",
+    PRIMARY_BTN: "Request Early Access",
     SECONDARY_BTN: "Sign In to Portal",
   },
   BLOG: {
@@ -191,7 +190,7 @@ export const MARKETING_COPY = {
     RELATED_SUBTITLE: "Continue building financial mastery with these practical frameworks.",
   },
   FEATURE_PAGES: {
-    PRIMARY_CTA: "Get Started Free",
+    PRIMARY_CTA: "Request Early Access",
     SECONDARY_CTA: "All Features",
     RELATED_TITLE: "Explore Related Capabilities",
     RELATED_SUBTITLE: "FinAI's modular architecture connects every aspect of your financial life.",

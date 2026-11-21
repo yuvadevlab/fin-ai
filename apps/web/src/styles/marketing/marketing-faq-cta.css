@@ -13,6 +13,8 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 0;
+    margin: 0 auto;
   }
 
   .fn-mkt-faq-item {
@@ -32,6 +34,14 @@
     font-weight: 600;
     color: var(--foreground);
     margin: 0 0 0.5rem 0;
+    padding: 0;
+  }
+
+  .fn-mkt-faq-q h3 {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    margin: 0;
   }
 
   .fn-mkt-faq-a {
@@ -39,6 +49,8 @@
     color: var(--muted-foreground);
     line-height: 1.6;
     margin: 0;
+    margin-inline-start: 0;
+    padding: 0;
   }
 
   /* ── Final Call to Action Banner ───────────────────────────────────────── */

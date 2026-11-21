@@ -65,7 +65,7 @@ export const PUBLIC_PAGES_SEO = {
   FEATURES: {
     title: "Features & Capabilities — Intelligent Personal Wealth Suite",
     description:
-      "Explore FinAI's full feature set: real-time expense classification, proactive envelope budgeting, multi-year wealth forecasting, and Google Gemini AI insights.",
+      "Explore FinAI's full feature set: real-time expense classification, proactive envelope budgeting, multi-year wealth forecasting, and Gemini AI insights.",
     path: "/features",
   },
   EXPENSE_TRACKING: {

@@ -1,6 +1,6 @@
 /**
  * @file apps/web/src/features/marketing/components/PublicFooter.tsx
- * @description Master public footer with brand description, directory navigation, and Yuva DevLab attribution.
+ * @description Accessible public footer with brand description, directory navigation landmarks, and Yuva DevLab attribution.
  * @module @fin-ai/web/features/marketing/components/PublicFooter
  */
 
@@ -14,7 +14,7 @@ export function PublicFooter(): React.JSX.Element {
   const copy = UI_COPY.MARKETING.FOOTER;
 
   return (
-    <footer className="fn-mkt-footer">
+    <footer className="fn-mkt-footer" role="contentinfo">
       <div className="fn-mkt-container">
         <div className="fn-mkt-footer-grid">
           {/* Brand Column */}
@@ -26,9 +26,11 @@ export function PublicFooter(): React.JSX.Element {
           </div>
 
           {/* Product Directory */}
-          <div>
-            <div className="fn-mkt-footer-heading">{copy.SECTIONS.PRODUCT.TITLE}</div>
-            <ul className="fn-mkt-footer-list">
+          <nav aria-labelledby="footer-product-heading">
+            <h2 id="footer-product-heading" className="fn-mkt-footer-heading">
+              {copy.SECTIONS.PRODUCT.TITLE}
+            </h2>
+            <ul className="fn-mkt-footer-list" role="list">
               {copy.SECTIONS.PRODUCT.LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="fn-mkt-footer-link">
@@ -37,12 +39,14 @@ export function PublicFooter(): React.JSX.Element {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           {/* Resources Directory */}
-          <div>
-            <div className="fn-mkt-footer-heading">{copy.SECTIONS.RESOURCES.TITLE}</div>
-            <ul className="fn-mkt-footer-list">
+          <nav aria-labelledby="footer-resources-heading">
+            <h2 id="footer-resources-heading" className="fn-mkt-footer-heading">
+              {copy.SECTIONS.RESOURCES.TITLE}
+            </h2>
+            <ul className="fn-mkt-footer-list" role="list">
               {copy.SECTIONS.RESOURCES.LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="fn-mkt-footer-link">
@@ -51,12 +55,14 @@ export function PublicFooter(): React.JSX.Element {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           {/* Legal Directory */}
-          <div>
-            <div className="fn-mkt-footer-heading">{copy.SECTIONS.LEGAL.TITLE}</div>
-            <ul className="fn-mkt-footer-list">
+          <nav aria-labelledby="footer-legal-heading">
+            <h2 id="footer-legal-heading" className="fn-mkt-footer-heading">
+              {copy.SECTIONS.LEGAL.TITLE}
+            </h2>
+            <ul className="fn-mkt-footer-list" role="list">
               {copy.SECTIONS.LEGAL.LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="fn-mkt-footer-link">
@@ -65,7 +71,7 @@ export function PublicFooter(): React.JSX.Element {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
         </div>
 
         {/* Bottom Attribution & Legal Disclaimer */}

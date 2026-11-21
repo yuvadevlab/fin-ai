@@ -12,6 +12,8 @@ export * from "./data/blog-posts";
 export * from "./services/features-service";
 export * from "./services/blog-service";
 
+export * from "./context/EarlyAccessContext";
+export * from "./components/EarlyAccessModal";
 export * from "./components/PublicHeader";
 export * from "./components/PublicFooter";
 export * from "./components/HeroSection";
@@ -21,5 +23,6 @@ export * from "./components/HowItWorksSection";
 export * from "./components/SecuritySection";
 export * from "./components/FaqSection";
 export * from "./components/CtaBannerSection";
+export * from "./components/FeatureDeepDiveView";
 export * from "./components/features";
 export * from "./components/blog";

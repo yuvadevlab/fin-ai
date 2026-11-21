@@ -112,4 +112,16 @@
     position: relative !important;
     z-index: 10 !important;
   }
+
+  /* ── Popovers, Selects & DatePickers Stacking Layering Over Dialogs ─────── */
+  .dl-popover,
+  .dl-date-picker-content,
+  .dl-select-content,
+  .dl-searchable-select-content,
+  [data-radix-popper-content-wrapper]:has(.dl-popover),
+  [data-radix-popper-content-wrapper]:has(.dl-date-picker-content),
+  [data-radix-popper-content-wrapper]:has(.dl-select-content),
+  [data-radix-popper-content-wrapper]:has(.dl-searchable-select-content) {
+    z-index: var(--z-popover, 70) !important;
+  }
 }

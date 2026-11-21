@@ -60,6 +60,12 @@
     color: var(--primary);
   }
 
+  .fn-mkt-drawer-link--active {
+    background-color: color-mix(in srgb, var(--primary) 14%, transparent) !important;
+    color: var(--primary) !important;
+    font-weight: 600;
+  }
+
   .fn-mkt-drawer-link-arrow {
     color: var(--muted-foreground);
     transition:
@@ -67,9 +73,10 @@
       color var(--duration-fast, 150ms) ease;
   }
 
-  .fn-mkt-drawer-link:hover .fn-mkt-drawer-link-arrow {
+  .fn-mkt-drawer-link:hover .fn-mkt-drawer-link-arrow,
+  .fn-mkt-drawer-link--active .fn-mkt-drawer-link-arrow {
     color: var(--primary);
-    transform: translateX(2px);
+    transform: translateX(3px);
   }
 
   .fn-mkt-drawer-footer {
@@ -79,6 +86,22 @@
     padding-top: 1.25rem;
     margin-top: auto;
     border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+
+  .fn-mkt-drawer-utilities {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .fn-mkt-drawer-theme-label {
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .fn-mkt-drawer-footer > * {
