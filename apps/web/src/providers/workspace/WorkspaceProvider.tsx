@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { StorageKey, WorkspaceType, QUERY_KEYS } from "@fin-ai/shared-types";
 import { useWorkspaces } from "@/features/workspaces/api";
+import { useAuth } from "@/providers/auth";
 import { WorkspaceContext } from "./workspace-context";
 
 export interface WorkspaceProviderProps {
@@ -14,7 +15,8 @@ export interface WorkspaceProviderProps {
 export function WorkspaceProvider({ children }: WorkspaceProviderProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: workspaces = [], isLoading } = useWorkspaces();
+  const { token } = useAuth();
+  const { data: workspaces = [], isLoading } = useWorkspaces(Boolean(token));
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem(StorageKey.WORKSPACE_ID);

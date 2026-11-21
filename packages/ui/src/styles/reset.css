@@ -25,6 +25,11 @@
 
   html,
   body {
+    min-height: 100%;
+  }
+
+  html:has(.finai-app-shell),
+  body:has(.finai-app-shell) {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;

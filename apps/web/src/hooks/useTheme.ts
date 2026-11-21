@@ -7,7 +7,9 @@ export function useTheme(): Theme {
 
   useEffect(() => {
     const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains("dark");
+      const isDark =
+        document.documentElement.classList.contains("dark") ||
+        document.documentElement.getAttribute("data-theme") === "finai-dark";
       setTheme(isDark ? "dark" : "light");
     };
 
@@ -15,7 +17,10 @@ export function useTheme(): Theme {
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        if (
+          mutation.type === "attributes" &&
+          (mutation.attributeName === "class" || mutation.attributeName === "data-theme")
+        ) {
           updateTheme();
         }
       });
@@ -23,7 +28,7 @@ export function useTheme(): Theme {
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["class", "data-theme"],
     });
 
     return () => observer.disconnect();

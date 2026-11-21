@@ -25,6 +25,24 @@
     flex-shrink: 0;
   }
 
+  .fn-sidebar-brand-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: opacity 150ms ease;
+  }
+
+  .fn-sidebar-brand-link:hover {
+    opacity: 0.85;
+  }
+
+  .fn-sidebar-brand-link:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
   .fn-sidebar-nav {
     flex: 1;
     overflow-y: auto;

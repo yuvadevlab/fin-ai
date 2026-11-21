@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { DEVLAB_PORTAL_ROUTES } from "@/lib";
-import { UI_COPY } from "@/lib/ui-copy";
+/**
+ * @file apps/web/src/features/auth/components/RegisterView.tsx
+ * @description Client-side fallback view for /register route.
+ * Redirects to the curated early access waitlist workflow on the homepage.
+ * @module @fin-ai/web/features/auth/components/RegisterView
+ */
 
-export function RegisterView() {
+import React, { useEffect } from "react";
+import { APP_ROUTES } from "@/lib/routes";
+import { UI_COPY } from "@/lib/ui-copy";
+import { EarlyAccessQueryParamKey } from "@/features/marketing/context/EarlyAccessContext";
+
+export function RegisterView(): React.JSX.Element {
   useEffect(() => {
     if (typeof window !== "undefined") {
-      window.location.href = DEVLAB_PORTAL_ROUTES.REGISTER();
+      const searchParams = new URLSearchParams();
+      searchParams.set(EarlyAccessQueryParamKey.EARLY_ACCESS, "true");
+      window.location.replace(`${APP_ROUTES.HOME}?${searchParams.toString()}`);
     }
   }, []);
 

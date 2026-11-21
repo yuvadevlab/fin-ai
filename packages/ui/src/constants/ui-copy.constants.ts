@@ -37,10 +37,12 @@ export const UI_COPY_CONSTANTS = {
     NOTIFICATIONS_UNREAD_ARIA: "Notifications, unread items available",
     SEARCH_PLACEHOLDER: "Search anything...",
     USER_PROFILE_ARIA: "User profile",
+    THEME_TOGGLE_ARIA: "Toggle color theme",
   },
   SIDEBAR: {
     NAV_ARIA: "Sidebar navigation",
     MAIN_NAV_ARIA: "Main Navigation",
+    BRAND_HOME_ARIA: "FinAI Home",
     OVERVIEW_HEADING: "Overview",
     INTELLIGENCE_HEADING: "Intelligence",
     COLLAPSE_ARIA: "Collapse sidebar (Cmd+B)",

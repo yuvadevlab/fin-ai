@@ -30,7 +30,7 @@ export function LoginView() {
 
       const isForceReAuth = promptParam === AuthPrompt.LOGIN || Boolean(errorParam);
       const portalUrl = DEVLAB_PORTAL_ROUTES.LOGIN({
-        redirectUrl: window.location.origin,
+        redirectUrl: `${window.location.origin}/dashboard`,
         ...(errorParam ? { error: errorParam } : {}),
         prompt: isForceReAuth ? AuthPrompt.LOGIN : undefined,
       });

@@ -148,6 +148,8 @@ export {
   DropdownMenuRadioGroup,
   Toggle,
   toggleVariants,
+  Textarea,
+  type TextareaProps,
   useIsMobile,
   Table,
   TableHeader,
