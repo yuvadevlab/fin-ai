@@ -60,7 +60,7 @@ export function PublicHeader(): React.JSX.Element {
         <nav className="fn-mkt-nav-links" aria-label={copy.ARIA_NAV}>
           {navItems.map((item) => {
             const isActive =
-              pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+              pathname === item.href || Boolean(pathname?.startsWith(`${item.href}/`));
             return (
               <Link
                 key={item.href}
@@ -118,7 +118,7 @@ export function PublicHeader(): React.JSX.Element {
             <nav className="fn-mkt-drawer-nav" aria-label={copy.ARIA_NAV}>
               {navItems.map((item) => {
                 const isActive =
-                  pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+                  pathname === item.href || Boolean(pathname?.startsWith(`${item.href}/`));
                 return (
                   <Link
                     key={item.href}
