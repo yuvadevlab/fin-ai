@@ -1,0 +1,179 @@
+/**
+ * @file apps/web/src/styles/marketing/marketing-shell.css
+ * @description Semantic shell, layout, header, and footer styles for FinAI public marketing pages.
+ * Encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ * @module @fin-ai/web/styles/marketing/shell
+ */
+
+@layer dl-components {
+  .fn-mkt-page {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: clip;
+    width: 100%;
+  }
+
+  .fn-mkt-container {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+  }
+
+  .fn-mkt-section-bordered {
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+
+  .fn-mkt-btn-arrow {
+    margin-left: 0.5rem;
+    width: var(--icon-sm, 1rem);
+    height: var(--icon-sm, 1rem);
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .fn-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border-width: 0 !important;
+  }
+
+  .fn-skip-link:focus {
+    position: fixed !important;
+    top: 1rem !important;
+    left: 1rem !important;
+    z-index: 1000 !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.75rem 1.25rem !important;
+    background-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    border-radius: var(--radius-md, 0.375rem) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    clip: auto !important;
+    overflow: visible !important;
+  }
+
+  .fn-mkt-unstyled-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* ── Public Navigation Header ─────────────────────────────────────────── */
+  .fn-mkt-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: color-mix(in srgb, var(--background) 80%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    transition: background-color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+  }
+
+  .fn-mkt-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fn-mkt-mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .fn-mkt-mobile-menu-btn {
+      display: none !important;
+    }
+  }
+
+  .fn-mkt-nav-links {
+    display: none;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .fn-mkt-nav-links {
+      display: flex;
+    }
+  }
+
+  .fn-mkt-sign-in-btn {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .fn-mkt-sign-in-btn {
+      display: inline-flex;
+    }
+  }
+
+  .fn-mkt-nav-link {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    padding: 0.375rem 0.625rem;
+    border-radius: var(--radius-md, 0.375rem);
+    transition:
+      color var(--duration-fast, 150ms) ease,
+      background-color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-nav-link:hover {
+    color: var(--foreground);
+    background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+
+  .fn-mkt-nav-link--active {
+    color: var(--primary) !important;
+    font-weight: 600;
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+
+  .fn-mkt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* ── Badge Pill ─────────────────────────────────────────────────────────── */
+  .fn-mkt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full, 9999px);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+    color: var(--primary);
+    border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  }
+}

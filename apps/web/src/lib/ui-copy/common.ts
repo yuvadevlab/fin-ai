@@ -57,6 +57,8 @@ export const COMMON_COPY = {
   },
   A11Y: {
     TOGGLE_THEME: "Toggle color theme",
+    SWITCH_TO_DARK: "Switch to dark theme",
+    SWITCH_TO_LIGHT: "Switch to light theme",
     CLOSE_DIALOG: "Close dialog",
     CLEAR_OUTPUT: "Clear output",
     JUMP_TO_LATEST: "Jump to latest message",

@@ -55,7 +55,9 @@ function resolveTheme(theme: string): "dark" | "light" {
 function applyTheme(theme: string) {
   if (typeof document === "undefined") return;
   const resolved = resolveTheme(theme);
-  document.documentElement.classList.toggle("dark", resolved === "dark");
+  const isDark = resolved === "dark";
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.setAttribute("data-theme", isDark ? "finai-dark" : "finai");
 }
 
 function applyDensity(density: string) {

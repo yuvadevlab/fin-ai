@@ -124,6 +124,37 @@
     margin: 0;
   }
 
+  /* ── Theme Mode Toggle ─────────────────────────────────────────────────── */
+  .fn-theme-toggle-btn {
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--muted-foreground);
+    transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  @media (min-width: 640px) {
+    .fn-theme-toggle-btn {
+      inline-size: 2.25rem;
+      block-size: 2.25rem;
+    }
+  }
+
+  .fn-theme-toggle-btn:hover {
+    color: var(--foreground);
+  }
+
+  .fn-theme-toggle-icon {
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: currentColor;
+    transition: transform var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-theme-toggle-tooltip {
+    font-size: var(--text-xs, 0.75rem);
+    margin: 0;
+  }
+
   /* ── Accessibility Skip Link ───────────────────────────────────────────── */
   .fn-skip-to-content {
     position: fixed;

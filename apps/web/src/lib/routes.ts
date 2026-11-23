@@ -16,7 +16,18 @@ import { DEVLAB_PORTAL_WEB_URL, APP_ID } from "./app-constants";
 /** Client-side Next.js route paths */
 export const APP_ROUTES = {
   HOME: "/",
-  DASHBOARD: "/",
+  DASHBOARD: "/dashboard",
+  FEATURES: "/features",
+  EXPENSE_TRACKING: "/expense-tracking",
+  BUDGET_PLANNING: "/budget-planning",
+  AI_FINANCIAL_ADVISOR: "/ai-financial-advisor",
+  WEALTH_MANAGEMENT: "/wealth-management",
+  FINANCIAL_GOALS: "/financial-goals",
+  ABOUT: "/about",
+  BLOG: "/blog",
+  BLOG_POST: (slug: string) => `/blog/${slug}`,
+  PRIVACY_POLICY: "/privacy-policy",
+  TERMS_OF_SERVICE: "/terms-of-service",
   LOGIN: "/login",
   REGISTER: "/register",
   FORGOT_PASSWORD: "/forgot-password",
@@ -42,6 +53,36 @@ export interface DevLabPortalLoginOptions {
   prompt?: AuthPrompt;
 }
 
+/**
+ * Resolves the fully-qualified base URL of the FinAI web application.
+ * In browser environments, dynamically derives the current window origin so
+ * authentication handoffs stay pinned to the exact host and port (e.g. localhost:3001).
+ * On the server, falls back to NEXT_PUBLIC_APP_URL, defaulting to localhost:3001 in development.
+ */
+export function getAppBaseUrl(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  return process.env.NODE_ENV === "development"
+    ? "http://localhost:3001"
+    : "https://fin-ai-yuvadevlab.vercel.app";
+}
+
+/**
+ * Constructs an absolute callback URL for DevLab Portal SSO handoffs.
+ *
+ * @param path - Target route within the FinAI application (defaults to /dashboard)
+ * @returns Fully-qualified destination URL
+ */
+export function getAuthRedirectUrl(path: string = APP_ROUTES.DASHBOARD): string {
+  const baseUrl = getAppBaseUrl();
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${normalizedPath}`;
+}
+
 /** DevLab Central Portal SSO route builders and canonical destinations */
 export const DEVLAB_PORTAL_ROUTES = {
   LOGIN: (redirectUrlOrOptions?: string | DevLabPortalLoginOptions) => {
@@ -57,11 +98,10 @@ export const DEVLAB_PORTAL_ROUTES = {
       redirectUrl = redirectUrlOrOptions;
     }
 
+    const destination = redirectUrl || getAuthRedirectUrl(APP_ROUTES.DASHBOARD);
     const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.LOGIN}`);
     url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
-    if (redirectUrl) {
-      url.searchParams.set(AuthQueryParamKey.REDIRECT, redirectUrl);
-    }
+    url.searchParams.set(AuthQueryParamKey.REDIRECT, destination);
     if (error) {
       url.searchParams.set(AuthQueryParamKey.ERROR, error);
     }
@@ -70,9 +110,11 @@ export const DEVLAB_PORTAL_ROUTES = {
     }
     return url.toString();
   },
-  REGISTER: () => {
+  REGISTER: (redirectUrl?: string) => {
+    const destination = redirectUrl || getAuthRedirectUrl(APP_ROUTES.DASHBOARD);
     const url = new URL(`${DEVLAB_PORTAL_WEB_URL}${DEVLAB_CONFIG.PATHS.REGISTER}`);
     url.searchParams.set(AuthQueryParamKey.APP, APP_ID);
+    url.searchParams.set(AuthQueryParamKey.REDIRECT, destination);
     return url.toString();
   },
   FORGOT_PASSWORD: () => {

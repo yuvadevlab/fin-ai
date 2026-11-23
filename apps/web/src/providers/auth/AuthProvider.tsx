@@ -106,7 +106,7 @@ export function AuthProvider({ initialToken = null, children }: AuthProviderProp
       document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       window.location.href = DEVLAB_PORTAL_ROUTES.LOGIN({
-        redirectUrl: window.location.origin,
+        redirectUrl: `${window.location.origin}/dashboard`,
         prompt: AuthPrompt.LOGIN,
       });
     }

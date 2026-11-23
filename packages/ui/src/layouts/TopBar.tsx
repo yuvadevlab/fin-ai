@@ -7,6 +7,7 @@ export interface TopBarProps extends React.HTMLAttributes<HTMLElement> {
   leftContent?: React.ReactNode;
   workspaceMenu?: React.ReactNode;
   notificationsMenu?: React.ReactNode;
+  themeToggle?: React.ReactNode;
   profileMenu?: React.ReactNode;
   actions?: React.ReactNode;
   onMenuClick?: () => void;
@@ -29,6 +30,7 @@ export function TopBar({
   leftContent,
   workspaceMenu,
   notificationsMenu,
+  themeToggle,
   profileMenu,
   actions,
   onMenuClick,
@@ -207,6 +209,7 @@ export function TopBar({
                 {hasNotifications && <span className="fn-topbar-notif-badge" aria-hidden="true" />}
               </Button>
             )}
+            {themeToggle}
             {onAddTransactionClick && (
               <Button
                 size="sm"

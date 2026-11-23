@@ -1,0 +1,217 @@
+/**
+ * @file apps/web/src/styles/marketing/marketing-blog.css
+ * @description Educational blog listing, cards, and single article prose typography styles.
+ * Encapsulated under @layer dl-components (Rule 4: strictly under 250 lines).
+ * @module @fin-ai/web/styles/marketing/blog
+ */
+
+@layer dl-components {
+  /* ── Breadcrumb Back Link ─────────────────────────────────────────────────── */
+  .fn-mkt-back-link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-back-link:hover {
+    color: var(--foreground);
+  }
+
+  /* ── Blog Grid Layout ─────────────────────────────────────────────────────── */
+  .fn-mkt-blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .fn-mkt-blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fn-mkt-blog-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ── Blog Card Component ─────────────────────────────────────────────────── */
+  .fn-mkt-blog-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background-color: var(--card);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color var(--duration-fast, 150ms) ease,
+      transform var(--duration-fast, 150ms) ease,
+      box-shadow var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-blog-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+
+  .fn-mkt-blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .fn-mkt-blog-meta-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--muted-foreground);
+  }
+
+  .fn-mkt-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--muted-foreground);
+    line-height: 1;
+  }
+
+  .fn-mkt-meta-icon {
+    width: 0.8125rem;
+    height: 0.8125rem;
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+  }
+
+  .fn-mkt-meta-dot {
+    color: color-mix(in srgb, var(--border) 80%, var(--muted-foreground));
+    font-size: 0.75rem;
+  }
+
+  .fn-mkt-article-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--muted-foreground);
+  }
+
+  .fn-mkt-blog-title {
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--foreground);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .fn-mkt-blog-desc {
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    margin: 0 0 1.25rem 0;
+    flex: 1;
+  }
+
+  .fn-mkt-blog-read-more {
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* ── Single Article Reader Layout ───────────────────────────────────────── */
+  .fn-mkt-article-body-section {
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+
+  .fn-mkt-article-wrap {
+    max-width: 48rem;
+    margin-inline: auto;
+    padding-block: 1rem 3rem;
+  }
+
+  .fn-mkt-article-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .fn-mkt-article-takeaways {
+    padding: 1.5rem;
+    border-radius: var(--radius-xl, 0.75rem);
+    background-color: color-mix(in srgb, var(--primary) 8%, var(--card));
+    border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+    margin-bottom: 2.5rem;
+  }
+
+  .fn-mkt-article-takeaways-title {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .fn-mkt-article-takeaways-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--foreground);
+    line-height: 1.6;
+  }
+
+  .fn-mkt-article-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .fn-mkt-article-h2 {
+    font-size: var(--text-xl, 1.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+    margin: 0 0 1rem 0;
+  }
+
+  .fn-mkt-article-p {
+    font-size: var(--text-base, 1rem);
+    line-height: 1.75;
+    color: var(--foreground);
+    margin: 0 0 1.25rem 0;
+  }
+
+  .fn-mkt-article-inline-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-mkt-article-inline-link:hover {
+    color: color-mix(in srgb, var(--primary) 80%, white);
+  }
+}
