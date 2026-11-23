@@ -20,6 +20,31 @@ export class ApiError extends Error {
   }
 }
 
+function shouldRedirectToLogin(pathname: string): boolean {
+  if (
+    pathname === APP_ROUTES.LOGIN ||
+    pathname === APP_ROUTES.REGISTER ||
+    pathname === APP_ROUTES.FORGOT_PASSWORD ||
+    pathname === APP_ROUTES.RESET_PASSWORD ||
+    pathname === APP_ROUTES.HOME ||
+    pathname === APP_ROUTES.FEATURES ||
+    pathname.startsWith("/features/") ||
+    pathname === APP_ROUTES.EXPENSE_TRACKING ||
+    pathname === APP_ROUTES.BUDGET_PLANNING ||
+    pathname === APP_ROUTES.AI_FINANCIAL_ADVISOR ||
+    pathname === APP_ROUTES.WEALTH_MANAGEMENT ||
+    pathname === APP_ROUTES.FINANCIAL_GOALS ||
+    pathname === APP_ROUTES.ABOUT ||
+    pathname === APP_ROUTES.BLOG ||
+    pathname.startsWith("/blog/") ||
+    pathname === APP_ROUTES.PRIVACY_POLICY ||
+    pathname === APP_ROUTES.TERMS_OF_SERVICE
+  ) {
+    return false;
+  }
+  return true;
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = endpoint.startsWith("http")
     ? endpoint
@@ -58,10 +83,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
         document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
         document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
         document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-        if (
-          window.location.pathname !== APP_ROUTES.LOGIN &&
-          window.location.pathname !== APP_ROUTES.REGISTER
-        ) {
+        if (shouldRedirectToLogin(window.location.pathname)) {
           window.location.href = `${APP_ROUTES.LOGIN}?error=session_expired`;
         }
         throw new ApiError(401, { message: "Session expired" });
@@ -100,10 +122,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
       document.cookie = `${StorageKey.TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.DEVLAB_ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${StorageKey.WORKSPACE_ID}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      if (
-        window.location.pathname !== APP_ROUTES.LOGIN &&
-        window.location.pathname !== APP_ROUTES.REGISTER
-      ) {
+      if (shouldRedirectToLogin(window.location.pathname)) {
         window.location.href = `${APP_ROUTES.LOGIN}?error=session_expired`;
       }
     }

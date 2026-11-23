@@ -11,9 +11,34 @@ import { DEVLAB_PORTAL_ROUTES } from "@/lib/routes";
 import { isJwtExpired } from "@/lib/jwt";
 
 /**
+ * Canonical public marketing routes accessible to anonymous visitors and search engines.
+ */
+const PUBLIC_MARKETING_ROUTES = new Set([
+  "/",
+  "/features",
+  "/expense-tracking",
+  "/budget-planning",
+  "/ai-financial-advisor",
+  "/wealth-management",
+  "/financial-goals",
+  "/about",
+  "/blog",
+  "/privacy-policy",
+  "/terms-of-service",
+]);
+
+function isPublicMarketingRoute(pathname: string): boolean {
+  if (PUBLIC_MARKETING_ROUTES.has(pathname)) return true;
+  if (pathname.startsWith("/blog/")) return true;
+  if (pathname.startsWith("/features/")) return true;
+  return false;
+}
+
+/**
  * Authentication middleware running before route execution.
  * Checks for authentication token cookies and redirects unauthenticated users
- * directly to the DevLab Portal Web UI login.
+ * attempting to access private application routes directly to the DevLab Portal.
+ * Never blocks or redirects anonymous visitors from public marketing pages.
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -26,7 +51,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/apple-icon") ||
     pathname === "/icon.svg" ||
     pathname === "/manifest.webmanifest" ||
-    pathname === "/robots.txt";
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml";
 
   if (isPublicAsset) {
     return NextResponse.next();
@@ -72,7 +98,15 @@ export function middleware(request: NextRequest) {
     request.cookies.get(StorageKey.TOKEN)?.value ||
     request.cookies.get(StorageKey.DEVLAB_ACCESS_TOKEN)?.value;
 
-  if (!token || isJwtExpired(token)) {
+  const isAuthenticated = Boolean(token && !isJwtExpired(token));
+
+  // 3. Allow anonymous visitors and search crawlers full access to public marketing routes
+  if (isPublicMarketingRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  // 4. Protected application routes require valid authentication
+  if (!isAuthenticated) {
     const response = NextResponse.redirect(
       DEVLAB_PORTAL_ROUTES.LOGIN({
         redirectUrl: request.url,
@@ -80,6 +114,7 @@ export function middleware(request: NextRequest) {
         prompt: token ? AuthPrompt.LOGIN : undefined,
       }),
     );
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     if (token) {
       response.cookies.delete(StorageKey.TOKEN);
       response.cookies.delete(StorageKey.DEVLAB_ACCESS_TOKEN);
@@ -87,7 +122,10 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.next();
+  // Enforce noindex headers on private application dashboard routes
+  const response = NextResponse.next();
+  response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  return response;
 }
 
 export const config = {

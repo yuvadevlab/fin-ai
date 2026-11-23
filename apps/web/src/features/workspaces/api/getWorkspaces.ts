@@ -5,10 +5,11 @@ import { serverFetch } from "@/lib/server-fetch";
 
 export const workspacesQueryKey = () => QUERY_KEYS.WORKSPACES.ALL;
 
-export function useWorkspaces() {
+export function useWorkspaces(enabled = true) {
   return useQuery<WorkspaceWithRole[]>({
     queryKey: workspacesQueryKey(),
     queryFn: () => apiClient.get<WorkspaceWithRole[]>(API_ENDPOINTS.WORKSPACES.BASE),
+    enabled,
   });
 }
 
