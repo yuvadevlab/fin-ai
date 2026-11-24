@@ -89,11 +89,11 @@ export function AccountsPage() {
         }
       />
 
-      <ReadOnlyWorkspaceBanner />
+      {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
       {/* Accounts Grid or Empty State */}
       {isClient && !isLoading && accounts.length === 0 ? (
-        <section className="fn-account-empty" aria-label={UI_COPY.ACCOUNTS.EMPTY_TITLE}>
+        <section className="fn-accounts-empty" aria-label={UI_COPY.ACCOUNTS.EMPTY_TITLE}>
           <div className="fn-account-empty-icon-wrap">
             <Wallet className="fn-account-empty-icon" />
           </div>
@@ -107,7 +107,7 @@ export function AccountsPage() {
           )}
         </section>
       ) : (
-        <section className="fn-account-grid" aria-label={UI_COPY.ACCOUNTS.LINKED_ACCOUNTS}>
+        <section className="fn-accounts-grid" aria-label={UI_COPY.ACCOUNTS.LINKED_ACCOUNTS}>
           {accounts.map((a) => (
             <AccountCard
               key={a.id}
