@@ -1,7 +1,9 @@
 import { BadRequestException } from "@nestjs/common";
+import { AccountType, TransactionType } from "@fin-ai/shared-types";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
 import { resolveDefaultAccount } from "@/modules/accounts/accounts-preferences.util";
+import { resolveTransferCategory } from "./utils/transfer-category.utils";
 
 /**
  * Entity reference resolution for agent write tools.
@@ -175,19 +177,31 @@ export async function resolveTransactionRefs(
     accountId = defaultAccount.id;
   }
 
-  const category = await resolveCategoryRef(
-    categoriesService,
-    userId,
-    splitRef(input.category) ?? { id: input.categoryId ?? "" },
-    { autoCreate: options.autoCreateCategory },
-  );
-
   let toAccountId: string | null = null;
+  let isCreditCard = false;
   if (input.toAccount !== undefined) {
     toAccountId = (await resolveAccountRef(accountsService, userId, splitRef(input.toAccount)!)).id;
+    const dest = accounts.find((a) => a.id === toAccountId);
+    isCreditCard = dest?.type === AccountType.CREDIT_CARD;
   } else if (input.toAccountId !== undefined) {
     toAccountId = input.toAccountId;
+    const dest = accounts.find((a) => a.id === toAccountId);
+    isCreditCard = dest?.type === AccountType.CREDIT_CARD;
   }
 
-  return { accountId, categoryId: category.id, toAccountId };
+  let categoryId: string;
+  if (!input.category && !input.categoryId && input.type === TransactionType.TRANSFER) {
+    const transferCat = await resolveTransferCategory(categoriesService, userId, isCreditCard);
+    categoryId = transferCat.id;
+  } else {
+    const category = await resolveCategoryRef(
+      categoriesService,
+      userId,
+      splitRef(input.category) ?? { id: input.categoryId ?? "" },
+      { autoCreate: options.autoCreateCategory },
+    );
+    categoryId = category.id;
+  }
+
+  return { accountId, categoryId, toAccountId };
 }

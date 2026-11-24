@@ -29,6 +29,7 @@ export default function robots(): MetadataRoute.Robots {
           "/terms-of-service",
           "/icon.svg",
           "/opengraph-image",
+          "/googleb6ffb6081f6f4fb1.html",
         ],
         disallow: [
           "/dashboard",

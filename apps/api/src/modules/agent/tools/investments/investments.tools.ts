@@ -65,6 +65,27 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       },
     }),
     defineTool({
+      name: AgentToolName.INVESTMENTS_GET,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_GET],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_GET],
+      schema: z.object({
+        investmentId: z.string().uuid("Invalid investment ID"),
+      }),
+      execute: async (input, ctx) =>
+        investmentsService.findOne(
+          input.investmentId,
+          ctx.userId,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        ),
+      summarize: (output) => {
+        const inv = output as { name: string; currentValue: number; assetClass: string };
+        return `${inv.name} (${inv.assetClass}): ${formatINR(inv.currentValue)}`;
+      },
+    }),
+    defineTool({
       name: AgentToolName.INVESTMENTS_CREATE,
       description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_CREATE],
       access: ToolAccessLevel.WRITE,
@@ -100,6 +121,49 @@ export function createInvestmentsTools(investmentsService: InvestmentsService) {
       summarize: (output) => {
         const investment = output as { name: string; currentValue: number };
         return `Added ${investment.name} — value ${formatINR(investment.currentValue)}`;
+      },
+    }),
+    defineTool({
+      name: AgentToolName.INVESTMENTS_UPDATE,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.INVESTMENTS_UPDATE],
+      access: ToolAccessLevel.WRITE,
+      confirmation: ToolConfirmationType.REQUIRED,
+      label: AGENT_TOOL_LABELS[AgentToolName.INVESTMENTS_UPDATE],
+      invalidates: INVALIDATES_INVESTMENT_WRITES,
+      schema: createInvestmentSchema.partial().extend({
+        investmentId: z.string().uuid("Invalid investment ID"),
+      }),
+      execute: async (input, ctx) => {
+        const { investmentId, ...rest } = input;
+        return investmentsService.update(investmentId, ctx.userId, rest);
+      },
+      describe: (input) => ({
+        type: AgentCardType.CONFIRMATION,
+        title: AGENT_TOOL_TITLES[AgentToolName.INVESTMENTS_UPDATE],
+        rows: [
+          [ConfirmationRowLabel.INVESTMENT_ID, input.investmentId],
+          ...(input.name ? [[ConfirmationRowLabel.NAME, input.name] as [string, string]] : []),
+          ...(input.currentValue !== undefined
+            ? [
+                [ConfirmationRowLabel.CURRENT_VALUE, formatINR(input.currentValue)] as [
+                  string,
+                  string,
+                ],
+              ]
+            : []),
+          ...(input.investedAmount !== undefined
+            ? [
+                [ConfirmationRowLabel.INVESTED_AMOUNT, formatINR(input.investedAmount)] as [
+                  string,
+                  string,
+                ],
+              ]
+            : []),
+        ],
+      }),
+      summarize: (output) => {
+        const inv = output as { name: string; currentValue: number };
+        return `Updated ${inv.name} — current value ${formatINR(inv.currentValue)}`;
       },
     }),
     defineTool({

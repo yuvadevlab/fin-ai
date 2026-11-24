@@ -48,7 +48,21 @@ export {
 } from "./components/FormDialogField";
 
 // ─── Chart Components ────────────────────────────────────────────────────────
-export { CashFlowChart, ExpenseBarChart, CategoryPie, TrendLine, CHART_COLORS } from "./charts";
+export {
+  CashFlowChart,
+  ExpenseBarChart,
+  CategoryPie,
+  TrendLine,
+  EmotionalTrendLineChart,
+  type TrendPolarity,
+  type TrendDataPoint,
+  type EmotionalTrendLineChartProps,
+  type ExpenseBarDataPoint,
+  type ExpenseBarChartProps,
+  type TrendLineDataPoint,
+  type TrendLineChartProps,
+  CHART_COLORS,
+} from "./charts";
 
 // ─── Layout Components ───────────────────────────────────────────────────────
 export { AppShell, Sidebar, TopBar, DashboardTabs } from "./layouts";

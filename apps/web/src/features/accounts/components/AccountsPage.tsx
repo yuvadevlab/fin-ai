@@ -1,26 +1,17 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Wallet, Star, MoreVertical } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  Button,
-  ConfirmDialog,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  cn,
-} from "@fin-ai/ui";
+import { Plus, Wallet } from "lucide-react";
+import { PageContainer, PageHeader, Button, ConfirmDialog } from "@fin-ai/ui";
 import { formatINR } from "@fin-ai/finance-engine";
-import { useIsClient } from "@/hooks";
-import { usePrivacyMode } from "@/hooks";
+import { TransactionKind, TransactionType } from "@fin-ai/shared-types";
+import { useIsClient, usePrivacyMode } from "@/hooks";
 import { UI_COPY } from "@/lib/ui-copy";
-import { PrivacyMoney, ReadOnlyWorkspaceBanner } from "@/components";
+import { ReadOnlyWorkspaceBanner } from "@/components";
 import { useWorkspace } from "@/providers";
+import { TransactionDialog } from "@/features/transactions/components";
 import { AccountDialog } from "./AccountDialog";
+import { AccountCard } from "./AccountCard";
 import { Account, useAccounts, useDeleteAccount, useSetDefaultAccount } from "../api";
 
 export function AccountsPage() {
@@ -43,13 +34,9 @@ export function AccountsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
 
-  const getAccountTypeLabel = (type: string) =>
-    ({
-      BANK: UI_COPY.ACCOUNTS.TYPES.BANK,
-      CREDIT_CARD: UI_COPY.ACCOUNTS.TYPES.CREDIT_CARD,
-      WALLET: UI_COPY.ACCOUNTS.TYPES.DIGITAL_WALLET,
-      CASH: UI_COPY.ACCOUNTS.TYPES.CASH_WALLET,
-    })[type] ?? type;
+  // Pay credit card bill state
+  const [payCardAccount, setPayCardAccount] = useState<Account | null>(null);
+  const [payDialogOpen, setPayDialogOpen] = useState(false);
 
   const handleOpenAddAccount = () => {
     setSelectedAccount(null);
@@ -64,6 +51,11 @@ export function AccountsPage() {
   const handleOpenDeleteAccount = (account: Account) => {
     setAccountToDelete(account);
     setDeleteOpen(true);
+  };
+
+  const handleOpenPayCard = (account: Account) => {
+    setPayCardAccount(account);
+    setPayDialogOpen(true);
   };
 
   const handleDeleteAccountConfirm = async () => {
@@ -88,9 +80,10 @@ export function AccountsPage() {
             : UI_COPY.ACCOUNTS.PAGE_DESCRIPTION
         }
         actions={
-          isReadOnly ? undefined : (
-            <Button size="sm" onClick={handleOpenAddAccount} className="fn-header-action-btn">
-              <Plus className="fn-icon-md" /> {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
+          !isReadOnly && (
+            <Button onClick={handleOpenAddAccount} className="fn-account-action-btn">
+              <Plus className="fn-icon-md mr-1.5" />
+              {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
             </Button>
           )
         }
@@ -98,97 +91,55 @@ export function AccountsPage() {
 
       {isReadOnly && <ReadOnlyWorkspaceBanner />}
 
+      {/* Accounts Grid or Empty State */}
       {isClient && !isLoading && accounts.length === 0 ? (
-        <div className="fn-accounts-empty">
-          <div className="fn-accounts-empty-icon">
-            <Wallet className="fn-entity-empty-icon-svg" />
+        <section className="fn-accounts-empty" aria-label={UI_COPY.ACCOUNTS.EMPTY_TITLE}>
+          <div className="fn-account-empty-icon-wrap">
+            <Wallet className="fn-account-empty-icon" />
           </div>
-          <h3 className="fn-entity-empty-title">{UI_COPY.ACCOUNTS.EMPTY_TITLE}</h3>
-          <p className="fn-entity-empty-desc">{UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}</p>
+          <p className="fn-account-empty-title">{UI_COPY.ACCOUNTS.EMPTY_TITLE}</p>
+          <p className="fn-account-empty-desc">{UI_COPY.ACCOUNTS.EMPTY_DESCRIPTION}</p>
           {!isReadOnly && (
-            <Button size="sm" onClick={handleOpenAddAccount} className="fn-entity-empty-btn">
-              <Plus className="fn-icon-md" /> {UI_COPY.ACCOUNTS.LINK_FIRST}
+            <Button onClick={handleOpenAddAccount} className="fn-account-empty-btn">
+              <Plus className="fn-icon-md mr-1.5" />
+              {UI_COPY.ACCOUNTS.LINK_FIRST}
             </Button>
           )}
-        </div>
+        </section>
       ) : (
-        <section className="fn-accounts-grid">
+        <section className="fn-accounts-grid" aria-label={UI_COPY.ACCOUNTS.LINKED_ACCOUNTS}>
           {accounts.map((a) => (
-            <div key={a.id} className={cn("fn-account-card", a.isDefault && "is-default")}>
-              {/* Header: Name, Type, and visible Edit/Delete actions */}
-              <div className="fn-account-card-header">
-                <div className="fn-account-header-info">
-                  <div className="fn-account-avatar">{a.name.slice(0, 2).toUpperCase()}</div>
-                  <div>
-                    <div className="fn-account-title-wrap">
-                      <p className="fn-account-name">{a.name}</p>
-                      {a.isDefault && (
-                        <span className="fn-account-default-badge">
-                          <Star className="fn-account-star-icon" />
-                          {UI_COPY.ACCOUNTS.DEFAULT_BADGE}
-                        </span>
-                      )}
-                    </div>
-                    <p className="fn-account-type">{getAccountTypeLabel(a.type)}</p>
-                  </div>
-                </div>
-
-                {/* Actions Dropdown Menu */}
-                {!isReadOnly && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="fn-account-menu-trigger"
-                        aria-label={`Actions for ${a.name}`}
-                      >
-                        <MoreVertical className="fn-icon-md" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="fn-account-menu-content">
-                      {!a.isDefault && accounts.length > 1 && (
-                        <DropdownMenuItem
-                          onClick={() => handleSetDefault(a.id)}
-                          className="fn-account-menu-item"
-                        >
-                          <Star className="fn-account-menu-icon" />{" "}
-                          {UI_COPY.ACCOUNTS.SET_DEFAULT_ACTION}
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        onClick={() => handleOpenEditAccount(a)}
-                        className="fn-account-menu-item"
-                      >
-                        <Pencil className="fn-account-menu-icon" /> {UI_COPY.ACCOUNTS.EDIT_ACTION}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleOpenDeleteAccount(a)}
-                        className="fn-account-menu-item-destructive"
-                      >
-                        <Trash2 className="fn-account-menu-icon" /> {UI_COPY.ACCOUNTS.DELETE_ACTION}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-
-              {/* Account Balance */}
-              <div className="fn-account-balance">
-                <p className="fn-account-balance-val">
-                  <PrivacyMoney value={a.balance} className={cn(a.balance < 0 && "is-negative")} />
-                </p>
-              </div>
-
-              {/* Status Footer */}
-              <div className="fn-account-card-footer">
-                <span className="fn-account-status">{UI_COPY.ACCOUNTS.ACTIVE_STATUS}</span>
-                <span className="fn-account-currency">{a.currency}</span>
-              </div>
-            </div>
+            <AccountCard
+              key={a.id}
+              account={a}
+              accounts={accounts}
+              isReadOnly={isReadOnly}
+              onSetDefault={handleSetDefault}
+              onEdit={handleOpenEditAccount}
+              onDelete={handleOpenDeleteAccount}
+              onPayCard={handleOpenPayCard}
+            />
           ))}
         </section>
+      )}
+
+      {/* Pay Credit Card Bill Dialog */}
+      {payCardAccount && (
+        <TransactionDialog
+          open={payDialogOpen}
+          onOpenChange={(open) => {
+            setPayDialogOpen(open);
+            if (!open) setPayCardAccount(null);
+          }}
+          initialValues={{
+            kind: TransactionKind.TRANSFER,
+            type: TransactionType.TRANSFER,
+            toAccountId: payCardAccount.id,
+            toAccount: payCardAccount.id,
+            amount: Math.abs(payCardAccount.balance),
+            notes: `Credit card bill payment for ${payCardAccount.name}`,
+          }}
+        />
       )}
 
       {/* Add / Edit Account Dialog */}

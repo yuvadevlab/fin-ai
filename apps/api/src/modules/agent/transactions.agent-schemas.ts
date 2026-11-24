@@ -75,7 +75,11 @@ const transferError = {
 
 export const agentCreateTransactionSchema = agentTransactionBase
   .refine(validDateInput, dateError)
-  .refine((v) => v.category !== undefined || v.categoryId !== undefined, categoryError)
+  .refine(
+    (v) =>
+      v.type === TransactionType.TRANSFER || v.category !== undefined || v.categoryId !== undefined,
+    categoryError,
+  )
   .refine(
     (v) =>
       v.type !== TransactionType.TRANSFER ||

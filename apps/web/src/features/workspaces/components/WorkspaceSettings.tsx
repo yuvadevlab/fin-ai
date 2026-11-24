@@ -11,6 +11,7 @@ import { WorkspaceInvitationCard } from "./WorkspaceInvitationCard";
 import { InviteMemberDialog } from "./InviteMemberDialog";
 import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog";
 import { WorkspaceMembersCard } from "./WorkspaceMembersCard";
+import { WorkspaceListCard } from "./WorkspaceListCard";
 
 /** Icon + colour for the active workspace role badge */
 function getRoleDisplay(role?: WorkspaceRole | null) {
@@ -100,6 +101,12 @@ export function WorkspaceSettings() {
           </div>
         )}
       </div>
+
+      {/* ── All workspaces list ── */}
+      <section className="fn-workspace-section">
+        <p className="fn-workspace-section-title">{UI_COPY.WORKSPACES.ALL_WORKSPACES}</p>
+        <WorkspaceListCard />
+      </section>
 
       {/* ── Create shared workspace card ── */}
       {!isShared && (

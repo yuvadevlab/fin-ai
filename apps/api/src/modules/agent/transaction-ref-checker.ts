@@ -15,6 +15,7 @@ export interface TransactionRefInput {
   categoryId?: string;
   toAccount?: string;
   toAccountId?: string | null;
+  type?: string;
 }
 
 export interface RefCheckWarning {

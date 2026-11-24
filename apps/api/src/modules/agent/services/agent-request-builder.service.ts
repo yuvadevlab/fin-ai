@@ -98,7 +98,9 @@ export class AgentRequestBuilderService {
     const entityMemoryData = await this.entityMemory.load(conversationId);
     let systemPrompt = buildAgentSystemPrompt({
       portfolioSnapshot: snapshot,
-      toolPlanInstructions: buildToolPlanInstructions(this.registry.list().map((t) => t.name)),
+      toolPlanInstructions: buildToolPlanInstructions(
+        this.registry.list({ readOnly: wsContext?.isReadOnly }).map((t) => t.name),
+      ),
       currentDate: serverTodayISO(),
       entityMemory: this.entityMemory.buildPromptSection(entityMemoryData),
       pendingAction: pendingAction
@@ -113,7 +115,7 @@ export class AgentRequestBuilderService {
     return {
       request: {
         messages: [{ role: LlmRole.SYSTEM, content: systemPrompt }, ...history],
-        tools: this.registry.toLlmDefinitions(),
+        tools: this.registry.toLlmDefinitions({ readOnly: wsContext?.isReadOnly }),
       },
       pendingAction,
       needsTools: true,

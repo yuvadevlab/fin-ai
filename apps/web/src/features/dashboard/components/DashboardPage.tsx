@@ -62,6 +62,24 @@ export function DashboardPage() {
     [monthlyCashFlow],
   );
 
+  const expenseTrendHint = useMemo(() => {
+    if (expenseData.length < 2) return UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT;
+    const last = expenseData[expenseData.length - 1]?.expense ?? 0;
+    const prev = expenseData[expenseData.length - 2]?.expense ?? 0;
+    return last > prev
+      ? UI_COPY.DASHBOARD.PAGE.EXPENSE_SPIKE_HINT
+      : UI_COPY.DASHBOARD.PAGE.EXPENSE_REDUCED_HINT;
+  }, [expenseData]);
+
+  const savingsTrendHint = useMemo(() => {
+    if (savingsTrend.length < 2) return UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND_HINT;
+    const last = savingsTrend[savingsTrend.length - 1]?.value ?? 0;
+    const prev = savingsTrend[savingsTrend.length - 2]?.value ?? 0;
+    return last >= prev
+      ? UI_COPY.DASHBOARD.PAGE.SAVINGS_GROWING_HINT
+      : UI_COPY.DASHBOARD.PAGE.SAVINGS_DIPPED_HINT;
+  }, [savingsTrend]);
+
   return (
     <PageContainer>
       <PageHeader
@@ -129,7 +147,7 @@ export function DashboardPage() {
       <div className="fn-dashboard-charts-grid">
         <ChartCard
           title={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND}
-          hint={UI_COPY.DASHBOARD.PAGE.EXPENSE_TREND_HINT}
+          hint={expenseTrendHint}
           action={
             <InfoButton
               className="fn-info-btn-action"
@@ -145,7 +163,7 @@ export function DashboardPage() {
 
         <ChartCard
           title={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND}
-          hint={UI_COPY.DASHBOARD.PAGE.SAVINGS_TREND_HINT}
+          hint={savingsTrendHint}
           action={
             <InfoButton
               className="fn-info-btn-action"
