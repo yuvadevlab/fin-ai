@@ -11,6 +11,10 @@ import { CategoriesService } from "@/modules/categories/categories.service";
 import { BudgetsService } from "@/modules/budgets/budgets.service";
 import { GoalsService } from "@/modules/goals/goals.service";
 import { InvestmentsService } from "@/modules/investments/investments.service";
+import { NotificationsService } from "@/modules/notifications/services/notifications.service";
+import { WorkspacesService } from "@/modules/workspaces/services/workspaces.service";
+import { WorkspacesInvitationsService } from "@/modules/workspaces/services/workspaces-invitations.service";
+import { WorkspacesMembersService } from "@/modules/workspaces/services/workspaces-members.service";
 import { UsersService } from "@/modules/auth/users.service";
 import {
   createAccountsTools,
@@ -21,6 +25,8 @@ import {
   createGoalsTools,
   createInsightsTools,
   createInvestmentsTools,
+  createNotificationsTools,
+  createWorkspacesTools,
   createProfileTools,
   createSearchTools,
   createTransactionRecordTools,
@@ -87,6 +93,10 @@ export interface AgentToolDeps {
   budgetsService: BudgetsService;
   goalsService: GoalsService;
   investmentsService: InvestmentsService;
+  notificationsService: NotificationsService;
+  workspacesService: WorkspacesService;
+  workspacesInvitationsService: WorkspacesInvitationsService;
+  workspacesMembersService: WorkspacesMembersService;
   usersService: UsersService;
   actionManager: ActionManager;
   actionService: AgentActionService;
@@ -116,6 +126,12 @@ export function buildAgentTools(deps: AgentToolDeps): AgentTool[] {
     ...createBudgetsTools(deps.budgetsService, deps.categoriesService),
     ...createGoalsTools(deps.goalsService),
     ...createInvestmentsTools(deps.investmentsService),
+    ...createNotificationsTools(deps.notificationsService),
+    ...createWorkspacesTools({
+      workspacesService: deps.workspacesService,
+      invitationsService: deps.workspacesInvitationsService,
+      membersService: deps.workspacesMembersService,
+    }),
     ...createInsightsTools(deps.analyticsService),
     ...createProfileTools(deps.usersService, deps.accountsService),
     ...createActionManagementTools(deps.actionManager, deps.actionService),

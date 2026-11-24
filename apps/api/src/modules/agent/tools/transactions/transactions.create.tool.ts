@@ -18,6 +18,7 @@ import {
   ToolInvalidationTag,
 } from "@fin-ai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS, AGENT_TOOL_TITLES } from "@fin-ai/ai-engine";
+import { resolveDefaultAccount } from "@/modules/accounts/accounts-preferences.util";
 import { agentCreateTransactionSchema } from "../../transactions.agent-schemas";
 import { checkTransactionRefs, resolveTransactionRefs } from "../../entity-reference";
 import { resolveAgentTransactionDate } from "../../date-expression";
@@ -54,9 +55,13 @@ export function createTransactionCreateTool(
     resolveInput: async (input, ctx) => {
       if (!input.account && !input.accountId) {
         const accounts = await accountsService.findAll(ctx.userId);
-        const defaultAccount = accounts.find((a) => a.isDefault);
+        const defaultAccount = resolveDefaultAccount(accounts);
         if (defaultAccount) {
-          return { ...input, accountId: defaultAccount.id };
+          return {
+            ...input,
+            accountId: defaultAccount.id,
+            account: defaultAccount.name,
+          };
         }
       }
       return input;

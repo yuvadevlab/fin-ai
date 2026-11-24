@@ -95,6 +95,30 @@ export class InvestmentsService {
     return inv;
   }
 
+  /** Updates an investment holding: name, assetClass, currentValue, or investedAmount. */
+  async update(
+    id: string,
+    userId: string,
+    input: Partial<CreateInvestmentInput>,
+    workspaceId?: string,
+  ) {
+    this.logger.info(
+      `[update] Updating investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`,
+    );
+    await this.findOne(id, userId, workspaceId);
+    const updated = await this.prisma.client.investment.update({
+      where: { id },
+      data: {
+        ...(input.name !== undefined && { name: input.name }),
+        ...(input.assetClass !== undefined && { assetClass: input.assetClass as AssetClass }),
+        ...(input.currentValue !== undefined && { currentValue: input.currentValue }),
+        ...(input.investedAmount !== undefined && { investedAmount: input.investedAmount }),
+      },
+    });
+    this.logger.info(`Updated investment ${id.slice(0, 8)} for user ${userId.slice(0, 8)}`);
+    return updated;
+  }
+
   /** Updates the current market value of an investment. */
   async updateValue(id: string, userId: string, currentValue: number, workspaceId?: string) {
     this.logger.info(

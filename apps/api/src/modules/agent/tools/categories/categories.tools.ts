@@ -51,6 +51,22 @@ export function createCategoriesTools(categoriesService: CategoriesService) {
       },
     }),
     defineTool({
+      name: AgentToolName.CATEGORIES_GROUPS_LIST,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_GROUPS_LIST],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.CATEGORIES_GROUPS_LIST],
+      schema: z.object({}),
+      execute: async () => {
+        const groups = await categoriesService.getCategoryGroups();
+        return { groups };
+      },
+      summarize: (output) => {
+        const { groups } = output as { groups: Array<{ name: string }> };
+        return `Retrieved ${groups.length} category group(s)`;
+      },
+    }),
+    defineTool({
       name: AgentToolName.CATEGORIES_RESOLVE,
       description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.CATEGORIES_RESOLVE],
       access: ToolAccessLevel.READ,

@@ -16,6 +16,7 @@ export const AgentToolName = {
   TRANSACTIONS_SUMMARIZE: "transactions.summarize",
   TRANSACTIONS_RECATEGORIZE_PREVIEW: "transactions.recategorize",
   TRANSACTIONS_RECATEGORIZE_APPLY: "transactions.recategorizeApply",
+  TRANSACTIONS_EXPORT: "transactions.export",
 
   // Accounts
   ACCOUNTS_LIST: "accounts.list",
@@ -41,6 +42,7 @@ export const AgentToolName = {
   CATEGORIES_CREATE: "categories.create",
   CATEGORIES_UPDATE: "categories.update",
   CATEGORIES_DELETE: "categories.delete",
+  CATEGORIES_GROUPS_LIST: "categories.groups.list",
 
   // Goals
   GOALS_LIST: "goals.list",
@@ -64,9 +66,23 @@ export const AgentToolName = {
 
   // Investments
   INVESTMENTS_LIST: "investments.list",
+  INVESTMENTS_GET: "investments.get",
   INVESTMENTS_CREATE: "investments.create",
+  INVESTMENTS_UPDATE: "investments.update",
   INVESTMENTS_UPDATE_VALUE: "investments.updateValue",
   INVESTMENTS_DELETE: "investments.delete",
+
+  // Notifications
+  NOTIFICATIONS_LIST: "notifications.list",
+  NOTIFICATIONS_UNREAD_COUNT: "notifications.unreadCount",
+  NOTIFICATIONS_MARK_ALL_READ: "notifications.markAllRead",
+
+  // Workspaces
+  WORKSPACES_LIST: "workspaces.list",
+  WORKSPACES_GET: "workspaces.get",
+  WORKSPACES_MEMBERS_LIST: "workspaces.members.list",
+  WORKSPACES_INVITATIONS_LIST: "workspaces.invitations.list",
+  WORKSPACES_INVITATIONS_SEND: "workspaces.invitations.send",
 
   // Profile
   PROFILE_GET: "profile.get",
@@ -192,6 +208,8 @@ export const ToolInvalidationTag = {
   GOALS: "goals",
   CATEGORIES: "categories",
   INVESTMENTS: "investments",
+  NOTIFICATIONS: "notifications",
+  WORKSPACES: "workspaces",
   USER_PROFILE: "user-profile",
   PROFILE: "profile",
 } as const;

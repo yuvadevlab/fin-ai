@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { LlmToolDefinition } from "@fin-ai/ai-engine";
+import { ToolAccessLevel } from "@fin-ai/shared-types";
 import type { AgentTool } from "./agent.types";
 
 /**
@@ -33,13 +34,18 @@ export class ToolRegistry {
     return this.tools.get(name);
   }
 
-  /** Snapshot of every registered tool (used for the tool-plan prompt listing). */
-  list(): AgentTool[] {
-    return [...this.tools.values()];
+  /** Snapshot of registered tools, with optional read-only filtering for view-only workspaces. */
+  list(options?: { readOnly?: boolean }): AgentTool[] {
+    const all = [...this.tools.values()];
+    if (options?.readOnly) {
+      return all.filter((t) => t.access === ToolAccessLevel.READ);
+    }
+    return all;
   }
 
   /**
    * Renders the catalog as the tool manifest sent to the LLM.
+   * Supports read-only workspace filtering to prevent models from proposing unauthorized writes.
    *
    * Each Zod schema is converted to a JSON Schema so Ollama's native
    * function-calling format can describe the expected arguments.
@@ -47,8 +53,8 @@ export class ToolRegistry {
    * pointers — local models routinely fail to resolve `$ref`s, and inline
    * schemas keep the manifest self-contained.
    */
-  toLlmDefinitions(): LlmToolDefinition[] {
-    return this.list().map((tool) => ({
+  toLlmDefinitions(options?: { readOnly?: boolean }): LlmToolDefinition[] {
+    return this.list(options).map((tool) => ({
       name: tool.name,
       description: tool.description,
       parameters: zodToJsonSchema(tool.schema, {
