@@ -1,6 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
+import { resolveDefaultAccount } from "@/modules/accounts/accounts-preferences.util";
 
 /**
  * Entity reference resolution for agent write tools.
@@ -164,11 +165,11 @@ export async function resolveTransactionRefs(
     const resolved = await resolveAccountRef(accountsService, userId, accountRef);
     accountId = resolved.id;
   } else {
-    // No account specified — use the user's default account (annotated by findAll)
-    const defaultAccount = accounts.find((a) => a.isDefault);
+    // No account specified — use user's default, or prefer 1st BANK account, or 1st of any
+    const defaultAccount = resolveDefaultAccount(accounts);
     if (!defaultAccount) {
       throw new BadRequestException(
-        "No account was specified and no default account is set. Specify an account (e.g. 'use HDFC') or set a default account in FinAI.",
+        "No account was specified and no active accounts exist. Please create an account in FinAI first.",
       );
     }
     accountId = defaultAccount.id;

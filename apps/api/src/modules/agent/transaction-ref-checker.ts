@@ -1,5 +1,6 @@
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
+import { resolveDefaultAccount } from "@/modules/accounts/accounts-preferences.util";
 import {
   bestEntityMatch,
   bestEntityMatches,
@@ -65,6 +66,14 @@ export async function checkTransactionRefs(
   } else if (accountRef.id) {
     if (!accounts.find((a) => a.id === accountRef.id)) {
       warnings.push({ field: "Account", message: `Account ID ${accountRef.id} not found.` });
+    }
+  } else {
+    const defaultAccount = resolveDefaultAccount(accounts);
+    if (!defaultAccount) {
+      warnings.push({
+        field: "Account",
+        message: "No account specified and no active accounts exist.",
+      });
     }
   }
 
