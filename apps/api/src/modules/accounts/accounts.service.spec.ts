@@ -56,9 +56,77 @@ describe("AccountsService", () => {
         orderBy: { name: "asc" },
       });
       expect(result).toEqual([
-        { id: "1", name: "Savings", userId: "user1", isDefault: false },
+        { id: "1", name: "Savings", userId: "user1", isDefault: true },
         { id: "2", name: "Checking", userId: "user1", isDefault: false },
       ]);
+    });
+
+    it("should prefer 1st account of type BANK when no explicit default preference is set", async () => {
+      const mockAccounts = [
+        { id: "1", name: "Credit Card", type: AccountType.CREDIT_CARD, userId: "user1" },
+        { id: "2", name: "HDFC Salary", type: AccountType.BANK, userId: "user1" },
+        { id: "3", name: "SBI Savings", type: AccountType.BANK, userId: "user1" },
+      ];
+      (prismaMock.client.account.findMany as Mock).mockResolvedValue(mockAccounts);
+
+      const result = await service.findAll("user1");
+
+      expect(result).toEqual([
+        {
+          id: "1",
+          name: "Credit Card",
+          type: AccountType.CREDIT_CARD,
+          userId: "user1",
+          isDefault: false,
+        },
+        { id: "2", name: "HDFC Salary", type: AccountType.BANK, userId: "user1", isDefault: true },
+        { id: "3", name: "SBI Savings", type: AccountType.BANK, userId: "user1", isDefault: false },
+      ]);
+    });
+
+    it("should fall back to accounts[0] when no BANK account exists", async () => {
+      const mockAccounts = [
+        { id: "1", name: "Cash Wallet", type: AccountType.CASH, userId: "user1" },
+        { id: "2", name: "Credit Card", type: AccountType.CREDIT_CARD, userId: "user1" },
+      ];
+      (prismaMock.client.account.findMany as Mock).mockResolvedValue(mockAccounts);
+
+      const result = await service.findAll("user1");
+
+      expect(result).toEqual([
+        { id: "1", name: "Cash Wallet", type: AccountType.CASH, userId: "user1", isDefault: true },
+        {
+          id: "2",
+          name: "Credit Card",
+          type: AccountType.CREDIT_CARD,
+          userId: "user1",
+          isDefault: false,
+        },
+      ]);
+    });
+
+    it("should respect explicit default account preference", async () => {
+      const mockAccounts = [
+        { id: "1", name: "Savings", userId: "user1" },
+        { id: "2", name: "Checking", userId: "user1" },
+      ];
+      (prismaMock.client.account.findMany as Mock).mockResolvedValue(mockAccounts);
+      (prismaMock.client.user.findUnique as Mock).mockResolvedValue({
+        preferences: { defaultAccountId: "2" },
+      });
+
+      const result = await service.findAll("user1");
+
+      expect(result).toEqual([
+        { id: "1", name: "Savings", userId: "user1", isDefault: false },
+        { id: "2", name: "Checking", userId: "user1", isDefault: true },
+      ]);
+    });
+
+    it("should return empty array when user has no accounts", async () => {
+      (prismaMock.client.account.findMany as Mock).mockResolvedValue([]);
+      const result = await service.findAll("user1");
+      expect(result).toEqual([]);
     });
   });
 

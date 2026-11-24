@@ -18,6 +18,10 @@ import { CategoriesService } from "@/modules/categories/categories.service";
 import { BudgetsService } from "@/modules/budgets/budgets.service";
 import { GoalsService } from "@/modules/goals/goals.service";
 import { InvestmentsService } from "@/modules/investments/investments.service";
+import { NotificationsService } from "@/modules/notifications/services/notifications.service";
+import { WorkspacesService } from "@/modules/workspaces/services/workspaces.service";
+import { WorkspacesInvitationsService } from "@/modules/workspaces/services/workspaces-invitations.service";
+import { WorkspacesMembersService } from "@/modules/workspaces/services/workspaces-members.service";
 import { UsersService } from "@/modules/auth/users.service";
 import { ConversationService } from "@/modules/ai/conversation.service";
 import { ToolRegistry } from "./tool-registry";
@@ -56,6 +60,10 @@ export class AgentService {
     budgetsService: BudgetsService,
     goalsService: GoalsService,
     investmentsService: InvestmentsService,
+    notificationsService: NotificationsService,
+    workspacesService: WorkspacesService,
+    workspacesInvitationsService: WorkspacesInvitationsService,
+    workspacesMembersService: WorkspacesMembersService,
     usersService: UsersService,
   ) {
     const tools = buildAgentTools({
@@ -67,6 +75,10 @@ export class AgentService {
       budgetsService,
       goalsService,
       investmentsService,
+      notificationsService,
+      workspacesService,
+      workspacesInvitationsService,
+      workspacesMembersService,
       usersService,
       actionManager,
       actionService,

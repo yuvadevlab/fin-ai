@@ -46,4 +46,8 @@ export const ACCOUNTS_COPY = {
   SET_DEFAULT_ACTION: "Set as Default",
   EDIT_ACTION: "Edit Account",
   DELETE_ACTION: "Delete Account",
+  CREDIT_CARD_DUES: "Outstanding Due",
+  CREDIT_CARD_NO_DUES: "No Dues (Fully Paid)",
+  CREDIT_CARD_PREPAID: "Credit Balance",
+  PAY_CARD_BILL_ACTION: "Pay Card Bill",
 } as const;

@@ -27,7 +27,7 @@ export async function executeActionConfirm(
   if (action.status === AgentActionStatus.EXECUTED) {
     return { alreadyExecuted: true as const, result: action.result };
   }
-  if (action.status !== AgentActionStatus.PROPOSED) {
+  if (action.status !== AgentActionStatus.PROPOSED && action.status !== AgentActionStatus.FAILED) {
     throw new BadRequestException(`Action is ${action.status}`);
   }
   if (action.expiresAt.getTime() < Date.now()) {

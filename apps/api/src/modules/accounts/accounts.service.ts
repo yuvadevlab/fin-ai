@@ -3,7 +3,11 @@ import { Logger } from "@yuva-devlab/logger";
 import { AccountType, Prisma } from "@fin-ai/database";
 import { type CreateAccountInput, type UpdateAccountInput } from "@fin-ai/validation";
 import { PrismaService } from "@/modules/prisma/prisma.service";
-import { getDefaultAccountId, setDefaultAccountId } from "./accounts-preferences.util";
+import {
+  getDefaultAccountId,
+  resolveDefaultAccountId,
+  setDefaultAccountId,
+} from "./accounts-preferences.util";
 
 import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
 
@@ -29,8 +33,9 @@ export class AccountsService {
    * The "resolved default" logic:
    * 1. If the user has an explicit default preference AND that account still
    *    exists → use it.
-   * 2. If the user has exactly one account → auto-default it (first-run UX).
-   * 3. Otherwise → no default (user must pick explicitly).
+   * 2. Otherwise, prefer the 1st account of type BANK.
+   * 3. If no BANK account exists, fall back to the 1st account of any type.
+   * 4. Otherwise → no default (no accounts exist).
    *
    * Runs the account fetch and default-preference read in parallel.
    */
@@ -59,13 +64,7 @@ export class AccountsService {
       getDefaultAccountId(this.prisma, userId),
     ]);
 
-    const resolvedDefaultId =
-      defaultAccountId && accounts.some((a) => a.id === defaultAccountId)
-        ? defaultAccountId
-        : accounts.length === 1
-          ? accounts[0].id
-          : null;
-
+    const resolvedDefaultId = resolveDefaultAccountId(accounts, defaultAccountId);
     const enriched = accounts.map((a) => ({ ...a, isDefault: a.id === resolvedDefaultId }));
     this.logger.info(
       `Found ${enriched.length} active account(s) for user ${userId.slice(0, 8)}, default: ${resolvedDefaultId ? resolvedDefaultId.slice(0, 8) : "none"}`,

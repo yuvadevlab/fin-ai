@@ -10,6 +10,10 @@ import { PrismaService } from "@/modules/prisma/prisma.service";
 import { TransactionType } from "@fin-ai/shared-types";
 import { formatFinanceContextMarkdown } from "./context-formatters";
 import { resolveUserScope } from "@/common/utils/workspace.util";
+import {
+  getDefaultAccountId,
+  resolveDefaultAccountId,
+} from "@/modules/accounts/accounts-preferences.util";
 
 @Injectable()
 export class ContextBuilderService {
@@ -31,39 +35,51 @@ export class ContextBuilderService {
     const userScope = resolveUserScope(userId, memberUserIds);
     const maxRecentTxns = options?.maxRecentTxns ?? 30;
 
-    const [accounts, monthTxns, recentTxns, budgets, goals, investments, categories] =
-      await Promise.all([
-        this.prisma.client.account.findMany({
-          where: { userId: userScope, isActive: true },
-          select: { name: true, type: true, balance: true, currency: true },
-        }),
-        this.prisma.client.transaction.findMany({
-          where: { userId: userScope, date: { gte: startOfMonth } },
-          include: { category: { select: { name: true, group: true } } },
-        }),
-        this.prisma.client.transaction.findMany({
-          where: { userId: userScope },
-          include: { category: { select: { name: true, group: true } } },
-          orderBy: { date: "desc" },
-          take: maxRecentTxns,
-        }),
-        this.prisma.client.budget.findMany({
-          where: { userId: userScope },
-          include: { category: { select: { name: true } } },
-        }),
-        this.prisma.client.goal.findMany({
-          where: { userId: userScope },
-          orderBy: { deadline: "asc" },
-        }),
-        this.prisma.client.investment.findMany({
-          where: { userId: userScope },
-        }),
-        this.prisma.client.category.findMany({
-          where: { userId: userScope },
-          select: { name: true },
-          orderBy: { name: "asc" },
-        }),
-      ]);
+    const [
+      rawAccounts,
+      defaultAccountId,
+      monthTxns,
+      recentTxns,
+      budgets,
+      goals,
+      investments,
+      categories,
+    ] = await Promise.all([
+      this.prisma.client.account.findMany({
+        where: { userId: userScope, isActive: true },
+        select: { id: true, name: true, type: true, balance: true, currency: true },
+      }),
+      getDefaultAccountId(this.prisma, userId),
+      this.prisma.client.transaction.findMany({
+        where: { userId: userScope, date: { gte: startOfMonth } },
+        include: { category: { select: { name: true, group: true } } },
+      }),
+      this.prisma.client.transaction.findMany({
+        where: { userId: userScope },
+        include: { category: { select: { name: true, group: true } } },
+        orderBy: { date: "desc" },
+        take: maxRecentTxns,
+      }),
+      this.prisma.client.budget.findMany({
+        where: { userId: userScope },
+        include: { category: { select: { name: true } } },
+      }),
+      this.prisma.client.goal.findMany({
+        where: { userId: userScope },
+        orderBy: { deadline: "asc" },
+      }),
+      this.prisma.client.investment.findMany({
+        where: { userId: userScope },
+      }),
+      this.prisma.client.category.findMany({
+        where: { userId: userScope },
+        select: { name: true },
+        orderBy: { name: "asc" },
+      }),
+    ]);
+
+    const resolvedDefaultId = resolveDefaultAccountId(rawAccounts, defaultAccountId);
+    const accounts = rawAccounts.map((a) => ({ ...a, isDefault: a.id === resolvedDefaultId }));
 
     const netWorth = accounts.reduce((acc, a) => acc + a.balance, 0);
 

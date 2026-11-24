@@ -121,4 +121,98 @@
     text-transform: uppercase;
     margin: 0;
   }
+
+  /* ── Workspaces List ─────────────────────────────────────────────────────── */
+  .fn-workspace-list-card {
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    background-color: var(--card);
+    padding: var(--space-4, 1rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .fn-workspace-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3, 0.75rem);
+    border-radius: var(--radius-xl, 0.75rem);
+    border: 1px solid transparent;
+    transition:
+      background-color var(--duration-fast, 150ms) ease,
+      border-color var(--duration-fast, 150ms) ease;
+  }
+
+  .fn-workspace-list-item:hover {
+    background-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .fn-workspace-list-item--active {
+    background-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+
+  .fn-workspace-item-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3, 0.75rem);
+    min-inline-size: 0;
+  }
+
+  .fn-workspace-item-icon {
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: var(--muted);
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .fn-workspace-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+
+  .fn-workspace-item-name {
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fn-workspace-item-meta {
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+
+  .fn-workspace-item-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+    flex-shrink: 0;
+  }
+
+  .fn-workspace-active-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    padding-inline: 0.5rem;
+    padding-block: 0.125rem;
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  }
 }

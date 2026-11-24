@@ -62,6 +62,41 @@ export function createAnalyticsTools(analyticsService: AnalyticsService) {
       },
     }),
     defineTool({
+      name: AgentToolName.ANALYTICS_CATEGORIES,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_CATEGORIES],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_CATEGORIES],
+      schema: z.object({}),
+      execute: async (_input, ctx) =>
+        analyticsService.getCategoryBreakdown(ctx.userId, ctx.workspaceId, ctx.memberUserIds),
+      summarize: (output) => {
+        const categories = output as { name: string; total: number }[];
+        return `Spending breakdown across ${categories.length} category(ies)`;
+      },
+    }),
+    defineTool({
+      name: AgentToolName.ANALYTICS_SAVINGS_TREND,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_SAVINGS_TREND],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.ANALYTICS_SAVINGS_TREND],
+      schema: z.object({
+        months: z.number().int().positive().max(24).default(6),
+      }),
+      execute: async (input, ctx) =>
+        analyticsService.getSavingsTrend(
+          ctx.userId,
+          input.months,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        ),
+      summarize: (output) => {
+        const points = output as { month: string; value: number }[];
+        return `Savings trend over ${points.length} month(s)`;
+      },
+    }),
+    defineTool({
       name: AgentToolName.ANALYTICS_RECOMMENDATIONS,
       description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.ANALYTICS_RECOMMENDATIONS],
       access: ToolAccessLevel.READ,
