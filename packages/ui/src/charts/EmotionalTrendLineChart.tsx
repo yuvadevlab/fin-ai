@@ -1,8 +1,9 @@
 import React, { useId, useMemo } from "react";
 import {
+  Area,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -80,10 +81,10 @@ function CustomActiveDot({
 }
 
 /**
- * Common, DRY emotional trend line chart component.
- * Uses standard production tooltip styling via tooltipStyle().
- * Dynamically computes SVG stroke segments and milestone dots based on behavioral polarity.
- * Guarantees single-color active dot rendering on hover without multi-color gradient bleeding.
+ * Emotional trend chart component with multi-colored horizontal
+ * emotional segmentation and CashFlow-style vertical area color fade.
+ * Renders the shaded area with an opacity mask and superimposes a 100% vibrant,
+ * crisp stroke line on top so the stroke is never dimmed.
  */
 export function EmotionalTrendLineChart({
   data,
@@ -92,34 +93,64 @@ export function EmotionalTrendLineChart({
   className,
 }: EmotionalTrendLineChartProps) {
   const rawId = useId();
-  const gradientId = `${colorTag}-gradient-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const cleanId = rawId.replace(/[^a-zA-Z0-9_-]/g, "");
+  const strokeGradId = `${colorTag}-stroke-${cleanId}`;
+  const areaColorGradId = `${colorTag}-area-color-${cleanId}`;
+  const maskGradId = `${colorTag}-mask-grad-${cleanId}`;
+  const maskId = `${colorTag}-mask-${cleanId}`;
 
   const gradientStops = useMemo(() => buildGradientStops(data, polarity), [data, polarity]);
 
   return (
     <div className={`fn-chart-container ${className || ""}`.trim()}>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
-          {gradientStops && (
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="100%" y2="0">
-                {gradientStops}
-              </linearGradient>
-            </defs>
-          )}
+        <ComposedChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
+          <defs>
+            {gradientStops && (
+              <>
+                <linearGradient id={strokeGradId} x1="0" y1="0" x2="100%" y2="0">
+                  {gradientStops}
+                </linearGradient>
+                <linearGradient id={areaColorGradId} x1="0" y1="0" x2="100%" y2="0">
+                  {gradientStops}
+                </linearGradient>
+              </>
+            )}
+            <linearGradient id={maskGradId} x1="0" y1="0" x2="0" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#000000" stopOpacity={0} />
+            </linearGradient>
+            <mask id={maskId}>
+              <rect x="0" y="0" width="100%" height="100%" fill={`url(#${maskGradId})`} />
+            </mask>
+          </defs>
+
           <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
           <XAxis dataKey="label" {...axisProps} />
           <YAxis {...axisProps} tickFormatter={formatCurrencyShort} />
           <Tooltip {...tooltipStyle()} formatter={(v) => formatCurrencyShort(Number(v))} />
+
+          {/* 1. Subtle, masked multi-color vertical area fade underneath */}
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="none"
+            fill={gradientStops ? `url(#${areaColorGradId})` : "var(--primary)"}
+            mask={`url(#${maskId})`}
+            legendType="none"
+            tooltipType="none"
+          />
+
+          {/* 2. 100% full opacity, crisp, vibrant emotional stroke line on top */}
           <Line
             type="monotone"
             dataKey="value"
-            stroke={gradientStops ? `url(#${gradientId})` : "var(--primary)"}
+            stroke={gradientStops ? `url(#${strokeGradId})` : "var(--primary)"}
             strokeWidth={2.5}
             dot={<CustomMilestoneDot data={data} polarity={polarity} />}
             activeDot={<CustomActiveDot data={data} polarity={polarity} />}
           />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
