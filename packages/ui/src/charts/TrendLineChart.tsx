@@ -1,40 +1,37 @@
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { formatCurrencyShort } from "@fin-ai/finance-engine";
-import { axisProps, tooltipStyle } from "./chart-theme";
+import React, { useMemo } from "react";
+import { EmotionalTrendLineChart } from "./EmotionalTrendLineChart";
 
-interface TrendLineDataPoint {
+/**
+ * Data point schema for the monthly savings/trend line chart.
+ */
+export interface TrendLineDataPoint {
   month: string;
   value: number;
 }
 
-interface TrendLineChartProps {
+/**
+ * Props accepted by the TrendLine component.
+ */
+export interface TrendLineChartProps {
   data: TrendLineDataPoint[];
+  color?: string;
+  metricLabel?: string;
+  className?: string;
 }
 
-export function TrendLine({ data }: TrendLineChartProps) {
+/**
+ * Monthly savings trend line chart with dynamic positive/negative behavioral coloring.
+ * Reuses the common EmotionalTrendLineChart component with 'positive-growth' polarity.
+ */
+export function TrendLine({ data, className }: TrendLineChartProps) {
+  const chartData = useMemo(() => data.map((d) => ({ label: d.month, value: d.value })), [data]);
+
   return (
-    <ResponsiveContainer width="100%" height={200}>
-      <LineChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-        <XAxis dataKey="month" {...axisProps} />
-        <YAxis {...axisProps} tickFormatter={formatCurrencyShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v) => formatCurrencyShort(Number(v))} />
-        <Line
-          type="monotone"
-          dataKey="value"
-          stroke="oklch(0.63 0.14 156)"
-          strokeWidth={2.5}
-          dot={{ r: 3, fill: "oklch(0.63 0.14 156)" }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <EmotionalTrendLineChart
+      data={chartData}
+      polarity="positive-growth"
+      colorTag="savings"
+      className={className}
+    />
   );
 }
