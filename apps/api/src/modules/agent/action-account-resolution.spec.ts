@@ -2,12 +2,18 @@ import { describe, it, expect, vi } from "vitest";
 import { BadRequestException } from "@nestjs/common";
 import { resolveTransactionRefs } from "./entity-reference";
 import { checkTransactionRefs, type TransactionRefInput } from "./transaction-ref-checker";
+import { executeActionConfirm } from "./action-execution.helper";
 import {
   resolveDefaultAccount,
   resolveDefaultAccountId,
 } from "@/modules/accounts/accounts-preferences.util";
+import { AgentActionStatus } from "@fin-ai/database";
 import type { AccountsService } from "@/modules/accounts/accounts.service";
 import type { CategoriesService } from "@/modules/categories/categories.service";
+import type { ToolRegistry } from "./tool-registry";
+import type { AuditService } from "./audit.service";
+import type { PrismaService } from "@/modules/prisma/prisma.service";
+import { Logger } from "@yuva-devlab/logger";
 
 describe("Agent Account Resolution & Action Confirmation", () => {
   const mockAccounts = [
@@ -154,6 +160,84 @@ describe("Agent Account Resolution & Action Confirmation", () => {
       expect(accountWarnings[0].message).toContain(
         "No account specified and no active accounts exist",
       );
+    });
+  });
+
+  describe("executeActionConfirm retry on FAILED status", () => {
+    const logger = new Logger("TestLogger");
+    const mockAudit = { record: vi.fn().mockResolvedValue(undefined) } as unknown as AuditService;
+    const mockTool = {
+      schema: { parse: vi.fn().mockImplementation((x: unknown) => x) },
+      execute: vi.fn().mockResolvedValue({ id: "tx-123", amount: 3700 }),
+      serialize: vi.fn().mockReturnValue({ id: "tx-123" }),
+      summarize: vi.fn().mockReturnValue("Transaction recorded"),
+    };
+    const mockRegistry = {
+      get: vi.fn().mockReturnValue(mockTool),
+    } as unknown as ToolRegistry;
+
+    it("should allow confirming a FAILED action when retried", async () => {
+      const mockPrisma = {
+        client: {
+          agentAction: {
+            findFirst: vi.fn().mockResolvedValue({
+              id: "action-failed-1",
+              userId: "user-1",
+              status: AgentActionStatus.FAILED,
+              tool: "transactions.create",
+              input: { amount: 3700 },
+              expiresAt: new Date(Date.now() + 600000),
+            }),
+            update: vi.fn().mockResolvedValue({ id: "action-failed-1" }),
+          },
+        },
+      } as unknown as PrismaService;
+
+      const result = await executeActionConfirm(
+        mockPrisma,
+        mockRegistry,
+        mockAudit,
+        logger,
+        "action-failed-1",
+        "user-1",
+      );
+
+      expect(mockTool.execute).toHaveBeenCalled();
+      expect(result).toHaveProperty("alreadyExecuted", false);
+      expect(result).toHaveProperty("result");
+      expect(mockPrisma.client.agentAction.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: AgentActionStatus.EXECUTED }),
+        }),
+      );
+    });
+
+    it("should reject action with REJECTED status", async () => {
+      const mockPrisma = {
+        client: {
+          agentAction: {
+            findFirst: vi.fn().mockResolvedValue({
+              id: "action-rejected-1",
+              userId: "user-1",
+              status: "REJECTED",
+              tool: "transactions.create",
+              input: { amount: 3700 },
+              expiresAt: new Date(Date.now() + 600000),
+            }),
+          },
+        },
+      } as unknown as PrismaService;
+
+      await expect(
+        executeActionConfirm(
+          mockPrisma,
+          mockRegistry,
+          mockAudit,
+          logger,
+          "action-rejected-1",
+          "user-1",
+        ),
+      ).rejects.toThrow("Action is REJECTED");
     });
   });
 
