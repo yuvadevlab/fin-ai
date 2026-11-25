@@ -1,28 +1,66 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
+import { Prisma } from "@fin-ai/database";
 import { PrismaService } from "@/modules/prisma/prisma.service";
+import { resolveWorkspaceMemberIds } from "@/common/utils/workspace.util";
+import { CategorySeedService } from "@/modules/categories/category-seed.service";
 import ExcelJS from "exceljs";
 
 /** Generates the Excel bulk-upload template with in-cell dropdowns. */
 @Injectable()
 export class TransactionsExportService {
   private readonly logger = new Logger(TransactionsExportService.name);
-  constructor(private prisma: PrismaService) {}
 
-  async generateExcelTemplate(userId: string): Promise<Buffer> {
-    this.logger.info(`[generateExcelTemplate] Building template for user ${userId.slice(0, 8)}`);
-    const [accounts, categories] = await Promise.all([
-      this.prisma.client.account.findMany({
-        where: { userId, isActive: true },
-        select: { id: true, name: true, type: true },
-        orderBy: { name: "asc" },
-      }),
-      this.prisma.client.category.findMany({
-        where: { userId },
+  constructor(
+    private prisma: PrismaService,
+    private categorySeedService: CategorySeedService,
+  ) {}
+
+  async generateExcelTemplate(
+    userId: string,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ): Promise<Buffer> {
+    this.logger.info(
+      `[generateExcelTemplate] Building template for user ${userId.slice(0, 8)} (workspace: ${workspaceId ? workspaceId.slice(0, 8) : "default"})`,
+    );
+
+    const resolvedMemberIds =
+      memberUserIds && memberUserIds.length > 0
+        ? memberUserIds
+        : await resolveWorkspaceMemberIds(this.prisma.client, workspaceId, userId);
+
+    const accountWhere: Prisma.AccountWhereInput = {
+      isActive: true,
+      ...(workspaceId
+        ? { OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }] }
+        : { userId }),
+    };
+
+    const categoryWhere: Prisma.CategoryWhereInput = workspaceId
+      ? { OR: [{ workspaceId }, { userId: { in: resolvedMemberIds } }] }
+      : { userId };
+
+    const accounts = await this.prisma.client.account.findMany({
+      where: accountWhere,
+      select: { id: true, name: true, type: true },
+      orderBy: { name: "asc" },
+    });
+
+    let categories = await this.prisma.client.category.findMany({
+      where: categoryWhere,
+      select: { id: true, name: true, group: true },
+      orderBy: { name: "asc" },
+    });
+
+    if (categories.length === 0) {
+      await this.categorySeedService.seedUserDefaultCategories(userId);
+      categories = await this.prisma.client.category.findMany({
+        where: categoryWhere,
         select: { id: true, name: true, group: true },
         orderBy: { name: "asc" },
-      }),
-    ]);
+      });
+    }
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = "FinAI Financial Engine";
@@ -55,7 +93,6 @@ export class TransactionsExportService {
         bottom: { style: "medium", color: { argb: "334155" } },
         right: { style: "thin", color: { argb: "334155" } },
       };
-      cell.protection = { locked: true };
     });
 
     // ─── Sheet 2: Reference_Lists ────────────────────────────────────────────
@@ -88,8 +125,8 @@ export class TransactionsExportService {
 
     const categoriesCount = Math.max(categories.length, 1);
     const accountsCount = Math.max(accounts.length, 1);
-    const categoryFormula = `'Reference_Lists'!$A$2:$A$${categoriesCount + 1}`;
-    const accountFormula = `'Reference_Lists'!$B$2:$B$${accountsCount + 1}`;
+    const categoryFormula = `='Reference_Lists'!$A$2:$A$${categoriesCount + 1}`;
+    const accountFormula = `='Reference_Lists'!$B$2:$B$${accountsCount + 1}`;
 
     for (let r = 2; r <= 500; r++) {
       const rowObj = wsImport.getRow(r);
@@ -145,17 +182,8 @@ export class TransactionsExportService {
           bottom: { style: "thin", color: { argb: "E2E8F0" } },
           right: { style: "thin", color: { argb: "E2E8F0" } },
         };
-        cell.protection = { locked: false };
       });
     }
-
-    await wsImport.protect("finai_sheet_protected", {
-      selectLockedCells: true,
-      selectUnlockedCells: true,
-      formatCells: true,
-      formatColumns: true,
-      formatRows: true,
-    });
 
     const buffer = await workbook.xlsx.writeBuffer();
     this.logger.info(

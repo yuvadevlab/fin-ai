@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CategoriesModule } from "../categories/categories.module";
 import { TransactionsController } from "./transactions.controller";
 import { TransactionsRepository } from "./repositories";
 import {
@@ -10,6 +11,7 @@ import {
 import { TransactionsBulkService } from "./services/transactions-bulk.service";
 
 @Module({
+  imports: [CategoriesModule],
   controllers: [TransactionsController],
   providers: [
     TransactionsRepository,

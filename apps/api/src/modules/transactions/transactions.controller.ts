@@ -57,9 +57,20 @@ export class TransactionsController {
   @ApiOperation({
     summary: "Generate and download dynamic Excel template with in-cell DDL dropdowns",
   })
-  async downloadTemplate(@CurrentUser("id") userId: string, @Res() res: Response) {
-    this.logger.info(`[downloadTemplate] Generating Excel template for user ${userId.slice(0, 8)}`);
-    const buffer = await this.transactionsService.generateExcelTemplate(userId);
+  async downloadTemplate(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @CurrentWorkspace("memberUserIds") memberUserIds: string[] | undefined,
+    @Res() res: Response,
+  ) {
+    this.logger.info(
+      `[downloadTemplate] Generating Excel template for user ${userId.slice(0, 8)} (workspace: ${workspaceId ? workspaceId.slice(0, 8) : "default"})`,
+    );
+    const buffer = await this.transactionsService.generateExcelTemplate(
+      userId,
+      workspaceId,
+      memberUserIds,
+    );
     this.logger.info(
       `[downloadTemplate] Template generated (${buffer.length} bytes) for user ${userId.slice(0, 8)}`,
     );
