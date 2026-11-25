@@ -588,11 +588,11 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
       '@yuva-devlab/tokens':
-        specifier: ^2.1.2
-        version: 2.1.2
+        specifier: ^2.2.0
+        version: 2.2.0
       '@yuva-devlab/ui':
-        specifier: ^3.0.2
-        version: 3.0.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(@yuva-devlab/tokens@2.1.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.8(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+        specifier: ^4.0.1
+        version: 4.0.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(@yuva-devlab/tokens@2.2.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.8(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -4678,13 +4678,13 @@ packages:
   '@yuva-devlab/resilience@0.2.1':
     resolution: {integrity: sha512-cm+LRXs8D65HxvKPUIbb1WCxTPwx+lVUKbP36WV0d3KZR+ZINklpaWxz4OYR1R+fmeculhhNGRtHa3KuT6sD6g==}
 
-  '@yuva-devlab/tokens@2.1.2':
-    resolution: {integrity: sha512-3iSZb/zBCvDHA+YjRXNchsVw31fPv1xhJ1uAeHhva3We8taUasPyQrZH7E9ouRXTCMSROIuTCFq2DpwccTGwqA==}
+  '@yuva-devlab/tokens@2.2.0':
+    resolution: {integrity: sha512-XUsVuiZeb1PT8GFNgLmzTAFqoL6D6LkoEtD8Odvy3IwycBZwfGpzqmg78RshBqfpemzz+eCr2wmmhDq2Lxhtgg==}
 
-  '@yuva-devlab/ui@3.0.2':
-    resolution: {integrity: sha512-NL9GrPNL4jlF6FjV+AzfG8FMI+I19+qgwhn3Q2LTDmMKficUbk/hNvUpmIkTBIs6qRIiDMqmvKGkQXDpUYqjpw==}
+  '@yuva-devlab/ui@4.0.1':
+    resolution: {integrity: sha512-WlYT/8Fb2SS4e/STROzpi74zfxNHAE4hDbaijZm92rCefO69p6QkDKLBJ+4BdGQ7naWLR+Grb4Jbm54sGZEJ9Q==}
     peerDependencies:
-      '@yuva-devlab/tokens': '>=2.1.2'
+      '@yuva-devlab/tokens': '>=2.2.0'
       react: ^19.0.0
       react-dom: ^19.0.0
       sonner: ^2.0.0
@@ -13648,9 +13648,9 @@ snapshots:
     dependencies:
       '@yuva-devlab/errors': 0.2.0
 
-  '@yuva-devlab/tokens@2.1.2': {}
+  '@yuva-devlab/tokens@2.2.0': {}
 
-  '@yuva-devlab/ui@3.0.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(@yuva-devlab/tokens@2.1.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.8(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
+  '@yuva-devlab/ui@4.0.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(@yuva-devlab/tokens@2.2.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sonner@2.0.8(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
     dependencies:
       '@radix-ui/react-accordion': 1.3.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-alert-dialog': 1.2.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -13678,7 +13678,7 @@ snapshots:
       '@radix-ui/react-toggle': 1.2.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-toggle-group': 1.2.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-tooltip': 1.4.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@yuva-devlab/tokens': 2.1.2
+      '@yuva-devlab/tokens': 2.2.0
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       cmdk: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
