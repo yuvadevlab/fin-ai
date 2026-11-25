@@ -29,7 +29,7 @@
   "dependencies": {
     "@fin-ai/prompts": "workspace:*",
     "@fin-ai/shared-types": "workspace:*",
-    "@yuva-devlab/ai-client": "^0.3.0",
+    "@yuva-devlab/ai-client": "^0.4.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
