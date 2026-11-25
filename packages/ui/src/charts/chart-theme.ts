@@ -29,3 +29,11 @@ export function tooltipStyle() {
 }
 
 export const CHART_COLORS = PIE_COLORS;
+
+export const CHART_THEME = {
+  primary: "var(--primary)",
+  destructive: "var(--destructive)",
+  investment: "var(--investment, #3b82f6)",
+  border: "var(--border)",
+  muted: "var(--muted-foreground)",
+} as const;

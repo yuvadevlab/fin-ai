@@ -17,7 +17,7 @@ export interface FinanceContextData {
   totalInvested: number;
   unrealizedGain: number;
   portfolioReturnPct: number;
-  accounts: { name: string; type: string; balance: number }[];
+  accounts: { name: string; type: string; balance: number; isDefault?: boolean }[];
   topCategories: [string, number][];
   categories: { name: string }[];
   budgets: { limit: number; category?: { name: string } | null }[];
@@ -83,7 +83,12 @@ export function formatFinanceContextMarkdown(data: FinanceContextData): string {
     `### Accounts (${accounts.length} linked)`,
     accounts.length === 0
       ? `- No bank accounts linked yet.`
-      : accounts.map((a) => `- ${a.name} [${a.type}]: ${formatINR(a.balance)}`).join("\n"),
+      : accounts
+          .map(
+            (a) =>
+              `- ${a.name} [${a.type}]${a.isDefault ? " (Default)" : ""}: ${formatINR(a.balance)}`,
+          )
+          .join("\n"),
     ``,
     `### Top Expense Categories (This Month)`,
     topCategories.length === 0

@@ -65,6 +65,20 @@ export class InvestmentsController {
     return this.investmentsService.create(userId, body, workspaceId);
   }
 
+  @Patch(":id")
+  @ApiOperation({ summary: "Update an investment holding" })
+  update(
+    @CurrentUser("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string,
+    @Body() body: Partial<CreateInvestmentInput>,
+  ) {
+    this.logger.info(
+      `[update] Updating investment ${id.slice(0, 8)} (user: ${userId.slice(0, 8)})`,
+    );
+    return this.investmentsService.update(id, userId, body, workspaceId);
+  }
+
   @Patch(":id/value")
   @ApiOperation({ summary: "Update the current market value of an investment" })
   updateValue(

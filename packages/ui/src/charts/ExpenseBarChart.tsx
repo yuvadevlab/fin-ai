@@ -1,26 +1,35 @@
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { formatCurrencyShort } from "@fin-ai/finance-engine";
-import { axisProps, tooltipStyle } from "./chart-theme";
+import React, { useMemo } from "react";
+import { EmotionalTrendLineChart } from "./EmotionalTrendLineChart";
 
-interface ExpenseBarDataPoint {
+/**
+ * Data point schema for the monthly expense trend chart.
+ */
+export interface ExpenseBarDataPoint {
   month: string;
   expense: number;
 }
 
-interface ExpenseBarChartProps {
+/**
+ * Props accepted by the ExpenseBarChart component.
+ */
+export interface ExpenseBarChartProps {
   data: ExpenseBarDataPoint[];
+  className?: string;
 }
 
-export function ExpenseBarChart({ data }: ExpenseBarChartProps) {
+/**
+ * Monthly expense trend line chart with dynamic positive/negative behavioral coloring.
+ * Reuses the common EmotionalTrendLineChart component with 'positive-reduction' polarity.
+ */
+export function ExpenseBarChart({ data, className }: ExpenseBarChartProps) {
+  const chartData = useMemo(() => data.map((d) => ({ label: d.month, value: d.expense })), [data]);
+
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 10, right: 8, left: -12, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-        <XAxis dataKey="month" {...axisProps} />
-        <YAxis {...axisProps} tickFormatter={formatCurrencyShort} />
-        <Tooltip {...tooltipStyle()} formatter={(v) => formatCurrencyShort(Number(v))} />
-        <Bar dataKey="expense" radius={[6, 6, 0, 0]} fill="oklch(0.63 0.14 156)" />
-      </BarChart>
-    </ResponsiveContainer>
+    <EmotionalTrendLineChart
+      data={chartData}
+      polarity="positive-reduction"
+      colorTag="expense"
+      className={className}
+    />
   );
 }

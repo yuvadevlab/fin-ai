@@ -20,6 +20,7 @@ import {
   ToolInvalidationTag,
 } from "@fin-ai/shared-types";
 import { AGENT_TOOL_DESCRIPTIONS, AGENT_TOOL_LABELS } from "@fin-ai/ai-engine";
+import { resolveDefaultAccount } from "@/modules/accounts/accounts-preferences.util";
 import { agentCreateTransactionSchema } from "../../transactions.agent-schemas";
 import { checkTransactionRefs, resolveTransactionRefs } from "../../entity-reference";
 import { resolveAgentTransactionDate } from "../../date-expression";
@@ -63,6 +64,19 @@ export function createTransactionBulkCreateTool(
         }
       }
       return allWarnings;
+    },
+    resolveInput: async (input, ctx) => {
+      const accounts = await accountsService.findAll(ctx.userId);
+      const defaultAccount = resolveDefaultAccount(accounts);
+      if (!defaultAccount) return input;
+      return {
+        ...input,
+        transactions: input.transactions.map((tx) =>
+          !tx.account && !tx.accountId
+            ? { ...tx, accountId: defaultAccount.id, account: defaultAccount.name }
+            : tx,
+        ),
+      };
     },
     execute: async (input, ctx) => {
       const created = [];

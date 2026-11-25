@@ -15,6 +15,8 @@ export * from "./budgets/budgets.transfer.tool";
 export * from "./categories/categories.tools";
 export * from "./goals/goals.tools";
 export * from "./investments/investments.tools";
+export * from "./notifications/notifications.tools";
+export * from "./workspaces/workspaces.tools";
 export * from "./profile/profile.tools";
 export * from "./transactions/transactions.tools";
 export * from "./transactions/transactions.create.tool";

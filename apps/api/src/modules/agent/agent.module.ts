@@ -8,6 +8,8 @@ import { CategoriesModule } from "@/modules/categories/categories.module";
 import { BudgetsModule } from "@/modules/budgets/budgets.module";
 import { GoalsModule } from "@/modules/goals/goals.module";
 import { InvestmentsModule } from "@/modules/investments/investments.module";
+import { NotificationsModule } from "@/modules/notifications/notifications.module";
+import { WorkspacesModule } from "@/modules/workspaces/workspaces.module";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { AgentController } from "./agent.controller";
 import { AgentService } from "./agent.service";
@@ -37,6 +39,8 @@ import { AgentRequestBuilderService } from "./services/agent-request-builder.ser
     BudgetsModule,
     GoalsModule,
     InvestmentsModule,
+    NotificationsModule,
+    WorkspacesModule,
     AuthModule,
   ],
   controllers: [AgentController],

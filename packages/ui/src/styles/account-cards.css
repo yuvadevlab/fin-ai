@@ -159,4 +159,26 @@
     color: var(--muted-foreground);
     font-weight: 600;
   }
+
+  .fn-account-due-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .fn-account-due-label.is-due {
+    color: var(--destructive);
+  }
+
+  .fn-account-due-label.is-settled {
+    color: var(--color-success, #10b981);
+  }
+
+  .fn-account-pay-btn {
+    height: 1.75rem;
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+  }
 }

@@ -9,7 +9,7 @@ import { AgentToolName } from "@fin-ai/shared-types";
 /** Reusable tool descriptions instructing LLM model on tool parameters and semantics */
 export const AGENT_TOOL_DESCRIPTIONS: Record<string, string> = {
   [AgentToolName.TRANSACTIONS_CREATE]:
-    "Record a new transaction for the user. Requires confirmation. Fields: amount (positive number), optional type (INCOME | EXPENSE | TRANSFER | INVESTMENT, defaults to EXPENSE), account (HDFC account name or accountId), category (e.g. 'groceries' resolving to 'Groceries & Supermarket', or categoryId), optional toAccount (required for TRANSFER), optional notes (max 500 chars). Date: if the user names a date (e.g. 'yesterday', '2 days back', 'aug 15', 'tomorrow', 'last week'), extract that phrase verbatim into dateExpression and also set date to the best-matching YYYY-MM-DD; if the user gives NO date, OMIT date and dateExpression entirely (the server records today). Category and account are resolved to the user's real records server-side — never invent IDs. Account balances update automatically.",
+    "Record a new transaction for the user. Requires confirmation. Fields: amount (positive number), optional type (INCOME | EXPENSE | TRANSFER | INVESTMENT, defaults to EXPENSE), account (source account name or ID, defaults to primary Bank account if omitted), category (optional for transfers; e.g. 'groceries' resolving to 'Groceries & Supermarket'), optional toAccount (required for TRANSFER, e.g. destination Credit Card or Bank account), optional notes (max 500 chars). IMPORTANT FOR CREDIT CARDS: When paying or settling a credit card bill, ALWAYS use type: 'TRANSFER' with toAccount set to the credit card; NEVER use EXPENSE for card bill payments as that causes double-counting. Date: if the user names a date, pass it in dateExpression; omit date fields for today.",
 
   [AgentToolName.TRANSACTIONS_BULK_CREATE]:
     "Record multiple transactions in one atomic batch (max 25). Requires confirmation. Each item uses the same fields as transactions.create (amount, optional type defaulting to EXPENSE, account/category by name or ID; if the user names a date, pass it verbatim in dateExpression; OMIT date/dateExpression when no date is given so the server records today). Use for import-style requests like 'add these three expenses'.",
@@ -33,6 +33,9 @@ export const AGENT_TOOL_DESCRIPTIONS: Record<string, string> = {
 
   [AgentToolName.TRANSACTIONS_RECATEGORIZE_APPLY]:
     "Apply a re-categorization: move ALL transactions matching a filter to a target category, as counted by the transactions.recategorize dry-run. Requires confirmation. Only the category changes — account balances are never touched. targetCategory accepts a category name or ID.",
+
+  [AgentToolName.TRANSACTIONS_EXPORT]:
+    "Export a filtered transaction summary or CSV-formatted records for a given date range, category, account, or transaction type.",
 
   [AgentToolName.ACCOUNTS_LIST]:
     "List the user's active FinAI accounts with balances, types, and the default account flag. Use this to resolve account names (e.g. 'my HDFC account') to IDs.",
@@ -89,6 +92,9 @@ export const AGENT_TOOL_DESCRIPTIONS: Record<string, string> = {
   [AgentToolName.CATEGORIES_DELETE]:
     "Permanently delete one of the user's categories. Requires confirmation. Fails if the category is still used by any transactions or budgets.",
 
+  [AgentToolName.CATEGORIES_GROUPS_LIST]:
+    "Get all standard category groups (Income, Fixed Expenses, Variable Expenses, Discretionary, Debt & Repayment, Savings & Investments) and their display order.",
+
   [AgentToolName.GOALS_LIST]:
     "List the user's savings goals with progress percentage and deadlines.",
 
@@ -139,14 +145,44 @@ export const AGENT_TOOL_DESCRIPTIONS: Record<string, string> = {
   [AgentToolName.INVESTMENTS_LIST]:
     "Get the user's investment portfolio with total portfolio value and per-asset allocation percentages.",
 
+  [AgentToolName.INVESTMENTS_GET]:
+    "Get detailed holding information for a single investment by its ID.",
+
   [AgentToolName.INVESTMENTS_CREATE]:
     "Add an investment holding to the user's portfolio. Requires confirmation. Fields: name, assetClass (MUTUAL_FUND | STOCK | FIXED_DEPOSIT | GOLD | EPF | PPF | REAL_ESTATE | CRYPTO | OTHER), currentValue, investedAmount.",
+
+  [AgentToolName.INVESTMENTS_UPDATE]:
+    "Update an existing investment holding: name, assetClass, currentValue, or investedAmount (cost basis when purchasing more units). Requires confirmation.",
 
   [AgentToolName.INVESTMENTS_UPDATE_VALUE]:
     "Update the current market value of one of the user's investment holdings. Requires confirmation.",
 
   [AgentToolName.INVESTMENTS_DELETE]:
     "Permanently remove an investment holding from the user's portfolio. Requires confirmation — this is destructive and cannot be undone.",
+
+  [AgentToolName.NOTIFICATIONS_LIST]:
+    "List the user's notifications and alerts (budget warnings, goal milestones, system alerts) with unread status and timestamps.",
+
+  [AgentToolName.NOTIFICATIONS_UNREAD_COUNT]:
+    "Check how many unread notifications or financial alerts are currently pending for the user.",
+
+  [AgentToolName.NOTIFICATIONS_MARK_ALL_READ]:
+    "Mark all unread notifications as read. Quick maintenance action — no confirmation required.",
+
+  [AgentToolName.WORKSPACES_LIST]:
+    "List all workspaces the user has access to, including Personal and Shared workspaces with roles and member counts.",
+
+  [AgentToolName.WORKSPACES_GET]:
+    "Get detailed information for a specific workspace by ID, including members and the user's role.",
+
+  [AgentToolName.WORKSPACES_MEMBERS_LIST]:
+    "List all members of a shared workspace with their assigned roles.",
+
+  [AgentToolName.WORKSPACES_INVITATIONS_LIST]:
+    "List pending workspace collaboration invitations sent to the user.",
+
+  [AgentToolName.WORKSPACES_INVITATIONS_SEND]:
+    "Invite a user by email to join a shared workspace. Requires confirmation. Fields: workspaceId, email, role (MEMBER | ADMIN, defaults to MEMBER).",
 
   [AgentToolName.PROFILE_GET]:
     "Get the current user's profile: id, email, name, avatar URL, and preferences (appearance, notifications, security, default account).",

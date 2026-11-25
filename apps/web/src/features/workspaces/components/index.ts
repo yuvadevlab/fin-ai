@@ -5,4 +5,5 @@ export * from "./CreateWorkspaceDialog";
 export * from "./InviteMemberForm";
 export * from "./InviteMemberDialog";
 export * from "./WorkspaceSettings";
+export * from "./WorkspaceListCard";
 export * from "./WorkspaceMembersCard";

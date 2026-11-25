@@ -130,5 +130,64 @@ export function createTransactionsTools(transactionsService: TransactionsService
         return `Summarized ${groups.length} group(s). Top: ${top.join(", ")}`;
       },
     }),
+    defineTool({
+      name: AgentToolName.TRANSACTIONS_EXPORT,
+      description: AGENT_TOOL_DESCRIPTIONS[AgentToolName.TRANSACTIONS_EXPORT],
+      access: ToolAccessLevel.READ,
+      confirmation: ToolConfirmationType.NONE,
+      label: AGENT_TOOL_LABELS[AgentToolName.TRANSACTIONS_EXPORT],
+      schema: z.object({
+        dateFrom: flexibleDateSchema.optional(),
+        dateTo: flexibleDateSchema.optional(),
+        category: z.string().optional(),
+        type: z.nativeEnum(TransactionType).optional(),
+        format: z.enum(["csv", "json"]).default("csv"),
+      }),
+      execute: async (input, ctx) => {
+        const filter: TransactionFilterInput = {
+          ...(input.dateFrom && { dateFrom: input.dateFrom }),
+          ...(input.dateTo && { dateTo: input.dateTo }),
+          ...(input.category && { category: input.category }),
+          ...(input.type && { type: input.type }),
+          pageSize: 200,
+          page: 1,
+          sortOrder: "desc",
+        };
+        const res = await transactionsService.findAll(
+          ctx.userId,
+          filter,
+          ctx.workspaceId,
+          ctx.memberUserIds,
+        );
+        const rows = res.items.map((t) => ({
+          date: t.date,
+          type: t.type,
+          amount: t.amount,
+          category: t.category?.name ?? "Uncategorized",
+          account: t.account?.name ?? "Unknown",
+          notes: t.notes ?? "",
+        }));
+
+        if (input.format === "csv") {
+          const header = "Date,Type,Amount,Category,Account,Notes";
+          const csvLines = rows.map((r) =>
+            [
+              r.date,
+              r.type,
+              r.amount,
+              `"${r.category.replace(/"/g, '""')}"`,
+              `"${r.account.replace(/"/g, '""')}"`,
+              `"${r.notes.replace(/"/g, '""')}"`,
+            ].join(","),
+          );
+          return { format: "csv", total: rows.length, data: [header, ...csvLines].join("\n") };
+        }
+        return { format: "json", total: rows.length, transactions: rows };
+      },
+      summarize: (output) => {
+        const { total, format } = output as { total: number; format: string };
+        return `Exported ${total} transaction(s) in ${format.toUpperCase()} format`;
+      },
+    }),
   ];
 }
