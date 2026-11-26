@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { AlertTriangle, MessagesSquare, Zap } from "lucide-react";
-import { cn, Shimmer } from "@fin-ai/ui";
+import { cn } from "@fin-ai/ui";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
@@ -87,18 +87,11 @@ export function AgentRun({
       {/* 2. Financial insight card */}
       {insight && <FinancialInsight text={text} />}
 
-      {/* 3. Prose response (deduplicated) */}
-      {proseContent ? (
+      {/* 3. Prose response (ActivityTimeline owns the streaming thinking indicator) */}
+      {proseContent && (
         <div className="fn-chat-prose">
           <MarkdownMessage content={proseContent} />
         </div>
-      ) : (
-        streaming &&
-        !reasoningStreaming && (
-          <div className="fn-chat-prose">
-            <Shimmer>{UI_COPY.ADVISOR.ACTIVITY_TIMELINE.THINKING}</Shimmer>
-          </div>
-        )
       )}
 
       {/* 4. Error block */}

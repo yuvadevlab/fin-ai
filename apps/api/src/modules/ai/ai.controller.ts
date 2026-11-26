@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Res, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { type Response } from "express";
 import { Logger } from "@yuva-devlab/logger";
@@ -93,12 +105,15 @@ export class AiController {
   }
 
   @Post("chat")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Stream an AI response via SSE" })
   async chat(
     @Body(new ZodValidationPipe(agentChatSchema)) body: AgentChatInput,
     @CurrentUser("id") userId: string,
     @Res() res: Response,
   ) {
+    // Explicitly return 200 OK; Cloud Run / GFE buffers non-200 (e.g. 201) SSE responses until res.end().
+    res.status(HttpStatus.OK);
     // Set SSE headers (CORS is handled globally via WEB_URL config in main.ts)
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");

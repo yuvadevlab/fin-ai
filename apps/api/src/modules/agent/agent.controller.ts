@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Post, Param, Query, Res, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Param,
+  Query,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { type Response } from "express";
@@ -49,6 +60,7 @@ export class AgentController {
    * unexpectedly, so the client never sees a silently dropped stream.
    */
   @Post("chat")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Run an agent turn and stream events via SSE" })
   async chat(
     @Body(new ZodValidationPipe(agentChatSchema)) body: AgentChatInput,
@@ -61,6 +73,8 @@ export class AgentController {
     this.logger.info(
       `[chat] SSE stream started for user ${userId.slice(0, 8)} (workspace: ${(workspaceId ?? "").slice(0, 8) || "personal"}, readOnly: ${isReadOnly ?? false})`,
     );
+    // Explicitly return 200 OK; Cloud Run / GFE buffers non-200 (e.g. 201) SSE responses until res.end().
+    res.status(HttpStatus.OK);
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
