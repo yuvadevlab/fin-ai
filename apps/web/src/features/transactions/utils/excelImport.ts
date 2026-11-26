@@ -1,33 +1,52 @@
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { API_BASE_URL } from "@/lib/api-client";
-import { StorageKey, API_ENDPOINTS, TransactionKind } from "@fin-ai/shared-types";
+import { isJwtExpired } from "@/lib/jwt";
+import { StorageKey, API_ENDPOINTS } from "@fin-ai/shared-types";
 import { BulkRow } from "@/features/transactions/components/BulkTransactionForm";
+import {
+  type SelectOption,
+  generateRowId,
+  parseExcelDate,
+  resolveColumnIndices,
+  matchEntityOption,
+  parseTransactionKind,
+} from "./excelImport.helpers";
 
-export interface SelectOption {
-  label: string;
-  value: string;
-}
-
-function generateRowId(): string {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `row_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-}
+export * from "./excelImport.helpers";
 
 /**
  * Downloads the dynamic Excel template directly from the backend API.
+ * Attaches authentication tokens and active workspace headers.
  */
-export async function downloadExcelTemplateFromApi() {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem(StorageKey.TOKEN) ||
-        localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
-        localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN)
-      : null;
+export async function downloadExcelTemplateFromApi(): Promise<void> {
   const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  if (typeof window !== "undefined") {
+    let token =
+      localStorage.getItem(StorageKey.TOKEN) ||
+      localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
+      localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN);
+
+    if (!token && typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|;\s*)(?:finai_token|devlab_access_token)=([^;]+)/);
+      if (match?.[1]) {
+        token = decodeURIComponent(match[1]);
+      }
+    }
+
+    if (token) {
+      if (isJwtExpired(token)) {
+        throw new Error("Session expired. Please log in again.");
+      }
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const activeWorkspaceId = localStorage.getItem(StorageKey.WORKSPACE_ID);
+    if (activeWorkspaceId) {
+      headers["X-Workspace-Id"] = activeWorkspaceId;
+    }
+  }
 
   const res = await fetch(`${API_BASE_URL}/${API_ENDPOINTS.TRANSACTIONS.TEMPLATE}`, {
     method: "GET",
@@ -53,6 +72,12 @@ export async function downloadExcelTemplateFromApi() {
 
 /**
  * Parses an uploaded Excel (.xlsx, .xls) or CSV file into BulkRow array.
+ * Maps columns with conflict-free matching and resolves entities without destructive defaults.
+ *
+ * @param file - File selected by user.
+ * @param accounts - List of user accounts.
+ * @param categories - List of user categories.
+ * @returns Array of validated, mapped BulkRow records.
  */
 export async function parseExcelOrCsvFile(
   file: File,
@@ -78,21 +103,7 @@ export async function parseExcelOrCsvFile(
           throw new Error("Excel sheet contains no transaction rows.");
         }
 
-        // Header mapping
-        const headerRow = (rawData[0] || []).map((h) => String(h).toLowerCase().trim());
-
-        const getColIndex = (keywords: string[]) => {
-          return headerRow.findIndex((h) => keywords.some((k) => h.includes(k)));
-        };
-
-        const dateIdx = getColIndex(["date"]);
-        const typeIdx = getColIndex(["type", "kind"]);
-        const amountIdx = getColIndex(["amount", "price", "val"]);
-        const categoryIdx = getColIndex(["category", "cat"]);
-        const accountIdx = getColIndex(["account", "from account", "src"]);
-        const toAccountIdx = getColIndex(["to account", "dest", "to"]);
-        const notesIdx = getColIndex(["note", "desc", "remark", "summary"]);
-
+        const indices = resolveColumnIndices(rawData[0] || []);
         const parsedRows: BulkRow[] = [];
         const todayStr = format(new Date(), "yyyy-MM-dd");
 
@@ -100,69 +111,28 @@ export async function parseExcelOrCsvFile(
           const row = rawData[i] as unknown[];
           if (!row || row.every((cell) => cell === "" || cell === null)) continue;
 
-          // Raw values
-          const rawAmount = String(row[amountIdx >= 0 ? amountIdx : 2] || "").replace(
-            /[^0-9.]/g,
-            "",
-          );
-          const rawType = String(row[typeIdx >= 0 ? typeIdx : 1] || "").toLowerCase();
-          const rawCat = String(row[categoryIdx >= 0 ? categoryIdx : 3] || "").trim();
-          const rawAcc = String(row[accountIdx >= 0 ? accountIdx : 4] || "").trim();
-          const rawToAcc = String(row[toAccountIdx >= 0 ? toAccountIdx : 5] || "").trim();
-          const rawDate = row[dateIdx >= 0 ? dateIdx : 0];
-          const rawNotes = String(row[notesIdx >= 0 ? notesIdx : 6] || "").trim();
+          const rawAmount = String(row[indices.amountIdx] ?? "").replace(/[^0-9.]/g, "");
+          const rawType = String(row[indices.typeIdx] ?? "").toLowerCase();
+          const rawCat = String(row[indices.categoryIdx] ?? "").trim();
+          const rawAcc = String(row[indices.accountIdx] ?? "").trim();
+          const rawToAcc = String(row[indices.toAccountIdx] ?? "").trim();
+          const rawDate = row[indices.dateIdx];
+          const rawNotes = String(row[indices.notesIdx] ?? "").trim();
 
           if (!rawAmount || parseFloat(rawAmount) <= 0) continue;
 
-          // Parse Type
-          let kind: TransactionKind = TransactionKind.EXPENSE;
-          if (rawType.includes("inc") || rawType.includes("credit")) kind = TransactionKind.INCOME;
-          else if (rawType.includes("trans")) kind = TransactionKind.TRANSFER;
-
-          // Match Category ID
-          const matchedCat =
-            categories.find((c) => c.label.toLowerCase() === rawCat.toLowerCase()) ||
-            categories.find((c) => c.label.toLowerCase().includes(rawCat.toLowerCase())) ||
-            categories[0];
-
-          // Match Account ID
-          const matchedAcc =
-            accounts.find((a) => a.label.toLowerCase().includes(rawAcc.toLowerCase())) ||
-            accounts.find((a) => a.value === rawAcc) ||
-            accounts[0];
-
-          // Match To Account ID
-          const matchedToAcc = rawToAcc
-            ? accounts.find((a) => a.label.toLowerCase().includes(rawToAcc.toLowerCase()))?.value
-            : undefined;
-
-          // Parse Date (handles DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, native JS Date)
-          let formattedDate = todayStr;
-          if (rawDate instanceof Date && !isNaN(rawDate.getTime())) {
-            formattedDate = format(rawDate, "yyyy-MM-dd");
-          } else if (typeof rawDate === "string" && rawDate.trim()) {
-            const str = rawDate.trim();
-            const ddmmyyyyMatch = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
-            if (ddmmyyyyMatch) {
-              const [, day, month, year] = ddmmyyyyMatch;
-              const d = new Date(Number(year), Number(month) - 1, Number(day));
-              if (!isNaN(d.getTime())) {
-                formattedDate = format(d, "yyyy-MM-dd");
-              }
-            } else {
-              const parsedD = new Date(str);
-              if (!isNaN(parsedD.getTime())) {
-                formattedDate = format(parsedD, "yyyy-MM-dd");
-              }
-            }
-          }
+          const kind = parseTransactionKind(rawType);
+          const matchedCat = matchEntityOption(rawCat, categories);
+          const matchedAcc = matchEntityOption(rawAcc, accounts);
+          const matchedToAcc = rawToAcc ? matchEntityOption(rawToAcc, accounts)?.value : undefined;
+          const formattedDate = parseExcelDate(rawDate, todayStr);
 
           parsedRows.push({
             id: generateRowId(),
             amount: rawAmount,
             kind,
-            category: matchedCat?.value || categories[0]?.value || "",
-            account: matchedAcc?.value || accounts[0]?.value || "",
+            category: matchedCat?.value ?? "",
+            account: matchedAcc?.value ?? "",
             toAccount: matchedToAcc,
             date: formattedDate,
             notes: rawNotes,
