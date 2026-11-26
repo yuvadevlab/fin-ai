@@ -23,7 +23,9 @@ import {
   MAX_EMPTY_RETRIES,
   MAX_ITERATIONS,
   emitModelTurnEnd,
+  emitMaxIterationsError,
   emitRunLog,
+  executeToolBatch,
 } from "./agent-orchestrator.helpers";
 
 export interface AgentRunParams {
@@ -112,11 +114,8 @@ export class AgentOrchestratorService {
           this.logger.warn(
             `[Run ${runId.slice(0, 8)}] Empty or malformed-plan turn on iteration ${iteration}; retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`,
           );
-          emitRunLog(
-            emit,
-            AgentRunLogLevel.LLM,
-            `Empty/malformed output on turn ${iteration} — retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`,
-          );
+          const retryMsg = `Empty/malformed output on turn ${iteration} — retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`;
+          emitRunLog(emit, AgentRunLogLevel.LLM, retryMsg);
           request.messages.push({ role: "user", content: EMPTY_TURN_RECOVERY_PROMPT });
           continue;
         }
@@ -145,7 +144,7 @@ export class AgentOrchestratorService {
       let hasConfirmation = false;
       let confirmationCount = 0;
 
-      for (const call of toolCalls) {
+      const dispatchOne = async (call: (typeof toolCalls)[number]) => {
         this.logger.info(
           `[Run ${runId.slice(0, 8)}] Dispatching tool "${call.name}" args: ${call.arguments.slice(0, 80)}`,
         );
@@ -163,7 +162,17 @@ export class AgentOrchestratorService {
         this.logger.info(
           `[Run ${runId.slice(0, 8)}] Tool "${call.name}" status: ${(result as { status?: string }).status ?? "ok"}`,
         );
+        return { call, result };
+      };
 
+      const dispatched = await executeToolBatch(
+        toolCalls,
+        (name) => this.toolDispatcher.isReadOnly?.(name) ?? false,
+        emit,
+        dispatchOne,
+      );
+
+      for (const { call, result } of dispatched) {
         request.messages.push({
           role: "tool",
           toolName: call.name,
@@ -226,12 +235,7 @@ export class AgentOrchestratorService {
       this.logger.error(`[Run ${runId.slice(0, 8)}] Final synthesis failed`, finalError);
     }
 
-    emit({
-      type: "error",
-      error: AGENT_MAX_ITERATIONS_MESSAGE,
-      code: "MAX_ITERATIONS",
-    });
-    emit({ type: "done" });
+    emitMaxIterationsError(emit, AGENT_MAX_ITERATIONS_MESSAGE);
   }
 
   /** Persists the final assistant message and closes the run with a `done` event. */

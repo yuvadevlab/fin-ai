@@ -1,6 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
-import { AgentRunLogLevel } from "@fin-ai/shared-types";
+import {
+  AgentRunLogLevel,
+  AgentStreamEventType,
+  ExecutionPhase,
+  LlmStreamEventType,
+  PhaseStatus,
+} from "@fin-ai/shared-types";
 import {
   ToolPlanStreamFilter,
   type ChatModel,
@@ -49,7 +55,13 @@ export class AgentTurnRunner {
     this.logger.info(
       `Turn ${turn}: streaming (${request.messages.length} msgs, ${request.tools?.length ?? 0} tools, pendingAction: ${pendingAction})`,
     );
-    emit({ type: "phase", phase: "model_turn", status: "start", turn, pendingAction });
+    emit({
+      type: AgentStreamEventType.PHASE,
+      phase: ExecutionPhase.MODEL_TURN,
+      status: PhaseStatus.START,
+      turn,
+      pendingAction,
+    });
 
     const filter = new ToolPlanStreamFilter();
     const reasoningFilter = new ToolPlanStreamFilter();
@@ -62,33 +74,33 @@ export class AgentTurnRunner {
 
     for await (const event of model.stream(request)) {
       switch (event.type) {
-        case "reasoning-delta": {
+        case LlmStreamEventType.REASONING_DELTA: {
           // Stream sanitized thinking live to the UI while preserving full
           // reasoningContent for <tool_plan> fallback parsing.
           reasoningContent += event.text;
           const visibleReasoning = reasoningFilter.push(event.text);
           if (visibleReasoning) {
-            emit({ type: "reasoning", content: visibleReasoning });
+            emit({ type: AgentStreamEventType.REASONING, content: visibleReasoning });
           }
           break;
         }
-        case "text-delta": {
+        case LlmStreamEventType.TEXT_DELTA: {
           deltaContent += event.text;
           const visible = filter.push(event.text);
           if (visible) {
             visibleContent += visible;
-            emit({ type: "token", content: visible });
+            emit({ type: AgentStreamEventType.TOKEN, content: visible });
           }
           break;
         }
-        case "tool_call":
+        case LlmStreamEventType.TOOL_CALL:
           toolCalls.push(event.toolCall);
           break;
-        case "usage":
+        case LlmStreamEventType.USAGE:
           tokensIn = event.tokensIn;
           tokensOut = event.tokensOut;
           break;
-        case "done":
+        case LlmStreamEventType.DONE:
           break;
       }
     }
@@ -96,12 +108,12 @@ export class AgentTurnRunner {
     // Flush any partial-tag tail held by the filters
     const reasoningTail = reasoningFilter.flush();
     if (reasoningTail) {
-      emit({ type: "reasoning", content: reasoningTail });
+      emit({ type: AgentStreamEventType.REASONING, content: reasoningTail });
     }
     const tail = filter.flush();
     if (tail) {
       visibleContent += tail;
-      emit({ type: "token", content: tail });
+      emit({ type: AgentStreamEventType.TOKEN, content: tail });
     }
 
     // Reconstruct full raw output across reasoning + content channels so split
@@ -112,7 +124,7 @@ export class AgentTurnRunner {
       `Turn ${turn}: done — ${visibleContent.length} visible chars (${reasoningContent.length} reasoning chars), ${toolCalls.length} native tool call(s), tokens: ${tokensIn} in / ${tokensOut} out`,
     );
     emit({
-      type: "log",
+      type: AgentStreamEventType.LOG,
       level: AgentRunLogLevel.LLM,
       message: `Turn ${turn} inference complete`,
       detail: `${visibleContent.length} visible chars${reasoningContent ? `, ${reasoningContent.length} reasoning chars` : ""}`,

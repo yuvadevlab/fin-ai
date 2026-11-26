@@ -160,7 +160,7 @@ export class AgentService {
         status: PhaseStatus.END,
       });
       emit({
-        type: "log",
+        type: AgentStreamEventType.LOG,
         level: AgentRunLogLevel.CTX,
         message: `Loaded ${Math.max(0, request.messages.length - 1)} context message(s) & ${request.tools?.length ?? 0} tool(s)`,
         detail: pendingAction ? `Pending approval: ${pendingAction.tool}` : undefined,

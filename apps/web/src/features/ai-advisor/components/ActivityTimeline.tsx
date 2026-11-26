@@ -26,6 +26,8 @@ interface ActivityTimelineProps {
   logs?: AgentRunLogEntry[];
   reasoning?: string;
   reasoningStreaming?: boolean;
+  reasoningStartedAt?: number;
+  reasoningCompletedAt?: number;
   isStreaming: boolean;
   hasText?: boolean;
 }
@@ -40,6 +42,8 @@ export function ActivityTimeline({
   logs = [],
   reasoning = "",
   reasoningStreaming = false,
+  reasoningStartedAt,
+  reasoningCompletedAt,
   isStreaming,
   hasText = false,
 }: ActivityTimelineProps) {
@@ -137,7 +141,6 @@ export function ActivityTimeline({
               isStreaming ? "fn-timeline-header-title--active" : "fn-timeline-header-title--idle",
             )}
           >
-            {isStreaming && <span className="fn-timeline-spark">⚡</span>}
             {isStreaming ? <Shimmer>{headerTitle}</Shimmer> : headerTitle}
           </span>
           {summaryMeta && <span className="fn-timeline-header-meta">{summaryMeta}</span>}
@@ -208,7 +211,15 @@ export function ActivityTimeline({
                 >
                   <div className="fn-timeline-reasoning-label">
                     <Brain className="fn-timeline-reasoning-icon" aria-hidden="true" />
-                    <span>{reasoningStreaming ? <Shimmer>Thinking…</Shimmer> : "Reasoning"}</span>
+                    <span>
+                      {reasoningStreaming ? (
+                        <Shimmer>{latestLog?.message || state.statusLabel}</Shimmer>
+                      ) : reasoningStartedAt && reasoningCompletedAt ? (
+                        `Thought for ${formatDuration(reasoningCompletedAt - reasoningStartedAt)}`
+                      ) : (
+                        `Thought process · ${reasoning.trim().split(/\s+/).length} words`
+                      )}
+                    </span>
                   </div>
                   <p className="fn-timeline-reasoning-text">{reasoning}</p>
                 </div>

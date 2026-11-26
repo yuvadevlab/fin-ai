@@ -27,6 +27,11 @@ export class AgentToolDispatcher {
     private readonly entityMemory: EntityMemoryService,
   ) {}
 
+  /** Returns true when the named tool is registered as read-only (safe for parallel dispatch). */
+  isReadOnly(toolName: string): boolean {
+    return this.registry.get(toolName)?.access === ToolAccessLevel.READ;
+  }
+
   async dispatch(
     call: LlmToolCall,
     ctx: AgentContext,

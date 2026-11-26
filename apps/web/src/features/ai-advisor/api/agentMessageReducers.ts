@@ -36,6 +36,7 @@ export function appendReasoningReducer(
     ...last,
     reasoning: (last.reasoning ?? "") + content,
     reasoningStreaming: true,
+    reasoningStartedAt: last.reasoningStartedAt ?? Date.now(),
   }));
 }
 
@@ -44,6 +45,10 @@ export function appendTextReducer(prev: AgentChatMessage[], content: string): Ag
     ...last,
     text: last.text + content,
     reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
   }));
 }
 
@@ -223,6 +228,10 @@ export function failStreamReducer(prev: AgentChatMessage[], errorText: string): 
     error: errorText,
     streaming: false,
     reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
   };
   return copy;
 }
@@ -232,7 +241,15 @@ export function endStreamReducer(prev: AgentChatMessage[]): AgentChatMessage[] {
   const copy = [...prev];
   const last = copy[copy.length - 1];
   if (!last || last.role !== AgentChatRole.ASSISTANT || !last.streaming) return prev;
-  copy[copy.length - 1] = { ...last, streaming: false, reasoningStreaming: false };
+  copy[copy.length - 1] = {
+    ...last,
+    streaming: false,
+    reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
+  };
   return copy;
 }
 

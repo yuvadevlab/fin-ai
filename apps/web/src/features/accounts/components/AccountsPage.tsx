@@ -81,8 +81,8 @@ export function AccountsPage() {
         }
         actions={
           !isReadOnly && (
-            <Button onClick={handleOpenAddAccount} className="fn-account-action-btn">
-              <Plus className="fn-icon-md mr-1.5" />
+            <Button size="sm" onClick={handleOpenAddAccount} className="fn-header-action-btn">
+              <Plus className="fn-icon-md" />
               {UI_COPY.ACCOUNTS.LINK_ACCOUNT}
             </Button>
           )

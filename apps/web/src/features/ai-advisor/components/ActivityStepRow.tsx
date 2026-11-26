@@ -1,8 +1,24 @@
 "use client";
 
-import { Check, Circle, Loader2, X } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BarChart3,
+  Brain,
+  Check,
+  Database,
+  Loader2,
+  PiggyBank,
+  Search,
+  ShieldCheck,
+  Tag,
+  Target,
+  TrendingUp,
+  Wallet,
+  Wrench,
+  X,
+} from "lucide-react";
 import { cn, Shimmer } from "@fin-ai/ui";
-import { AgentActivityStatus } from "@fin-ai/shared-types";
+import { AgentActivityKind, AgentActivityStatus, AgentToolNamespace } from "@fin-ai/shared-types";
 import type { AgentActivity } from "../api/agentTypes";
 import { activityLabel, formatDuration } from "../utils/deriveRunState";
 
@@ -14,9 +30,45 @@ interface ActivityStepRowProps {
   isCurrent?: boolean;
 }
 
-/** Icon per real activity state: ✓ completed · ◌ running · ○ pending · ✕ failed. */
-function StatusIcon({ status }: { status: AgentActivityStatus }) {
-  if (status === AgentActivityStatus.SUCCESS) {
+/** Picks a Copilot-style contextual Lucide icon for each step/tool category. */
+function StepContextIcon({ activity }: { activity: AgentActivity }) {
+  const cls = "fn-timeline-header-icon fn-timeline-header-icon--pending";
+  if (activity.kind === AgentActivityKind.APPROVAL) {
+    return <ShieldCheck className={cls} aria-hidden="true" />;
+  }
+  if (activity.kind === AgentActivityKind.PHASE) {
+    if (activity.tool.startsWith("phase:loading_context")) {
+      return <Database className={cls} aria-hidden="true" />;
+    }
+    return <Brain className={cls} aria-hidden="true" />;
+  }
+  const ns = activity.tool.split(".")[0];
+  switch (ns) {
+    case AgentToolNamespace.ACCOUNTS:
+      return <Wallet className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.TRANSACTIONS:
+      return <ArrowLeftRight className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.ANALYTICS:
+    case AgentToolNamespace.INSIGHTS:
+      return <BarChart3 className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.SEARCH:
+      return <Search className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.BUDGETS:
+      return <PiggyBank className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.GOALS:
+      return <Target className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.INVESTMENTS:
+      return <TrendingUp className={cls} aria-hidden="true" />;
+    case AgentToolNamespace.CATEGORIES:
+      return <Tag className={cls} aria-hidden="true" />;
+    default:
+      return <Wrench className={cls} aria-hidden="true" />;
+  }
+}
+
+/** Icon per real activity state: contextual icon when pending, spinner while running, ✓/✕ on completion. */
+function StatusIcon({ activity }: { activity: AgentActivity }) {
+  if (activity.status === AgentActivityStatus.SUCCESS) {
     return (
       <Check
         className="fn-timeline-header-icon fn-timeline-header-icon--muted"
@@ -24,7 +76,7 @@ function StatusIcon({ status }: { status: AgentActivityStatus }) {
       />
     );
   }
-  if (status === AgentActivityStatus.RUNNING) {
+  if (activity.status === AgentActivityStatus.RUNNING) {
     return (
       <Loader2
         className="fn-timeline-header-icon fn-timeline-header-icon--streaming fn-icon-spin"
@@ -32,24 +84,17 @@ function StatusIcon({ status }: { status: AgentActivityStatus }) {
       />
     );
   }
-  if (status === AgentActivityStatus.ERROR) {
+  if (activity.status === AgentActivityStatus.ERROR) {
     return (
       <X className="fn-timeline-header-icon fn-timeline-header-icon--error" aria-hidden="true" />
     );
   }
-  return (
-    <Circle
-      className="fn-timeline-header-icon fn-timeline-header-icon--pending"
-      aria-hidden="true"
-    />
-  );
+  return <StepContextIcon activity={activity} />;
 }
 
 /**
- * One row of the live activity stream. The label always comes from the
- * centralized mapper (`activityLabel`) — user-safe wording, no tool names,
- * no internal details, no chain-of-thought. Running rows end with an
- * ellipsis so the current operation reads as in-progress.
+ * One row of the live activity stream. Uses contextual Copilot-style icons and Shimmer
+ * on active steps while resolving labels through `activityLabel`.
  */
 export function ActivityStepRow({
   activity,
@@ -68,7 +113,7 @@ export function ActivityStepRow({
       aria-current={isCurrent ? "step" : undefined}
     >
       <span className="fn-timeline-status-icon-box">
-        <StatusIcon status={activity.status} />
+        <StatusIcon activity={activity} />
       </span>
       <span className="fn-timeline-item-content">
         <span

@@ -72,6 +72,10 @@ export interface AgentChatMessage {
   reasoning?: string;
   /** True while reasoning tokens are actively streaming before answer begins. */
   reasoningStreaming?: boolean;
+  /** Epoch ms when reasoning started streaming. */
+  reasoningStartedAt?: number;
+  /** Epoch ms when reasoning finished streaming. */
+  reasoningCompletedAt?: number;
   streaming?: boolean;
   /** Runtime that answered this turn ("agent" vs "chat") — set from SSE `mode`. */
   mode?: AgentResolvedMode;

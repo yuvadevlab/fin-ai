@@ -29,6 +29,8 @@ export function AgentRun({
     text = "",
     reasoning = "",
     reasoningStreaming = false,
+    reasoningStartedAt,
+    reasoningCompletedAt,
     activities = [],
     confirmations = [],
     logs = [],
@@ -75,6 +77,8 @@ export function AgentRun({
           logs={logs}
           reasoning={reasoning}
           reasoningStreaming={reasoningStreaming}
+          reasoningStartedAt={reasoningStartedAt}
+          reasoningCompletedAt={reasoningCompletedAt}
           isStreaming={streaming}
           hasText={text.length > 0}
         />

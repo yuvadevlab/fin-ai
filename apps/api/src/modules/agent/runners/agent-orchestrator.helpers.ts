@@ -1,4 +1,11 @@
-import { AgentRunLogLevel } from "@fin-ai/shared-types";
+import {
+  AgentErrorCode,
+  AgentRunLogLevel,
+  AgentStreamEventType,
+  ExecutionPhase,
+  PhaseStatus,
+} from "@fin-ai/shared-types";
+import type { LlmToolCall } from "@fin-ai/ai-engine";
 import type { AgentEventEmitter } from "../agent.types";
 
 /** Safety cap: max model↔tool loop iterations per run. */
@@ -25,7 +32,7 @@ export function emitRunLog(
   message: string,
   detail?: string,
 ): void {
-  emit({ type: "log", level, message, detail });
+  emit({ type: AgentStreamEventType.LOG, level, message, detail });
 }
 
 /** Emits the end-of-turn model_turn phase transition event. */
@@ -36,11 +43,53 @@ export function emitModelTurnEnd(
   toolCallsCount: number,
 ): void {
   emit({
-    type: "phase",
-    phase: "model_turn",
-    status: "end",
+    type: AgentStreamEventType.PHASE,
+    phase: ExecutionPhase.MODEL_TURN,
+    status: PhaseStatus.END,
     turn,
     pendingAction,
     toolCalls: toolCallsCount,
   });
+}
+
+/**
+ * Executes a batch of tool calls in parallel when all calls are read-only,
+ * or sequentially when any call mutates state or requires confirmation.
+ */
+export async function executeToolBatch(
+  toolCalls: LlmToolCall[],
+  isReadOnly: ((toolName: string) => boolean) | undefined,
+  emit: AgentEventEmitter,
+  dispatchOne: (
+    call: LlmToolCall,
+  ) => Promise<{ call: LlmToolCall; result: Record<string, unknown> }>,
+): Promise<Array<{ call: LlmToolCall; result: Record<string, unknown> }>> {
+  const canParallelize =
+    toolCalls.length > 1 && toolCalls.every((c) => isReadOnly?.(c.name) ?? false);
+
+  if (canParallelize) {
+    emitRunLog(
+      emit,
+      AgentRunLogLevel.TOOL,
+      `Executing ${toolCalls.length} read tools in parallel`,
+      toolCalls.map((c) => c.name).join(", "),
+    );
+    return Promise.all(toolCalls.map((call) => dispatchOne(call)));
+  }
+
+  const results: Array<{ call: LlmToolCall; result: Record<string, unknown> }> = [];
+  for (const call of toolCalls) {
+    results.push(await dispatchOne(call));
+  }
+  return results;
+}
+
+/** Emits the terminal MAX_ITERATIONS error and done event pair. */
+export function emitMaxIterationsError(emit: AgentEventEmitter, message: string): void {
+  emit({
+    type: AgentStreamEventType.ERROR,
+    error: message,
+    code: AgentErrorCode.MAX_ITERATIONS,
+  });
+  emit({ type: AgentStreamEventType.DONE });
 }
