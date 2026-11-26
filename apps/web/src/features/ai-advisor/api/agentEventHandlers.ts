@@ -50,8 +50,16 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       port.onMode?.(event.mode);
       return false;
 
+    case "log":
+      port.appendLog?.(makeLog(event.level, event.message, event.detail));
+      return false;
+
     case "token":
       port.appendText(event.content);
+      return false;
+
+    case "reasoning":
+      port.appendReasoning?.(event.content);
       return false;
 
     case "token_replace":
@@ -66,17 +74,6 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       if (event.status === "start") {
         if (event.phase === "loading_context") {
           port.updateActivity("phase:agent_started", { status: AgentActivityStatus.SUCCESS });
-          port.appendLog?.(
-            makeLog(AgentRunLogLevel.CTX, "Loading accounts, budgets, goals & monthly cashflow"),
-          );
-        } else if (event.phase === "model_turn") {
-          port.appendLog?.(
-            makeLog(
-              AgentRunLogLevel.LLM,
-              `Reasoning & planning (Turn ${event.turn ?? 1})`,
-              "LLM inference started",
-            ),
-          );
         }
         port.appendActivity({
           tool: key,
@@ -90,16 +87,6 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
             event.toolCalls === 0
               ? "Prepared your answer"
               : `Selected ${event.toolCalls} step${event.toolCalls === 1 ? "" : "s"} for execution`;
-          port.appendLog?.(
-            makeLog(
-              AgentRunLogLevel.LLM,
-              event.toolCalls === 0
-                ? "Direct answer synthesis selected"
-                : `Model planned ${event.toolCalls} tool execution${event.toolCalls === 1 ? "" : "s"}`,
-            ),
-          );
-        } else if (event.phase === "loading_context") {
-          port.appendLog?.(makeLog(AgentRunLogLevel.CTX, "Financial context loaded & grounded"));
         }
         port.updateActivity(key, patch);
       }

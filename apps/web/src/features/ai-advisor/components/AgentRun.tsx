@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { AlertTriangle, MessagesSquare, Zap } from "lucide-react";
-import { cn } from "@fin-ai/ui";
+import { cn, Shimmer } from "@fin-ai/ui";
 import { MarkdownMessage } from "./MarkdownMessage";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { FinancialInsight } from "./FinancialInsight";
@@ -27,6 +27,8 @@ export function AgentRun({
 }: AgentRunProps) {
   const {
     text = "",
+    reasoning = "",
+    reasoningStreaming = false,
     activities = [],
     confirmations = [],
     logs = [],
@@ -66,11 +68,13 @@ export function AgentRun({
         </div>
       )}
 
-      {/* 1. Live activity stream with real-time logs & speed ticker */}
-      {(hasActivities || streaming || logs.length > 0) && (
+      {/* 1. Unified Copilot-style thinking, steps & live console */}
+      {(hasActivities || streaming || logs.length > 0 || !!reasoning) && (
         <ActivityTimeline
           activities={activities}
           logs={logs}
+          reasoning={reasoning}
+          reasoningStreaming={reasoningStreaming}
           isStreaming={streaming}
           hasText={text.length > 0}
         />
@@ -80,10 +84,17 @@ export function AgentRun({
       {insight && <FinancialInsight text={text} />}
 
       {/* 3. Prose response (deduplicated) */}
-      {proseContent && (
+      {proseContent ? (
         <div className="fn-chat-prose">
           <MarkdownMessage content={proseContent} />
         </div>
+      ) : (
+        streaming &&
+        !reasoningStreaming && (
+          <div className="fn-chat-prose">
+            <Shimmer>{UI_COPY.ADVISOR.ACTIVITY_TIMELINE.THINKING}</Shimmer>
+          </div>
+        )
       )}
 
       {/* 4. Error block */}

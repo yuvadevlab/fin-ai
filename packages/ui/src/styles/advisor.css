@@ -60,7 +60,7 @@
 
   .fn-advisor-jump-bottom {
     position: absolute;
-    bottom: 5rem;
+    bottom: 6.25rem;
     left: 50%;
     z-index: 10;
     display: flex;
@@ -128,6 +128,7 @@
       min-width: 0;
       flex-shrink: 0;
       overflow-y: auto;
+      padding-block-end: 1.5rem;
     }
   }
 

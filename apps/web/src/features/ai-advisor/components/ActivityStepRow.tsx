@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Circle, Loader2, X } from "lucide-react";
-import { cn } from "@fin-ai/ui";
+import { cn, Shimmer } from "@fin-ai/ui";
 import { AgentActivityStatus } from "@fin-ai/shared-types";
 import type { AgentActivity } from "../api/agentTypes";
 import { activityLabel, formatDuration } from "../utils/deriveRunState";
@@ -80,8 +80,11 @@ export function ActivityStepRow({
             activity.status === AgentActivityStatus.PENDING && "fn-timeline-item-title--pending",
           )}
         >
-          {activityLabel(activity)}
-          {activity.status === AgentActivityStatus.RUNNING ? "…" : ""}
+          {activity.status === AgentActivityStatus.RUNNING ? (
+            <Shimmer>{`${activityLabel(activity)}…`}</Shimmer>
+          ) : (
+            activityLabel(activity)
+          )}
         </span>
         {expanded && detail && activity.status !== AgentActivityStatus.RUNNING && (
           <span className="fn-timeline-item-detail">{detail}</span>

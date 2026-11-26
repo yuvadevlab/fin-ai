@@ -45,6 +45,7 @@ export function approvalKey(actionId: string): string {
 
 export interface AgentEventPort {
   appendLog?(log: AgentRunLogEntry): void;
+  appendReasoning?(content: string): void;
   appendText(content: string): void;
   replaceText(content: string): void;
   appendActivity(activity: AgentActivity): void;

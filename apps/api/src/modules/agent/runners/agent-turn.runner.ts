@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
+import { AgentRunLogLevel } from "@fin-ai/shared-types";
 import {
   ToolPlanStreamFilter,
   type ChatModel,
@@ -51,6 +52,7 @@ export class AgentTurnRunner {
     emit({ type: "phase", phase: "model_turn", status: "start", turn, pendingAction });
 
     const filter = new ToolPlanStreamFilter();
+    const reasoningFilter = new ToolPlanStreamFilter();
     let reasoningContent = "";
     let deltaContent = "";
     let visibleContent = "";
@@ -61,9 +63,13 @@ export class AgentTurnRunner {
     for await (const event of model.stream(request)) {
       switch (event.type) {
         case "reasoning-delta": {
-          // Keep reasoning private (never emit as visible tokens) while preserving
-          // any <tool_plan> blocks emitted inside the reasoning channel.
+          // Stream sanitized thinking live to the UI while preserving full
+          // reasoningContent for <tool_plan> fallback parsing.
           reasoningContent += event.text;
+          const visibleReasoning = reasoningFilter.push(event.text);
+          if (visibleReasoning) {
+            emit({ type: "reasoning", content: visibleReasoning });
+          }
           break;
         }
         case "text-delta": {
@@ -87,7 +93,11 @@ export class AgentTurnRunner {
       }
     }
 
-    // Flush any partial-tag tail held by the filter
+    // Flush any partial-tag tail held by the filters
+    const reasoningTail = reasoningFilter.flush();
+    if (reasoningTail) {
+      emit({ type: "reasoning", content: reasoningTail });
+    }
     const tail = filter.flush();
     if (tail) {
       visibleContent += tail;
@@ -101,6 +111,12 @@ export class AgentTurnRunner {
     this.logger.info(
       `Turn ${turn}: done — ${visibleContent.length} visible chars (${reasoningContent.length} reasoning chars), ${toolCalls.length} native tool call(s), tokens: ${tokensIn} in / ${tokensOut} out`,
     );
+    emit({
+      type: "log",
+      level: AgentRunLogLevel.LLM,
+      message: `Turn ${turn} inference complete`,
+      detail: `${visibleContent.length} visible chars${reasoningContent ? `, ${reasoningContent.length} reasoning chars` : ""}`,
+    });
     return { rawContent, visibleContent, toolCalls, tokensIn, tokensOut };
   }
 }

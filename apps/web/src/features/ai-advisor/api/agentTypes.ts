@@ -68,6 +68,10 @@ export interface AgentRunLogEntry {
 export interface AgentChatMessage {
   role: AgentChatRole;
   text: string;
+  /** Live streamed model reasoning/thinking text. */
+  reasoning?: string;
+  /** True while reasoning tokens are actively streaming before answer begins. */
+  reasoningStreaming?: boolean;
   streaming?: boolean;
   /** Runtime that answered this turn ("agent" vs "chat") — set from SSE `mode`. */
   mode?: AgentResolvedMode;

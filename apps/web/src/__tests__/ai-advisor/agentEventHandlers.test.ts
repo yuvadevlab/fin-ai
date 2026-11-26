@@ -215,6 +215,28 @@ describe("handleAgentStreamEvent", () => {
     expect(port.appendText).not.toHaveBeenCalled();
   });
 
+  it("streams real-time server log events to appendLog", () => {
+    const port = createPort();
+    const terminal = handleAgentStreamEvent(
+      {
+        type: "log",
+        level: "LLM",
+        message: "Turn 1 inference complete",
+        detail: "42 visible chars",
+      },
+      port,
+    );
+
+    expect(terminal).toBe(false);
+    expect(port.appendLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        level: "LLM",
+        message: "Turn 1 inference complete",
+        detail: "42 visible chars",
+      }),
+    );
+  });
+
   it("returns true only for terminal events", () => {
     const port = createPort();
     expect(handleAgentStreamEvent({ type: "done" }, port)).toBe(true);

@@ -8,7 +8,7 @@
  * A write action inserts confirmation_required instead of executing, and the
  * confirm/reject endpoints reply with action_result.
  */
-import { AgentCardType, AgentMode } from "@fin-ai/shared-types";
+import { AgentCardType, AgentMode, AgentRunLogLevel } from "@fin-ai/shared-types";
 
 export interface AgentCard {
   /** Card kind — drives which UI component renders it. */
@@ -36,6 +36,8 @@ export type AgentStreamEvent =
    * or "chat" (tool-free advisor fast-path — conversational only).
    */
   | { type: "mode"; mode: AgentMode }
+  /** Real-time transparent execution log emitted by the agent runtime. */
+  | { type: "log"; level: AgentRunLogLevel; message: string; detail?: string }
   /**
    * One streamed chunk (DELTA) of the assistant's visible answer text.
    * Clients must APPEND this to the current assistant message:
@@ -44,6 +46,8 @@ export type AgentStreamEvent =
    * reproduces the full answer exactly once.
    */
   | { type: "token"; content: string }
+  /** Live model thinking/reasoning delta (filtered of <tool_plan> tags). */
+  | { type: "reasoning"; content: string }
   /**
    * REPLACE the accumulated visible text of the current assistant message
    * with `content` (message.text = content — never append).

@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, User } from "lucide-react";
+import { User } from "lucide-react";
+import { Suggestion, SuggestionList } from "@fin-ai/ui";
 import { extractFollowUpQuestions } from "@fin-ai/ai-engine/extract-follow-ups";
 import { UI_COPY } from "@/lib";
 import { AgentRun } from "./AgentRun";
@@ -75,18 +76,15 @@ export function ChatMessages({
                 <p className="fn-chat-followups-title">
                   {UI_COPY.ADVISOR.FEED.SUGGESTED_FOLLOW_UPS}
                 </p>
-                <div className="fn-chat-followups-list">
+                <SuggestionList>
                   {followUps.map((question, qIdx) => (
-                    <button
+                    <Suggestion
                       key={qIdx}
+                      label={question}
                       onClick={() => onSelectFollowUp(question)}
-                      className="fn-chat-followup-chip"
-                    >
-                      <span>{question}</span>
-                      <ArrowRight className="fn-chat-followup-icon" />
-                    </button>
+                    />
                   ))}
-                </div>
+                </SuggestionList>
               </div>
             )}
           </div>
