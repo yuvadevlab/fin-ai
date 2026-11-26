@@ -13,6 +13,7 @@ import {
   appendActivityReducer,
   appendConfirmationReducer,
   appendLogReducer,
+  appendReasoningReducer,
   appendTextReducer,
   endStreamReducer,
   failStreamReducer,
@@ -33,6 +34,10 @@ export function useAgentMessages() {
 
   const appendLog = useCallback((log: AgentRunLogEntry) => {
     setMessages((prev) => appendLogReducer(prev, log));
+  }, []);
+
+  const appendReasoning = useCallback((content: string) => {
+    setMessages((prev) => appendReasoningReducer(prev, content));
   }, []);
 
   const appendText = useCallback((content: string) => {
@@ -108,6 +113,7 @@ export function useAgentMessages() {
     messages,
     portMethods: {
       appendLog,
+      appendReasoning,
       appendText,
       replaceText,
       appendActivity,

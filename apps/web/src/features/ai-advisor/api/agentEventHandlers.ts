@@ -3,7 +3,11 @@ import {
   AgentActivityKind,
   AgentActivityStatus,
   AgentConfirmationStatus,
+  AgentMode,
   AgentRunLogLevel,
+  AgentStreamEventType,
+  ExecutionPhase,
+  PhaseStatus,
 } from "@fin-ai/shared-types";
 import type { AgentActivity } from "./agentTypes";
 import {
@@ -18,15 +22,15 @@ export { phaseKey, approvalKey, type AgentEventPort };
 
 export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEventPort): boolean {
   switch (event.type) {
-    case "conversation":
+    case AgentStreamEventType.CONVERSATION:
       port.onConversation(event.conversationId);
       return false;
 
-    case "title":
+    case AgentStreamEventType.TITLE:
       port.onTitle?.(event.title);
       return false;
 
-    case "run":
+    case AgentStreamEventType.RUN:
       resetRunStartTime();
       port.appendLog?.(
         makeLog(AgentRunLogLevel.SYS, `Agent run initialized: ${event.runId.slice(0, 8)}`),
@@ -38,11 +42,11 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       });
       return false;
 
-    case "mode":
+    case AgentStreamEventType.MODE:
       port.appendLog?.(
         makeLog(
           AgentRunLogLevel.SYS,
-          event.mode === "agent"
+          event.mode === AgentMode.AGENT
             ? "Agent mode — tools & actions enabled"
             : "Advisor mode — conversational fast reply",
         ),
@@ -50,33 +54,30 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       port.onMode?.(event.mode);
       return false;
 
-    case "token":
+    case AgentStreamEventType.LOG:
+      port.appendLog?.(makeLog(event.level, event.message, event.detail));
+      return false;
+
+    case AgentStreamEventType.TOKEN:
       port.appendText(event.content);
       return false;
 
-    case "token_replace":
+    case AgentStreamEventType.REASONING:
+      port.appendReasoning?.(event.content);
+      return false;
+
+    case AgentStreamEventType.TOKEN_REPLACE:
       port.replaceText(event.content);
       port.appendLog?.(
         makeLog(AgentRunLogLevel.STREAM, "Grounded response replaced pre-action tokens"),
       );
       return false;
 
-    case "phase": {
+    case AgentStreamEventType.PHASE: {
       const key = phaseKey(event.phase, event.turn, event.pendingAction);
-      if (event.status === "start") {
-        if (event.phase === "loading_context") {
+      if (event.status === PhaseStatus.START) {
+        if (event.phase === ExecutionPhase.LOADING_CONTEXT) {
           port.updateActivity("phase:agent_started", { status: AgentActivityStatus.SUCCESS });
-          port.appendLog?.(
-            makeLog(AgentRunLogLevel.CTX, "Loading accounts, budgets, goals & monthly cashflow"),
-          );
-        } else if (event.phase === "model_turn") {
-          port.appendLog?.(
-            makeLog(
-              AgentRunLogLevel.LLM,
-              `Reasoning & planning (Turn ${event.turn ?? 1})`,
-              "LLM inference started",
-            ),
-          );
         }
         port.appendActivity({
           tool: key,
@@ -90,23 +91,13 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
             event.toolCalls === 0
               ? "Prepared your answer"
               : `Selected ${event.toolCalls} step${event.toolCalls === 1 ? "" : "s"} for execution`;
-          port.appendLog?.(
-            makeLog(
-              AgentRunLogLevel.LLM,
-              event.toolCalls === 0
-                ? "Direct answer synthesis selected"
-                : `Model planned ${event.toolCalls} tool execution${event.toolCalls === 1 ? "" : "s"}`,
-            ),
-          );
-        } else if (event.phase === "loading_context") {
-          port.appendLog?.(makeLog(AgentRunLogLevel.CTX, "Financial context loaded & grounded"));
         }
         port.updateActivity(key, patch);
       }
       return false;
     }
 
-    case "tool_call":
+    case AgentStreamEventType.TOOL_CALL:
       port.appendLog?.(makeLog(AgentRunLogLevel.TOOL, `Invoking ${event.tool}...`));
       port.appendActivity({
         tool: event.tool,
@@ -115,7 +106,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       });
       return false;
 
-    case "tool_result":
+    case AgentStreamEventType.TOOL_RESULT:
       port.appendLog?.(
         makeLog(
           AgentRunLogLevel.TOOL,
@@ -130,7 +121,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       });
       return false;
 
-    case "confirmation_required":
+    case AgentStreamEventType.CONFIRMATION_REQUIRED:
       port.appendLog?.(
         makeLog(
           AgentRunLogLevel.ACTION,
@@ -156,7 +147,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       });
       return false;
 
-    case "action_updated":
+    case AgentStreamEventType.ACTION_UPDATED:
       port.appendLog?.(makeLog(AgentRunLogLevel.ACTION, `Updated action: ${event.card.title}`));
       port.resolveApprovalActivity(event.actionId, {
         status: AgentActivityStatus.SUCCESS,
@@ -171,7 +162,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       port.updateConfirmationCard(event.actionId, event.card, event.tool);
       return false;
 
-    case "action_result":
+    case AgentStreamEventType.ACTION_RESULT:
       port.appendLog?.(
         makeLog(
           AgentRunLogLevel.ACTION,
@@ -188,7 +179,7 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       });
       return false;
 
-    case "usage":
+    case AgentStreamEventType.USAGE:
       port.appendLog?.(
         makeLog(
           AgentRunLogLevel.SYS,
@@ -197,12 +188,12 @@ export function handleAgentStreamEvent(event: AgentStreamEvent, port: AgentEvent
       );
       return false;
 
-    case "error":
+    case AgentStreamEventType.ERROR:
       port.appendLog?.(makeLog(AgentRunLogLevel.ERR, `Stream error: ${event.error}`));
       port.failStream(event.error);
       return true;
 
-    case "done":
+    case AgentStreamEventType.DONE:
       port.appendLog?.(makeLog(AgentRunLogLevel.DONE, "Agent run finished successfully"));
       port.endStream();
       return true;

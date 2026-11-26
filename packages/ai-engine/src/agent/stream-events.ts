@@ -8,7 +8,14 @@
  * A write action inserts confirmation_required instead of executing, and the
  * confirm/reject endpoints reply with action_result.
  */
-import { AgentCardType, AgentMode } from "@fin-ai/shared-types";
+import {
+  AgentCardType,
+  AgentMode,
+  AgentRunLogLevel,
+  AgentStreamEventType,
+  ExecutionPhase,
+  PhaseStatus,
+} from "@fin-ai/shared-types";
 
 export interface AgentCard {
   /** Card kind — drives which UI component renders it. */
@@ -25,17 +32,24 @@ export interface AgentCard {
  */
 export type AgentStreamEvent =
   /** First event: the conversation this run belongs to (new or existing). */
-  | { type: "conversation"; conversationId: string }
+  | { type: typeof AgentStreamEventType.CONVERSATION; conversationId: string }
   /** Generated short summary title for the conversation (1st turn). */
-  | { type: "title"; title: string }
+  | { type: typeof AgentStreamEventType.TITLE; title: string }
   /** Unique id for this agent run — correlates usage/audit across events. */
-  | { type: "run"; runId: string }
+  | { type: typeof AgentStreamEventType.RUN; runId: string }
   /**
    * Emitted once per run, right after routing resolves, so the UI can show
    * which runtime answered: "agent" (tool-enabled loop — can propose actions)
    * or "chat" (tool-free advisor fast-path — conversational only).
    */
-  | { type: "mode"; mode: AgentMode }
+  | { type: typeof AgentStreamEventType.MODE; mode: AgentMode }
+  /** Real-time transparent execution log emitted by the agent runtime. */
+  | {
+      type: typeof AgentStreamEventType.LOG;
+      level: AgentRunLogLevel;
+      message: string;
+      detail?: string;
+    }
   /**
    * One streamed chunk (DELTA) of the assistant's visible answer text.
    * Clients must APPEND this to the current assistant message:
@@ -43,65 +57,69 @@ export type AgentStreamEvent =
    * Deltas are not cumulative snapshots — concatenating the deltas in order
    * reproduces the full answer exactly once.
    */
-  | { type: "token"; content: string }
+  | { type: typeof AgentStreamEventType.TOKEN; content: string }
+  /** Live model thinking/reasoning delta (filtered of <tool_plan> tags). */
+  | { type: typeof AgentStreamEventType.REASONING; content: string }
   /**
    * REPLACE the accumulated visible text of the current assistant message
    * with `content` (message.text = content — never append).
-   *
-   * Why this exists: agent prose streams live BEFORE tools execute. When a
-   * write tool turns out to require confirmation, that prose was generated
-   * before the server resolved/validated the action and could contradict the
-   * confirmation card (the card is the source of truth). Instead of
-   * suppressing streaming, the runner streams everything and, if a
-   * confirmation supersedes the prose, sends the standardized grounded text
-   * as a `token_replace`. The user keeps real-time streaming AND the card can
-   * never be contradicted by hallucinated details. Subsequent `token` events
-   * append again after a replace.
    */
-  | { type: "token_replace"; content: string }
+  | { type: typeof AgentStreamEventType.TOKEN_REPLACE; content: string }
   /** The model started calling a tool (UI shows a progress chip). */
-  | { type: "tool_call"; tool: string; runId: string }
+  | { type: typeof AgentStreamEventType.TOOL_CALL; tool: string; runId: string }
   /** Tool finished; `ok` = success and `summary` is the human-readable line. `label` is server-provided activity label. */
-  | { type: "tool_result"; tool: string; ok: boolean; summary?: string; label?: string }
+  | {
+      type: typeof AgentStreamEventType.TOOL_RESULT;
+      tool: string;
+      ok: boolean;
+      summary?: string;
+      label?: string;
+    }
   /**
    * Real agent lifecycle transition, emitted ONLY when the server actually
-   * enters/leaves a phase — never on a timer. Powers the live activity
-   * stream's "◌ Understanding your request…" / "◌ Loading financial
-   * context…" steps:
-   *   - loading_context: assembling grounding data + system prompt.
-   *   - model_turn: one LLM inference round-trip (start → end). `turn` is
-   *     1-based; `pendingAction` marks runs that continue a pending
-   *     confirmation; `toolCalls` (end only) is how many tool calls the
-   *     model decided on — 0 means the answer text follows immediately.
+   * enters/leaves a phase — never on a timer.
    */
   | {
-      type: "phase";
-      phase: "loading_context" | "model_turn";
-      status: "start" | "end";
+      type: typeof AgentStreamEventType.PHASE;
+      phase: typeof ExecutionPhase.LOADING_CONTEXT | typeof ExecutionPhase.MODEL_TURN;
+      status: PhaseStatus;
       turn?: number;
       pendingAction?: boolean;
       toolCalls?: number;
     }
   /** Passive information card (insight/table) to render in the thread. */
-  | { type: "card"; card: AgentCard }
+  | { type: typeof AgentStreamEventType.CARD; card: AgentCard }
   /**
    * A write action is PROPOSED and waiting for the user. Nothing has been
    * executed yet; the client must show the card with confirm/reject buttons
    * pointing at POST /agent/actions/:id/confirm|reject.
    */
-  | { type: "confirmation_required"; actionId: string; tool: string; card: AgentCard }
+  | {
+      type: typeof AgentStreamEventType.CONFIRMATION_REQUIRED;
+      actionId: string;
+      tool: string;
+      card: AgentCard;
+    }
   /**
    * A pending action was updated (e.g. the user edited it through conversation).
-   * The client should replace the existing confirmation card for `actionId`
-   * with the new `card`. Nothing has been executed — the action remains
-   * pending until the user explicitly confirms.
    */
-  | { type: "action_updated"; actionId: string; tool: string; card: AgentCard; message?: string }
+  | {
+      type: typeof AgentStreamEventType.ACTION_UPDATED;
+      actionId: string;
+      tool: string;
+      card: AgentCard;
+      message?: string;
+    }
   /** Outcome of a confirmed/rejected action (after the user clicks a button). */
-  | { type: "action_result"; actionId: string; ok: boolean; card?: AgentCard }
-  /** Token accounting for the run (from the final LLM response). */
-  | { type: "usage"; tokensIn: number; tokensOut: number }
-  /** Terminal success event — the stream closes after this. */
-  | { type: "done" }
-  /** Terminal failure event — always followed by done (controller guarantees it). */
-  | { type: "error"; error: string; code?: string };
+  | {
+      type: typeof AgentStreamEventType.ACTION_RESULT;
+      actionId: string;
+      ok: boolean;
+      card?: AgentCard;
+    }
+  /** Token usage summary for the completed run (best-effort; 0 when unknown). */
+  | { type: typeof AgentStreamEventType.USAGE; tokensIn: number; tokensOut: number }
+  /** Terminal error (replaces or terminates the stream). */
+  | { type: typeof AgentStreamEventType.ERROR; error: string; code?: string }
+  /** Stream finished cleanly. Always the final event. */
+  | { type: typeof AgentStreamEventType.DONE };

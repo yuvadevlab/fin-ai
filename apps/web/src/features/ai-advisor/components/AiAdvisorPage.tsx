@@ -102,7 +102,7 @@ export function AiAdvisorPage() {
   };
 
   return (
-    <PageContainer>
+    <PageContainer fillViewport>
       <AdvisorHeader
         onOpenHistory={() => setHistoryOpen(true)}
         onNewChat={handleNewChat}

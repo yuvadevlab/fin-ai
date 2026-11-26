@@ -9,37 +9,55 @@ import type {
 
 /** Pure state helpers for useAgentMessages, keeping hook files under 250 lines. */
 
-export function appendLogReducer(
+function patchLastAssistant(
   prev: AgentChatMessage[],
-  log: AgentRunLogEntry,
+  updater: (last: AgentChatMessage) => AgentChatMessage,
 ): AgentChatMessage[] {
   if (prev.length === 0) return prev;
   const copy = [...prev];
   const last = copy[copy.length - 1];
   if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
-  copy[copy.length - 1] = {
-    ...last,
-    logs: [...(last.logs ?? []), log],
-  };
+  copy[copy.length - 1] = updater(last);
   return copy;
+}
+
+export function appendLogReducer(
+  prev: AgentChatMessage[],
+  log: AgentRunLogEntry,
+): AgentChatMessage[] {
+  return patchLastAssistant(prev, (last) => ({ ...last, logs: [...(last.logs ?? []), log] }));
+}
+
+export function appendReasoningReducer(
+  prev: AgentChatMessage[],
+  content: string,
+): AgentChatMessage[] {
+  return patchLastAssistant(prev, (last) => ({
+    ...last,
+    reasoning: (last.reasoning ?? "") + content,
+    reasoningStreaming: true,
+    reasoningStartedAt: last.reasoningStartedAt ?? Date.now(),
+  }));
 }
 
 export function appendTextReducer(prev: AgentChatMessage[], content: string): AgentChatMessage[] {
-  if (prev.length === 0) return prev;
-  const copy = [...prev];
-  const last = copy[copy.length - 1];
-  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
-  copy[copy.length - 1] = { ...last, text: last.text + content };
-  return copy;
+  return patchLastAssistant(prev, (last) => ({
+    ...last,
+    text: last.text + content,
+    reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
+  }));
 }
 
 export function replaceTextReducer(prev: AgentChatMessage[], content: string): AgentChatMessage[] {
-  if (prev.length === 0) return prev;
-  const copy = [...prev];
-  const last = copy[copy.length - 1];
-  if (!last || last.role !== AgentChatRole.ASSISTANT) return prev;
-  copy[copy.length - 1] = { ...last, text: content };
-  return copy;
+  return patchLastAssistant(prev, (last) => ({
+    ...last,
+    text: content,
+    reasoningStreaming: false,
+  }));
 }
 
 export function appendActivityReducer(
@@ -209,6 +227,11 @@ export function failStreamReducer(prev: AgentChatMessage[], errorText: string): 
     activities,
     error: errorText,
     streaming: false,
+    reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
   };
   return copy;
 }
@@ -218,7 +241,15 @@ export function endStreamReducer(prev: AgentChatMessage[]): AgentChatMessage[] {
   const copy = [...prev];
   const last = copy[copy.length - 1];
   if (!last || last.role !== AgentChatRole.ASSISTANT || !last.streaming) return prev;
-  copy[copy.length - 1] = { ...last, streaming: false };
+  copy[copy.length - 1] = {
+    ...last,
+    streaming: false,
+    reasoningStreaming: false,
+    reasoningCompletedAt:
+      last.reasoningStreaming && !last.reasoningCompletedAt
+        ? Date.now()
+        : last.reasoningCompletedAt,
+  };
   return copy;
 }
 

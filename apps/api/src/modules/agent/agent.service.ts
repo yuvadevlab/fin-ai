@@ -29,7 +29,13 @@ import { AgentActionService } from "./action.service";
 import { ActionManager } from "./action-manager";
 import { AgentOrchestratorService } from "./runners";
 import { buildAgentTools } from "./tool-factory";
-import { AgentStreamEventType, AgentMode, ExecutionPhase, PhaseStatus } from "@fin-ai/shared-types";
+import {
+  AgentStreamEventType,
+  AgentMode,
+  AgentRunLogLevel,
+  ExecutionPhase,
+  PhaseStatus,
+} from "@fin-ai/shared-types";
 import { AgentTitleService } from "./agent-title.service";
 import { AgentRequestBuilderService } from "./services/agent-request-builder.service";
 import type { AgentEventEmitter, AgentWorkspaceContext } from "./agent.types";
@@ -152,6 +158,12 @@ export class AgentService {
         type: AgentStreamEventType.PHASE,
         phase: ExecutionPhase.LOADING_CONTEXT,
         status: PhaseStatus.END,
+      });
+      emit({
+        type: AgentStreamEventType.LOG,
+        level: AgentRunLogLevel.CTX,
+        message: `Loaded ${Math.max(0, request.messages.length - 1)} context message(s) & ${request.tools?.length ?? 0} tool(s)`,
+        detail: pendingAction ? `Pending approval: ${pendingAction.tool}` : undefined,
       });
       emit({
         type: AgentStreamEventType.MODE,
