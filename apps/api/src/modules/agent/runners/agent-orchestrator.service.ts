@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@yuva-devlab/logger";
 import { Prisma } from "@fin-ai/database";
+import { AgentRunLogLevel } from "@fin-ai/shared-types";
 import {
   parseToolPlan,
   stripToolPlanTags,
@@ -16,16 +17,16 @@ import { AgentModelFactory } from "./agent-model.factory";
 import { AgentTurnRunner } from "./agent-turn.runner";
 import { AgentToolDispatcher } from "../dispatchers";
 import type { AgentEventEmitter } from "../agent.types";
-
-/** Safety cap: max model↔tool loop iterations per run. */
-const MAX_ITERATIONS = 8;
-
-/** Max corrective retries when the model returns empty or tag-only output. */
-const MAX_EMPTY_RETRIES = 2;
-
-/** Fallback message if the model fails to produce visible prose after retries. */
-const EMPTY_RESPONSE_FALLBACK_MESSAGE =
-  "I'm sorry, I couldn't complete that step cleanly. Could you please rephrase or try again?";
+import {
+  EMPTY_RESPONSE_FALLBACK_MESSAGE,
+  EMPTY_TURN_RECOVERY_PROMPT,
+  MAX_EMPTY_RETRIES,
+  MAX_ITERATIONS,
+  emitModelTurnEnd,
+  emitMaxIterationsError,
+  emitRunLog,
+  executeToolBatch,
+} from "./agent-orchestrator.helpers";
 
 export interface AgentRunParams {
   userId: string;
@@ -75,6 +76,12 @@ export class AgentOrchestratorService {
     this.logger.info(
       `[Run ${runId.slice(0, 8)}] Started (role: ${role ?? "agent"}, provider: ${model.provider}, model: ${model.model})`,
     );
+    emitRunLog(
+      emit,
+      AgentRunLogLevel.SYS,
+      `Initialized ${model.provider} (${model.model})`,
+      `role=${role ?? "agent"}`,
+    );
     let tokensIn = 0;
     let tokensOut = 0;
     let runVisibleContent = "";
@@ -96,14 +103,7 @@ export class AgentOrchestratorService {
         `[Run ${runId.slice(0, 8)}] Turn ${iteration} completed (${toolCalls.length} tool calls, tokens: +${turn.tokensIn} in / +${turn.tokensOut} out)`,
       );
 
-      emit({
-        type: "phase",
-        phase: "model_turn",
-        status: "end",
-        turn: iteration,
-        pendingAction: hasPendingAction,
-        toolCalls: toolCalls.length,
-      });
+      emitModelTurnEnd(emit, iteration, hasPendingAction, toolCalls.length);
 
       if (toolCalls.length === 0) {
         let finalContent = stripToolPlanTags(runVisibleContent).trim();
@@ -114,14 +114,9 @@ export class AgentOrchestratorService {
           this.logger.warn(
             `[Run ${runId.slice(0, 8)}] Empty or malformed-plan turn on iteration ${iteration}; retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`,
           );
-          request.messages.push({
-            role: "user",
-            content:
-              "Your previous response was empty or contained an incomplete tool plan. " +
-              "If you need to perform an action or look up data, emit a complete " +
-              '<tool_plan>{"tool_calls":[{"name":"...","arguments":{...}}]}</tool_plan> block. ' +
-              "Otherwise, respond directly in clear prose.",
-          });
+          const retryMsg = `Empty/malformed output on turn ${iteration} — retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`;
+          emitRunLog(emit, AgentRunLogLevel.LLM, retryMsg);
+          request.messages.push({ role: "user", content: EMPTY_TURN_RECOVERY_PROMPT });
           continue;
         }
 
@@ -149,9 +144,15 @@ export class AgentOrchestratorService {
       let hasConfirmation = false;
       let confirmationCount = 0;
 
-      for (const call of toolCalls) {
+      const dispatchOne = async (call: (typeof toolCalls)[number]) => {
         this.logger.info(
           `[Run ${runId.slice(0, 8)}] Dispatching tool "${call.name}" args: ${call.arguments.slice(0, 80)}`,
+        );
+        emitRunLog(
+          emit,
+          AgentRunLogLevel.TOOL,
+          `Dispatching ${call.name}`,
+          call.arguments.slice(0, 80),
         );
         const result = await this.toolDispatcher.dispatch(
           call,
@@ -161,7 +162,17 @@ export class AgentOrchestratorService {
         this.logger.info(
           `[Run ${runId.slice(0, 8)}] Tool "${call.name}" status: ${(result as { status?: string }).status ?? "ok"}`,
         );
+        return { call, result };
+      };
 
+      const dispatched = await executeToolBatch(
+        toolCalls,
+        (name) => this.toolDispatcher.isReadOnly?.(name) ?? false,
+        emit,
+        dispatchOne,
+      );
+
+      for (const { call, result } of dispatched) {
         request.messages.push({
           role: "tool",
           toolName: call.name,
@@ -224,12 +235,7 @@ export class AgentOrchestratorService {
       this.logger.error(`[Run ${runId.slice(0, 8)}] Final synthesis failed`, finalError);
     }
 
-    emit({
-      type: "error",
-      error: AGENT_MAX_ITERATIONS_MESSAGE,
-      code: "MAX_ITERATIONS",
-    });
-    emit({ type: "done" });
+    emitMaxIterationsError(emit, AGENT_MAX_ITERATIONS_MESSAGE);
   }
 
   /** Persists the final assistant message and closes the run with a `done` event. */

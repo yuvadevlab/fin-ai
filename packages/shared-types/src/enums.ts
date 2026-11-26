@@ -128,6 +128,7 @@ export type AgentCardType = (typeof AgentCardType)[keyof typeof AgentCardType];
 /** Lifecycle execution phases emitted during SSE stream */
 export const ExecutionPhase = {
   LOADING_CONTEXT: "loading_context",
+  MODEL_TURN: "model_turn",
   AGENT_LOOP: "agent_loop",
   SYNTHESIZING: "synthesizing",
 } as const;
@@ -154,13 +155,24 @@ export const AgentStreamEventType = {
   RUN: "run",
   PHASE: "phase",
   MODE: "mode",
+  LOG: "log",
+  REASONING: "reasoning",
   CONVERSATION: "conversation",
   TITLE: "title",
   TEXT: "text",
+  TOKEN: "token",
+  TOKEN_REPLACE: "token_replace",
   TOOL_START: "tool_start",
   TOOL_END: "tool_end",
+  TOOL_CALL: "tool_call",
+  TOOL_RESULT: "tool_result",
+  CARD: "card",
   CONFIRMATION: "confirmation",
+  CONFIRMATION_REQUIRED: "confirmation_required",
+  ACTION_UPDATED: "action_updated",
+  ACTION_RESULT: "action_result",
   STATUS: "status",
+  USAGE: "usage",
   ERROR: "error",
   DONE: "done",
 } as const;

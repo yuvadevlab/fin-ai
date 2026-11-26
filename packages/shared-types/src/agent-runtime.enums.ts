@@ -76,3 +76,28 @@ export const AgentChatRole = {
 } as const;
 
 export type AgentChatRole = (typeof AgentChatRole)[keyof typeof AgentChatRole];
+
+/** Canonical tool namespaces for icon & category mapping */
+export const AgentToolNamespace = {
+  ACCOUNTS: "accounts",
+  TRANSACTIONS: "transactions",
+  ANALYTICS: "analytics",
+  INSIGHTS: "insights",
+  SEARCH: "search",
+  BUDGETS: "budgets",
+  GOALS: "goals",
+  INVESTMENTS: "investments",
+  CATEGORIES: "categories",
+} as const;
+
+export type AgentToolNamespace = (typeof AgentToolNamespace)[keyof typeof AgentToolNamespace];
+
+/** Canonical error codes emitted on SSE error events */
+export const AgentErrorCode = {
+  MAX_ITERATIONS: "MAX_ITERATIONS",
+  CONVERSATION_NOT_FOUND: "CONVERSATION_NOT_FOUND",
+  LLM_UNAVAILABLE: "LLM_UNAVAILABLE",
+  AGENT_ERROR: "AGENT_ERROR",
+} as const;
+
+export type AgentErrorCode = (typeof AgentErrorCode)[keyof typeof AgentErrorCode];

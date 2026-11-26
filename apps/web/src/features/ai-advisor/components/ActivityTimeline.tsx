@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
+  Brain,
   Check,
   ChevronDown,
   ChevronUp,
@@ -11,7 +12,7 @@ import {
   Sparkles,
   Terminal,
 } from "lucide-react";
-import { cn } from "@fin-ai/ui";
+import { cn, Shimmer } from "@fin-ai/ui";
 import type { AgentActivity, AgentRunLogEntry } from "../api/agentTypes";
 import { deriveRunState, formatDuration, standbyLabel } from "../utils/deriveRunState";
 import { ActivityStepRow } from "./ActivityStepRow";
@@ -23,19 +24,40 @@ const COLLAPSED_ROWS = 3;
 interface ActivityTimelineProps {
   activities: AgentActivity[];
   logs?: AgentRunLogEntry[];
+  reasoning?: string;
+  reasoningStreaming?: boolean;
+  reasoningStartedAt?: number;
+  reasoningCompletedAt?: number;
   isStreaming: boolean;
   hasText?: boolean;
 }
 
+/**
+ * Unified Copilot / Claude Code style execution & thinking block.
+ * Combines live streamed reasoning, step timeline, and the real-time Terminal console
+ * inside a single collapsible container (auto-expands during streaming, collapses to 1 line on completion).
+ */
 export function ActivityTimeline({
   activities,
   logs = [],
+  reasoning = "",
+  reasoningStreaming = false,
+  reasoningStartedAt,
+  reasoningCompletedAt,
   isStreaming,
   hasText = false,
 }: ActivityTimelineProps) {
   const [expanded, setExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<"steps" | "logs">("steps");
+  const reasoningScrollRef = useRef<HTMLDivElement>(null);
   const state = deriveRunState(activities, isStreaming);
+
+  // Auto-scroll live reasoning stream
+  useEffect(() => {
+    if (reasoningStreaming && reasoningScrollRef.current) {
+      reasoningScrollRef.current.scrollTop = reasoningScrollRef.current.scrollHeight;
+    }
+  }, [reasoning, reasoningStreaming]);
 
   const hasError = state.hasError;
   const hasRunningRow = activities.some((a) => a.status === "running");
@@ -46,7 +68,7 @@ export function ActivityTimeline({
       ? { tool: "phase:standby", kind: "phase", status: "running", label: standbyLabel(hasText) }
       : null;
 
-  const showRows = expanded || (isStreaming && activities.length > 0);
+  const showRows = expanded || isStreaming;
   const visible = expanded
     ? activities
     : standby
@@ -78,12 +100,16 @@ export function ActivityTimeline({
           .join(" · ")
       : null;
 
+  const handleToggle = () => {
+    setExpanded((v) => !v);
+  };
+
   return (
-    <div className="fn-timeline">
-      {/* Header button */}
+    <div className={cn("fn-timeline", isStreaming && "is-streaming")}>
+      {/* Unified Header */}
       <button
         type="button"
-        onClick={() => setExpanded((v) => !v)}
+        onClick={handleToggle}
         aria-expanded={expanded}
         className="fn-timeline-header"
       >
@@ -115,8 +141,7 @@ export function ActivityTimeline({
               isStreaming ? "fn-timeline-header-title--active" : "fn-timeline-header-title--idle",
             )}
           >
-            {isStreaming && <span className="fn-timeline-spark">⚡</span>}
-            {headerTitle}
+            {isStreaming ? <Shimmer>{headerTitle}</Shimmer> : headerTitle}
           </span>
           {summaryMeta && <span className="fn-timeline-header-meta">{summaryMeta}</span>}
         </span>
@@ -137,7 +162,7 @@ export function ActivityTimeline({
         </span>
       </button>
 
-      {/* Expanded Mode Tabs (Steps vs Live Terminal) */}
+      {/* Expanded Mode Tabs (Thinking & Steps vs Live Console) */}
       {expanded && (
         <div className="fn-timeline-nav">
           <div className="fn-timeline-nav-tabs">
@@ -170,7 +195,7 @@ export function ActivityTimeline({
         </div>
       )}
 
-      {/* Steps or Live Terminal body */}
+      {/* Unified Body: Live Reasoning + Steps OR Live Console */}
       {showRows && (
         <>
           {expanded && viewMode === "logs" ? (
@@ -178,24 +203,49 @@ export function ActivityTimeline({
               <LiveRunConsole logs={logs} isStreaming={isStreaming} />
             </div>
           ) : (
-            <ul
-              id="agent-activity-steps"
-              aria-label={UI_COPY.ADVISOR.ACTIVITY_TIMELINE.EXECUTION_STEPS}
-              className="fn-timeline-list is-bordered"
-            >
-              {visible.map((activity, index) => (
-                <ActivityStepRow
-                  key={`${activity.tool}-${index}`}
-                  activity={activity}
-                  expanded={expanded}
-                  isCurrent={
-                    !expanded &&
-                    activity.status === "running" &&
-                    (activity.tool === currentKey || activity.tool === "phase:standby")
-                  }
-                />
-              ))}
-            </ul>
+            <div className="fn-timeline-body">
+              {reasoning && (isStreaming || expanded) && (
+                <div
+                  ref={reasoningScrollRef}
+                  className={cn("fn-timeline-reasoning", isStreaming && "is-streaming")}
+                >
+                  <div className="fn-timeline-reasoning-label">
+                    <Brain className="fn-timeline-reasoning-icon" aria-hidden="true" />
+                    <span>
+                      {reasoningStreaming ? (
+                        <Shimmer>{latestLog?.message || state.statusLabel}</Shimmer>
+                      ) : reasoningStartedAt && reasoningCompletedAt ? (
+                        `Thought for ${formatDuration(reasoningCompletedAt - reasoningStartedAt)}`
+                      ) : (
+                        `Thought process · ${reasoning.trim().split(/\s+/).length} words`
+                      )}
+                    </span>
+                  </div>
+                  <p className="fn-timeline-reasoning-text">{reasoning}</p>
+                </div>
+              )}
+
+              {visible.length > 0 && (
+                <ul
+                  id="agent-activity-steps"
+                  aria-label={UI_COPY.ADVISOR.ACTIVITY_TIMELINE.EXECUTION_STEPS}
+                  className="fn-timeline-list is-bordered"
+                >
+                  {visible.map((activity, index) => (
+                    <ActivityStepRow
+                      key={`${activity.tool}-${index}`}
+                      activity={activity}
+                      expanded={expanded}
+                      isCurrent={
+                        !expanded &&
+                        activity.status === "running" &&
+                        (activity.tool === currentKey || activity.tool === "phase:standby")
+                      }
+                    />
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
         </>
       )}
