@@ -48,8 +48,24 @@ function extractPlanBlock(content: string, openTag: string, closeTag: string): s
   const open = content.lastIndexOf(openTag);
   if (open === -1) return null;
   const close = content.indexOf(closeTag, open);
-  if (close === -1) return null;
+  if (close === -1) {
+    // Recover unclosed <tool_plan> blocks when the model hit stop/limit before closing
+    return content.slice(open + openTag.length).trim();
+  }
   return content.slice(open + openTag.length, close).trim();
+}
+
+/**
+ * Strips any <tool_plan>...</tool_plan>, <tool_call>...</tool_call>, and orphan
+ * opening/closing planning tags from assistant text so raw tags never leak to the UI
+ * or poison conversation history.
+ */
+export function stripToolPlanTags(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/<tool_plan>[\s\S]*?<\/tool_plan>/gi, "")
+    .replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "")
+    .replace(/<\/?(?:tool_plan|tool_call)>/gi, "");
 }
 
 /**
@@ -154,27 +170,29 @@ export class ToolPlanStreamFilter {
 
     for (;;) {
       if (!this.suppressingTag) {
-        const planIdx = this.buffer.indexOf(TOOL_PLAN_OPEN);
-        const callIdx = this.buffer.indexOf(TOOL_CALL_OPEN);
+        const candidates: Array<{ idx: number; open: string; close: string | null }> = [
+          {
+            idx: this.buffer.indexOf(TOOL_PLAN_OPEN),
+            open: TOOL_PLAN_OPEN,
+            close: TOOL_PLAN_CLOSE,
+          },
+          {
+            idx: this.buffer.indexOf(TOOL_CALL_OPEN),
+            open: TOOL_CALL_OPEN,
+            close: TOOL_CALL_CLOSE,
+          },
+          // Strip orphan closing tags (e.g. when reasoning channel emitted the opening tag)
+          { idx: this.buffer.indexOf(TOOL_PLAN_CLOSE), open: TOOL_PLAN_CLOSE, close: null },
+          { idx: this.buffer.indexOf(TOOL_CALL_CLOSE), open: TOOL_CALL_CLOSE, close: null },
+        ].filter((c) => c.idx !== -1);
 
-        let firstIdx = -1;
-        let matchOpen = "";
-        let matchClose = "";
-
-        if (planIdx !== -1 && (callIdx === -1 || planIdx < callIdx)) {
-          firstIdx = planIdx;
-          matchOpen = TOOL_PLAN_OPEN;
-          matchClose = TOOL_PLAN_CLOSE;
-        } else if (callIdx !== -1) {
-          firstIdx = callIdx;
-          matchOpen = TOOL_CALL_OPEN;
-          matchClose = TOOL_CALL_CLOSE;
-        }
-
-        if (firstIdx === -1) {
-          const keepPlan = partialSuffixLength(this.buffer, TOOL_PLAN_OPEN);
-          const keepCall = partialSuffixLength(this.buffer, TOOL_CALL_OPEN);
-          const keep = Math.max(keepPlan, keepCall);
+        if (candidates.length === 0) {
+          const keep = Math.max(
+            partialSuffixLength(this.buffer, TOOL_PLAN_OPEN),
+            partialSuffixLength(this.buffer, TOOL_CALL_OPEN),
+            partialSuffixLength(this.buffer, TOOL_PLAN_CLOSE),
+            partialSuffixLength(this.buffer, TOOL_CALL_CLOSE),
+          );
           const emitLength = this.buffer.length - keep;
           if (emitLength > 0) {
             visible += this.buffer.slice(0, emitLength);
@@ -183,9 +201,14 @@ export class ToolPlanStreamFilter {
           return visible;
         }
 
-        visible += this.buffer.slice(0, firstIdx);
-        this.buffer = this.buffer.slice(firstIdx + matchOpen.length);
-        this.suppressingTag = matchClose;
+        candidates.sort((a, b) => a.idx - b.idx);
+        const earliest = candidates[0];
+
+        visible += this.buffer.slice(0, earliest.idx);
+        this.buffer = this.buffer.slice(earliest.idx + earliest.open.length);
+        if (earliest.close) {
+          this.suppressingTag = earliest.close;
+        }
       } else {
         const close = this.buffer.indexOf(this.suppressingTag);
         if (close === -1) {
@@ -205,7 +228,7 @@ export class ToolPlanStreamFilter {
       this.buffer = "";
       return "";
     }
-    const out = this.buffer;
+    const out = stripToolPlanTags(this.buffer);
     this.buffer = "";
     return out;
   }

@@ -6,6 +6,6 @@ import { CategorySeedService } from "./category-seed.service";
 @Module({
   controllers: [CategoriesController],
   providers: [CategoriesService, CategorySeedService],
-  exports: [CategoriesService],
+  exports: [CategoriesService, CategorySeedService],
 })
 export class CategoriesModule {}

@@ -4,6 +4,7 @@ import {
   TOOL_PLAN_OPEN,
   ToolPlanStreamFilter,
   parseToolPlan,
+  stripToolPlanTags,
 } from "../llm/json-planning";
 
 /**
@@ -97,5 +98,28 @@ describe("parseToolPlan", () => {
     ).toBe("");
     expect(filter.push("Found it.")).toBe("Found it.");
     expect(filter.flush()).toBe("");
+  });
+
+  it("strips orphan closing </tool_plan> and </tool_call> tags across chunks", () => {
+    const filter = new ToolPlanStreamFilter();
+    expect(filter.push("</tool_p")).toBe("");
+    expect(filter.push("lan>\n")).toBe("\n");
+    expect(filter.push("</tool_call>Hello")).toBe("Hello");
+    expect(filter.flush()).toBe("");
+  });
+
+  it("recovers an unclosed <tool_plan> block when JSON is valid", () => {
+    const calls = parseToolPlan(
+      `${TOOL_PLAN_OPEN}\n{"tool_calls":[{"name":"accounts.list","arguments":{}}]}`,
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls![0].name).toBe("accounts.list");
+  });
+
+  it("stripToolPlanTags removes full blocks and orphan closing tags", () => {
+    expect(stripToolPlanTags("</tool_plan>\n")).toBe("\n");
+    expect(stripToolPlanTags('Hi <tool_plan>{"tool_calls":[]}</tool_plan> there')).toBe(
+      "Hi  there",
+    );
   });
 });

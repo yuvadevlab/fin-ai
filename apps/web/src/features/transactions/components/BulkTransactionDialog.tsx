@@ -5,33 +5,15 @@ import { FormDialog, toast } from "@fin-ai/ui";
 import { format } from "date-fns";
 import { useCreateBulkTransactions } from "../api";
 import { useInlineEntityCreation } from "../hooks";
-import { TransactionKind, TransactionType } from "@fin-ai/shared-types";
 import { downloadExcelTemplateFromApi, parseExcelOrCsvFile } from "../utils";
 import { BulkTransactionForm, type BulkRow } from "./BulkTransactionForm";
 import { InlineEntityDialogs } from "./InlineEntityDialogs";
 import { UI_COPY } from "@/lib/ui-copy";
-
-function generateRowId(): string {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `row_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-}
-
-const createEmptyRow = (
-  defaultAccount: string,
-  defaultCategory: string,
-  todayStr: string,
-  id?: string,
-): BulkRow => ({
-  id: id || generateRowId(),
-  amount: "",
-  kind: TransactionKind.EXPENSE,
-  category: defaultCategory,
-  account: defaultAccount,
-  date: todayStr,
-  notes: "",
-});
+import {
+  createEmptyRow,
+  validateBulkRows,
+  mapRowsToBulkPayload,
+} from "./BulkTransactionDialog.helpers";
 
 export interface BulkTransactionDialogProps {
   trigger?: React.ReactNode;
@@ -87,15 +69,11 @@ export function BulkTransactionDialog({
     const lastRow = rows[rows.length - 1];
     setRows((prev) => [
       ...prev,
-      {
-        id: generateRowId(),
-        amount: "",
-        kind: TransactionKind.EXPENSE,
-        category: lastRow?.category || defaultCategory,
-        account: lastRow?.account || defaultAccount,
-        date: lastRow?.date || todayStr,
-        notes: "",
-      },
+      createEmptyRow(
+        lastRow?.account || defaultAccount,
+        lastRow?.category || defaultCategory,
+        lastRow?.date || todayStr,
+      ),
     ]);
   };
 
@@ -107,7 +85,16 @@ export function BulkTransactionDialog({
 
   const handleChangeRow = (id: string, field: keyof BulkRow, value: string) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
-    if (errors.root) setErrors({});
+    setErrors((prev) => {
+      const errKey = `${id}_${field}`;
+      if (prev[errKey] || prev.root) {
+        const next = { ...prev };
+        delete next[errKey];
+        delete next.root;
+        return next;
+      }
+      return prev;
+    });
   };
 
   const handleDownloadTemplate = async () => {
@@ -144,37 +131,13 @@ export function BulkTransactionDialog({
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Client validation
-    const invalidRows = rows.filter(
-      (r) => !r.amount || parseFloat(r.amount) <= 0 || !r.category || !r.account || !r.date,
-    );
-
-    if (invalidRows.length > 0) {
-      setErrors({
-        root: UI_COPY.TRANSACTIONS.IMPORT.VALIDATION_FAILED,
-      });
+    const validationErrors = validateBulkRows(rows);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
-    const payload = rows.map((r) => {
-      const kindTypeMap: Record<TransactionKind, TransactionType> = {
-        [TransactionKind.EXPENSE]: TransactionType.EXPENSE,
-        [TransactionKind.INCOME]: TransactionType.INCOME,
-        [TransactionKind.TRANSFER]: TransactionType.TRANSFER,
-        [TransactionKind.INVESTMENT]: TransactionType.INVESTMENT,
-        [TransactionKind.GOAL]: TransactionType.GOAL,
-      };
-      return {
-        amount: parseFloat(r.amount),
-        type: kindTypeMap[r.kind] || TransactionType.EXPENSE,
-        categoryId: r.category,
-        accountId: r.account,
-        toAccountId: r.toAccount || null,
-        date: r.date,
-        notes: r.notes || undefined,
-      };
-    });
-
+    const payload = mapRowsToBulkPayload(rows);
     try {
       await createBulk.mutateAsync(payload);
       setOpen?.(false);

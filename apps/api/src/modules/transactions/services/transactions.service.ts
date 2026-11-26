@@ -108,8 +108,14 @@ export class TransactionsService {
     return this.summary.summarize(userId, filter, workspaceId, memberUserIds);
   }
 
-  generateExcelTemplate(userId: string): Promise<Buffer> {
-    this.logger.info(`[generateExcelTemplate] Generating template for user ${userId.slice(0, 8)}`);
-    return this.export_.generateExcelTemplate(userId);
+  generateExcelTemplate(
+    userId: string,
+    workspaceId?: string,
+    memberUserIds?: string[],
+  ): Promise<Buffer> {
+    this.logger.info(
+      `[generateExcelTemplate] Generating template for user ${userId.slice(0, 8)} (workspace: ${workspaceId ? workspaceId.slice(0, 8) : "default"})`,
+    );
+    return this.export_.generateExcelTemplate(userId, workspaceId, memberUserIds);
   }
 }

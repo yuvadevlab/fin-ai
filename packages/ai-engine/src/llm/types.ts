@@ -44,6 +44,7 @@ export interface LlmToolCall {
  */
 export type LlmStreamEvent =
   | { type: typeof LlmStreamEventType.TEXT_DELTA; text: string }
+  | { type: typeof LlmStreamEventType.REASONING_DELTA; text: string }
   | { type: typeof LlmStreamEventType.TOOL_CALL; toolCall: LlmToolCall }
   | { type: typeof LlmStreamEventType.USAGE; tokensIn: number; tokensOut: number }
   | { type: typeof LlmStreamEventType.DONE };
