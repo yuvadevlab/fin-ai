@@ -5,6 +5,7 @@
  */
 
 import { MessageRole, type ILLMProvider, type AIMessage } from "@yuva-devlab/ai-client";
+import { LlmStreamEventType } from "@fin-ai/shared-types";
 import {
   type ChatModel,
   type LlmChatRequest,
@@ -86,7 +87,12 @@ export class DevLabChatModel implements ChatModel {
 
         return {
           content: response.text,
-          toolCalls: [],
+          toolCalls: (response.toolCalls ?? []).map((tc) => ({
+            id: tc.id,
+            name: tc.name,
+            arguments:
+              typeof tc.arguments === "string" ? tc.arguments : JSON.stringify(tc.arguments ?? {}),
+          })),
           tokensIn: response.usage?.promptTokens,
           tokensOut: response.usage?.completionTokens,
         };
@@ -125,14 +131,43 @@ export class DevLabChatModel implements ChatModel {
           responseFormat: "text",
           timeoutMs: LLM_RETRY_CONFIG.TIMEOUT_MS,
         })) {
+          // Capture reasoning channel separately so <tool_plan> blocks emitted
+          // in reasoning_content/reasoning are still available for fallback parsing
+          if (chunk.reasoningDelta) {
+            yield { type: LlmStreamEventType.REASONING_DELTA, text: chunk.reasoningDelta };
+          }
           // Yield text delta if present in chunk
           if (chunk.delta) {
-            yield { type: "text-delta", text: chunk.delta };
+            yield { type: LlmStreamEventType.TEXT_DELTA, text: chunk.delta };
+          }
+          // Forward native tool calls if emitted by adapter
+          if (chunk.toolCalls?.length) {
+            for (const tc of chunk.toolCalls) {
+              yield {
+                type: LlmStreamEventType.TOOL_CALL,
+                toolCall: {
+                  id: tc.id,
+                  name: tc.name,
+                  arguments:
+                    typeof tc.arguments === "string"
+                      ? tc.arguments
+                      : JSON.stringify(tc.arguments ?? {}),
+                },
+              };
+            }
+          }
+          // Forward token usage metrics
+          if (chunk.usage) {
+            yield {
+              type: LlmStreamEventType.USAGE,
+              tokensIn: chunk.usage.promptTokens ?? 0,
+              tokensOut: chunk.usage.completionTokens ?? 0,
+            };
           }
         }
 
         // Terminal completion event
-        yield { type: "done" };
+        yield { type: LlmStreamEventType.DONE };
         return;
       } catch (err) {
         attempt++;

@@ -17,6 +17,7 @@ export type LlmRole = (typeof LlmRole)[keyof typeof LlmRole];
 /** Low-level streaming event types emitted by LLM adapters */
 export const LlmStreamEventType = {
   TEXT_DELTA: "text-delta",
+  REASONING_DELTA: "reasoning-delta",
   TOOL_CALL: "tool_call",
   USAGE: "usage",
   DONE: "done",

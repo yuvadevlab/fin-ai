@@ -51,7 +51,8 @@ export class AgentTurnRunner {
     emit({ type: "phase", phase: "model_turn", status: "start", turn, pendingAction });
 
     const filter = new ToolPlanStreamFilter();
-    let rawContent = "";
+    let reasoningContent = "";
+    let deltaContent = "";
     let visibleContent = "";
     let tokensIn = 0;
     let tokensOut = 0;
@@ -59,8 +60,14 @@ export class AgentTurnRunner {
 
     for await (const event of model.stream(request)) {
       switch (event.type) {
+        case "reasoning-delta": {
+          // Keep reasoning private (never emit as visible tokens) while preserving
+          // any <tool_plan> blocks emitted inside the reasoning channel.
+          reasoningContent += event.text;
+          break;
+        }
         case "text-delta": {
-          rawContent += event.text;
+          deltaContent += event.text;
           const visible = filter.push(event.text);
           if (visible) {
             visibleContent += visible;
@@ -87,8 +94,12 @@ export class AgentTurnRunner {
       emit({ type: "token", content: tail });
     }
 
+    // Reconstruct full raw output across reasoning + content channels so split
+    // <tool_plan>{...}</tool_plan> blocks parse cleanly.
+    const rawContent = reasoningContent ? `${reasoningContent}${deltaContent}` : deltaContent;
+
     this.logger.info(
-      `Turn ${turn}: done — ${visibleContent.length} visible chars, ${toolCalls.length} native tool call(s), tokens: ${tokensIn} in / ${tokensOut} out`,
+      `Turn ${turn}: done — ${visibleContent.length} visible chars (${reasoningContent.length} reasoning chars), ${toolCalls.length} native tool call(s), tokens: ${tokensIn} in / ${tokensOut} out`,
     );
     return { rawContent, visibleContent, toolCalls, tokensIn, tokensOut };
   }
