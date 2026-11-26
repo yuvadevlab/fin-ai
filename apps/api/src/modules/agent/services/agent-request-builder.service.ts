@@ -3,6 +3,7 @@ import { Logger } from "@yuva-devlab/logger";
 import {
   buildToolPlanInstructions,
   resolveAiProvider,
+  stripToolPlanTags,
   type LlmChatRequest,
   type LlmMessage,
 } from "@fin-ai/ai-engine";
@@ -84,10 +85,14 @@ export class AgentRequestBuilderService {
     );
     const pendingAction = await this.actionManager.getPendingAction(conversationId, userId);
 
-    const history: LlmMessage[] = recent.reverse().map((m) => ({
-      role: m.role === MessageRole.ASSISTANT ? ("assistant" as const) : ("user" as const),
-      content: m.content,
-    }));
+    const history: LlmMessage[] = recent
+      .reverse()
+      .map((m) => ({
+        role: m.role === MessageRole.ASSISTANT ? ("assistant" as const) : ("user" as const),
+        content: m.role === MessageRole.ASSISTANT ? stripToolPlanTags(m.content).trim() : m.content,
+      }))
+      // Drop corrupted empty/tag-only assistant messages so they cannot poison future turns
+      .filter((m) => m.role !== "assistant" || m.content.length > 0);
 
     const snapshot = await this.contextBuilder.buildFinanceContext(
       userId,

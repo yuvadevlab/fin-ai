@@ -3,6 +3,7 @@ import { Logger } from "@yuva-devlab/logger";
 import { Prisma } from "@fin-ai/database";
 import {
   parseToolPlan,
+  stripToolPlanTags,
   formatActionProposalMessage,
   AGENT_PROPOSAL_FAILED_MESSAGE,
   AGENT_MAX_ITERATIONS_MESSAGE,
@@ -18,6 +19,13 @@ import type { AgentEventEmitter } from "../agent.types";
 
 /** Safety cap: max model↔tool loop iterations per run. */
 const MAX_ITERATIONS = 8;
+
+/** Max corrective retries when the model returns empty or tag-only output. */
+const MAX_EMPTY_RETRIES = 2;
+
+/** Fallback message if the model fails to produce visible prose after retries. */
+const EMPTY_RESPONSE_FALLBACK_MESSAGE =
+  "I'm sorry, I couldn't complete that step cleanly. Could you please rephrase or try again?";
 
 export interface AgentRunParams {
   userId: string;
@@ -70,6 +78,7 @@ export class AgentOrchestratorService {
     let tokensIn = 0;
     let tokensOut = 0;
     let runVisibleContent = "";
+    let emptyRetries = 0;
 
     for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
       this.logger.info(
@@ -78,7 +87,7 @@ export class AgentOrchestratorService {
       const turn = await this.turnRunner.run(model, request, emit, iteration, hasPendingAction);
       tokensIn += turn.tokensIn;
       tokensOut += turn.tokensOut;
-      runVisibleContent += turn.visibleContent;
+      runVisibleContent += stripToolPlanTags(turn.visibleContent);
 
       const toolCalls =
         turn.toolCalls.length > 0 ? turn.toolCalls : (parseToolPlan(turn.rawContent) ?? []);
@@ -97,8 +106,29 @@ export class AgentOrchestratorService {
       });
 
       if (toolCalls.length === 0) {
-        let finalContent = runVisibleContent;
-        if (!hasPendingAction && /confirmation card/i.test(finalContent)) {
+        let finalContent = stripToolPlanTags(runVisibleContent).trim();
+
+        // Recover when model emitted empty text or only planning tags (e.g. </tool_plan>)
+        if (!finalContent && emptyRetries < MAX_EMPTY_RETRIES && iteration < MAX_ITERATIONS) {
+          emptyRetries++;
+          this.logger.warn(
+            `[Run ${runId.slice(0, 8)}] Empty or malformed-plan turn on iteration ${iteration}; retrying (${emptyRetries}/${MAX_EMPTY_RETRIES})`,
+          );
+          request.messages.push({
+            role: "user",
+            content:
+              "Your previous response was empty or contained an incomplete tool plan. " +
+              "If you need to perform an action or look up data, emit a complete " +
+              '<tool_plan>{"tool_calls":[{"name":"...","arguments":{...}}]}</tool_plan> block. ' +
+              "Otherwise, respond directly in clear prose.",
+          });
+          continue;
+        }
+
+        if (!finalContent) {
+          finalContent = EMPTY_RESPONSE_FALLBACK_MESSAGE;
+          emit({ type: "token_replace", content: finalContent });
+        } else if (!hasPendingAction && /confirmation card/i.test(finalContent)) {
           finalContent = AGENT_PROPOSAL_FAILED_MESSAGE;
           emit({ type: "token_replace", content: finalContent });
         }
