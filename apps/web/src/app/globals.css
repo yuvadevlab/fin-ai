@@ -7,6 +7,9 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
 @import "@fin-ai/ui/styles.css";
+@import "@yuva-devlab/agent-ui/styles.css";
+@import "../styles/finai-agent-chat.css";
+@import "@yuva-devlab/agent-ui/styles.css";
 @import "../styles/marketing/marketing-shell.css";
 @import "../styles/marketing/marketing-hero.css";
 @import "../styles/marketing/marketing-preview.css";

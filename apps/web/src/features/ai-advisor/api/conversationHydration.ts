@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib";
-import { API_ENDPOINTS } from "@fin-ai/shared-types";
+import { AgentChatRole, API_ENDPOINTS, MessageRole } from "@fin-ai/shared-types";
 import type { AiConversation, AiMessage } from "./useConversations";
 import { fetchConversationActions, type AgentActionHistoryItem } from "./agentActions";
 import type { AgentChatMessage, AgentConfirmation } from "./agentTypes";
@@ -21,7 +21,7 @@ export function hydrateConversationMessages(
   if (storedMessages.length === 0) return [];
 
   const baseMessages: AgentChatMessage[] = storedMessages.map((m) => ({
-    role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
+    role: m.role === MessageRole.USER ? AgentChatRole.USER : AgentChatRole.ASSISTANT,
     text: m.content,
   }));
 
@@ -32,7 +32,7 @@ export function hydrateConversationMessages(
   // Find all assistant message indices
   const assistantIndices: number[] = [];
   for (let i = 0; i < storedMessages.length; i++) {
-    if (storedMessages[i].role === "ASSISTANT") {
+    if (storedMessages[i].role === MessageRole.ASSISTANT) {
       assistantIndices.push(i);
     }
   }
@@ -62,7 +62,7 @@ export function hydrateConversationMessages(
     let endWindow = Infinity;
     if (nextAssistantIdx > 0) {
       for (let j = idx + 1; j <= nextAssistantIdx; j++) {
-        if (storedMessages[j].role === "USER") {
+        if (storedMessages[j].role === MessageRole.USER) {
           endWindow = new Date(storedMessages[j].createdAt).getTime();
           break;
         }

@@ -1,0 +1,27 @@
+/**
+ * @file apps/web/src/styles/finai-agent-chat.css
+ * @description FinAI-specific theme & viewport overrides for @yuva-devlab/agent-ui.
+ */
+
+@layer dl-app {
+  .fn-agent-chat-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    gap: 10px;
+  }
+
+  .fn-agent-chat-root {
+    --dl-chat-bg: var(--background);
+    --dl-chat-surface: var(--card);
+    --dl-chat-border: var(--border);
+    --dl-chat-accent: var(--primary);
+    --dl-chat-accent-fg: var(--primary-foreground);
+    --dl-chat-radius: 14px;
+    --dl-chat-content-max-width: 820px;
+
+    flex: 1;
+    min-height: 0;
+  }
+}
