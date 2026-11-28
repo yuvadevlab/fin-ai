@@ -2,199 +2,200 @@
 
 /**
  * @file apps/web/src/features/ai-advisor/components/AiAdvisorPage.tsx
- * @description Master AI Advisor conversation workspace component.
- * Integrates route-based thread state, zero-latency caching, history drawer, and financial context.
+ * @description FinAI Autonomous Advisor powered by @yuva-devlab/agent-ui.
  * @module @fin-ai/web/features/ai-advisor/components/AiAdvisorPage
  */
 
-import { useState } from "react";
-import { PageContainer, cn } from "@fin-ai/ui";
-import { ArrowDown } from "lucide-react";
-import { AgentChatRole, AgentConfirmationStatus } from "@fin-ai/shared-types";
+import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { PanelRight } from "lucide-react";
+import { AgentCardType } from "@yuva-devlab/agent-protocol";
 import {
-  ChatMessages,
-  ChatLoadingSkeleton,
-  ContextPanel,
-  AdvisorHeader,
-  AdvisorComposer,
-  EmptyState,
-  HistoryDrawer,
-  useConversations,
-  useDeleteConversation,
+  AgentApprovalState,
+  AgentChat,
+  AgentChatLayout,
+  AgentChatSlot,
+  AgentMessageRole,
+  type AgentChatMessageItem,
+  type AgentThreadAdapter,
+} from "@yuva-devlab/agent-ui";
+import { Button, PageContainer } from "@fin-ai/ui";
+import {
+  AgentConfirmationStatus,
+  API_ENDPOINTS,
+  MessageRole,
+  StorageKey,
+} from "@fin-ai/shared-types";
+import { ReadOnlyWorkspaceBanner } from "@/components";
+import {
+  confirmAgentAction,
+  fetchConversationActions,
+  QUICK_ACTIONS,
+  rejectAgentAction,
   removeCachedMessages,
-  useAgentChatContext,
-  useChatAutoScroll,
-  deriveRunState,
-  type AgentConfirmation,
+  type AiConversation,
 } from "@/features/ai-advisor";
+import { API_BASE_URL, API_ROUTES, apiClient } from "@/lib";
 import { UI_COPY } from "@/lib/ui-copy";
 import { useWorkspace } from "@/providers";
-import { ReadOnlyWorkspaceBanner } from "@/components";
 import { AdvisorMobileContextSheet } from "./AdvisorMobileContextSheet";
-import { useAdvisorThreadSync } from "../hooks/useAdvisorThreadSync";
 
+function getFinaiAuthHeaders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const headers: Record<string, string> = {};
+  const token =
+    localStorage.getItem(StorageKey.TOKEN) ||
+    localStorage.getItem(StorageKey.DEVLAB_ACCESS_TOKEN) ||
+    localStorage.getItem(StorageKey.DEVLAB_AUTH_TOKEN);
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const workspaceId = localStorage.getItem(StorageKey.WORKSPACE_ID);
+  if (workspaceId) headers["x-workspace-id"] = workspaceId;
+  return headers;
+}
+
+/** Master AI Advisor page wrapping the reusable @yuva-devlab/agent-ui workspace. */
 export function AiAdvisorPage() {
   const { isReadOnly } = useWorkspace();
-  const [input, setInput] = useState("");
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const queryClient = useQueryClient();
   const [contextOpen, setContextOpen] = useState(false);
-  const { containerRef, contentRef, isAtBottom, handleScroll, scrollToBottom } =
-    useChatAutoScroll();
 
-  const {
-    messages,
-    isStreaming,
-    isLoadingConversation,
-    conversationId,
-    executingActionId,
-    sendMessage,
-    startNewChat,
-    loadConversation,
-    stopStreaming,
-    confirmAction,
-    rejectAction,
-  } = useAgentChatContext();
+  const handleConfirmAction = useCallback(
+    async (actionId: string, approved: boolean) => {
+      if (approved) {
+        if (isReadOnly) return;
+        await confirmAgentAction(actionId);
+        await queryClient.invalidateQueries();
+      } else {
+        await rejectAgentAction(actionId);
+      }
+    },
+    [isReadOnly, queryClient],
+  );
 
-  const { data: conversations } = useConversations();
-  const deleteConversationMutation = useDeleteConversation();
+  const transport = useMemo(
+    () => ({
+      streamUrl: `${API_BASE_URL}/${API_ROUTES.AGENT_CHAT}`,
+      appSlug: "fin-ai",
+      profileSlug: "finai-advisor",
+      headers: getFinaiAuthHeaders,
+      buildBody: ({ prompt, threadId }: { prompt: string; threadId?: string }) => ({
+        question: prompt,
+        conversationId: threadId,
+      }),
+      onConfirmAction: handleConfirmAction,
+    }),
+    [handleConfirmAction],
+  );
 
-  const { routeConversationId, handleNewChat, handleSelectConversation } = useAdvisorThreadSync({
-    conversationId,
-    startNewChat,
-    loadConversation,
-    scrollToBottom,
-    setHistoryOpen,
-  });
+  const threadAdapter = useMemo<AgentThreadAdapter>(
+    () => ({
+      listThreads: async () => {
+        const list = await apiClient.get<AiConversation[]>(API_ENDPOINTS.AI.CONVERSATIONS);
+        return list.map((c) => ({ id: c.id, title: c.title, updatedAt: c.updatedAt }));
+      },
+      loadThread: async (threadId: string) => {
+        const [convo, actions] = await Promise.all([
+          apiClient.get<AiConversation>(API_ENDPOINTS.AI.CONVERSATION(threadId)),
+          fetchConversationActions(threadId).catch(() => []),
+        ]);
+        const mapped: AgentChatMessageItem[] = (convo.messages ?? []).map((m) => ({
+          id: m.id,
+          role: m.role === MessageRole.USER ? AgentMessageRole.USER : AgentMessageRole.ASSISTANT,
+          content: m.content,
+          createdAt: m.createdAt,
+        }));
+        const lastAssistant = [...mapped]
+          .reverse()
+          .find((m) => m.role === AgentMessageRole.ASSISTANT);
+        if (lastAssistant && actions.length > 0) {
+          lastAssistant.confirmations = actions.map((a) => ({
+            actionId: a.actionId,
+            tool: a.tool,
+            card: { type: AgentCardType.CONFIRMATION, title: a.card.title, rows: a.card.rows },
+            state:
+              a.status === AgentConfirmationStatus.EXECUTED
+                ? AgentApprovalState.ACCEPTED
+                : a.status === AgentConfirmationStatus.REJECTED
+                  ? AgentApprovalState.REJECTED
+                  : AgentApprovalState.REQUESTED,
+          }));
+        }
+        return mapped;
+      },
+      deleteThread: async (threadId: string) => {
+        removeCachedMessages(threadId);
+        await apiClient.delete<{ success: boolean }>(API_ENDPOINTS.AI.CONVERSATION(threadId));
+      },
+    }),
+    [],
+  );
 
-  const hasMessages = messages.length > 0 || !!conversationId || isLoadingConversation;
-  const lastAssistant = [...messages].reverse().find((m) => m.role === AgentChatRole.ASSISTANT);
-  const currentActivities = lastAssistant?.activities;
-  const runState = deriveRunState(currentActivities, isStreaming);
-  const pendingConfirmation =
-    lastAssistant?.confirmations?.find(
-      (c: AgentConfirmation) => c.status === AgentConfirmationStatus.PENDING,
-    ) ?? null;
-  const lastRunActivities =
-    lastAssistant && !lastAssistant.streaming ? lastAssistant.activities : undefined;
+  const starterPrompts = useMemo(() => QUICK_ACTIONS.map((q) => q.message), []);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const q = input.trim();
-    if (!q || isStreaming) return;
-    setInput("");
-    setContextOpen(false);
-    scrollToBottom();
-    await sendMessage(q);
-  };
-
-  const handleQuickAction = async (message: string) => {
-    if (isStreaming) return;
-    setContextOpen(false);
-    scrollToBottom();
-    await sendMessage(message);
-  };
-
-  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    removeCachedMessages(id);
-    await deleteConversationMutation.mutateAsync(id);
-    if (conversationId === id || routeConversationId === id) handleNewChat();
-  };
+  const copy = useMemo(
+    () => ({
+      defaultTitle: UI_COPY.ADVISOR.HEADER.TITLE,
+      newThread: UI_COPY.ADVISOR.HEADER.NEW_CHAT_BUTTON,
+      searchThreadsPlaceholder: UI_COPY.ADVISOR.DRAWER.TITLE,
+      noThreads: UI_COPY.ADVISOR.DRAWER.EMPTY,
+      untitledThread: UI_COPY.ADVISOR.DRAWER.UNTITLED_CHAT,
+      emptyTitle: UI_COPY.ADVISOR.EMPTY_STATE.TITLE,
+      emptyDescription: UI_COPY.ADVISOR.EMPTY_STATE.SUBTITLE,
+      composerPlaceholder: UI_COPY.ADVISOR.COMPOSER.PLACEHOLDER,
+      thinkingLabel: UI_COPY.ADVISOR.ACTIVITY_TIMELINE.THINKING,
+      thoughtProcessLabel: UI_COPY.ADVISOR.ACTIVITY_TIMELINE.HEADER_TITLE,
+      approveLabel: UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CONFIRM_SINGLE,
+      rejectLabel: UI_COPY.ADVISOR.CONFIRMATION_CAROUSEL.CANCEL_SINGLE,
+      approvedLabel: UI_COPY.ADVISOR.CONFIRMATION_STATUS.RECORDED,
+      rejectedLabel: UI_COPY.ADVISOR.CONFIRMATION_STATUS.CANCELLED,
+      scrollToBottomLabel: UI_COPY.ADVISOR.FEED.JUMP_TO_LATEST,
+      streamErrorFallback: UI_COPY.ADVISOR.ERROR_DESCRIPTION,
+    }),
+    [],
+  );
 
   return (
     <PageContainer fillViewport>
-      <AdvisorHeader
-        onOpenHistory={() => setHistoryOpen(true)}
-        onNewChat={handleNewChat}
-        onOpenContext={() => setContextOpen(true)}
-        hasMessages={hasMessages}
-      />
-      {isReadOnly && (
-        <div className="fn-advisor-banner-wrap">
-          <ReadOnlyWorkspaceBanner />
-        </div>
-      )}
-
-      <div className="fn-advisor-layout">
-        <div className="fn-advisor-chat-card">
-          <div className="fn-advisor-chat-scroll" ref={containerRef} onScroll={handleScroll}>
-            <div ref={contentRef}>
-              {isLoadingConversation && messages.length === 0 ? (
-                <ChatLoadingSkeleton />
-              ) : messages.length === 0 && !isStreaming ? (
-                <EmptyState onSelect={handleQuickAction} />
-              ) : (
-                <ChatMessages
-                  messages={messages}
-                  onSelectFollowUp={handleQuickAction}
-                  onConfirmAction={(id, tool) => {
-                    if (!isReadOnly) confirmAction(id, tool);
-                  }}
-                  onRejectAction={(id, idx) => rejectAction(id, idx)}
-                  executingActionId={executingActionId}
-                />
-              )}
-            </div>
+      <div className="fn-agent-chat-shell">
+        {isReadOnly && (
+          <div className="fn-advisor-banner-wrap">
+            <ReadOnlyWorkspaceBanner />
           </div>
+        )}
 
-          {!isAtBottom && hasMessages && (
-            <button
-              type="button"
-              onClick={scrollToBottom}
-              aria-label={UI_COPY.COMMON.A11Y.JUMP_TO_LATEST}
-              className="fn-advisor-jump-bottom"
-            >
-              <ArrowDown
-                className={cn("fn-advisor-jump-icon", isStreaming && "is-streaming")}
-                aria-hidden="true"
-              />
-              <span>
-                {isStreaming
-                  ? UI_COPY.ADVISOR.FEED.NEW_CONTENT
-                  : UI_COPY.ADVISOR.FEED.JUMP_TO_LATEST}
-              </span>
-            </button>
-          )}
-
-          <AdvisorComposer
-            value={input}
-            onChange={setInput}
-            onSubmit={handleSubmit}
-            isStreaming={isStreaming}
-            onStop={stopStreaming}
-            activities={currentActivities}
-            pendingConfirmation={pendingConfirmation}
-          />
-        </div>
-
-        <aside className="fn-advisor-sidebar" aria-label={UI_COPY.ADVISOR.CONTEXT.TITLE}>
-          <ContextPanel
-            onQuickAction={handleQuickAction}
-            isStreaming={isStreaming}
-            streamingLabel={runState.statusLabel}
-            pendingConfirmation={pendingConfirmation}
-            lastRunActivities={lastRunActivities}
-          />
-        </aside>
+        <AgentChat
+          transport={transport}
+          threadAdapter={threadAdapter}
+          layout={AgentChatLayout.EMBEDDED}
+          showSidebar
+          showTraceInspector
+          starterPrompts={starterPrompts}
+          copy={copy}
+          classNames={{ [AgentChatSlot.ROOT]: "fn-agent-chat-root" }}
+          renderers={{
+            renderHeaderActions: () => (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setContextOpen(true)}
+              >
+                <PanelRight size={14} /> {UI_COPY.ADVISOR.HEADER.CONTEXT_BUTTON}
+              </Button>
+            ),
+          }}
+        />
       </div>
 
       <AdvisorMobileContextSheet
         open={contextOpen}
         onOpenChange={setContextOpen}
-        onQuickAction={handleQuickAction}
-        isStreaming={isStreaming}
-        streamingLabel={runState.statusLabel}
-        pendingConfirmation={pendingConfirmation}
-        lastRunActivities={lastRunActivities}
-      />
-
-      <HistoryDrawer
-        open={historyOpen}
-        onOpenChange={setHistoryOpen}
-        conversations={conversations}
-        activeConversationId={conversationId}
-        onSelectConversation={handleSelectConversation}
-        onDeleteConversation={handleDeleteConversation}
+        isStreaming={false}
+        streamingLabel={UI_COPY.ADVISOR.CONTEXT.STREAMING_DEFAULT}
+        pendingConfirmation={null}
+        onQuickAction={async () => {
+          setContextOpen(false);
+        }}
       />
     </PageContainer>
   );

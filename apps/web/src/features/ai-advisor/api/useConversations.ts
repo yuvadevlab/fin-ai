@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS, API_ENDPOINTS } from "@fin-ai/shared-types";
+import { QUERY_KEYS, API_ENDPOINTS, MessageRole } from "@fin-ai/shared-types";
 import { apiClient } from "@/lib";
 
 export interface AiMessage {
   id: string;
-  role: "USER" | "ASSISTANT";
+  role: MessageRole;
   content: string;
   createdAt: string;
   metadata?: { actionIds?: string[]; runId?: string; [key: string]: unknown } | null;
